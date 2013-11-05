@@ -1,0 +1,8 @@
+*.o
+*.lst
+.dep
+ModbusTest
+*.map
+bin
+*.layout
+obj

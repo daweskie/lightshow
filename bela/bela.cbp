@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="bela" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="armelfgcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/bela" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/bela" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="armelfgcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-g" />
+			<Add directory="/usr/src/chibios/os/ports/common/ARMCMx/CMSIS/include" />
+			<Add directory="/usr/src/chibios/os/ports/common/ARMCMx" />
+			<Add directory="/usr/src/chibios/os/ports/GCC/ARMCMx" />
+			<Add directory="/usr/src/chibios/os/ports/GCC/ARMCMx/STM32F4xx" />
+			<Add directory="/usr/src/chibios/os/kernel/include" />
+			<Add directory="/usr/src/chibios/os/hal/include" />
+			<Add directory="/usr/src/chibios/os/hal/platforms/STM32F4xx" />
+			<Add directory="/usr/src/chibios/os/hal/platforms/STM32" />
+			<Add directory="/usr/src/chibios/os/hal/platforms/STM32/GPIOv2" />
+			<Add directory="/usr/src/chibios/os/hal/platforms/STM32/I2Cv1" />
+			<Add directory="/usr/src/chibios/os/hal/platforms/STM32/OTGv1" />
+			<Add directory="/usr/src/chibios/os/hal/platforms/STM32/RTCv2" />
+			<Add directory="/usr/src/chibios/os/hal/platforms/STM32/SPIv1" />
+			<Add directory="/usr/src/chibios/os/hal/platforms/STM32/USARTv1" />
+			<Add directory="/usr/src/chibios/boards/ST_STM32F4_DISCOVERY" />
+			<Add directory="/usr/src/chibios/os/various" />
+		</Compiler>
+		<Unit filename="Makefile" />
+		<Unit filename="adconv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="adconv.h" />
+		<Unit filename="bela.h" />
+		<Unit filename="belapwm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="belapwm.h" />
+		<Unit filename="chconf.h" />
+		<Unit filename="comm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="comm.h" />
+		<Unit filename="halconf.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mcuconf.h" />
+		<Unit filename="misc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="misc.h" />
+		<Unit filename="model.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="model.h" />
+		<Unit filename="ports.txt" />
+		<Unit filename="usbcfg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="usbcfg.h" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+			<lib_finder disable_auto="1" />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
