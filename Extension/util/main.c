@@ -20,6 +20,7 @@
 #include <bitset.h>
 #include "include/crc.h"
 
+#include <adc.h>
 
 void cmd_bitset_test()
 {

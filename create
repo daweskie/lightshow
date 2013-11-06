@@ -42,6 +42,7 @@ awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/lib.c > ${HOME
 
     createapp)
 HOME=$1
+mkdir ${HOME}
 awk " { gsub(\"#!#PROJECT_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/project.cbp > ${HOME}/$1.cbp
 awk " { gsub(\"#!#PROJECT_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/Makefile.app > ${HOME}/Makefile
 awk " { gsub(\"#!#PROJECT_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/app.c > ${HOME}/main.c

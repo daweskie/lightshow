@@ -32,6 +32,31 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="../../../../../../usr/src/ChibiOS/os/hal/include/adc.h" />
+		<Unit filename="../../../../../../usr/src/ChibiOS/os/hal/include/can.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/dac.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/ext.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/gpt.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/hal.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/i2c.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/i2s.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/icu.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/io_block.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/io_channel.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/mac.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/mii.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/mmc_spi.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/mmcsd.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/pal.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/pwm.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/rtc.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/sdc.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/serial.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/serial_usb.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/spi.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/tm.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/uart.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/usb.h" />
 		<Unit filename="Makefile" />
 		<Unit filename="include/bitset.h" />
 		<Unit filename="include/checksum.h" />
