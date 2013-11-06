@@ -2,12 +2,15 @@
 # Build global options
 # NOTE: Can be overridden externally.
 #
-USE_UTIL=y
-USE_CONFIG=n
-USE_MODBUS=n
 
 # Architecture or project specific options
 ##############################################################################
+USE_UTIL=y
+USE_CONFIG=n
+USE_MODBUS=n
+USE_SERIAL_PACKET=n
+USE_MOTOROLA_PACKET=n
+USE_MODBUS=n
 
 ##############################################################################
 # Project, sources and paths

@@ -11,6 +11,8 @@ flash: all
 
 cleanDebug: clean all
 
+doc: 
+	$(MAKE) -C doc
 
 .PHONY: clean cleanDebug doc
 

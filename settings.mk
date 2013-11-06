@@ -73,11 +73,22 @@ include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/ports/GCC/ARMCMx/STM32F4xx/port.mk
 include $(CHIBIOS)/os/kernel/kernel.mk
 
-#if wants to use socket module
+ifeq ($(USE_MOTOROLA_PACKET),y)
+USE_UTIL=y
+USE_CONFIG=y
+USE_SERIAL_PACKET=y
+include $(EXTENSION)/motorolapacket/motorolapacket.mk
+endif
+
 ifeq ($(USE_MODBUS),y)
 USE_UTIL=y
 USE_CONFIG=y
+USE_SERIAL_PACKET=y
 include $(EXTENSION)/modbus/modbus.mk
+endif
+
+ifeq ($(USE_SERIAL_PACKET),y)
+include $(EXTENSION)/serialpacket/serialpacket.mk
 endif
 
 ifeq ($(USE_CONFIG),y)

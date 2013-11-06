@@ -2,6 +2,7 @@
 
 TEMPLATE_DIR=templates
 THIS=`pwd`
+EXTENSION=Extension
 
 usage(){
     echo "usage: $0 <name>"
@@ -13,34 +14,49 @@ then
   exit
 fi
 
-mkdir $1
-mkdir $1/doc
-cp $TEMPLATE_DIR/.gitignore $1
-awk " { gsub(\"PROJECT_NAME +=\",\"PROJECT_NAME=$1\"); print; } " $TEMPLATE_DIR/doc/doxyfile > $1/doc/doxyfile
-cp $TEMPLATE_DIR/doc/Makefile $1/doc
-cp $TEMPLATE_DIR/doc/.gitignore $1/doc
-
-
 case `basename $0` in
+    create)
+	echo "Use this script as createlib for new lib, or createapp for new app!"
+	exit
+    ;;
+
     createlib)
-awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/lib.cbp > $1/$1.cbp
-awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/Makefile.lib > $1/Makefile
-mkdir $1/test
-awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/test/test.cbp > $1/test/test.cbp
-awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); gsub(\"#!#ZLIB#!#\",\"$THIS\");  print; } " $TEMPLATE_DIR/test/Makefile > $1/test/Makefile
-awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/test/main.c > $1/test/main.c
+HOME=${EXTENSION}/$1
+UNAME=$(echo $1 | tr '[:lower:]' '[:upper:]')
+mkdir -p ${HOME}/src
+mkdir -p ${HOME}/include
+awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/lib.cbp > ${HOME}/$1.cbp
+
+awk " { gsub(\"#!#LLIB_NAME#!#\",\"$UNAME\");
+        gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " \
+         $TEMPLATE_DIR/Makefile.lib > ${HOME}/$1.mk
+cat <<EOF > ${HOME}/include/$1.h
+#ifndef _${UNAME}_INCLUDED_
+#define _${UNAME}_INCLUDED_
+/* Module ${1} */
+
+#endif
+EOF
+awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/lib.c > ${HOME}/src/$1.c
     ;;
 
     createapp)
-awk " { gsub(\"#!#PROJECT_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/project.cbp > $1/$1.cbp
-awk " { gsub(\"#!#PROJECT_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/Makefile.app > $1/Makefile
-awk " { gsub(\"#!#PROJECT_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/app.c > $1/main.c
-cp $TEMPLATE_DIR/chconf.h $1
-cp $TEMPLATE_DIR/halconf.h $1
-cp $TEMPLATE_DIR/mcuconf.h $1
-cp $TEMPLATE_DIR/misc.h $1
-cp $TEMPLATE_DIR/misc.c $1
-cp $TEMPLATE_DIR/usbcfg.h $1
-cp $TEMPLATE_DIR/usbcfg.c $1
+HOME=$1
+awk " { gsub(\"#!#PROJECT_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/project.cbp > ${HOME}/$1.cbp
+awk " { gsub(\"#!#PROJECT_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/Makefile.app > ${HOME}/Makefile
+awk " { gsub(\"#!#PROJECT_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/app.c > ${HOME}/main.c
+cp $TEMPLATE_DIR/chconf.h ${HOME}
+cp $TEMPLATE_DIR/halconf.h ${HOME}
+cp $TEMPLATE_DIR/mcuconf.h ${HOME}
+cp $TEMPLATE_DIR/misc.h ${HOME}
+cp $TEMPLATE_DIR/misc.c ${HOME}
+cp $TEMPLATE_DIR/usbcfg.h ${HOME}
+cp $TEMPLATE_DIR/usbcfg.c ${HOME}
     ;;
 esac
+
+mkdir -p ${HOME}/doc
+cp $TEMPLATE_DIR/.gitignore $1
+awk " { gsub(\"PROJECT_NAME +=\",\"PROJECT_NAME=$1\"); print; } " $TEMPLATE_DIR/doc/doxyfile > ${HOME}/doc/doxyfile
+cp $TEMPLATE_DIR/doc/Makefile ${HOME}/doc
+cp $TEMPLATE_DIR/doc/.gitignore ${HOME}/doc
