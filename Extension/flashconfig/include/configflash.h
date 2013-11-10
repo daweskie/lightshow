@@ -24,10 +24,10 @@ int cfgAddItem(char *name, void *data, int len);
 
 int cfgGetItem(char *name, uint8_t *data, int maxLen);
 
-void cmd_show_config(BaseSequentialStream *chp, int argc, char *argv[]);
+void cmd_showConfig(BaseSequentialStream *chp, int argc, char *argv[]);
 
-void cmd_save_config(BaseSequentialStream *chp, int argc, char *argv[]);
+void cmd_saveConfig(BaseSequentialStream *chp, int argc, char *argv[]);
 
-void cmd_erase_config_flash(BaseSequentialStream *chp, int argc, char *argv[]);
+void cmd_eraseConfig_flash(BaseSequentialStream *chp, int argc, char *argv[]);
 
 #endif // CONFIGFLASH_H_INCLUDED

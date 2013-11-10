@@ -132,7 +132,7 @@ int cfgAddItem(char *name, void *data, int len) {
     return EXIT_SUCCESS;
 }
 
-int cfgGetItem(char *name, uint8_t *data, uint16_t maxLen) {
+int cfgGetItem(const char *name, uint8_t *data, uint16_t maxLen) {
     if (! (name && *name))
         return EXIT_FAILURE;
 
@@ -142,6 +142,91 @@ int cfgGetItem(char *name, uint8_t *data, uint16_t maxLen) {
 
     memcpy(data, item->data, item->len);
     return EXIT_SUCCESS;
+}
+
+int cfgGetShort(const char *name, short *target) {
+    if (! (name&&*name&&target) )
+        return EXIT_FAILURE;
+
+    struct CfgItem *item=cfgFind(name);
+    if (! (item&&item->data) )
+        return EXIT_FAILURE;
+
+    *target = atoi(item->data);
+    return EXIT_SUCCESS;
+}
+
+int cfgGetShortDef(const char *name, short def) {
+    short result;
+    return cfgGetShort(name, &result) == EXIT_SUCCESS ? result : def;
+}
+
+int cfgGetInt(const char *name, int *target) {
+    if (! (name&&*name&&target) )
+        return EXIT_FAILURE;
+
+    struct CfgItem *item=cfgFind(name);
+    if (! (item&&item->data) )
+        return EXIT_FAILURE;
+
+    *target = atoi(item->data);
+    return EXIT_SUCCESS;
+}
+
+int cfgGetIntDef(const char *name, int def) {
+    int result;
+    return cfgGetInt(name, &result) == EXIT_SUCCESS ? result : def;
+}
+
+int cfgGetLong(const char *name, long *target) {
+    if (! (name&&*name&&target) )
+        return EXIT_FAILURE;
+
+    struct CfgItem *item=cfgFind(name);
+    if (! (item&&item->data) )
+        return EXIT_FAILURE;
+
+    *target = atol(item->data);
+    return EXIT_SUCCESS;
+}
+
+int cfgGetLongDef(const char *name, long def) {
+    long result;
+    return cfgGetLong(name, &result) == EXIT_SUCCESS ? result : def;
+}
+
+int cfgGetLLong(const char *name, long long *target) {
+    if (! (name&&*name&&target) )
+        return EXIT_FAILURE;
+
+    struct CfgItem *item=cfgFind(name);
+    if (! (item&&item->data) )
+        return EXIT_FAILURE;
+
+    *target = atoll(item->data);
+    return EXIT_SUCCESS;
+}
+
+int cfgGetLLongDef(const char *name, long long def) {
+    long long result;
+    return cfgGetLLong(name, &result) == EXIT_SUCCESS ? result : def;
+}
+
+int cfgGetFloat(const char *name, float *target) {
+    if (! (name&&*name&&target) )
+        return EXIT_FAILURE;
+
+    struct CfgItem *item=cfgFind(name);
+    if (! (item&&item->data) )
+        return EXIT_FAILURE;
+
+    *target = atof(item->data);
+    return EXIT_SUCCESS;
+}
+
+int cfgGetFloatDef(const char *name, float def) {
+    float result;
+    return cfgGetFloat(name, &result) == EXIT_SUCCESS ? result : def;
 }
 
 static uint8_t *cfgParseConfigFlash(uint8_t *address) {
@@ -189,7 +274,7 @@ int cfgEraseFlash(void) {
     return status == FLASH_COMPLETE ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-void cmd_save_config(BaseSequentialStream *chp, int argc, char *argv[]) {
+void cmd_saveConfig(BaseSequentialStream *chp, int argc, char *argv[]) {
 #define chk_error(address,status) \
     do { \
         if ((status) != FLASH_COMPLETE) { \
@@ -241,7 +326,7 @@ void cmd_save_config(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "Config saved successfully\r\n");
 }
 
-void cmd_show_config(BaseSequentialStream *chp, int argc, char *argv[]) {
+void cmd_showConfig(BaseSequentialStream *chp, int argc, char *argv[]) {
     (void) argc;
     (void) argv;
     struct CfgItem *item;
@@ -255,7 +340,7 @@ void cmd_show_config(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "number of elements:%d\r\n", i);
 }
 
-void cmd_erase_config_flash(BaseSequentialStream *chp, int argc, char *argv[]) {
+void cmd_eraseConfig_flash(BaseSequentialStream *chp, int argc, char *argv[]) {
     (void) argc;
     (void) argv;
     chprintf(chp, "Erase config flash...");
