@@ -74,5 +74,15 @@ $(info ======================================================)
 $(info Project src:$(PROJECTSRC))
 $(info ======================================================)
 
+#!#PROJECT_NAME#!#.cbp:
+	perl -p -i -e  's/(\.\.\/)+usr\/src/../' #!#PROJECT_NAME#!#.cbp
+
+help:global_help
+	@echo "	#!#PROJECT_NAME#!#.cbp"
+	@echo "		- removes wrong absolute path from #!#PROJECT_NAME#!#.cbp"
+	@echo ""
+
+.PHONY: #!#PROJECT_NAME#!#.cbp help
+
 include ../targets.mk
 

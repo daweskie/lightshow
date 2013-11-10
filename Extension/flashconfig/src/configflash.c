@@ -14,20 +14,22 @@
     brief
 */
 
+#include <ch.h>
+#include <hal.h>
+#include <chprintf.h>
 #include <stdlib.h>
 #include <chtypes.h>
+#include <chconf.h>
+#include <halconf.h>
+#include <mcuconf.h>
 #include <stm32f4xx.h>
 #include <sys/queue.h>
 #include <string.h>
-#include "ch.h"
-#include "hal.h"
-#include "chprintf.h"
-#include "misc.h"
+#include <misc.h>
 #include <cmdutil.h>
 
-#include "Flash.h"
-#include "bela.h"
-#include "macros.h"
+#include <Flash.h>
+#include <macros.h>
 
 #define FLASH_EMPTY_CHAR (uint8_t)0xff
 #define DELIMITER "="

@@ -16,7 +16,7 @@ fi
 
 case `basename $0` in
     create)
-	echo "Use this script as createext for new extension, or createapp for new app!"
+	echo "Use this script as createext for new extension, createapp for new app or createtask for new task!"
 	exit
     ;;
 
@@ -62,6 +62,17 @@ cp $TEMPLATE_DIR/misc.h ${HOME}
 cp $TEMPLATE_DIR/misc.c ${HOME}
 cp $TEMPLATE_DIR/usbcfg.h ${HOME}
 cp $TEMPLATE_DIR/usbcfg.c ${HOME}
+    ;;
+
+    createtask)
+TEMPLATE_DIR=../templates
+UNAME=$(echo $1 | tr '[:lower:]' '[:upper:]')
+awk " { gsub(\"#!#UTASK_NAME#!#\",\"$UNAME\");
+        gsub(\"#!#TASK_NAME#!#\",\"$1\"); print; } " \
+         $TEMPLATE_DIR/task.h > $1.h
+awk " { gsub(\"#!#UTASK_NAME#!#\",\"$UNAME\");
+        gsub(\"#!#TASK_NAME#!#\",\"$1\"); print; } " \
+         $TEMPLATE_DIR/task.c > $1.c
     ;;
 esac
 

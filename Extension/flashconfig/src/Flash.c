@@ -68,6 +68,11 @@
 
 /* Includes ------------------------------------------------------------------*/
 
+#include <ch.h>
+#include <hal.h>
+#include <chconf.h>
+#include <halconf.h>
+#include <mcuconf.h>
 #include <stm32f4xx.h>
 #include "Flash.h"
 
