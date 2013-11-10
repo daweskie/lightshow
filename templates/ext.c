@@ -9,8 +9,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/** \file #!#LIB_NAME#!#.c
-    \brief module #!#LIB_NAME#!#
+/** \file #!#EXT_NAME#!#.c
+    \brief module #!#EXT_NAME#!#
 */
 
 #include <stdlib.h>

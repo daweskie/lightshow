@@ -1,6 +1,0 @@
-
-#Source files for #!#LIB_NAME#!# module
-#!#LLIB_NAME#!#_SRC = $(EXTENSION)/#!#LIB_NAME#!#/src/#!#LIB_NAME#!#.c
-
-#include directories
-#!#LLIB_NAME#!#_INC = $(EXTENSION)/#!#LIB_NAME#!#/include

@@ -65,7 +65,8 @@ endif
 # Imported source files and paths
 CHIBIOS = /usr/src/chibios
 
-EXTENSION=../Extension
+EXTENSION_PREFIX ?= ..
+EXTENSION =$(EXTENSION_PREFIX)/Extension
 
 include $(CHIBIOS)/boards/ST_STM32F4_DISCOVERY/board.mk
 include $(CHIBIOS)/os/hal/platforms/STM32F4xx/platform.mk
