@@ -15,11 +15,12 @@ doc:
 	$(MAKE) -C doc
 
 createtask:
-	@if [ -z ${TASK_NAME} ]; \
-	    then \
-	    $(error need set TASK_NAME=name") \
+	if [ -z "$(TASK_NAME)" ];  then  \
+	    echo "need set TASK_NAME=<name>"; exit 1; \
+	 else  \
+	    echo "create"; \
+	   ../createtask $(TASK_NAME); \
 	fi
-	../createtask $(TASK_NAME)
 
 global_help:
 	@echo "	Available targets:"
