@@ -37,22 +37,21 @@
 struct CfgItem {
     char *key;
     uint32_t len;
-    uint8_t *data;
+    char *data;
     SLIST_ENTRY(CfgItem) next;
 };
 
-typedef struct {
+static struct {
     uint16_t sector;
     uint8_t *flashBase;
     int modified;
     SLIST_HEAD(cfgList, CfgItem) cfgHead;
-} FlashConfig;
-
-static FlashConfig flashConfig = {
+}
+flashConfig = {
     .sector=0,
     .flashBase=0,
     .modified=0,
-    .cfgHead=NULL
+    .cfgHead={NULL}
 };
 
 static const uint32_t flashTable[] = {
@@ -79,7 +78,7 @@ uint32_t cfgGetFlashBase(uint16_t sector) {
     return 0;
 }
 
-static struct CfgItem *cfgFind(char *key) {
+static struct CfgItem *cfgFind(const char *key) {
     if (! (key && *key))
         return NULL;
     struct CfgItem *item;
@@ -168,8 +167,7 @@ int cfgGetInt(const char *name, int *target) {
     struct CfgItem *item=cfgFind(name);
     if (! (item&&item->data) )
         return EXIT_FAILURE;
-
-    *target = atoi(item->data);
+    *target =  atoi(item->data);
     return EXIT_SUCCESS;
 }
 
@@ -335,12 +333,12 @@ void cmd_showConfig(BaseSequentialStream *chp, int argc, char *argv[]) {
                   flashConfig.sector,flashConfig.flashBase,flashConfig.modified);
     SLIST_FOREACH(item, &flashConfig.cfgHead, next)  {
         chprintf(chp, "%d. name:%s, length:%d, data:\r\n   ", i++, item->key, item->len);
-        hexDump(chp, item->data, item->len);
+        hexDump(chp, (uint8_t *)item->data, item->len);
     }
     chprintf(chp, "number of elements:%d\r\n", i);
 }
 
-void cmd_eraseConfig_flash(BaseSequentialStream *chp, int argc, char *argv[]) {
+void cmd_eraseConfigFlash(BaseSequentialStream *chp, int argc, char *argv[]) {
     (void) argc;
     (void) argv;
     chprintf(chp, "Erase config flash...");

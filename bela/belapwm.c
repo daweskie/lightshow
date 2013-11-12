@@ -16,11 +16,13 @@
 
 #include <stdlib.h>
 #include <string.h>
-
 #include <mcuconf.h>
+#include <chconf.h>
+#include <halconf.h>
 #include <ch.h>
 #include <hal.h>
 #include <chprintf.h>
+#include <pwm_lld.h>
 
 #include "bela.h"
 #include "adconv.h"

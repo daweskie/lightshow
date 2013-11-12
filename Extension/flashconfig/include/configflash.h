@@ -24,10 +24,30 @@ int cfgAddItem(char *name, void *data, int len);
 
 int cfgGetItem(char *name, uint8_t *data, int maxLen);
 
+int cfgGetShort(const char *name, short *target);
+
+int cfgGetShortDef(const char *name, short def);
+
+int cfgGetInt(const char *name, int *target);
+
+int cfgGetIntDef(const char *name, int def);
+
+int cfgGetLong(const char *name, long *target);
+
+int cfgGetLongDef(const char *name, long def);
+
+int cfgGetLLong(const char *name, long long *target);
+
+int cfgGetLLongDef(const char *name, long long def);
+
+int cfgGetFloat(const char *name, float *target);
+
+int cfgGetFloatDef(const char *name, float def);
+
 void cmd_showConfig(BaseSequentialStream *chp, int argc, char *argv[]);
 
 void cmd_saveConfig(BaseSequentialStream *chp, int argc, char *argv[]);
 
-void cmd_eraseConfig_flash(BaseSequentialStream *chp, int argc, char *argv[]);
+void cmd_eraseConfigFlash(BaseSequentialStream *chp, int argc, char *argv[]);
 
 #endif // CONFIGFLASH_H_INCLUDED

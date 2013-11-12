@@ -23,9 +23,9 @@ SerialUSBDriver SDU1;
 static const ShellCommand commands[] = {
     {"mem", cmd_mem},
     {"threads", cmd_threads},
-    {"showcfg",cmd_show_config},
-    {"savecfg",cmd_save_config},
-    {"erasecfg",cmd_erase_config_flash},
+    {"showcfg",cmd_showConfig},
+    {"savecfg",cmd_saveConfig},
+    {"erasecfg",cmd_eraseConfigFlash},
     {"blinkspeed", cmd_blinkspeed},
     {"dump",cmd_dump},
     {"bs", cmd_blinkspeed},
