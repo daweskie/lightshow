@@ -10,5 +10,11 @@
 
 #define max(a,b) (a)<(b) ? (b) : (a)
 
+#ifdef DEBUG
+#define dbg(msg,...) \
+chprintf(dbgdisp,msg,##__VA_ARGS__)
+#else
+#define dbg(msg,...)
+#endif
 
 #endif // MACROS_H_INCLUDED
