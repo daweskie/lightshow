@@ -43,24 +43,24 @@ A script-ről készítettem két soft-linket, createapp ill. createlib néven. A
 Applikáció 
 
 indítása ./createapp appnev script-tel. Eredmény egy appnev nevű könyvtár, amelyben megjelennek az alábbi file-ok:
-.gitignore
-Makefile  
-chconf.h  
-appnev.cbp
-halconf.h 
-main.c    
-mcuconf.h 
-misc.c    
+.gitignore	Git repository-ból kihagyandó file-név minták.
+Makefile  	Make fordításvezérlő
+chconf.h  	ChibiOS config header file
+appnev.cbp	Code::Blocks project file
+halconf.h 	ChibiOS HAL header file
+main.c    	Applikáció main c file
+mcuconf.h 	ChibiOS microcontroller config header file
+misc.c    	
 misc.h    
 usbcfg.c  
 usbcfg.h
 
 a doc könyvtárban:
 
-Makefile
-doxyfile
+Makefile	Make fordításvezérlő
+doxyfile	Doxygen configurációs file
 
-az appnev könyvtárban a make hatására lefut a fordító. A Code::Block segítségével az appnev.cbp-t megnyitva betöltődik a projekt. Az beállításokat megtekintve láthatjuk, hogy a Makefile-t használja fordításra,
+az appnev könyvtárban a make hatására lefut a fordító. A Code::Blocks segítségével az appnev.cbp-t megnyitva betöltődik a projekt. Az beállításokat megtekintve láthatjuk, hogy a Makefile-t használja fordításra,
 de megmarad az IDE előnye is. A projekthez a ChibiOS include file-jai hozzá vannak adva, így a code completion funkció is használható. 
 Ha a projekt lefordult, akkor a parancssorból kiadott make flash paranccsal a bináris file-t letölti a discovery board flash memóriájába, majd megvárja, amíg reset-et nyomunk a board-on, majd 2 mp után elindítja a gtkterm-et
 és megjelenik a console. 
@@ -70,6 +70,56 @@ Extension
 indítása ./createext extnev script-tel. Eredmény egy extnev nevű könyvtár az Extension alkönyvtárban. Ezen belül létrejön egy test alkönyvtár amely az extension tesztjét valósítja meg. 
 File-ok:
 
-Extension/extnev/extnev.cbp
+Extension/extnev/
+  .gitignore	Git repository-ból kihagyandó file-név minták.
+  extnev.cbp 	Code::Blocks project file.
+  extnev.mk	Make include file az extension fordításához
+  doc/
+    Makefile	Make fordításvezérlő
+    doxyfile	Doxygen configurációs file
+    .gitignore	Git repository-ból kihagyandó file-név minták.
+  include/
+    extnev.h	Header file az extension definicíókhoz
+  src/
+    extnev.c	C forrás az extension kódjához
+  test/
+    Makefile	Make fordításvezérlő
+    extnev.cbp	Teszt Code::Blocks project file
+    chconf.h  	ChibiOS config header file
+    halconf.h 	ChibiOS HAL header file
+    mcuconf.h 	ChibiOS microcontroller config header file
+    
+Extension elérhetővé tétele
+
+A kész letesztelt exension-t a settings.mk file-ban lehet publikálni:
+
+ifeq ($(USE_<EXTENSION NEV>),y)
+include $(EXTENSION)/<extension nev>/<extension_nev>.mk
+endif
+
+Ha az extension további extension-okat használ, akkor azokat is be kell állítani. Pl. az új extension szeretné használni a config
+extension-t:
+
+ifeq ($(USE_<EXTENSION NEV>),y)
+USE_CONFIG=y
+include $(EXTENSION)/<extension nev>/<extension_nev>.mk
+endif
+
+Itt azonban vigyázni kell, úgy kell elhelyezni az ifeq kódját, a file-ban, hogy a használni kívánt extension-ok vizsgálata elé kerüljön. 
+Pl. itt a kódot a ifeq ($(USE_CONFIG),y)) vizsgálat elé kell helyezni.
+
+Kényelmi szolgáltatások
+
+Taszk generálás
+
+ChibiOS alatt szinte minden külön taszkban fut. Egy új taszk létrehozásának automatizálása igencsak megkönnyíti a munkát. 
+Használata az adott project könyvtárban a make createtask  <taskname> paranccsal lehetséges. Ennek hatására létrehozza
+a tasknev.h és tasknev.c file-okat a megfelelő tartalommal. 
+
+Help
+
+Érdemes a Makefile-hoz help-et is készíteni, mivel egyre szerteágazóbb lesz, nem várható el a felhasználóktól, hogy 
+keresgéljenek a különböző egymásra hivatkozó Makefile hierarchiában. A make help parancsra az elérhető célokat listázza ki.
+
 
    

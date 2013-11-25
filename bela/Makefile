@@ -72,4 +72,5 @@ $(info Project src:$(PROJECTSRC))
 $(info ======================================================)
 
 include ../targets.mk
+include ../help.mk
 

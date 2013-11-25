@@ -85,4 +85,5 @@ help:global_help
 .PHONY: #!#PROJECT_NAME#!#.cbp help
 
 include ../targets.mk
+include ../help.mk
 
