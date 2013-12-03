@@ -81,6 +81,9 @@ help:global_help
 	@echo "	#!#PROJECT_NAME#!#.cbp"
 	@echo "		- removes wrong absolute path from #!#PROJECT_NAME#!#.cbp"
 	@echo ""
+	@echo "	createtask"
+	@echo "		- create a new task for app"
+	@echo ""
 
 .PHONY: #!#PROJECT_NAME#!#.cbp help
 

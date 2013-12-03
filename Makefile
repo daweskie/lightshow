@@ -3,7 +3,7 @@
 
 PROJECTS=$(patsubst %.,%,$(patsubst ./%,%,$(patsubst %/Makefile,%,$(shell find . -name Makefile))))
 
-$(info projects:$(PROJECTS))
+#$(info projects:$(PROJECTS))
 
 THIS=$(shell pwd)
 
@@ -17,13 +17,16 @@ commit: clean
 	git add --all
 	git commit -a
 
-push: commit
+push:
 	git push origin master
 
 pull: 
 	git pull origin master
 
+help:global_help
+
 include help.mk
 
-.PHONY:clean commit doc
+.PHONY:clean commit doc help
+
 

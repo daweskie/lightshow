@@ -15,6 +15,10 @@
 /** \file
     \brief
 */
+#define _config_commands \
+    {"showcfg",cmd_showConfig}, \
+    {"savecfg",cmd_saveConfig},  \
+    {"erasecfg",cmd_eraseConfigFlash}
 
 int cfgInit(int sector);
 
@@ -43,6 +47,8 @@ int cfgGetLLongDef(const char *name, long long def);
 int cfgGetFloat(const char *name, float *target);
 
 int cfgGetFloatDef(const char *name, float def);
+
+int saveConfig(int forced);
 
 void cmd_showConfig(BaseSequentialStream *chp, int argc, char *argv[]);
 

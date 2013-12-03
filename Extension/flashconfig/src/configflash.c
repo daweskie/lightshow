@@ -272,6 +272,46 @@ int cfgEraseFlash(void) {
     return status == FLASH_COMPLETE ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
+int saveConfig(int forced)
+{
+    if(!flashConfig.modified && !forced)
+        return 1;
+
+    struct CfgItem *item;
+    uint8_t *mem = flashConfig.flashBase;
+
+    if (cfgEraseFlash() != EXIT_SUCCESS)
+        return 0;
+
+    FLASH_Status status=FLASH_COMPLETE;
+
+    SLIST_FOREACH(item, &flashConfig.cfgHead, next) {
+        char *name = item->key;
+        do {
+            status = FLASH_ProgramByte((uint32_t)mem, *name);
+            if (status != FLASH_COMPLETE)
+                return 0;
+
+            ++mem;
+        } while(*name++);
+
+        status = FLASH_ProgramWord((uint32_t)mem, item->len);
+        if (status != FLASH_COMPLETE)
+           return 0;
+
+        mem += sizeof(uint32_t);
+        uint32_t i;
+        for(i=0;i<item->len;i++,mem++) {
+            status = FLASH_ProgramByte((uint32_t)mem, *item->data++);
+            if (status != FLASH_COMPLETE)
+                return 0;
+        }
+    }
+
+    FLASH_Lock();
+    return 1;
+}
+
 void cmd_saveConfig(BaseSequentialStream *chp, int argc, char *argv[]) {
 #define chk_error(address,status) \
     do { \

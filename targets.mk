@@ -15,11 +15,14 @@ doc:
 	$(MAKE) -C doc
 
 createtask:
-	if [ -z "$(TASK_NAME)" ];  then  \
-	    echo "need set TASK_NAME=<name>"; exit 1; \
-	 else  \
+	echo -n "taskname:"; \
+	read TASK_NAME ;     \
+	echo taskname:$$TASK_NAME; \
+	if [ -z "$$TASK_NAME" ];  then  \
+	    echo "need set name of task"; exit 1; \
+	else  \
 	    echo "create"; \
-	   ../createtask $(TASK_NAME); \
+	   ../createtask $$TASK_NAME; \
 	fi
 
 .PHONY: clean cleanDebug doc
