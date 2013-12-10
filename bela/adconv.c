@@ -30,6 +30,7 @@
 #include <math.h>
 #include <Flash.h>
 #include <configflash.h>
+#include <stringbuilder.h>
 
 #include <snprintf.h>
 #include "bela.h"
@@ -150,8 +151,14 @@ static void checkParam(uint16_t ch) {
 
 static void restoreChannelParam(int ch) {
     char buffer[16];
-    snprintf(buffer,16,"%s%d",BELA_ADC_FLASH_CONFIG_PREFIX,ch);
-    cfgGetItem(buffer,(uint8_t *)&adParams.channelParams[ch], sizeof(ChannelParam));
+    struct StringBuilder builder;
+    sbInit(&builder, buffer, 16);
+    sbAddString(&builder, BELA_ADC_FLASH_CONFIG_PREFIX);
+    sbAddChar(&builder, ch);
+
+    //snprintf(buffer,16,"%s%d",BELA_ADC_FLASH_CONFIG_PREFIX,ch);
+//    cfgGetItem(buffer,(uint8_t *)&adParams.channelParams[ch], sizeof(ChannelParam));
+    cfgGetItem(builder.chars,(uint8_t *)&adParams.channelParams[ch], sizeof(ChannelParam));
     checkParam(ch);
 }
 

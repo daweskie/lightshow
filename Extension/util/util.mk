@@ -1,7 +1,8 @@
 #Source files for Motorola packet module
 EXTENSION_UTIL_SRC = $(EXTENSION)/util/src/checksum.c \
     $(EXTENSION)/util/src/cmdutil.c \
-    $(EXTENSION)/util/src/snprintf.c
+    $(EXTENSION)/util/src/snprintf.c \
+    $(EXTENSION)/util/src/stringbuilder.c
 
 
 

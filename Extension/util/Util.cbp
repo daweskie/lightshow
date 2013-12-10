@@ -32,8 +32,6 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="../../../../../../usr/src/ChibiOS/os/hal/include/adc.h" />
-		<Unit filename="../../../../../../usr/src/ChibiOS/os/hal/include/can.h" />
 		<Unit filename="../../ChibiOS/os/hal/include/dac.h" />
 		<Unit filename="../../ChibiOS/os/hal/include/ext.h" />
 		<Unit filename="../../ChibiOS/os/hal/include/gpt.h" />
@@ -57,12 +55,15 @@
 		<Unit filename="../../ChibiOS/os/hal/include/tm.h" />
 		<Unit filename="../../ChibiOS/os/hal/include/uart.h" />
 		<Unit filename="../../ChibiOS/os/hal/include/usb.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/adc.h" />
+		<Unit filename="../../ChibiOS/os/hal/include/can.h" />
 		<Unit filename="Makefile" />
 		<Unit filename="include/bitset.h" />
 		<Unit filename="include/checksum.h" />
 		<Unit filename="include/cmdutil.h" />
 		<Unit filename="include/endian.h" />
 		<Unit filename="include/macros.h" />
+		<Unit filename="include/stringbuilder.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -70,6 +71,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/cmdutil.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stringbuilder.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="util.mk" />
