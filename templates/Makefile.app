@@ -3,6 +3,11 @@
 # NOTE: Can be overridden externally.
 #
 
+#default is stm32f4discovery if you don't set board
+
+#BOARD=
+
+
 # Architecture or project specific options
 ##############################################################################
 USE_UTIL=y

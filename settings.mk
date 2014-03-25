@@ -68,7 +68,9 @@ CHIBIOS = /usr/src/chibios
 EXTENSION_PREFIX ?= ..
 EXTENSION =$(EXTENSION_PREFIX)/Extension
 
-include $(CHIBIOS)/boards/ST_STM32F4_DISCOVERY/board.mk
+BOARD ?= ST_STM32F4_DISCOVERY
+
+include $(CHIBIOS)/boards/$(BOARD)/board.mk
 include $(CHIBIOS)/os/hal/platforms/STM32F4xx/platform.mk
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/ports/GCC/ARMCMx/STM32F4xx/port.mk

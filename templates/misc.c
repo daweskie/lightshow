@@ -60,43 +60,7 @@ void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[])
   } while (tp != NULL);
 }
 
-int blinkspeed = 500;
-
-void cmd_blinkspeed(BaseSequentialStream *chp, int argc, char *argv[]) {
-
-  (void)argv;
-  int speed = 500;
-  if (argc != 1) {
-    chprintf(chp, "Usage: blinkspeed speed [ms]\r\n");
-    return;
-  }
-  speed = atoi(argv[0]);
-  if(speed>5000) speed = 5000;
-  if(speed<5) speed = 5;
-  blinkspeed = speed;
-}
-
-
-/*
- * Red LED blinker thread, times are in milliseconds.
- */
-static WORKING_AREA(waThread1, 128);
-
-static msg_t Thread1(void *arg) {
-
-  (void)arg;
-  chRegSetThreadName("blinker");
-  while (TRUE) {
-    palClearPad(GPIOD, GPIOD_LED6);
-    chThdSleepMilliseconds(blinkspeed);
-    palSetPad(GPIOD, GPIOD_LED6);
-    chThdSleepMilliseconds(blinkspeed);
-  }
-  return 0;
-}
-
 
 
 void miscInit(void) {
-    chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
 }

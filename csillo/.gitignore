@@ -1,8 +1,0 @@
-bin/
-*~
-*.layout
-doc/html
-lib/*
-*.o
-.dep/
-build/
