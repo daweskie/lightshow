@@ -23,12 +23,12 @@
 
 #include "#!#TASK_NAME#!#.h"
 
-static THD_WORKING_AREA(waThreadPWM, 128);
+static THD_WORKING_AREA(waThread#!#TASK_NAME#!#, 128);
 
 /**
 
 */
-static msg_t #!#TASK_NAME#!#Process(void *arg) {
+static THD_FUNCTION(Thread#!#TASK_NAME#!#, arg) {
     (void) arg;
     chRegSetThreadName("#!#TASK_NAME#!#");
 
@@ -49,5 +49,5 @@ void cmd_#!#TASK_NAME#!#(BaseSequentialStream *chp, int argc, char *argv[]) {
 void #!#TASK_NAME#!#Init(void)
 {
 
-  chThdCreateStatic(waThreadPWM, sizeof(waThreadPWM), NORMALPRIO, #!#TASK_NAME#!#Process, NULL);
+  chThdCreateStatic(waThread#!#TASK_NAME#!#, sizeof(waThread#!#TASK_NAME#!#), NORMALPRIO, Thread#!#TASK_NAME#!#, NULL);
 }
