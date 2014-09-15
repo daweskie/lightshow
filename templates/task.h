@@ -2,7 +2,7 @@
 #define #!#UTASK_NAME#!#_H_INCLUDED
 
 /*
- * Copyright (C)  2013 Zoltan Zidarics (Zamek)
+ * Copyright (C)  2014 Zoltan Zidarics (Zamek)
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of

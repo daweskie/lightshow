@@ -23,7 +23,7 @@
 
 #include "#!#TASK_NAME#!#.h"
 
-static WORKING_AREA(waThreadPWM, 128);
+static THD_WORKING_AREA(waThreadPWM, 128);
 
 /**
 
