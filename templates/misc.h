@@ -18,6 +18,7 @@
 
 void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]);
 void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]);
+
 void cmd_blinkspeed(BaseSequentialStream *chp, int argc, char *argv[]);
 void cmd_dump(BaseSequentialStream *chp, int argc, char *argv[]);
 void miscInit(void);

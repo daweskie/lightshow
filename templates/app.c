@@ -6,6 +6,7 @@
 #include <hal.h>
 #include <shell.h>
 #include <chprintf.h>
+#include <shell.h>
 
 #include "usbcfg.h"
 #include "misc.h"
@@ -15,12 +16,10 @@ SerialUSBDriver SDU1;
 static const ShellCommand commands[] = {
     {"mem", cmd_mem},
     {"threads", cmd_threads},
-    {"blinkspeed", cmd_blinkspeed},
-    {"bs", cmd_blinkspeed},
     {NULL,NULL}
 };
 
-#define SHELL_WA_SIZE THD_WA_SIZE(2048)
+#define SHELL_WA_SIZE THD_WORKING_AREA_SIZE(2048)
 
 extern SerialUSBDriver SDU1;
 
@@ -44,7 +43,7 @@ void connectConsole(void) {
 */
 int main(void)
 {
-    Thread *shelltp=NULL;
+    thread_t *shelltp=NULL;
 
     halInit();
     chSysInit();
@@ -56,7 +55,7 @@ int main(void)
                 shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
         }
         else {
-            if(chThdTerminated(shelltp)) {
+            if(chThdTerminatedX(shelltp)) {
                 chThdRelease(shelltp);
                 shelltp=NULL;
             }

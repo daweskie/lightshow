@@ -2,12 +2,12 @@
 
 Debug:all
 
-flash: all
+flash: all killterm
 	st-flash write build/$(PROJECT).bin 0x8000000
 	@echo "press reset"
 	@read
 	@sleep 2
-	gtkterm -c disc &
+	../startterm
 
 cleanDebug: clean all
 
@@ -25,6 +25,10 @@ createtask:
 	   ../createtask $$TASK_NAME; \
 	fi
 
-.PHONY: clean cleanDebug doc
+killterm:
+	../killterm
+
+.PHONY: clean cleanDebug doc killterm
+
 
 

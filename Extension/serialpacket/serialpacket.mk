@@ -7,3 +7,5 @@ SERIAL_PACKET_SRC = $(EXTENSION)/serialpacket/src/serialpacket.c
 SERIAL_PACKET_INC = $(EXTENSION)/serialpacket/include 
 
 
+CSRC+=$(SERIAL_PACKET_SRC)
+INCDIR+=$(SERIAL_PACKET_INC)

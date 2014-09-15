@@ -3,11 +3,14 @@
 # NOTE: Can be overridden externally.
 #
 
-USE_CONFIG=y
-USE_MODBUS=y
-
 # Architecture or project specific options
 ##############################################################################
+USE_UTIL=y
+USE_CONFIG=y
+USE_MODBUS=n
+USE_SERIAL_PACKET=n
+USE_MOTOROLA_PACKET=n
+USE_MODBUS=n
 
 ##############################################################################
 # Project, sources and paths

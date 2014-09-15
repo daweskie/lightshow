@@ -36,30 +36,25 @@ void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
   chprintf(chp, "heap free total  : %u bytes\r\n", size);
 }
 
-void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[])
-{
-  static const char *states[] = {THD_STATE_NAMES};
-  Thread *tp;
+void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
+  static const char *states[] = {CH_STATE_NAMES};
+  thread_t *tp;
 
   (void)argv;
-  if (argc > 0)
-  {
+  if (argc > 0) {
     chprintf(chp, "Usage: threads\r\n");
     return;
   }
-  chprintf(chp, "%20s %10s %10s %6s %6s %11s %7s\r\n",
-           "name", "add", "stack", "prio", "refs", "state", "time");
+  chprintf(chp, "    addr    stack prio refs     state\r\n");
   tp = chRegFirstThread();
-  do
-  {
-    chprintf(chp, "%20s %.10lx %.10lx %6lu %6lu %11s %7lu\r\n",
-             (uint32_t)tp->p_name, (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
+  do {
+    chprintf(chp, "%.8lx %.8lx %4lu %4lu %9s\r\n",
+             (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
              (uint32_t)tp->p_prio, (uint32_t)(tp->p_refs - 1),
-             states[tp->p_state], (uint32_t)tp->p_time);
+             states[tp->p_state]);
     tp = chRegNextThread(tp);
   } while (tp != NULL);
 }
-
 
 
 void miscInit(void) {

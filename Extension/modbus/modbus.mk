@@ -6,3 +6,5 @@ MODBUS_SRC = $(EXTENSION)/modbus/src/modbus.c
 #include directories
 MODBUS_INC = $(EXTENSION)/modbus/include 
 
+CSRC+=$(MODBUS_SRC)
+INCDIR+=$(MODBUS_INC)

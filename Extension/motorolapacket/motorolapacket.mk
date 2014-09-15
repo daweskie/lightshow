@@ -6,4 +6,6 @@ MOTOROLA_PACKET_SRC = $(EXTENSION)/motorolapacket/src/motorolapacket.c
 #include directories
 MOTOROLA_PACKET_INC = $(EXTENSION)/motorolapacket/include 
 
+CSRC+=$(MOTOROLA_PACKET_SRC)
+INCDIR+=$(MOTOROLA_PACKET_INC)
 
