@@ -1,0 +1,161 @@
+Exams for Programming III.
+
+
+1. Checksum module
+
+The module has methods for the popular checksumming algorithms. The module need to serve both on the fly and buffer calculating methods too.
+The must have algorithms:
+- none no checksum, but the empty functions exist.
+- checksum all bytes added to an aggregation, and the 0-aggregation will be the checksum.
+- crc16 16 bit crc
+- crc modbus 16 bit crc for modbus
+
+The differences between the last two crc  are, the shift direction, and xor value.
+
+Module have to serve
+- on the fly mode, which means aggregate one byte and
+- block mode which means calculating a checksum value of a given buffer.
+
+2. Config module
+
+Configutration is one of the most important part of software.
+It needs to read/write some parameters to make flexible architecture.
+The config is a simple text file which contains
+
+- comments
+- name=value lines
+
+The comment begins with #, all the ramining contents of line ignored.
+The delimiter between name and value is = (equal).
+The empty value is name=
+
+The config values can be changed during the software runs with cfgSetXXX functions.
+All changes will be saved at cfgClose() function.
+
+If a key isn't exists in config, there will be getXXXDef(key, default) functions, which
+returns the default value.
+
+If a key isn't exists in config, there can set it with cfgSetXXX, and next
+cfgClose() will save the new key/value pairs.
+
+Format of file:
+
+after # all remaing part of row is comment
+
+name=value pairs per row.
+
+for example:
+    #modbus parameters
+    modbus.tcpip.address = 82.141.159.83
+    #modbus.tcpip.address = 82.141.159.83
+    modbus.tcpip.timeout.ms = 2000   # increase this if plc is too slow
+
+    modbus.comm.baud = 19200
+    modbus.comm.databits = 8
+    modbus.comm.parity = none
+    modbus.comm.stopbits = 1
+    modbus.comm.encoding = rtu
+    modbus.comm.echo = false
+
+    #empty value
+    notknown=
+
+3. Serial module
+Serial communication module with the following submodules:
+-serial driver is a general configurable serial driver implementation
+-serial packets is a fifo handling module for the incoming packets
+-Motorola protocol driver
+-Modbus driver
+
+3/a. Serial driver
+
+SerialDriver is a low level serial driver configured by config package or direct parameters.
+
+Features of SerialDriver:
+- can be stopped or started,
+- can be register a receive handler function to call on receive char.
+
+SerialDriver starting a thread to handle receive. The thread waits the events in a select() function.
+
+3/b. Serial packets
+
+SerialPacket is fifo for received packets. All packets has the following fields:
+-address of target
+-command
+-n bytes of data. N can be 0
+
+Features of SerialPacket:
+-Unused packet are in a pool to prevent memory defragmentation. After processing a frame it can recycle to pool
+-The valid packets are in a fifo
+
+3/c. Motorola protocol driver
+  Motorola frame handler is a queue of Motorola frames. The module uses SerialDriver and SerialPackets modules.
+  Motorola frame format is:
+
+  field                     size in bytes
+  n*0x55 (preamble)         n*1
+  0xff                      1
+  1                         1
+  address                   1
+  command                   1
+  datalen                   2 LE or BE format, can be 0
+  data                      datalen*1
+  crc16                     2 LE or BE format
+
+3/d. Modbus Protocol driver
+
+Modbus rtu mode which is use 8 bits data
+Modbus frame handler is a queue of Modbus frames. The module uses SerialDriver and SerialPackets modules.
+
+Modbus register base address can be configure by config.
+
+Modbus frame format is:
+    field                   size in bytes
+    address                 1
+    function code           1
+    data                    depends on function code
+    error check             2
+
+Implement the following functions:
+- read single holding register function code is: 3
+- write single holding register function code is: 6
+- read multiple holding registers, function code is: 4
+- write multiple holding registers, function code is: 16
+
+Detailed information is http://www.modbus.com/docs/Modbus_Application_Protocol_V1_1b.pdf
+
+4. Socket communication module
+It contains both of server and client implementation too.
+All parameters stored/restored with config module
+
+4/a. Socket server implementation
+
+Implements a socket server which is highly configurable by config module
+
+
+4/b. Socket client implementation
+Implements a socket client which is highly configurable by config module
+
+5. Tasks
+
+This module can run a lot of user defined tasks.
+Each task start can delayed and has a repeat time in us.
+User can define a function which is the code of task.
+The task function doesn't need to sleep, because task system does it.
+The task can be oneshoot task which means after the task is running first it finished.
+
+6. FileBuffer
+This module serves buffered file read/write methods. Both of them use a background thread to read/write from/to file.
+The buffer size and counts of buffer are configurable.
+
+6/a. FileReader
+
+Buffered file reading from a file. A background thread reads more buffers, and the user can get this buffers.
+The size of buffer and number of buffers are configurable. All of non-used buffers are in a pool.
+After using a buffer it will be put into the pool.
+
+6/b. FileWriter
+
+Buffered file writing to a file. A background thread writes buffers, and the user can put this buffers.
+The size of buffer and number of buffers are configurable. All of non-used buffers are in a pool.
+User can et an empty buffer from the pool, and out it into the valid fifo.
