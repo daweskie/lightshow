@@ -21,6 +21,7 @@
  @return the int represented by the string, or zero if conversion fails
 */
 int nu_str_toint(const char *str){
+   asd
 }
 
 /**
