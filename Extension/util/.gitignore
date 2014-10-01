@@ -1,9 +1,0 @@
-*.o
-*.lst
-.dep
-MotorolaTest
-*.map
-bin
-*.layout
-obj
-
