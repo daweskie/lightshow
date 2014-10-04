@@ -1,0 +1,10 @@
+First assessement of Embedded Programming course
+
+
+Please finish the flowchart of
+
+    cmd_mem(BaseSequentialStream *chp, int argc, char *argv[])
+    cmd_threads(BaseSequentialStream *chp, int argc, char *argv[])
+    cmd_test(BaseSequentialStream *chp, int argc, char *argv[])
+
+in acceltest/resources/acceltest.dia 
