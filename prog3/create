@@ -1,0 +1,49 @@
+#!/bin/sh
+
+TEMPLATE_DIR=templates
+THIS=`pwd`
+
+usage(){
+    echo "usage: $0 <name>"
+}
+
+if [ -z $1 ];
+then
+  usage
+  exit
+fi
+
+mkdir $1
+mkdir $1/src
+mkdir $1/include
+mkdir $1/doc
+cp $TEMPLATE_DIR/.gitignore $1
+awk " { gsub(\"PROJECT_NAME +=\",\"PROJECT_NAME=$1\"); print; } " $TEMPLATE_DIR/doc/doxyfile > $1/doc/doxyfile
+cp $TEMPLATE_DIR/doc/Makefile $1/doc
+cp $TEMPLATE_DIR/doc/.gitignore $1/doc
+
+
+case `basename $0` in
+    create)
+echo "Use this script as createlib for new lib, or createapp for new app!"
+exit      
+    ;;
+    
+    createlib)
+awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/lib.cbp > $1/$1.cbp
+awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/Makefile.lib > $1/Makefile
+awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/lib.header > $1/include/$1.h
+awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/lib.c > $1/src/$1.c
+mkdir $1/test
+awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/test/test.cbp > $1/test/test.cbp
+awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); gsub(\"#!#ZLIB#!#\",\"$THIS\");  print; } " $TEMPLATE_DIR/test/Makefile > $1/test/Makefile
+awk " { gsub(\"#!#LIB_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/test/main.c > $1/test/main.c
+    ;;
+
+    createapp)
+awk " { gsub(\"#!#APP_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/app.cbp > $1/$1.cbp
+awk " { gsub(\"#!#APP_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/Makefile.app > $1/Makefile
+awk " { gsub(\"#!#APP_NAME#!#\",\"$1\"); print; } " $TEMPLATE_DIR/main.c > $1/src/main.c
+    ;;
+    
+esac
