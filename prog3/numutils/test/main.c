@@ -64,7 +64,7 @@ void test_nu_str_tolong() {
     assert(nu_str_tolong("")==0);
     assert(nu_str_tolong("123")==123);
     assert(nu_str_tolong("123V5")==0);
-    assert(nu_str_tolong("12356789567")==12356789567);
+    assert(nu_str_tolong("12356789567")==0);
 #ifndef MINIMAL_VERSION
     assert(nu_str_tolong("0x10")==16);
     assert(nu_str_tolong("x10")==0);
@@ -86,7 +86,7 @@ void test_nu_str_tolong_default() {
     assert(nu_str_tolong_default("",-1)==-1);
     assert(nu_str_tolong_default("123",-1)==123);
     assert(nu_str_tolong_default("123V5",-1)==-1);
-    assert(nu_str_tolong_default("12356789567",-1)==12356789567);
+    assert(nu_str_tolong_default("12356789567",-1)==-1);
 #ifndef MINIMAL_VERSION
     assert(nu_str_tolong_default("0x10",-1)==16);
     assert(nu_str_tolong_default("x10",-1)==-1);
@@ -286,8 +286,8 @@ void test_is_digit() {
 }
 
 void test_is_number() {
-    assert(nu_is_number(NULL)!=0);
-    assert(nu_is_number("")!=0);
+    assert(nu_is_number(NULL)==0);
+    assert(nu_is_number("")==0);
     assert(nu_is_number("01234")!=0);
     assert(nu_is_number("01234.0")!=0);
     assert(nu_is_number("-01234")!=0);
