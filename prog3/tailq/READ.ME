@@ -1,0 +1,357 @@
+Using Queue in C
+
+Multithreading applications need using queues (fifo). For example we need to compute characters coming serial line,
+it seems to be good to make a thread each to receive and each to computing. There are programmers who think no need to
+separate processes, we can compute characters on the fly at the receiving.
+Let's see what disadvantages includes this method.
+
+- receiving characters often happened in interrupt. More programmers disable interrupt at the beginning of handler until processing.
+  If we got the last character of a frame, we need to check it by crc checker and we need to compute the incoming new frame.
+  It should use relatively long times. The interrupt mask is lives long times causing the system is late for computing new events during
+  this time. If we don't disable the interrupt, receiving a new character starts the function, but we cannot finished the last receiving.
+- it makes harder because we cannot debug asynchron processes. When the program stopped at breakpoint,
+  the system is freezed at the actual state, but cannot handle the asynchron events. We can debug the function, but it isn't the working state.
+
+As we can see, it is an unstable situation, we should hope, it will be working as we expected. Beacuse Murphy's laws working well, our program
+ will not.
+
+As we can see above it seems to make to independent processes to work. If we should pass only one character between the processes, they continously
+waits each oder. The receiver cannot get new characters until the last character computing.
+
+We can apply the eskimo counting method: one, two, many. It means we can use only one thing, or many things. We can use a fifo (first in first out) for this.
+The other name of fifo is queue. With this method we can set the optimal working environment.
+
+Here is an example to demonstrate this:
+
+Pizzeria
+
+Here is a pizzeria with the following conditionals:
+- the oven can bake 10 pizza at a time (energy saving)
+- There are maximum number of guests in the pizzeria.
+- the kitchen stopped before the closing time, the remaining pizzas will be saled cheaper.
+
+Application
+
+There are two processes, one of the baking and one of the selling.
+The kitchen make 10 pieces of different pizza, and the selling sales the pizzas.
+It seems to be two different thread to bake (producer) and sale (consumer).
+The producer take the finished pizzas to the fifo, and sales get it from the fifo if it is not empty.
+
+The different programming languages has fifo implementations for example Java and C++ named Collection. The Gnu libc has this implementation too
+thanks to BSD. The header file name is sys/queue.h. There are many different lists in this module and the most beautiful thing is that,
+all are made by macros.
+
+All lists has an entry point named head. This is the first element on list. All data have to take into a struct and there is a field
+which handled by list handler. This field points to the next element and the previous element if it is a double linked list.
+
+We will use the TAILQ fifo in this demo. There are following procedures for this:
+
+TAILQ_ENTRY(TYPE)
+
+This is the type of handled field in data structure. The TYPE is the name of struct. In this demo it will be:
+
+struct pizza_t {
+    int order;
+    int pizza;
+    TAILQ_ENTRY(pizza_t) entries;
+};
+
+TAILQ_HEAD(HEADNAME, TYPE)
+
+The variable of the list handler. That is the parameter of the most list handler macros.
+The HEAD_NAME will be the type of a struct, the TYPE is the handled field of data structure. Here is the pizzeria type:
+
+struct {
+    struct tailhead *headp;                 /* Tail queue head. */
+    int product_order;
+    volatile int pizzeria_opened;
+    volatile int kitchen_opened;
+    pthread_t producer;
+    pthread_t consumer;
+    pthread_mutex_t mutex;
+    TAILQ_HEAD(tailhead, pizza_t) head;
+} pizzeria;
+
+
+TAILQ_INIT(TAILQ_HEAD *head);
+
+Initialize the fifo. The head is the variable of list handler.
+
+
+TAILQ_INSERT_AFTER(TAILQ_HEAD *head, TYPE *listelm,
+                TYPE *elm, TAILQ_ENTRY NAME);
+
+Insert an item after the given item.
+
+TAILQ_INSERT_HEAD(TAILQ_HEAD *head,
+                TYPE *elm, TAILQ_ENTRY NAME);
+Insert a new item to the head of list.
+
+TAILQ_INSERT_TAIL(TAILQ_HEAD *head,
+                TYPE *elm, TAILQ_ENTRY NAME);
+Insert a new item after the end of list.
+
+TAILQ_REMOVE(TAILQ_HEAD *head, TYPE *elm, TAILQ_ENTRY NAME);
+Remove the given item from list.
+
+Here is the producer thread:
+
+void *bake(void *param)
+{
+    while(pizzeria.kitchen_opened) {
+        int i;
+        for(i=0;i<BAKE_CAPACITY;i++) {
+            struct pizza_t *make;
+            MALLOC(make, sizeof(struct pizza_t));
+            make->order = ++pizzeria.product_order;
+            make->pizza = rand() % PIZZA_COUNTS;
+
+            pthread_mutex_lock(&pizzeria.mutex);
+            TAILQ_INSERT_TAIL(&pizzeria.head, make, entries);
+            pthread_mutex_unlock(&pizzeria.mutex);
+
+            printf("Baking pizza, order:%d, value:%s\n", make->order, menu[make->pizza]);
+        }
+        sleep(1);
+    }
+    return NULL;
+}
+
+The thread runs until the kitchen is opened ( while(pizzeria.kitchen_opened) ).
+The kitchen_opened variable is volatile. It means, it needs to load from memory every read, cannot cache it into a register.
+The thread can detect if another thread wants to stop it. We use a mutex for the list administration, because we need to guarantee, only one thread
+can insert or remove an element at the time. We can think about mutex as a key of lavatory. If somebody get the key, all of other people have to wait until
+this guy finished.
+As we can see the kitchen make BAKE_CAPACITY pieces of pizzas at a time. After that it will prepare the next pizzas. It will be representing a 1 sec of sleep.
+
+The consumer works two phase. Until the kitchen is works it will continously sale the pizzas corresponding the number of guests.
+After the kitchen stopped, it will sale all of the remaining pizzas.
+
+void sale_a_pizza() {
+    struct pizza_t *sale;
+    sale = pizzeria.head.tqh_first;
+    printf("\t\t\tEat pizza, order:%d, name:%s\n", sale->order, menu[sale->pizza]);
+
+    pthread_mutex_lock(&pizzeria.mutex);
+    TAILQ_REMOVE(&pizzeria.head, pizzeria.head.tqh_first, entries);
+    pthread_mutex_unlock(&pizzeria.mutex);
+
+    FREE(sale);
+}
+
+void *consume(void *param)
+{
+    while(pizzeria.kitchen_opened) {
+        sleep(2);
+        int i=0;
+        while (!TAILQ_EMPTY(&pizzeria.head) && i<GUESTS_MAX) {
+            sale_a_pizza();
+            i++;
+        }
+    }
+    printf("\nPizzeria will be closed, let's sale the remaining pizzas\n");
+    while (!TAILQ_EMPTY(&pizzeria.head))
+       sale_a_pizza();
+
+    return NULL;
+}
+
+Guests eat pizzas slower than bake. This will be modelling with a sleep(2). The GUESTS_MAX constant means the maximum of guests at a time.
+
+The controlling are in open(), close_kitchen() and close_pizzeria() functions. The open initializes the variables (list, mutex, random generator),
+and starts the tthreads (pthread_create()).
+The close functions have to wait the threads to really stopped. Please don't forget, the kitchen_opened and pizzeria_opened variables are only an intents
+to stop the thread. All thread check this variables at only one point. The running oven cannot stop immediately, the pizzas have to bake in it.
+The guests cannot kicked out at the close time, we need to finish their eat. All of the close function waits the thread stop with pthread_join() function.
+
+void open() {
+    TAILQ_INIT(&pizzeria.head);
+    pizzeria.product_order=0;
+    time_t t;
+    time(&t);
+    srand(t);
+    pthread_mutex_init(&pizzeria.mutex, NULL);
+    pizzeria.kitchen_opened=1;
+    pizzeria.pizzeria_opened=1;
+    pthread_create(&pizzeria.producer, NULL, bake, NULL);
+    pthread_create(&pizzeria.consumer, NULL, consume, NULL);
+    printf("\nNow the pizzeria is opening\n\n");
+}
+
+void close_kitchen() {
+    pizzeria.kitchen_opened=0;
+    pthread_join(pizzeria.producer,NULL);
+    printf("\nNow the kitchen is closed, no more pizzas baken\n\n");
+}
+
+void close_pizzeria() {
+    pizzeria.pizzeria_opened=0;
+    pthread_join(pizzeria.consumer,NULL);
+    printf("\nNow the pizzeria is closed, no more pizzas reamining\n");
+    printf("Are remaining pizzas: %s\n", TAILQ_EMPTY(&pizzeria.head) ? "false" : "true");
+}
+
+Here is the full code:
+/**
+    Demonstrating tailq as a normal queue;
+
+    There are two process, a producer and a consumer. Producer produce some data asynchronous, and puts its products into the queue.
+    There is a process as a consumer, which is gets products from the queue, if its not empty.
+
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/queue.h>
+#include <time.h>
+#include <pthread.h>
+#include <unistd.h>
+
+#define MALLOC(ptr,size)  \
+do { \
+    ptr=malloc(size); \
+    if (!ptr)  \
+       abort(); \
+} while(0) \
+
+#define FREE(ptr) \
+do { \
+    free(ptr); \
+    ptr=NULL; \
+} while(0)
+
+
+const char *menu[] = {
+    {"Bacon" },
+    {"Bolognese" },
+    {"Broccoli" },
+    {"Buddy" },
+    {"California" },
+    {"Cipolla" },
+    {"Costolla" },
+    {"Hawaii" },
+    {"Margareta" },
+    {"Mozzarella" },
+    {"Palermo" },
+    {"Popey" },
+    {"Salami" },
+    {"Sicilia" },
+    {"Siena" },
+    {"Vegas" },
+    {"Vulcan" }
+};
+
+const int PIZZA_COUNTS = sizeof(menu)/sizeof(char *);
+
+const int GUESTS_MAX = 7;
+const int BAKE_CAPACITY = 10;
+const int OPENING_TIME = 5; //sec
+const int DISCOUNT_TIME = 2; // sev
+
+struct {
+    struct tailhead *headp;                 /* Tail queue head. */
+    int product_order;
+    volatile int pizzeria_opened;
+    volatile int kitchen_opened;
+    pthread_t producer;
+    pthread_t consumer;
+    pthread_mutex_t mutex;
+    TAILQ_HEAD(tailhead, pizza_t) head;
+} pizzeria;
+
+
+struct pizza_t {
+    int order;
+    int pizza;
+    TAILQ_ENTRY(pizza_t) entries;         /* Tail queue. */
+};
+
+
+void *bake(void *param)
+{
+    while(pizzeria.kitchen_opened) {
+        int i;
+        for(i=0;i<BAKE_CAPACITY;i++) {
+            struct pizza_t *make;
+            MALLOC(make, sizeof(struct pizza_t));
+            make->order = ++pizzeria.product_order;
+            make->pizza = rand() % PIZZA_COUNTS;
+
+            pthread_mutex_lock(&pizzeria.mutex);
+            TAILQ_INSERT_TAIL(&pizzeria.head, make, entries);
+            pthread_mutex_unlock(&pizzeria.mutex);
+
+            printf("Baking pizza, order:%d, value:%s\n", make->order, menu[make->pizza]);
+        }
+        sleep(1);
+    }
+    return NULL;
+}
+
+void sale_a_pizza() {
+    struct pizza_t *sale;
+    sale = pizzeria.head.tqh_first;
+    printf("\t\t\tEat pizza, order:%d, name:%s\n", sale->order, menu[sale->pizza]);
+
+    pthread_mutex_lock(&pizzeria.mutex);
+    TAILQ_REMOVE(&pizzeria.head, pizzeria.head.tqh_first, entries);
+    pthread_mutex_unlock(&pizzeria.mutex);
+
+    FREE(sale);
+}
+
+void *consume(void *param)
+{
+    while(pizzeria.kitchen_opened) {
+        sleep(2);
+        int i=0;
+        while (!TAILQ_EMPTY(&pizzeria.head) && i<GUESTS_MAX) {
+            sale_a_pizza();
+            i++;
+        }
+    }
+    printf("\nPizzeria will be closed, let's sale the remaining pizzas\n");
+    while (!TAILQ_EMPTY(&pizzeria.head))
+       sale_a_pizza();
+
+    return NULL;
+}
+
+void open() {
+    TAILQ_INIT(&pizzeria.head);
+    pizzeria.product_order=0;
+    time_t t;
+    time(&t);
+    srand(t);
+    pthread_mutex_init(&pizzeria.mutex, NULL);
+    pizzeria.kitchen_opened=1;
+    pizzeria.pizzeria_opened=1;
+    pthread_create(&pizzeria.producer, NULL, bake, NULL);
+    pthread_create(&pizzeria.consumer, NULL, consume, NULL);
+    printf("\nNow the pizzeria is opening\n\n");
+}
+
+void close_kitchen() {
+    pizzeria.kitchen_opened=0;
+    pthread_join(pizzeria.producer,NULL);
+    printf("\nNow the kitchen is closed, no more pizzas baken\n\n");
+}
+
+void close_pizzeria() {
+    pizzeria.pizzeria_opened=0;
+    pthread_join(pizzeria.consumer,NULL);
+    printf("\nNow the pizzeria is closed, no more pizzas reamining\n");
+    printf("Are remaining pizzas: %s\n", TAILQ_EMPTY(&pizzeria.head) ? "false" : "true");
+}
+
+int main(int argc, char **argv)
+{
+    open();
+    sleep(OPENING_TIME);
+    close_kitchen();
+    sleep(DISCOUNT_TIME);
+    close_pizzeria();
+    return EXIT_SUCCESS;
+}
+
+

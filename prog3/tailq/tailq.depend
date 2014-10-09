@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1382257799 source:/home/zamek/oktat/c/gyak/prog_III/tailq/main.c
+	<stdio.h>
+	<stdlib.h>
+	<sys/queue.h>
+	<time.h>
+	<pthread.h>
+	<unistd.h>
+
