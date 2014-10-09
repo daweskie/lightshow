@@ -3,6 +3,13 @@
 #include <assert.h>
 #include <numutils.h>
 
+
+#define FLOAT_DIFF_LIMIT 0.001
+
+#define FL_COMPARE_D(a,b,diff) (a-b)<=diff
+
+#define FL_COMPARE(a,b) FL_COMPARE_D(a,b,FLOAT_DIFF_LIMIT)
+
 #define MINIMAL_VERSION
 
 void test_nu_str_toint() {
@@ -96,8 +103,9 @@ void test_nu_str_tolong_default() {
 #endif // MINIMAL_VERSION
 }
 
+
 void test_nu_str_tofloat() {
-    assert(nu_str_tofloat(NULL)==0.0);
+    assert(FL_COMPARE(nu_str_tofloat(NULL),0.0));
     assert(nu_str_tofloat("")==0.0);
     assert(nu_str_tofloat("123.12")==123.12);
     assert(nu_str_tofloat("123V5.0")==0);
@@ -234,7 +242,7 @@ void test_min() {
     long *pa =&la;
     long *pb = &lb;
 
-    assert(nu_min(pa,pb)==pa);
+    assert(nu_min(*pa,*pb)==*pa);
 }
 
 void test_max() {
