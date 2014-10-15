@@ -1,0 +1,29 @@
+First assessement of Embedded Programming course
+
+Please finish the flowchart of
+
+    cmd_mem(BaseSequentialStream *chp, int argc, char *argv[])
+    cmd_threads(BaseSequentialStream *chp, int argc, char *argv[])
+    cmd_test(BaseSequentialStream *chp, int argc, char *argv[])
+
+in acceltest/resources/acceltest.dia 
+
+Second assessement of Embedded Programming course
+
+Please modify code of acceltest:
+    - Remove inline constant 4 for the x and y fifo (xbuf, ybuf) and put a predefined macro constant to define the size of fifo
+	(don't forget to change all references in the code)
+
+    - Please set all used inline constants into a predefined macro constant
+
+    - Please check all predefined macro constant in compile time 
+
+    - Please store absolute maximum ans minimum values of x and y values. 
+
+    - Please make a function (getter function) to ask average, maximum and minimum values for other tasks.
+	(hide all data from other task. Other tasks can pass a pointer of a structure to the function, to copy data)
+
+    - Please use a synchronization method to avoid inconsistent data served to other tasks.
+
+    - Please make a command which runs until a predefined time to continuously read and print values to the console.
+
