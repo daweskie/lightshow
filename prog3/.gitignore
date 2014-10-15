@@ -1,0 +1,13 @@
+html/*
+latex/*
+obj/*
+bin/*
+*.log
+*.info
+build/*
+dist/*
+*.o
+*.a
+*.tmp
+*.bak
+*.layout
