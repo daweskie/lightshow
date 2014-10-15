@@ -17,6 +17,7 @@ SerialUSBDriver SDU1;
 static const ShellCommand commands[] = {
     {"mem", cmd_mem},
     {"threads", cmd_threads},
+    task1_commands,
     {NULL,NULL}
 };
 

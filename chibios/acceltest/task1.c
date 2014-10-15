@@ -24,6 +24,11 @@
 
 #include "task1.h"
 
+
+#if TASK_STACK_SIZE <128
+    #error The task minimum size is 128!
+
+#endif // TASK_STACK_SIZE
 static THD_WORKING_AREA(waThreadtask1, 128);
 
 
@@ -86,21 +91,21 @@ static const SPIConfig spi2cfg = {
 static THD_FUNCTION(Threadtask1, arg) {
   static int8_t xbuf[4], ybuf[4];   /* Last accelerometer data.*/
   systime_t time;                   /* Next deadline.*/
-  
+
   (void)arg;
   chRegSetThreadName("reader");
-  
+
   /* LIS302DL initialization.*/
   lis302dlWriteRegister(&SPID1, LIS302DL_CTRL_REG1, 0x43);
   lis302dlWriteRegister(&SPID1, LIS302DL_CTRL_REG2, 0x00);
   lis302dlWriteRegister(&SPID1, LIS302DL_CTRL_REG3, 0x00);
-  
+
   /* Reader thread loop.*/
   time = chVTGetSystemTime();
   while (TRUE) {
     int32_t x, y;
     unsigned i;
-    
+
     /* Keeping an history of the latest four accelerometer readings.*/
     for (i = 3; i > 0; i--) {
       xbuf[i] = xbuf[i - 1];
@@ -142,19 +147,39 @@ static THD_FUNCTION(Threadtask1, arg) {
     }
 
     /* Waiting until the next 250 milliseconds time interval.*/
-    chThdSleepUntil(time += MS2ST(100));
+    chThdSleepUntil(time += MS2ST(100)); // javitani
   }
   return 0;
 }
 
 /**
     task1 user interface
+    usage ac <n | a> where n is 0 between MAX_FIFO-1
+        a is means print all fifo items and average min and max
 */
 void cmd_task1(BaseSequentialStream *chp, int argc, char *argv[]) {
-    (void) argc;
-    (void) argv;
-    (void) chp;
+    if (!(chp && argv))
+        return;
+    if (!argc) {
+        chprintf(chp, "usage ac <[n|a]>\r\n");
+        return;
+    }
+
+    if (argv[0]=='a'){
+        printAll(chp);
+        return;
+    }
+
+    int ch = atoi(argv[0]);
+    printChannel(chp, ch);
+
 }
+
+
+
+
+
+
 
 void task1Init(void)
 {
