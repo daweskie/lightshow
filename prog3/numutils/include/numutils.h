@@ -1,6 +1,7 @@
 #ifndef NUMUTILS_H_INCLUDED
 #define NUMUTILS_H_INCLUDED
 
+#include <stdbool.h>
 /*
  * Copyright (C)  2014 Zoltan Zidarics (Zamek)
  *

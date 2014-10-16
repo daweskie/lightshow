@@ -38,6 +38,9 @@
 		<Unit filename="src/numutils.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="test/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<envvars />
 			<code_completion />

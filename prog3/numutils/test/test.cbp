@@ -34,6 +34,10 @@
 			<Add option="-Wall" />
 			<Add option="-g" />
 		</Compiler>
+		<Unit filename="../include/numutils.h" />
+		<Unit filename="../src/numutils.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="Makefile" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
