@@ -124,11 +124,11 @@ void test_nu_str_tofloat() {
 
 void test_nu_str_tofloat_default() {
     printf("\ntest_nu_str_tofloat_default started\n");
-    assert(nu_str_tofloat_default(NULL,2.0)==2.0);
-    assert(nu_str_tofloat_default("",2.0)==2.0);
-    assert(nu_str_tofloat_default("123.12",2.0)==123.12);
-    assert(nu_str_tofloat_default("123V5.0",2.0)==2.0);
-    assert(nu_str_tofloat_default("123567.32",2.0)==123567.32);
+    assert(FL_COMPARE(nu_str_tofloat_default(NULL,2.0),2.0));
+    assert(FL_COMPARE(nu_str_tofloat_default("",2.0),2.0));
+    assert(FL_COMPARE(nu_str_tofloat_default("123.12",2.0),123.12));
+    assert(FL_COMPARE(nu_str_tofloat_default("123V5.0",2.0),2.0));
+    assert(FL_COMPARE(nu_str_tofloat_default("123567.32",2.0),123567.32));
     printf("passed\n\n");
 }
 
@@ -309,7 +309,7 @@ void test_is_digit() {
     printf("passed\n\n");
 }
 
-/*void test_is_number() {
+void test_is_number() {
     printf("\ntest_is_number started\n");
     assert(nu_is_number(NULL)==0);
     assert(nu_is_number("")==0);
@@ -321,7 +321,7 @@ void test_is_digit() {
     assert(nu_is_number("-012.3.4")==0);
     printf("passed\n\n");
 }
-**/
+
 
 int test_numutils()
 {
@@ -330,7 +330,7 @@ int test_numutils()
     test_nu_str_tolong();
     test_nu_str_tolong_default();
     test_nu_str_tofloat();
-    //test_nu_str_tofloat_default();
+    test_nu_str_tofloat_default();
     test_nu_str_tobyte();
     test_nu_str_tobyte_default();
     test_nu_str_toshort();
@@ -339,7 +339,7 @@ int test_numutils()
     test_min();
     test_max();
     test_is_digit();
-//    test_is_number();
+    test_is_number();
 }
 
 int main(int argc, char **argv)
@@ -347,6 +347,6 @@ int main(int argc, char **argv)
     printf("numutils testing started\n");
     int result = test_numutils();
     printf("numutils testing ended\n");
-    printf("All passed\n");
+    printf("\n\nAll passed\n");
     return result;
 }

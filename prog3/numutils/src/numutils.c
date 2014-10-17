@@ -11,12 +11,13 @@
  */
 
 #include <string.h>
-#include <stdbool.h>
-#define white_space(c) ((c) == ' ' || (c) == '\t')
-#define valid_digit(c) ((c) >= '0' && (c) <= '9')
+
+
 
 /** \file strutils.c
     \brief strberutilities
+
+    AUTHOR : DAVID DOBO
 */
 
 /**
@@ -43,7 +44,7 @@ int nu_str_toint(const char *str)
 
         else if (str[i]< 48 || str[i] > 57)
         {
-            //printf("Unable to convert it into integer.\n");
+
             return 0;
         }
         else
@@ -86,7 +87,7 @@ int nu_str_toint_default(const char *str, int defaultValue)
 
         else if (str[i]< 48 || str[i] > 57)
         {
-            //printf("Unable to convert it into integer.\n");
+
             return defaultValue;
         }
         else
@@ -126,7 +127,7 @@ long nu_str_tolong(const char *str)
 
         else if (str[i]< 48 || str[i] > 57)
         {
-            //printf("Unable to convert it into integer.\n");
+
             return 0;
         }
         else
@@ -169,7 +170,7 @@ long nu_str_tolong_default(const char *str, long defaultValue)
 
         else if (str[i]< 48 || str[i] > 57)
         {
-            //printf("Unable to convert it into integer.\n");
+
             return defaultValue;
         }
         else
@@ -195,12 +196,12 @@ long nu_str_tolong_default(const char *str, long defaultValue)
 
 float nu_str_tofloat(const char *str)
 {
-    int i=0; // Initialize result and i
+    int i=0;
     float res=0,res1=0,res2=0,powa=10;
 
     if (!str || !*str)
     {
-        //printf("Not too much...man. \n");
+
         return 0;
     }
     while(str[i]!='\0')
@@ -211,7 +212,7 @@ float nu_str_tofloat(const char *str)
         }
         i++;
     }
-    i==0;
+    i=0;
 
     while(str[i]!='\0')
     {
@@ -219,7 +220,7 @@ float nu_str_tofloat(const char *str)
         while(str[i]!='.')
         {
             res1 = res1*10 + str[i]- 48;
-            //printf("%f\n", res1);
+
             i++;
         }
         i++;
@@ -227,16 +228,16 @@ float nu_str_tofloat(const char *str)
         {
             res2 = res2 +((str[i]-48)/(powa));
             powa = powa*10;
-            //printf("Current: %d\n", str[i]);
+
 
             i++;
         }
         res=res1+res2;
     }
-    //printf("%d!\n", res); // I was using this shit during trouble shooting.
 
 
-    //printf("res= %f\n", res);
+
+
     return res;
 
 }
@@ -253,6 +254,50 @@ float nu_str_tofloat(const char *str)
 */
 float nu_str_tofloat_default(const char *str, float defaultValue)
 {
+    int i=0;
+    float res=0,res1=0,res2=0,powa=10;
+
+    if (!str || !*str)
+    {
+
+        return defaultValue;
+    }
+    while(str[i]!='\0')
+    {
+        if(str[i]< 46 || str[i] > 57 || i>9)
+        {
+            return defaultValue;
+        }
+        i++;
+    }
+    i=0;
+
+    while(str[i]!='\0')
+    {
+
+        while(str[i]!='.')
+        {
+            res1 = res1*10 + str[i]- 48;
+
+            i++;
+        }
+        i++;
+        while(str[i]!='\0')
+        {
+            res2 = res2 +((str[i]-48)/(powa));
+            powa = powa*10;
+
+
+            i++;
+        }
+        res=res1+res2;
+    }
+
+
+
+
+    return res;
+
 }
 
 /**
@@ -266,83 +311,205 @@ float nu_str_tofloat_default(const char *str, float defaultValue)
 */
 char nu_str_tobyte(const char *str)
 {
-    if (!str || !*str)
+    int result;
+
+    if (!str || !*str || (nu_str_toint(str)>255))
     {
         return 0;
-
     }
 
-    /**
-    * Convert a String to a byte, returning a
-    * default value if the conversion fails.
-    *
-    * If the string is null, the default value is returned.
-    *
-    * @param str the string to convert, may be null
-    * @param defaultValue the default value
-    * @return the byte represented by the string, or the default if conversion fails
-    */
-    char nu_str_tobyte_default(const char *str, char defaultValue)
+    result = nu_str_toint(str);
+
+    return result;
+}
+
+/**
+* Convert a String to a byte, returning a
+* default value if the conversion fails.
+*
+* If the string is null, the default value is returned.
+*
+* @param str the string to convert, may be null
+* @param defaultValue the default value
+* @return the byte represented by the string, or the default if conversion fails
+*/
+char nu_str_tobyte_default(const char *str, char defaultValue)
+{
+    int result;
+
+    if (!str || !*str || (nu_str_toint(str)>255))
     {
+        return defaultValue;
     }
 
-    /**
-    * Convert a String to a short, returning a
-    * zero value if the conversion fails.
-    *
-    * If the string is null, the zero value is returned.
-    *
-    * @param str the string to convert, may be null
-    * @return the byte represented by the string, or zero if conversion fails
-    */
-    short nu_str_toshort(const char *str)
+    result = nu_str_toint(str);
+
+    return result;
+}
+
+/**
+* Convert a String to a short, returning a
+* zero value if the conversion fails.
+*
+* If the string is null, the zero value is returned.
+*
+* @param str the string to convert, may be null
+* @return the byte represented by the string, or zero if conversion fails
+*/
+short nu_str_toshort(const char *str)
+{
+    short result;
+
+    if (!str || !*str || (nu_str_toint(str)>32767))
     {
+        return 0;
     }
 
-    /**
-    * Convert a String to a short, returning a
-    * default value if the conversion fails.
-    *
-    * If the string is null, the default value is returned.
-    *
-    * @param str the string to convert, may be null
-    * @param defaultValue the default value
-    * @return the short represented by the string, or the default if conversion fails
-    */
-    short nu_str_toshort_default(const char *str, short defaultValue)
+    result = nu_str_toint(str);
+
+}
+
+/**
+* Convert a String to a short, returning a
+* default value if the conversion fails.
+*
+* If the string is null, the default value is returned.
+*
+* @param str the string to convert, may be null
+* @param defaultValue the default value
+* @return the short represented by the string, or the default if conversion fails
+*/
+short nu_str_toshort_default(const char *str, short defaultValue)
+{
+    short result;
+
+    if (!str || !*str || (nu_str_toint(str)>32767))
     {
+        return defaultValue;
     }
 
-    /**
-    * Utility method to check if a string contains only zeros or null
-    *
-    * Returns 1 if str null.
-    *
-    * @param str the String to check, may be null
-    * @return 1 if it is all zeros or null
-    */
-    char nu_is_all_zeros(const char *str)
+    result = nu_str_toint(str);
+
+}
+
+/**
+* Utility method to check if a string contains only zeros or null
+*
+* Returns 1 if str null.
+*
+* @param str the String to check, may be null
+* @return 1 if it is all zeros or null
+*/
+char nu_is_all_zeros(const char *str)
+{
+    if (!str || !*str)
+        return 1;
+
+    int i=0;
+
+
+    while(str[i]!='\0')
     {
-    }
 
-    /**
-        Check if all characters of string is streric (0..9)
-        returns 1 if str is not null and all member is streric (0..9)
-        @param str the String to check, may be null
-        @return 1 if str is not null and all member is streric (0..9)
-    */
-    char nu_is_digit(const char *str)
+        if (str[i] == 48 )
+        {
+            i++;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/**
+    Check if all characters of string is numeric (0..9)
+    returns 1 if str is not null and all member is numeric (0..9)
+    @param str the String to check, may be null
+    @return 1 if str is not null and all member is numeric (0..9)
+*/
+char nu_is_digit(const char *str)
+{
+    if (!str || !*str)
+        return 0;
+
+    int i=0;
+
+
+    if (str[0] == '-')
     {
+        //sign = -1;
+        i++;
     }
 
-
-    /**
-        Check if a str is a valid strber.
-        Valid strber is int including base (123, 0x12, 0b10101, 0o123, float)
-        returns 1 if str is not null and is strber
-        @param str the String to check, may be null
-        @return 1 if str is not null and is strber
-    */
-    char nu_is_strber(const char *str)
+    while(str[i]!='\0')
     {
+
+        if (str[i]> 47 && str[i] < 58)
+        {
+            i++;
+        }
+        else
+        {
+            return 0;
+        }
+
     }
+
+    return 1;
+
+
+}
+
+
+
+/**
+    Check if a str is a valid number.
+    Valid number is int including base (123, 0x12, 0b10101, 0o123, float)
+    returns 1 if str is not null and is number
+    @param str the String to check, may be null
+    @return 1 if str is not null and is number
+*/
+char nu_is_number(const char *str)
+{
+    if (!str || !*str)
+        return 0;
+
+    int i=0;
+    int cnt=0;
+
+
+    while(str[i]!='\0')
+    {
+        i++;
+        if(str[i] == '.')
+        {
+            cnt++;
+        }
+    }
+    i = 0; //reset i
+
+    if (str[0] == '-')
+    {
+        i++;
+    }
+
+
+
+    while(str[i]!='\0')
+    {
+        if (((str[1]== ('b' || 'o' || 'x')) || ((str[i] == 46)&& cnt == 1) || (str[i]> 47 && str[i] < 58)))
+        {
+            i++;
+        }
+
+        else
+        {
+            return 0;
+        }
+
+    }
+    return 1;
+
+}
