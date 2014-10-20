@@ -1,0 +1,36 @@
+Evaluating of DOSAAP
+
+test finished: ok
+
+late:  1 day
+
+			max points		points
+nu_str_toint			 1		0
+nu_str_toint_default		10		5
+nu_str_tolong			 1		0
+nu_str_tolong_default		10		1
+nu_str_tofloat			 1		0
+nu_str_tofloat_default		10		0
+nu_str_tobyte			 1		0
+nu_str_tobyte_default		10		4
+nu_str_toshort			 1		0
+nu_str_toshort_default		10		3
+nu_is_all_zeros			10		8
+nu_min				 1		0
+nu_max				 1		0
+nu_is_digit			10		8
+nu_is_number			10		8
+
+==============================================================================
+max points			87		37
+
+Base
+0-43:1
+44-54:2
+55-65:3
+66-76:4
+77-87:5
+
+result: 1
+
+

@@ -2,24 +2,22 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <numutils.h>
-
+#include <math.h>
 
 #define FLOAT_DIFF_LIMIT 0.001
 
-#define FL_COMPARE_D(a,b,diff) (a-b)<=diff
+#define FL_COMPARE_D(a,b,diff) (fabsf((a)-(b)))<=(diff)
 
-#define FL_COMPARE(a,b) FL_COMPARE_D(a,b,FLOAT_DIFF_LIMIT)
+#define FL_COMPARE(a,b) FL_COMPARE_D((a),(b),FLOAT_DIFF_LIMIT)
 
 #define MINIMAL_VERSION
 
 void test_nu_str_toint() {
-    printf("\ntest_nu_str_toint started\n");
     assert(nu_str_toint(NULL)==0);
     assert(nu_str_toint("")==0);
     assert(nu_str_toint("123")==123);
     assert(nu_str_toint("123V5")==0);
     assert(nu_str_toint("123567891234567")==0);
-    printf("passed\n\n");
 #ifndef MINIMAL_VERSION
     assert(nu_str_toint("0x10")==16);
     assert(nu_str_toint("x10")==0);
@@ -40,13 +38,11 @@ void test_nu_str_toint() {
 }
 
 void test_nu_str_toint_default() {
-    printf("\ntest_nu_str_toint_default started\n");
     assert(nu_str_toint_default(NULL,-1)==-1);
     assert(nu_str_toint_default("",-1)==-1);
     assert(nu_str_toint_default("123",-1)==123);
     assert(nu_str_toint_default("123V5",-1)==-1);
     assert(nu_str_toint_default("123567891234567",-1)==-1);
-    printf("passed\n\n");
 #ifndef MINIMAL_VERSION
     assert(nu_str_toint_default("0x10",-1)==16);
     assert(nu_str_toint_default("x10",-1)==-1);
@@ -64,13 +60,11 @@ void test_nu_str_toint_default() {
 }
 
 void test_nu_str_tolong() {
-    printf("\ntest_nu_str_tolong started\n");
     assert(nu_str_tolong(NULL)==0);
     assert(nu_str_tolong("")==0);
     assert(nu_str_tolong("123")==123);
     assert(nu_str_tolong("123V5")==0);
     assert(nu_str_tolong("12356789567")==0);
-    printf("passed\n\n");
 #ifndef MINIMAL_VERSION
     assert(nu_str_tolong("0x10")==16);
     assert(nu_str_tolong("x10")==0);
@@ -88,13 +82,11 @@ void test_nu_str_tolong() {
 }
 
 void test_nu_str_tolong_default() {
-    printf("\ntest_nu_str_tolong_default started\n");
     assert(nu_str_tolong_default(NULL,-1)==-1);
     assert(nu_str_tolong_default("",-1)==-1);
     assert(nu_str_tolong_default("123",-1)==123);
     assert(nu_str_tolong_default("123V5",-1)==-1);
     assert(nu_str_tolong_default("12356789567",-1)==-1);
-    printf("passed\n\n");
 #ifndef MINIMAL_VERSION
     assert(nu_str_tolong_default("0x10",-1)==16);
     assert(nu_str_tolong_default("x10",-1)==-1);
@@ -113,32 +105,26 @@ void test_nu_str_tolong_default() {
 
 
 void test_nu_str_tofloat() {
-    printf("\ntest_nu_str_tofloat started\n");
     assert(FL_COMPARE(nu_str_tofloat(NULL),0.0));
     assert(FL_COMPARE(nu_str_tofloat(""),0.0));
     assert(FL_COMPARE(nu_str_tofloat("123.12"),123.12));
     assert(FL_COMPARE(nu_str_tofloat("123V5.0"),0));
     assert(FL_COMPARE(nu_str_tofloat("123567.32"),123567.32));
-    printf("passed\n\n");
 }
 
 void test_nu_str_tofloat_default() {
-    printf("\ntest_nu_str_tofloat_default started\n");
     assert(FL_COMPARE(nu_str_tofloat_default(NULL,2.0),2.0));
     assert(FL_COMPARE(nu_str_tofloat_default("",2.0),2.0));
     assert(FL_COMPARE(nu_str_tofloat_default("123.12",2.0),123.12));
     assert(FL_COMPARE(nu_str_tofloat_default("123V5.0",2.0),2.0));
     assert(FL_COMPARE(nu_str_tofloat_default("123567.32",2.0),123567.32));
-    printf("passed\n\n");
 }
 
 void test_nu_str_tobyte() {
-    printf("\ntest_nu_str_tobyte started\n");
     assert(nu_str_tobyte(NULL)==0);
     assert(nu_str_tobyte("")==0);
     assert(nu_str_tobyte("1")==1);
     assert(nu_str_tobyte("327")==0);
-    printf("passed\n\n");
 #ifndef MINIMAL_VERSION
     assert(nu_str_tobyte("0x10")==16);
     assert(nu_str_tobyte("x10")==0);
@@ -156,12 +142,10 @@ void test_nu_str_tobyte() {
 }
 
 void test_nu_str_tobyte_default() {
-    printf("\ntest_nu_str_tobyte_default started\n");
     assert(nu_str_tobyte_default(NULL,0)==0);
     assert(nu_str_tobyte_default("",0)==0);
     assert(nu_str_tobyte_default("1",0)==1);
     assert(nu_str_tobyte_default("327",0)==0);
-    printf("passed\n\n");
 #ifndef MINIMAL_VERSION
     assert(nu_str_tobyte_default("0x10",0)==16);
     assert(nu_str_tobyte_default("x10",0)==0);
@@ -179,12 +163,10 @@ void test_nu_str_tobyte_default() {
 }
 
 void test_nu_str_toshort() {
-    printf("\ntest_nu_str_toshort started\n");
     assert(nu_str_toshort(NULL)==0);
     assert(nu_str_toshort("")==0);
     assert(nu_str_toshort("32767")==32767);
     assert(nu_str_toshort("32768")==0);
-    printf("passed\n\n");
 #ifndef MINIMAL_VERSION
     assert(nu_str_toshort("0x10")==16);
     assert(nu_str_toshort("x10")==0);
@@ -202,12 +184,10 @@ void test_nu_str_toshort() {
 }
 
 void test_nu_str_toshort_default() {
-    printf("\ntest_nu_str_toshort_default started\n");
     assert(nu_str_toshort_default(NULL,0)==0);
     assert(nu_str_toshort_default("",0)==0);
     assert(nu_str_toshort_default("32767",0)==32767);
     assert(nu_str_toshort_default("32768",0)==0);
-    printf("passed\n\n");
 #ifndef MINIMAL_VERSION
     assert(nu_str_toshort_default("0x10",0)==16);
     assert(nu_str_toshort_default("x10",0)==0);
@@ -225,7 +205,6 @@ void test_nu_str_toshort_default() {
 }
 
 void test_nu_is_all_zeros() {
-    printf("\ntest_nu_is_all_zeros started\n");
     assert(nu_is_all_zeros("")!=0);
     assert(nu_is_all_zeros(NULL)!=0);
     assert(nu_is_all_zeros("123")==0);
@@ -233,7 +212,6 @@ void test_nu_is_all_zeros() {
     assert(nu_is_all_zeros("0")!=0);
     assert(nu_is_all_zeros("00")!=0);
     assert(nu_is_all_zeros("0000")!=0);
-    printf("passed\n\n");
 }
 
 void test_min() {
@@ -295,22 +273,19 @@ void test_max() {
     long *pa =&la;
     long *pb = &lb;
 
-    assert(nu_max(pa,pb)==pb);
+    assert(nu_max(*pa,*pb)==*pb);
 }
 
 void test_is_digit() {
-    printf("\ntest_is_digit started\n");
     assert(nu_is_digit(NULL)==0);
     assert(nu_is_digit("")==0);
     assert(nu_is_digit("01234")!=0);
     assert(nu_is_digit("01234v567")==0);
     assert(nu_is_digit("-012345")!=0);
     assert(nu_is_digit("01-234")==0);
-    printf("passed\n\n");
 }
 
 void test_is_number() {
-    printf("\ntest_is_number started\n");
     assert(nu_is_number(NULL)==0);
     assert(nu_is_number("")==0);
     assert(nu_is_number("01234")!=0);
@@ -319,9 +294,7 @@ void test_is_number() {
     assert(nu_is_number("-01234.0")!=0);
     assert(nu_is_number("-01234-")==0);
     assert(nu_is_number("-012.3.4")==0);
-    printf("passed\n\n");
 }
-
 
 int test_numutils()
 {
@@ -340,6 +313,7 @@ int test_numutils()
     test_max();
     test_is_digit();
     test_is_number();
+    return EXIT_SUCCESS;
 }
 
 int main(int argc, char **argv)
@@ -347,6 +321,5 @@ int main(int argc, char **argv)
     printf("numutils testing started\n");
     int result = test_numutils();
     printf("numutils testing ended\n");
-    printf("\n\nAll passed\n");
     return result;
 }

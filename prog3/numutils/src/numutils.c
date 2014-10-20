@@ -27,7 +27,7 @@
  @param str the string to convert, may be null
  @return the int represented by the string, or zero if conversion fails
 */
-int nu_str_toint(const char *str)
+int nu_str_toint(const char *str) //Z Why not nu_str_toint_default(str,0)?
 {
     if (!str || !*str)
         return 0;
@@ -37,12 +37,12 @@ int nu_str_toint(const char *str)
 
     while(str[i]!='\0')
     {
-        if(i>4)
+        if(i>4) //Z WTF is it? 
         {
             return 0;
         }
 
-        else if (str[i]< 48 || str[i] > 57)
+        else if (str[i]< 48 || str[i] > 57) //Z '0' '9' 
         {
 
             return 0;
@@ -85,7 +85,7 @@ int nu_str_toint_default(const char *str, int defaultValue)
             return defaultValue;
         }
 
-        else if (str[i]< 48 || str[i] > 57)
+        else if (str[i]< 48 || str[i] > 57)  //Z Why else if preceding return '0' '9'
         {
 
             return defaultValue;
@@ -110,7 +110,7 @@ int nu_str_toint_default(const char *str, int defaultValue)
  @param str the string to convert, may be null
  @return the long represented by the string, or zero if conversion fails
 */
-long nu_str_tolong(const char *str)
+long nu_str_tolong(const char *str) //Z Why not nu_str_tolong_default(str,0)?
 {
     if (!str || !*str)
         return 0;
@@ -158,7 +158,7 @@ long nu_str_tolong_default(const char *str, long defaultValue)
     if (!str || !*str)
         return defaultValue;
 
-    int i=0,sum=0;
+    int i=0,sum=0;   //Z WTF? return value have to be long!
 
 
     while(str[i]!='\0')
@@ -194,7 +194,7 @@ long nu_str_tolong_default(const char *str, long defaultValue)
  @return the float represented by the string, or zero if conversion fails
 */
 
-float nu_str_tofloat(const char *str)
+float nu_str_tofloat(const char *str) //Z Why not nu_str_tofloat_default(str,0)?
 {
     int i=0;
     float res=0,res1=0,res2=0,powa=10;
@@ -206,7 +206,7 @@ float nu_str_tofloat(const char *str)
     }
     while(str[i]!='\0')
     {
-        if(str[i]< 46 || str[i] > 57 || i>9)
+        if(str[i]< 46 || str[i] > 57 || i>9)  //WTF?  if str contains / (47) ?
         {
             return 0;
         }
@@ -224,10 +224,10 @@ float nu_str_tofloat(const char *str)
             i++;
         }
         i++;
-        while(str[i]!='\0')
+        while(str[i]!='\0')  //Z *str
         {
             res2 = res2 +((str[i]-48)/(powa));
-            powa = powa*10;
+            powa = powa*10; //Z powa *=10;
 
 
             i++;
@@ -309,7 +309,7 @@ float nu_str_tofloat_default(const char *str, float defaultValue)
 * @param str the string to convert, may be null
 * @return the byte represented by the string, or zero if conversion fails
 */
-char nu_str_tobyte(const char *str)
+char nu_str_tobyte(const char *str) //Z Why not nu_str_tobyte_default(str,0)?
 {
     int result;
 
@@ -356,7 +356,7 @@ char nu_str_tobyte_default(const char *str, char defaultValue)
 * @param str the string to convert, may be null
 * @return the byte represented by the string, or zero if conversion fails
 */
-short nu_str_toshort(const char *str)
+short nu_str_toshort(const char *str)//Z Why not nu_str_toshort_default(str,0)?
 {
     short result;
 
@@ -417,7 +417,7 @@ char nu_is_all_zeros(const char *str)
         }
         else
         {
-            return 0;
+            return 0;  
         }
     }
     return 1;
@@ -446,7 +446,7 @@ char nu_is_digit(const char *str)
     while(str[i]!='\0')
     {
 
-        if (str[i]> 47 && str[i] < 58)
+        if (str[i]> 47 && str[i] < 58)  
         {
             i++;
         }
