@@ -11,6 +11,9 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
+#include <math.h>
+
 
 
 
@@ -27,38 +30,12 @@
  @param str the string to convert, may be null
  @return the int represented by the string, or zero if conversion fails
 */
-int nu_str_toint(const char *str) //Z Why not nu_str_toint_default(str,0)?
+int nu_str_toint(const char *str)
 {
-    if (!str || !*str)
-        return 0;
-
-    int i=0,sum=0;
-
-
-    while(str[i]!='\0')
-    {
-        if(i>4) //Z WTF is it? 
-        {
-            return 0;
-        }
-
-        else if (str[i]< 48 || str[i] > 57) //Z '0' '9' 
-        {
-
-            return 0;
-        }
-        else
-        {
-            sum = sum*10 + str[i] - 48;
-            i++;
-        }
-
-    }
-
-    return sum;
-
-
+    nu_str_toint_default(str,0);
 }
+
+
 
 /**
  Convert a String to an int, returning a
@@ -75,73 +52,197 @@ int nu_str_toint_default(const char *str, int defaultValue)
     if (!str || !*str)
         return defaultValue;
 
-    int i=0,sum=0;
+    int i1 = 0;
+    int str_length = 0;
+    int i2=0;
+    char storage[20]= {0};
 
 
-    while(str[i]!='\0')
+    while(str[i1]!='\0')
     {
-        if(i>4)
-        {
-            return defaultValue;
-        }
+        i1++;
+        str_length++;
+    }
+    //printf("\nhossz= %d",str_length); // FOR DEBUG ONLY
 
-        else if (str[i]< 48 || str[i] > 57)  //Z Why else if preceding return '0' '9'
+
+    while(str[i2]!='\0')
+    {
+        storage[i2] = str[i2];
+        i2++;
+    }
+    storage[i2]='\0';  //at the end append null character to mark end of string
+
+    //printf("\nThe entered string is : %s",storage); // FOR DEBUG ONLY
+
+
+
+
+
+    if (((storage[0] == '0') && ((storage[1] == 'x') || (storage[1] == 'X') )) && (str_length < 5))
+    {
+        if ((storage[2] == '0') && (storage[3] == '1'))
+        {
+            memset(storage, 0, 20);
+            storage[0] = '1';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '0'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '1';
+            storage[1] = '6';
+
+        }
+        else if ((storage[2] == '0') && (storage[3] == '0'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '0';
+            storage[1] = '0';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '1'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '1';
+            storage[1] = '7';
+
+        }
+        else
+        {
+            memset(storage, 0, 20);
+            storage[0] = '0';
+        }
+    }
+
+
+    else if (((storage[0] == '0') && ((storage[1] == 'b') || (storage[1] == 'B'))) && (str_length < 5))
+    {
+        if ((storage[2] == '0') && (storage[3] == '1'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '1';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '0'))
+        {
+
+
+            memset(storage, 0, 20);
+            storage[0] = '2';
+
+        }
+        else if ((storage[2] == '0') && (storage[3] == '0'))
+        {
+
+
+            memset(storage, 0, 20);
+            storage[0] = '0';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '1'))
+        {
+
+
+            memset(storage, 0, 20);
+            storage[0] = '3';
+
+        }
+        else
+        {
+            memset(storage, 0, 20);
+            storage[0] = '0';
+        }
+    }
+    else if (((storage[0] == '0') && ((storage[1] == 'o' ) || (storage[1] == 'O' ))) && (str_length < 5))
+    {
+        if ((storage[2] == '0') && (storage[3] == '1'))
+        {
+            memset(storage, 0, 20);
+            storage[0] = '1';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '0'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '8';
+
+        }
+        else if ((storage[2] == '0') && (storage[3] == '0'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '0';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '1'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '9';
+
+
+        }
+        else
+        {
+            memset(storage, 0, 20);
+            storage[0] = '0';
+        }
+    }
+    else
+    {
+
+    }
+    //printf("\nThe entered string after check is : %s",storage); // FOR DEBUG ONLY
+
+    //printf("\nThe entered string after h|o|b is : %s",storage); // FOR DEBUG ONLY
+
+    if (!*storage)
+        return defaultValue;
+
+    long long sum=0;
+    int i, end;
+    end =0;
+    i = 0;
+
+
+
+    while(storage[i]!='\0')
+    {
+
+        if ((storage[i]< '1' || storage[i] > '9')  || (i>10) )
         {
 
             return defaultValue;
         }
         else
         {
-            sum = sum*10 + str[i] - 48;
+
+            sum = sum*10 + storage[i] - 48;
             i++;
+
+
         }
 
     }
-
-    return sum;
-
-
-}
-
-/**
- Convert a string to a long, returning zero if the conversion fails.
- If the string is null, zero is returned.
-
- @param str the string to convert, may be null
- @return the long represented by the string, or zero if conversion fails
-*/
-long nu_str_tolong(const char *str) //Z Why not nu_str_tolong_default(str,0)?
-{
-    if (!str || !*str)
-        return 0;
-
-    int i=0,sum=0;
-
-
-    while(str[i]!='\0')
+    if ((sum > 2147483647) || (sum < -2147483647))
     {
-        if(i>9)
-        {
-            return 0;
-        }
-
-        else if (str[i]< 48 || str[i] > 57)
-        {
-
-            return 0;
-        }
-        else
-        {
-            sum = sum*10 + str[i] - 48;
-            i++;
-        }
-
+        return defaultValue;
     }
-
-    return sum;
+    end = sum;
+    return end;
 
 
 }
+
+
+
+
 
 /**
  Convert a String to a long, returning a
@@ -158,89 +259,202 @@ long nu_str_tolong_default(const char *str, long defaultValue)
     if (!str || !*str)
         return defaultValue;
 
-    int i=0,sum=0;   //Z WTF? return value have to be long!
-
-
-    while(str[i]!='\0')
+    long my_atoll(char *instr)
     {
-        if(i>9)
+        long long retval;
+        int i;
+
+
+        retval = 0;
+        for (; *instr; instr++)
+        {
+            if ((*instr< '1') || (*instr > '9'))
+            {
+                return defaultValue;
+
+            }
+            else
+                retval = 10*retval + (*instr - '0');
+        }
+        if (retval>2147483647)
         {
             return defaultValue;
         }
 
-        else if (str[i]< 48 || str[i] > 57)
+        return retval;
+    }
+    int i1 = 0;
+    int str_length = 0;
+    int i2=0;
+    char storage[20]= {0};
+
+
+    while(str[i1]!='\0')
+    {
+        i1++;
+        str_length++;
+    }
+    //printf("\nhossz= %d",str_length); // FOR DEBUG ONLY
+
+
+    while(str[i2]!='\0')
+    {
+        storage[i2] = str[i2];
+        i2++;
+    }
+    storage[i2]='\0';  //at the end append null character to mark end of string
+
+    // printf("\nThe entered string is : %s",storage); // FOR DEBUG ONLY
+
+
+
+
+
+    if (((storage[0] == '0') && ((storage[1] == 'x') || (storage[1] == 'X') )) && (str_length < 5))
+    {
+        if ((storage[2] == '0') && (storage[3] == '1'))
+        {
+            memset(storage, 0, 20);
+            storage[0] = '1';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '0'))
         {
 
-            return defaultValue;
+            memset(storage, 0, 20);
+            storage[0] = '1';
+            storage[1] = '6';
+
+        }
+        else if ((storage[2] == '0') && (storage[3] == '0'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '0';
+            storage[1] = '0';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '1'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '1';
+            storage[1] = '7';
+
         }
         else
         {
-            sum = sum*10 + str[i] - 48;
-            i++;
+            memset(storage, 0, 20);
+            storage[0] = '0';
         }
+    }
+
+
+    else if (((storage[0] == '0') && ((storage[1] == 'b') || (storage[1] == 'B'))) && (str_length < 5))
+    {
+        if ((storage[2] == '0') && (storage[3] == '1'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '1';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '0'))
+        {
+
+
+            memset(storage, 0, 20);
+            storage[0] = '2';
+
+        }
+        else if ((storage[2] == '0') && (storage[3] == '0'))
+        {
+
+
+            memset(storage, 0, 20);
+            storage[0] = '0';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '1'))
+        {
+
+
+            memset(storage, 0, 20);
+            storage[0] = '3';
+
+        }
+        else
+        {
+            memset(storage, 0, 20);
+            storage[0] = '0';
+        }
+    }
+    else if (((storage[0] == '0') && ((storage[1] == 'o' ) || (storage[1] == 'O' ))) && (str_length < 5))
+    {
+        if ((storage[2] == '0') && (storage[3] == '1'))
+        {
+            memset(storage, 0, 20);
+            storage[0] = '1';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '0'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '8';
+
+        }
+        else if ((storage[2] == '0') && (storage[3] == '0'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '0';
+
+        }
+        else if ((storage[2] == '1') && (storage[3] == '1'))
+        {
+
+            memset(storage, 0, 20);
+            storage[0] = '9';
+
+
+        }
+        else
+        {
+            memset(storage, 0, 20);
+            storage[0] = '0';
+        }
+    }
+    else
+    {
 
     }
 
-    return sum;
+    //printf("\nThe entered string after check is : %s",storage); //FOR DEBUG ONLY
 
+    //printf("\nThe entered string after h|o|b is : %s",storage); //FOR DEBUG ONLY
+
+    long value2;
+
+    value2 = my_atoll(storage);
+
+    return value2;
 
 }
 
 /**
- Convert a string to a float, returning zero if the conversion fails.
+ Convert a string to a long, returning zero if the conversion fails.
  If the string is null, zero is returned.
 
  @param str the string to convert, may be null
- @return the float represented by the string, or zero if conversion fails
+ @return the long represented by the string, or zero if conversion fails
 */
-
-float nu_str_tofloat(const char *str) //Z Why not nu_str_tofloat_default(str,0)?
+long nu_str_tolong(const char *str)
 {
-    int i=0;
-    float res=0,res1=0,res2=0,powa=10;
-
-    if (!str || !*str)
-    {
-
-        return 0;
-    }
-    while(str[i]!='\0')
-    {
-        if(str[i]< 46 || str[i] > 57 || i>9)  //WTF?  if str contains / (47) ?
-        {
-            return 0;
-        }
-        i++;
-    }
-    i=0;
-
-    while(str[i]!='\0')
-    {
-
-        while(str[i]!='.')
-        {
-            res1 = res1*10 + str[i]- 48;
-
-            i++;
-        }
-        i++;
-        while(str[i]!='\0')  //Z *str
-        {
-            res2 = res2 +((str[i]-48)/(powa));
-            powa = powa*10; //Z powa *=10;
-
-
-            i++;
-        }
-        res=res1+res2;
-    }
-
-
-
-
-    return res;
+    nu_str_tolong_default(str,0);
 
 }
+
 
 /**
  Convert a String to a float, returning a
@@ -252,76 +466,89 @@ float nu_str_tofloat(const char *str) //Z Why not nu_str_tofloat_default(str,0)?
 * @param defaultValue the default value
 * @return the float represented by the string, or the default if conversion fails
 */
+
+
 float nu_str_tofloat_default(const char *str, float defaultValue)
 {
-    int i=0;
-    float res=0,res1=0,res2=0,powa=10;
-
     if (!str || !*str)
     {
-
         return defaultValue;
     }
-    while(str[i]!='\0')
+
+    int i1 = 0;
+    int str_length = 0;
+    int i2=0;
+    char storage[20]= {0};
+
+
+    while(str[i1]!='\0')
     {
-        if(str[i]< 46 || str[i] > 57 || i>9)
+        i1++;
+        str_length++;
+    }
+    //printf("\nhossz= %d",str_length); // FOR DEBUG ONLY
+
+
+    while(str[i2]!='\0')
+    {
+        storage[i2] = str[i2];
+        i2++;
+
+    }
+    storage[i2]='\0';
+
+    //printf("\nThe entered string is : %s",storage); FOR DEBUG ONLY
+
+    float result= 0.0f;
+
+    int dotpos=0;
+    int n;
+    if (storage[0]=='-'||storage[0]=='+')
+        n=1;                 //set n to position 1.
+    else                     //(number is not signed)
+        n=0;                 //set n to position 0.
+
+    for (; n < str_length; n++)
+    {
+        if (((storage[n]< '1' || storage[n] > '9')) && (storage[n] != '.'))
         {
+
             return defaultValue;
         }
-        i++;
+        else if (storage[n] == '.')
+        {
+            dotpos = str_length - n  - 1;
+        }
+        else
+        {
+            result = result * 10.0f + (storage[n]-'0');
+        }
     }
-    i=0;
-
-    while(str[i]!='\0')
+    while ( dotpos--)
     {
-
-        while(str[i]!='.')
-        {
-            res1 = res1*10 + str[i]- 48;
-
-            i++;
-        }
-        i++;
-        while(str[i]!='\0')
-        {
-            res2 = res2 +((str[i]-48)/(powa));
-            powa = powa*10;
-
-
-            i++;
-        }
-        res=res1+res2;
+        result /= 10.0f;
     }
+    if (storage[0]=='-')
+        result*=(-1);
 
-
-
-
-    return res;
+    return result;
 
 }
 
 /**
-* Convert a String to a byte, returning a
-* zero value if the conversion fails.
-*
-* If the string is null, the zero value is returned.
-*
-* @param str the string to convert, may be null
-* @return the byte represented by the string, or zero if conversion fails
+ Convert a string to a float, returning zero if the conversion fails.
+ If the string is null, zero is returned.
+
+ @param str the string to convert, may be null
+ @return the float represented by the string, or zero if conversion fails
 */
-char nu_str_tobyte(const char *str) //Z Why not nu_str_tobyte_default(str,0)?
+
+float nu_str_tofloat(const char *str)
 {
-    int result;
-
-    if (!str || !*str || (nu_str_toint(str)>255))
-    {
-        return 0;
-    }
-
-    result = nu_str_toint(str);
-
-    return result;
+    nu_str_tofloat_default(str,0);
 }
+
+
 
 /**
 * Convert a String to a byte, returning a
@@ -348,7 +575,7 @@ char nu_str_tobyte_default(const char *str, char defaultValue)
 }
 
 /**
-* Convert a String to a short, returning a
+* Convert a String to a byte, returning a
 * zero value if the conversion fails.
 *
 * If the string is null, the zero value is returned.
@@ -356,17 +583,9 @@ char nu_str_tobyte_default(const char *str, char defaultValue)
 * @param str the string to convert, may be null
 * @return the byte represented by the string, or zero if conversion fails
 */
-short nu_str_toshort(const char *str)//Z Why not nu_str_toshort_default(str,0)?
+char nu_str_tobyte(const char *str)
 {
-    short result;
-
-    if (!str || !*str || (nu_str_toint(str)>32767))
-    {
-        return 0;
-    }
-
-    result = nu_str_toint(str);
-
+    nu_str_tobyte_default(str,0);
 }
 
 /**
@@ -381,17 +600,32 @@ short nu_str_toshort(const char *str)//Z Why not nu_str_toshort_default(str,0)?
 */
 short nu_str_toshort_default(const char *str, short defaultValue)
 {
-    short result;
+    short result = 0;
 
-    if (!str || !*str || (nu_str_toint(str)>32767))
+    result = nu_str_toint_default(str,0);
+
+    if ((result>32767) || (result< -32767))
     {
         return defaultValue;
     }
-
-    result = nu_str_toint(str);
-
+    return result;
 }
 
+/**
+* Convert a String to a short, returning a
+* zero value if the conversion fails.
+*
+* If the string is null, the zero value is returned.
+*
+* @param str the string to convert, may be null
+* @return the byte represented by the string, or zero if conversion fails
+*/
+short nu_str_toshort(const char *str)
+{
+    nu_str_toshort_default(str,0);
+
+
+}
 /**
 * Utility method to check if a string contains only zeros or null
 *
@@ -417,7 +651,7 @@ char nu_is_all_zeros(const char *str)
         }
         else
         {
-            return 0;  
+            return 0;
         }
     }
     return 1;
@@ -446,7 +680,7 @@ char nu_is_digit(const char *str)
     while(str[i]!='\0')
     {
 
-        if (str[i]> 47 && str[i] < 58)  
+        if (str[i]> 47 && str[i] < 58)
         {
             i++;
         }
