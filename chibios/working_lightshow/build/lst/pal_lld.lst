@@ -1,0 +1,584 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"pal_lld.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.initgpio,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.thumb
+  23              		.thumb_func
+  25              	initgpio:
+  26              	.LFB118:
+  27              		.file 1 "/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c"
+   1:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*
+   2:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+   5:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+   7:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  12:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  17:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** */
+  20:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  21:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /**
+  22:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @file    STM32/GPIOv2/pal_lld.c
+  23:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @brief   STM32L1xx/STM32F2xx/STM32F4xx GPIO low level driver code.
+  24:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  *
+  25:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @addtogroup PAL
+  26:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @{
+  27:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  */
+  28:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  29:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #include "ch.h"
+  30:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #include "hal.h"
+  31:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  32:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #if HAL_USE_PAL || defined(__DOXYGEN__)
+  33:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  34:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #if defined(STM32L1XX_MD)
+  35:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #define AHB_EN_MASK     (RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOBEN |          \
+  36:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHBENR_GPIOCEN | RCC_AHBENR_GPIODEN |          \
+  37:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHBENR_GPIOEEN | RCC_AHBENR_GPIOHEN)
+  38:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #define AHB_LPEN_MASK   AHB_EN_MASK
+  39:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #elif defined(STM32F0XX)
+  40:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #define AHB_EN_MASK     (RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOBEN |          \
+  41:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHBENR_GPIOCEN | RCC_AHBENR_GPIODEN |          \
+  42:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHBENR_GPIOFEN)
+  43:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #elif defined(STM32F2XX)
+  44:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #define AHB1_EN_MASK    (RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOBEN |        \
+  45:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIODEN |        \
+  46:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHB1ENR_GPIOEEN | RCC_AHB1ENR_GPIOFEN |        \
+  47:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHB1ENR_GPIOGEN | RCC_AHB1ENR_GPIOHEN |        \
+  48:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHB1ENR_GPIOIEN)
+  49:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #define AHB1_LPEN_MASK  AHB1_EN_MASK
+  50:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #elif defined(STM32F30X)
+  51:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #define AHB_EN_MASK     (RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOBEN |          \
+  52:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHBENR_GPIOCEN | RCC_AHBENR_GPIODEN |          \
+  53:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHBENR_GPIOEEN | RCC_AHBENR_GPIOFEN)
+  54:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #elif defined(STM32F4XX)
+  55:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #define AHB1_EN_MASK    (RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOBEN |        \
+  56:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIODEN |        \
+  57:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHB1ENR_GPIOEEN | RCC_AHB1ENR_GPIOFEN |        \
+  58:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHB1ENR_GPIOGEN | RCC_AHB1ENR_GPIOHEN |        \
+  59:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                          RCC_AHB1ENR_GPIOIEN)
+  60:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #define AHB1_LPEN_MASK  AHB1_EN_MASK
+  61:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #else
+  62:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #error "missing or unsupported platform for GPIOv2 PAL driver"
+  63:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #endif
+  64:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  65:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*===========================================================================*/
+  66:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /* Driver exported variables.                                                */
+  67:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*===========================================================================*/
+  68:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  69:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*===========================================================================*/
+  70:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /* Driver local variables.                                                   */
+  71:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*===========================================================================*/
+  72:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  73:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*===========================================================================*/
+  74:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /* Driver local functions.                                                   */
+  75:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*===========================================================================*/
+  76:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  77:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** static void initgpio(GPIO_TypeDef *gpiop, const stm32_gpio_setup_t *config) {
+  28              		.loc 1 77 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33 0000 82B0     		sub	sp, sp, #8
+  34              		.cfi_def_cfa_offset 8
+  35 0002 0190     		str	r0, [sp, #4]
+  36 0004 0091     		str	r1, [sp]
+  78:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  79:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   gpiop->OTYPER  = config->otyper;
+  37              		.loc 1 79 0
+  38 0006 009B     		ldr	r3, [sp]
+  39 0008 5A68     		ldr	r2, [r3, #4]
+  40 000a 019B     		ldr	r3, [sp, #4]
+  41 000c 5A60     		str	r2, [r3, #4]
+  80:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   gpiop->OSPEEDR = config->ospeedr;
+  42              		.loc 1 80 0
+  43 000e 009B     		ldr	r3, [sp]
+  44 0010 9A68     		ldr	r2, [r3, #8]
+  45 0012 019B     		ldr	r3, [sp, #4]
+  46 0014 9A60     		str	r2, [r3, #8]
+  81:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   gpiop->PUPDR   = config->pupdr;
+  47              		.loc 1 81 0
+  48 0016 009B     		ldr	r3, [sp]
+  49 0018 DA68     		ldr	r2, [r3, #12]
+  50 001a 019B     		ldr	r3, [sp, #4]
+  51 001c DA60     		str	r2, [r3, #12]
+  82:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   gpiop->ODR     = config->odr;
+  52              		.loc 1 82 0
+  53 001e 009B     		ldr	r3, [sp]
+  54 0020 1A69     		ldr	r2, [r3, #16]
+  55 0022 019B     		ldr	r3, [sp, #4]
+  56 0024 5A61     		str	r2, [r3, #20]
+  83:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   gpiop->AFRL    = config->afrl;
+  57              		.loc 1 83 0
+  58 0026 009B     		ldr	r3, [sp]
+  59 0028 5A69     		ldr	r2, [r3, #20]
+  60 002a 019B     		ldr	r3, [sp, #4]
+  61 002c 1A62     		str	r2, [r3, #32]
+  84:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   gpiop->AFRH    = config->afrh;
+  62              		.loc 1 84 0
+  63 002e 009B     		ldr	r3, [sp]
+  64 0030 9A69     		ldr	r2, [r3, #24]
+  65 0032 019B     		ldr	r3, [sp, #4]
+  66 0034 5A62     		str	r2, [r3, #36]
+  85:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   gpiop->MODER   = config->moder;
+  67              		.loc 1 85 0
+  68 0036 009B     		ldr	r3, [sp]
+  69 0038 1A68     		ldr	r2, [r3]
+  70 003a 019B     		ldr	r3, [sp, #4]
+  71 003c 1A60     		str	r2, [r3]
+  86:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** }
+  72              		.loc 1 86 0
+  73 003e 02B0     		add	sp, sp, #8
+  74              		@ sp needed
+  75 0040 7047     		bx	lr
+  76              		.cfi_endproc
+  77              	.LFE118:
+  79 0042 00BFAFF3 		.section	.text._pal_lld_init,"ax",%progbits
+  79      0080AFF3 
+  79      0080AFF3 
+  79      0080
+  80              		.align	2
+  81              		.p2align 4,,15
+  82              		.global	_pal_lld_init
+  83              		.thumb
+  84              		.thumb_func
+  86              	_pal_lld_init:
+  87              	.LFB119:
+  87:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  88:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*===========================================================================*/
+  89:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /* Driver interrupt handlers.                                                */
+  90:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*===========================================================================*/
+  91:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  92:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*===========================================================================*/
+  93:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /* Driver exported functions.                                                */
+  94:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /*===========================================================================*/
+  95:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+  96:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /**
+  97:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @brief   STM32 I/O ports configuration.
+  98:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @details Ports A-D(E, F, G, H) clocks enabled.
+  99:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  *
+ 100:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @param[in] config    the STM32 ports configuration
+ 101:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  *
+ 102:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @notapi
+ 103:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  */
+ 104:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** void _pal_lld_init(const PALConfig *config) {
+  88              		.loc 1 104 0
+  89              		.cfi_startproc
+  90              		@ args = 0, pretend = 0, frame = 8
+  91              		@ frame_needed = 0, uses_anonymous_args = 0
+  92 0000 00B5     		push	{lr}
+  93              		.cfi_def_cfa_offset 4
+  94              		.cfi_offset 14, -4
+  95 0002 83B0     		sub	sp, sp, #12
+  96              		.cfi_def_cfa_offset 16
+  97 0004 0190     		str	r0, [sp, #4]
+ 105:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+ 106:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   /*
+ 107:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****    * Enables the GPIO related clocks.
+ 108:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****    */
+ 109:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #if defined(STM32L1XX_MD)
+ 110:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   rccEnableAHB(AHB_EN_MASK, TRUE);
+ 111:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   RCC->AHBLPENR |= AHB_LPEN_MASK;
+ 112:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #elif defined(STM32F0XX)
+ 113:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   rccEnableAHB(AHB_EN_MASK, TRUE);
+ 114:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #elif defined(STM32F2XX) || defined(STM32F4XX)
+ 115:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   RCC->AHB1ENR   |= AHB1_EN_MASK;
+  98              		.loc 1 115 0
+  99 0006 244A     		ldr	r2, .L3
+ 100 0008 234B     		ldr	r3, .L3
+ 101 000a 1B6B     		ldr	r3, [r3, #48]
+ 102 000c 6FEA5323 		mvn	r3, r3, lsr #9
+ 103 0010 6FEA4323 		mvn	r3, r3, lsl #9
+ 104 0014 1363     		str	r3, [r2, #48]
+ 116:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   RCC->AHB1LPENR |= AHB1_LPEN_MASK;
+ 105              		.loc 1 116 0
+ 106 0016 204A     		ldr	r2, .L3
+ 107 0018 1F4B     		ldr	r3, .L3
+ 108 001a 1B6D     		ldr	r3, [r3, #80]
+ 109 001c 6FEA5323 		mvn	r3, r3, lsr #9
+ 110 0020 6FEA4323 		mvn	r3, r3, lsl #9
+ 111 0024 1365     		str	r3, [r2, #80]
+ 117:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #endif
+ 118:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+ 119:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   /*
+ 120:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****    * Initial GPIO setup.
+ 121:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****    */
+ 122:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   initgpio(GPIOA, &config->PAData);
+ 112              		.loc 1 122 0
+ 113 0026 019B     		ldr	r3, [sp, #4]
+ 114 0028 1C48     		ldr	r0, .L3+4
+ 115 002a 1946     		mov	r1, r3
+ 116 002c FFF7FEFF 		bl	initgpio
+ 123:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   initgpio(GPIOB, &config->PBData);
+ 117              		.loc 1 123 0
+ 118 0030 019B     		ldr	r3, [sp, #4]
+ 119 0032 1C33     		adds	r3, r3, #28
+ 120 0034 1A48     		ldr	r0, .L3+8
+ 121 0036 1946     		mov	r1, r3
+ 122 0038 FFF7FEFF 		bl	initgpio
+ 124:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   initgpio(GPIOC, &config->PCData);
+ 123              		.loc 1 124 0
+ 124 003c 019B     		ldr	r3, [sp, #4]
+ 125 003e 3833     		adds	r3, r3, #56
+ 126 0040 1848     		ldr	r0, .L3+12
+ 127 0042 1946     		mov	r1, r3
+ 128 0044 FFF7FEFF 		bl	initgpio
+ 125:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   initgpio(GPIOD, &config->PDData);
+ 129              		.loc 1 125 0
+ 130 0048 019B     		ldr	r3, [sp, #4]
+ 131 004a 5433     		adds	r3, r3, #84
+ 132 004c 1648     		ldr	r0, .L3+16
+ 133 004e 1946     		mov	r1, r3
+ 134 0050 FFF7FEFF 		bl	initgpio
+ 126:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #if STM32_HAS_GPIOE
+ 127:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   initgpio(GPIOE, &config->PEData);
+ 135              		.loc 1 127 0
+ 136 0054 019B     		ldr	r3, [sp, #4]
+ 137 0056 7033     		adds	r3, r3, #112
+ 138 0058 1448     		ldr	r0, .L3+20
+ 139 005a 1946     		mov	r1, r3
+ 140 005c FFF7FEFF 		bl	initgpio
+ 128:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #endif
+ 129:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #if STM32_HAS_GPIOF
+ 130:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   initgpio(GPIOF, &config->PFData);
+ 141              		.loc 1 130 0
+ 142 0060 019B     		ldr	r3, [sp, #4]
+ 143 0062 8C33     		adds	r3, r3, #140
+ 144 0064 1248     		ldr	r0, .L3+24
+ 145 0066 1946     		mov	r1, r3
+ 146 0068 FFF7FEFF 		bl	initgpio
+ 131:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #endif
+ 132:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #if STM32_HAS_GPIOG
+ 133:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   initgpio(GPIOG, &config->PGData);
+ 147              		.loc 1 133 0
+ 148 006c 019B     		ldr	r3, [sp, #4]
+ 149 006e A833     		adds	r3, r3, #168
+ 150 0070 1048     		ldr	r0, .L3+28
+ 151 0072 1946     		mov	r1, r3
+ 152 0074 FFF7FEFF 		bl	initgpio
+ 134:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #endif
+ 135:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #if STM32_HAS_GPIOH
+ 136:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   initgpio(GPIOH, &config->PHData);
+ 153              		.loc 1 136 0
+ 154 0078 019B     		ldr	r3, [sp, #4]
+ 155 007a C433     		adds	r3, r3, #196
+ 156 007c 0E48     		ldr	r0, .L3+32
+ 157 007e 1946     		mov	r1, r3
+ 158 0080 FFF7FEFF 		bl	initgpio
+ 137:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #endif
+ 138:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #if STM32_HAS_GPIOI
+ 139:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   initgpio(GPIOI, &config->PIData);
+ 159              		.loc 1 139 0
+ 160 0084 019B     		ldr	r3, [sp, #4]
+ 161 0086 E033     		adds	r3, r3, #224
+ 162 0088 0C48     		ldr	r0, .L3+36
+ 163 008a 1946     		mov	r1, r3
+ 164 008c FFF7FEFF 		bl	initgpio
+ 140:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #endif
+ 141:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** }
+ 165              		.loc 1 141 0
+ 166 0090 03B0     		add	sp, sp, #12
+ 167              		@ sp needed
+ 168 0092 5DF804FB 		ldr	pc, [sp], #4
+ 169              	.L4:
+ 170 0096 00BF     		.align	2
+ 171              	.L3:
+ 172 0098 00380240 		.word	1073887232
+ 173 009c 00000240 		.word	1073872896
+ 174 00a0 00040240 		.word	1073873920
+ 175 00a4 00080240 		.word	1073874944
+ 176 00a8 000C0240 		.word	1073875968
+ 177 00ac 00100240 		.word	1073876992
+ 178 00b0 00140240 		.word	1073878016
+ 179 00b4 00180240 		.word	1073879040
+ 180 00b8 001C0240 		.word	1073880064
+ 181 00bc 00200240 		.word	1073881088
+ 182              		.cfi_endproc
+ 183              	.LFE119:
+ 185              		.section	.text._pal_lld_setgroupmode,"ax",%progbits
+ 186              		.align	2
+ 187              		.p2align 4,,15
+ 188              		.global	_pal_lld_setgroupmode
+ 189              		.thumb
+ 190              		.thumb_func
+ 192              	_pal_lld_setgroupmode:
+ 193              	.LFB120:
+ 142:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+ 143:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** /**
+ 144:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @brief   Pads mode setup.
+ 145:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @details This function programs a pads group belonging to the same port
+ 146:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  *          with the specified mode.
+ 147:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @note    @p PAL_MODE_UNCONNECTED is implemented as push pull at minimum
+ 148:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  *          speed.
+ 149:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  *
+ 150:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @param[in] port      the port identifier
+ 151:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @param[in] mask      the group mask
+ 152:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @param[in] mode      the mode
+ 153:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  *
+ 154:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  * @notapi
+ 155:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****  */
+ 156:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** #if 1
+ 157:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** void _pal_lld_setgroupmode(ioportid_t port,
+ 158:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                            ioportmask_t mask,
+ 159:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****                            iomode_t mode) {
+ 194              		.loc 1 159 0
+ 195              		.cfi_startproc
+ 196              		@ args = 0, pretend = 0, frame = 56
+ 197              		@ frame_needed = 0, uses_anonymous_args = 0
+ 198              		@ link register save eliminated.
+ 199 0000 8EB0     		sub	sp, sp, #56
+ 200              		.cfi_def_cfa_offset 56
+ 201 0002 0390     		str	r0, [sp, #12]
+ 202 0004 0291     		str	r1, [sp, #8]
+ 203 0006 0192     		str	r2, [sp, #4]
+ 160:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+ 161:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   uint32_t moder   = (mode & PAL_STM32_MODE_MASK) >> 0;
+ 204              		.loc 1 161 0
+ 205 0008 019B     		ldr	r3, [sp, #4]
+ 206 000a 03F00303 		and	r3, r3, #3
+ 207 000e 0D93     		str	r3, [sp, #52]
+ 162:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   uint32_t otyper  = (mode & PAL_STM32_OTYPE_MASK) >> 2;
+ 208              		.loc 1 162 0
+ 209 0010 019B     		ldr	r3, [sp, #4]
+ 210 0012 03F00403 		and	r3, r3, #4
+ 211 0016 9B08     		lsrs	r3, r3, #2
+ 212 0018 0C93     		str	r3, [sp, #48]
+ 163:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   uint32_t ospeedr = (mode & PAL_STM32_OSPEED_MASK) >> 3;
+ 213              		.loc 1 163 0
+ 214 001a 019B     		ldr	r3, [sp, #4]
+ 215 001c 03F01803 		and	r3, r3, #24
+ 216 0020 DB08     		lsrs	r3, r3, #3
+ 217 0022 0B93     		str	r3, [sp, #44]
+ 164:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   uint32_t pupdr   = (mode & PAL_STM32_PUDR_MASK) >> 5;
+ 218              		.loc 1 164 0
+ 219 0024 019B     		ldr	r3, [sp, #4]
+ 220 0026 03F06003 		and	r3, r3, #96
+ 221 002a 5B09     		lsrs	r3, r3, #5
+ 222 002c 0A93     		str	r3, [sp, #40]
+ 165:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   uint32_t altr    = (mode & PAL_STM32_ALTERNATE_MASK) >> 7;
+ 223              		.loc 1 165 0
+ 224 002e 019B     		ldr	r3, [sp, #4]
+ 225 0030 03F4F063 		and	r3, r3, #1920
+ 226 0034 DB09     		lsrs	r3, r3, #7
+ 227 0036 0893     		str	r3, [sp, #32]
+ 166:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   uint32_t bit     = 0;
+ 228              		.loc 1 166 0
+ 229 0038 0023     		movs	r3, #0
+ 230 003a 0993     		str	r3, [sp, #36]
+ 231              	.L11:
+ 167:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   while (TRUE) {
+ 168:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     if ((mask & 1) != 0) {
+ 232              		.loc 1 168 0
+ 233 003c 029B     		ldr	r3, [sp, #8]
+ 234 003e 03F00103 		and	r3, r3, #1
+ 235 0042 002B     		cmp	r3, #0
+ 236 0044 54D0     		beq	.L6
+ 237              	.LBB2:
+ 169:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       uint32_t altrmask, m1, m2, m4;
+ 170:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** 
+ 171:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       altrmask = altr << ((bit & 7) * 4);
+ 238              		.loc 1 171 0
+ 239 0046 099B     		ldr	r3, [sp, #36]
+ 240 0048 03F00703 		and	r3, r3, #7
+ 241 004c 9B00     		lsls	r3, r3, #2
+ 242 004e 089A     		ldr	r2, [sp, #32]
+ 243 0050 02FA03F3 		lsl	r3, r2, r3
+ 244 0054 0793     		str	r3, [sp, #28]
+ 172:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       m4 = 15 << ((bit & 7) * 4);
+ 245              		.loc 1 172 0
+ 246 0056 099B     		ldr	r3, [sp, #36]
+ 247 0058 03F00703 		and	r3, r3, #7
+ 248 005c 9B00     		lsls	r3, r3, #2
+ 249 005e 0F22     		movs	r2, #15
+ 250 0060 02FA03F3 		lsl	r3, r2, r3
+ 251 0064 0693     		str	r3, [sp, #24]
+ 173:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       if (bit < 8)
+ 252              		.loc 1 173 0
+ 253 0066 099B     		ldr	r3, [sp, #36]
+ 254 0068 072B     		cmp	r3, #7
+ 255 006a 09D8     		bhi	.L7
+ 174:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****         port->AFRL = (port->AFRL & ~m4) | altrmask;
+ 256              		.loc 1 174 0
+ 257 006c 039B     		ldr	r3, [sp, #12]
+ 258 006e 1A6A     		ldr	r2, [r3, #32]
+ 259 0070 069B     		ldr	r3, [sp, #24]
+ 260 0072 DB43     		mvns	r3, r3
+ 261 0074 1A40     		ands	r2, r2, r3
+ 262 0076 079B     		ldr	r3, [sp, #28]
+ 263 0078 1A43     		orrs	r2, r2, r3
+ 264 007a 039B     		ldr	r3, [sp, #12]
+ 265 007c 1A62     		str	r2, [r3, #32]
+ 266 007e 08E0     		b	.L8
+ 267              	.L7:
+ 175:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       else
+ 176:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****         port->AFRH = (port->AFRH & ~m4) | altrmask;
+ 268              		.loc 1 176 0
+ 269 0080 039B     		ldr	r3, [sp, #12]
+ 270 0082 5A6A     		ldr	r2, [r3, #36]
+ 271 0084 069B     		ldr	r3, [sp, #24]
+ 272 0086 DB43     		mvns	r3, r3
+ 273 0088 1A40     		ands	r2, r2, r3
+ 274 008a 079B     		ldr	r3, [sp, #28]
+ 275 008c 1A43     		orrs	r2, r2, r3
+ 276 008e 039B     		ldr	r3, [sp, #12]
+ 277 0090 5A62     		str	r2, [r3, #36]
+ 278              	.L8:
+ 177:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       m1 = 1 << bit;
+ 279              		.loc 1 177 0
+ 280 0092 099B     		ldr	r3, [sp, #36]
+ 281 0094 0122     		movs	r2, #1
+ 282 0096 02FA03F3 		lsl	r3, r2, r3
+ 283 009a 0593     		str	r3, [sp, #20]
+ 178:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       port->OTYPER  = (port->OTYPER & ~m1) | otyper;
+ 284              		.loc 1 178 0
+ 285 009c 039B     		ldr	r3, [sp, #12]
+ 286 009e 5A68     		ldr	r2, [r3, #4]
+ 287 00a0 059B     		ldr	r3, [sp, #20]
+ 288 00a2 DB43     		mvns	r3, r3
+ 289 00a4 1A40     		ands	r2, r2, r3
+ 290 00a6 0C9B     		ldr	r3, [sp, #48]
+ 291 00a8 1A43     		orrs	r2, r2, r3
+ 292 00aa 039B     		ldr	r3, [sp, #12]
+ 293 00ac 5A60     		str	r2, [r3, #4]
+ 179:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       m2 = 3 << (bit * 2);
+ 294              		.loc 1 179 0
+ 295 00ae 099B     		ldr	r3, [sp, #36]
+ 296 00b0 5B00     		lsls	r3, r3, #1
+ 297 00b2 0322     		movs	r2, #3
+ 298 00b4 02FA03F3 		lsl	r3, r2, r3
+ 299 00b8 0493     		str	r3, [sp, #16]
+ 180:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       port->OSPEEDR = (port->OSPEEDR & ~m2) | ospeedr;
+ 300              		.loc 1 180 0
+ 301 00ba 039B     		ldr	r3, [sp, #12]
+ 302 00bc 9A68     		ldr	r2, [r3, #8]
+ 303 00be 049B     		ldr	r3, [sp, #16]
+ 304 00c0 DB43     		mvns	r3, r3
+ 305 00c2 1A40     		ands	r2, r2, r3
+ 306 00c4 0B9B     		ldr	r3, [sp, #44]
+ 307 00c6 1A43     		orrs	r2, r2, r3
+ 308 00c8 039B     		ldr	r3, [sp, #12]
+ 309 00ca 9A60     		str	r2, [r3, #8]
+ 181:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       port->PUPDR   = (port->PUPDR & ~m2) | pupdr;
+ 310              		.loc 1 181 0
+ 311 00cc 039B     		ldr	r3, [sp, #12]
+ 312 00ce DA68     		ldr	r2, [r3, #12]
+ 313 00d0 049B     		ldr	r3, [sp, #16]
+ 314 00d2 DB43     		mvns	r3, r3
+ 315 00d4 1A40     		ands	r2, r2, r3
+ 316 00d6 0A9B     		ldr	r3, [sp, #40]
+ 317 00d8 1A43     		orrs	r2, r2, r3
+ 318 00da 039B     		ldr	r3, [sp, #12]
+ 319 00dc DA60     		str	r2, [r3, #12]
+ 182:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       port->MODER   = (port->MODER & ~m2) | moder;
+ 320              		.loc 1 182 0
+ 321 00de 039B     		ldr	r3, [sp, #12]
+ 322 00e0 1A68     		ldr	r2, [r3]
+ 323 00e2 049B     		ldr	r3, [sp, #16]
+ 324 00e4 DB43     		mvns	r3, r3
+ 325 00e6 1A40     		ands	r2, r2, r3
+ 326 00e8 0D9B     		ldr	r3, [sp, #52]
+ 327 00ea 1A43     		orrs	r2, r2, r3
+ 328 00ec 039B     		ldr	r3, [sp, #12]
+ 329 00ee 1A60     		str	r2, [r3]
+ 330              	.L6:
+ 331              	.LBE2:
+ 183:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     }
+ 184:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     mask >>= 1;
+ 332              		.loc 1 184 0
+ 333 00f0 029B     		ldr	r3, [sp, #8]
+ 334 00f2 5B08     		lsrs	r3, r3, #1
+ 335 00f4 0293     		str	r3, [sp, #8]
+ 185:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     if (!mask)
+ 336              		.loc 1 185 0
+ 337 00f6 029B     		ldr	r3, [sp, #8]
+ 338 00f8 002B     		cmp	r3, #0
+ 339 00fa 00D1     		bne	.L9
+ 186:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****       return;
+ 340              		.loc 1 186 0
+ 341 00fc 0FE0     		b	.L12
+ 342              	.L9:
+ 187:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     otyper <<= 1;
+ 343              		.loc 1 187 0
+ 344 00fe 0C9B     		ldr	r3, [sp, #48]
+ 345 0100 5B00     		lsls	r3, r3, #1
+ 346 0102 0C93     		str	r3, [sp, #48]
+ 188:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     ospeedr <<= 2;
+ 347              		.loc 1 188 0
+ 348 0104 0B9B     		ldr	r3, [sp, #44]
+ 349 0106 9B00     		lsls	r3, r3, #2
+ 350 0108 0B93     		str	r3, [sp, #44]
+ 189:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     pupdr <<= 2;
+ 351              		.loc 1 189 0
+ 352 010a 0A9B     		ldr	r3, [sp, #40]
+ 353 010c 9B00     		lsls	r3, r3, #2
+ 354 010e 0A93     		str	r3, [sp, #40]
+ 190:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     moder <<= 2;
+ 355              		.loc 1 190 0
+ 356 0110 0D9B     		ldr	r3, [sp, #52]
+ 357 0112 9B00     		lsls	r3, r3, #2
+ 358 0114 0D93     		str	r3, [sp, #52]
+ 191:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****     bit++;
+ 359              		.loc 1 191 0
+ 360 0116 099B     		ldr	r3, [sp, #36]
+ 361 0118 0133     		adds	r3, r3, #1
+ 362 011a 0993     		str	r3, [sp, #36]
+ 192:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c ****   }
+ 363              		.loc 1 192 0
+ 364 011c 8EE7     		b	.L11
+ 365              	.L12:
+ 193:/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.c **** }
+ 366              		.loc 1 193 0
+ 367 011e 0EB0     		add	sp, sp, #56
+ 368              		@ sp needed
+ 369 0120 7047     		bx	lr
+ 370              		.cfi_endproc
+ 371              	.LFE120:
+ 373 0122 00BFAFF3 		.text
+ 373      0080AFF3 
+ 373      0080AFF3 
+ 373      0080
+ 374              	.Letext0:
+ 375              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 376              		.file 3 "/usr/include/newlib/stdint.h"
+ 377              		.file 4 "/usr/src/chibiostest/os/hal/platforms/STM32F4xx/stm32f4xx.h"
+ 378              		.file 5 "/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.h"
+ 379              		.file 6 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 pal_lld.c
+     /tmp/ccXWLqeo.s:20     .text.initgpio:0000000000000000 $t
+     /tmp/ccXWLqeo.s:25     .text.initgpio:0000000000000000 initgpio
+     /tmp/ccXWLqeo.s:80     .text._pal_lld_init:0000000000000000 $t
+     /tmp/ccXWLqeo.s:86     .text._pal_lld_init:0000000000000000 _pal_lld_init
+     /tmp/ccXWLqeo.s:172    .text._pal_lld_init:0000000000000098 $d
+     /tmp/ccXWLqeo.s:186    .text._pal_lld_setgroupmode:0000000000000000 $t
+     /tmp/ccXWLqeo.s:192    .text._pal_lld_setgroupmode:0000000000000000 _pal_lld_setgroupmode
+                     .debug_frame:0000000000000010 $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,734 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chcore_v7m.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.SysTickVector,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.global	SysTickVector
+  23              		.thumb
+  24              		.thumb_func
+  26              	SysTickVector:
+  27              	.LFB7:
+  28              		.file 1 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c"
+   1:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /*
+   2:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+   5:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+   7:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  12:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  17:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** */
+  20:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  21:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /**
+  22:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @file    GCC/ARMCMx/chcore_v7m.c
+  23:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @brief   ARMv7-M architecture port code.
+  24:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  *
+  25:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @addtogroup ARMCMx_V7M_CORE
+  26:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @{
+  27:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  */
+  28:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  29:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #include "ch.h"
+  30:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  31:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /*===========================================================================*/
+  32:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /* Port interrupt handlers.                                                  */
+  33:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /*===========================================================================*/
+  34:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  35:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /**
+  36:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @brief   System Timer vector.
+  37:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @details This interrupt is used as system tick.
+  38:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @note    The timer must be initialized in the startup code.
+  39:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  */
+  40:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** CH_IRQ_HANDLER(SysTickVector) {
+  29              		.loc 1 40 0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  41:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  42:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   CH_IRQ_PROLOGUE();
+  37              		.loc 1 42 0
+  38 0002 FFF7FEFF 		bl	dbg_check_enter_isr
+  39              	.LBB2:
+  43:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  44:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   chSysLockFromIsr();
+  40              		.loc 1 44 0
+  41 0006 2023     		movs	r3, #32
+  42              	@ 44 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+  43 0008 83F31188 		msr     BASEPRI, r3
+  44              	@ 0 "" 2
+  45              		.thumb
+  46              	.LBE2:
+  47 000c FFF7FEFF 		bl	dbg_check_lock_from_isr
+  45:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   chSysTimerHandlerI();
+  48              		.loc 1 45 0
+  49 0010 FFF7FEFF 		bl	chSysTimerHandlerI
+  46:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   chSysUnlockFromIsr();
+  50              		.loc 1 46 0
+  51 0014 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+  52              	.LBB3:
+  53 0018 0023     		movs	r3, #0
+  54              	@ 46 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+  55 001a 83F31188 		msr     BASEPRI, r3
+  56              	@ 0 "" 2
+  57              		.thumb
+  58              	.LBE3:
+  47:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  48:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   CH_IRQ_EPILOGUE();
+  59              		.loc 1 48 0
+  60 001e FFF7FEFF 		bl	dbg_check_leave_isr
+  61 0022 FFF7FEFF 		bl	_port_irq_epilogue
+  49:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** }
+  62              		.loc 1 49 0
+  63 0026 08BD     		pop	{r3, pc}
+  64              		.cfi_endproc
+  65              	.LFE7:
+  67 0028 AFF30080 		.section	.text.SVCallVector,"ax",%progbits
+  67      AFF30080 
+  68              		.align	2
+  69              		.p2align 4,,15
+  70              		.global	SVCallVector
+  71              		.thumb
+  72              		.thumb_func
+  74              	SVCallVector:
+  75              	.LFB8:
+  50:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  51:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if !CORTEX_SIMPLIFIED_PRIORITY || defined(__DOXYGEN__)
+  52:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /**
+  53:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @brief   SVC vector.
+  54:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @details The SVC vector is used for exception mode re-entering after a
+  55:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  *          context switch.
+  56:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @note    The PendSV vector is only used in advanced kernel mode.
+  57:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  */
+  58:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** void SVCallVector(void) {
+  76              		.loc 1 58 0
+  77              		.cfi_startproc
+  78              		@ args = 0, pretend = 0, frame = 8
+  79              		@ frame_needed = 0, uses_anonymous_args = 0
+  80              		@ link register save eliminated.
+  81 0000 82B0     		sub	sp, sp, #8
+  82              		.cfi_def_cfa_offset 8
+  59:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   struct extctx *ctxp;
+  60:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  61:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   /* Current PSP value.*/
+  62:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("mrs     %0, PSP" : "=r" (ctxp) : : "memory");
+  83              		.loc 1 62 0
+  84              	@ 62 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+  85 0002 EFF30983 		mrs     r3, PSP
+  86              	@ 0 "" 2
+  87              		.thumb
+  88 0006 0193     		str	r3, [sp, #4]
+  63:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  64:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   /* Discarding the current exception context and positioning the stack to
+  65:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****      point to the real one.*/
+  66:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   ctxp++;
+  89              		.loc 1 66 0
+  90 0008 019B     		ldr	r3, [sp, #4]
+  91 000a 6833     		adds	r3, r3, #104
+  92 000c 0193     		str	r3, [sp, #4]
+  67:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  68:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if CORTEX_USE_FPU
+  69:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   /* Restoring the special register SCB_FPCCR.*/
+  70:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   SCB_FPCCR = (uint32_t)ctxp->fpccr;
+  93              		.loc 1 70 0
+  94 000e 084B     		ldr	r3, .L3
+  95 0010 019A     		ldr	r2, [sp, #4]
+  96 0012 526E     		ldr	r2, [r2, #100]
+  97 0014 5A60     		str	r2, [r3, #4]
+  71:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   SCB_FPCAR = SCB_FPCAR + sizeof (struct extctx);
+  98              		.loc 1 71 0
+  99 0016 064B     		ldr	r3, .L3
+ 100 0018 054A     		ldr	r2, .L3
+ 101 001a 9268     		ldr	r2, [r2, #8]
+ 102 001c 6832     		adds	r2, r2, #104
+ 103 001e 9A60     		str	r2, [r3, #8]
+  72:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif
+  73:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("msr     PSP, %0" : : "r" (ctxp) : "memory");
+ 104              		.loc 1 73 0
+ 105 0020 019B     		ldr	r3, [sp, #4]
+ 106              	@ 73 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 107 0022 83F30988 		msr     PSP, r3
+ 108              	@ 0 "" 2
+ 109              		.thumb
+ 110              	.LBB4:
+  74:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   port_unlock_from_isr();
+ 111              		.loc 1 74 0
+ 112 0026 0023     		movs	r3, #0
+ 113              	@ 74 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 114 0028 83F31188 		msr     BASEPRI, r3
+ 115              	@ 0 "" 2
+ 116              		.thumb
+ 117              	.LBE4:
+  75:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** }
+ 118              		.loc 1 75 0
+ 119 002c 02B0     		add	sp, sp, #8
+ 120              		@ sp needed
+ 121 002e 7047     		bx	lr
+ 122              	.L4:
+ 123              		.align	2
+ 124              	.L3:
+ 125 0030 30EF00E0 		.word	-536809680
+ 126              		.cfi_endproc
+ 127              	.LFE8:
+ 129 0034 AFF30080 		.section	.text._port_init,"ax",%progbits
+ 129      AFF30080 
+ 129      AFF30080 
+ 130              		.align	2
+ 131              		.p2align 4,,15
+ 132              		.global	_port_init
+ 133              		.thumb
+ 134              		.thumb_func
+ 136              	_port_init:
+ 137              	.LFB9:
+  76:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif /* !CORTEX_SIMPLIFIED_PRIORITY */
+  77:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  78:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if CORTEX_SIMPLIFIED_PRIORITY || defined(__DOXYGEN__)
+  79:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /**
+  80:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @brief   PendSV vector.
+  81:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @details The PendSV vector is used for exception mode re-entering after a
+  82:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  *          context switch.
+  83:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @note    The PendSV vector is only used in compact kernel mode.
+  84:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  */
+  85:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** void PendSVVector(void) {
+  86:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   struct extctx *ctxp;
+  87:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  88:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   /* Current PSP value.*/
+  89:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("mrs     %0, PSP" : "=r" (ctxp) : : "memory");
+  90:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  91:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   /* Discarding the current exception context and positioning the stack to
+  92:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****      point to the real one.*/
+  93:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   ctxp++;
+  94:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+  95:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if CORTEX_USE_FPU
+  96:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   /* Restoring the special register SCB_FPCCR.*/
+  97:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   SCB_FPCCR = (uint32_t)ctxp->fpccr;
+  98:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   SCB_FPCAR = SCB_FPCAR + sizeof (struct extctx);
+  99:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif
+ 100:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("msr     PSP, %0" : : "r" (ctxp) : "memory");
+ 101:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** }
+ 102:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif /* CORTEX_SIMPLIFIED_PRIORITY */
+ 103:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 104:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /*===========================================================================*/
+ 105:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /* Port exported functions.                                                  */
+ 106:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /*===========================================================================*/
+ 107:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 108:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /**
+ 109:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @brief   Port-related initialization code.
+ 110:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  */
+ 111:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** void _port_init(void) {
+ 138              		.loc 1 111 0
+ 139              		.cfi_startproc
+ 140              		@ args = 0, pretend = 0, frame = 0
+ 141              		@ frame_needed = 0, uses_anonymous_args = 0
+ 142 0000 08B5     		push	{r3, lr}
+ 143              		.cfi_def_cfa_offset 8
+ 144              		.cfi_offset 3, -8
+ 145              		.cfi_offset 14, -4
+ 112:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 113:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   /* Initialization of the vector table and priority related settings.*/
+ 114:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   SCB_VTOR = CORTEX_VTOR_INIT;
+ 146              		.loc 1 114 0
+ 147 0002 0A4B     		ldr	r3, .L6
+ 148 0004 0022     		movs	r2, #0
+ 149 0006 9A60     		str	r2, [r3, #8]
+ 115:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   SCB_AIRCR = AIRCR_VECTKEY | AIRCR_PRIGROUP(CORTEX_PRIGROUP_INIT);
+ 150              		.loc 1 115 0
+ 151 0008 084B     		ldr	r3, .L6
+ 152 000a 094A     		ldr	r2, .L6+4
+ 153 000c DA60     		str	r2, [r3, #12]
+ 116:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 117:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   /* Initialization of the system vectors used by the port.*/
+ 118:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   nvicSetSystemHandlerPriority(HANDLER_SVCALL,
+ 154              		.loc 1 118 0
+ 155 000e 0720     		movs	r0, #7
+ 156 0010 1021     		movs	r1, #16
+ 157 0012 FFF7FEFF 		bl	nvicSetSystemHandlerPriority
+ 119:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     CORTEX_PRIORITY_MASK(CORTEX_PRIORITY_SVCALL));
+ 120:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   nvicSetSystemHandlerPriority(HANDLER_PENDSV,
+ 158              		.loc 1 120 0
+ 159 0016 0A20     		movs	r0, #10
+ 160 0018 4FF40071 		mov	r1, #512
+ 161 001c FFF7FEFF 		bl	nvicSetSystemHandlerPriority
+ 121:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     CORTEX_PRIORITY_MASK(CORTEX_PRIORITY_PENDSV));
+ 122:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   nvicSetSystemHandlerPriority(HANDLER_SYSTICK,
+ 162              		.loc 1 122 0
+ 163 0020 0B20     		movs	r0, #11
+ 164 0022 8021     		movs	r1, #128
+ 165 0024 FFF7FEFF 		bl	nvicSetSystemHandlerPriority
+ 123:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     CORTEX_PRIORITY_MASK(CORTEX_PRIORITY_SYSTICK));
+ 124:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** }
+ 166              		.loc 1 124 0
+ 167 0028 08BD     		pop	{r3, pc}
+ 168              	.L7:
+ 169 002a 00BF     		.align	2
+ 170              	.L6:
+ 171 002c 00ED00E0 		.word	-536810240
+ 172 0030 0003FA05 		.word	100270848
+ 173              		.cfi_endproc
+ 174              	.LFE9:
+ 176 0034 AFF30080 		.section	.text._port_irq_epilogue,"ax",%progbits
+ 176      AFF30080 
+ 176      AFF30080 
+ 177              		.align	2
+ 178              		.p2align 4,,15
+ 179              		.global	_port_irq_epilogue
+ 180              		.thumb
+ 181              		.thumb_func
+ 183              	_port_irq_epilogue:
+ 184              	.LFB10:
+ 125:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 126:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if !CH_OPTIMIZE_SPEED
+ 127:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** void _port_lock(void) {
+ 128:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   register uint32_t tmp asm ("r3") = CORTEX_BASEPRI_KERNEL;
+ 129:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("msr     BASEPRI, %0" : : "r" (tmp) : "memory");
+ 130:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** }
+ 131:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 132:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** void _port_unlock(void) {
+ 133:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   register uint32_t tmp asm ("r3") = CORTEX_BASEPRI_DISABLED;
+ 134:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("msr     BASEPRI, %0" : : "r" (tmp) : "memory");
+ 135:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** }
+ 136:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif
+ 137:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 138:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /**
+ 139:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @brief   Exception exit redirection to _port_switch_from_isr().
+ 140:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  */
+ 141:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** void _port_irq_epilogue(void) {
+ 185              		.loc 1 141 0
+ 186              		.cfi_startproc
+ 187              		@ args = 0, pretend = 0, frame = 8
+ 188              		@ frame_needed = 0, uses_anonymous_args = 0
+ 189              		@ link register save eliminated.
+ 190 0000 82B0     		sub	sp, sp, #8
+ 191              		.cfi_def_cfa_offset 8
+ 192              	.LBB5:
+ 142:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 143:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   port_lock_from_isr();
+ 193              		.loc 1 143 0
+ 194 0002 2023     		movs	r3, #32
+ 195              	@ 143 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 196 0004 83F31188 		msr     BASEPRI, r3
+ 197              	@ 0 "" 2
+ 198              		.thumb
+ 199              	.LBE5:
+ 144:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   if ((SCB_ICSR & ICSR_RETTOBASE) != 0) {
+ 200              		.loc 1 144 0
+ 201 0008 264B     		ldr	r3, .L15
+ 202 000a 5B68     		ldr	r3, [r3, #4]
+ 203 000c 03F40063 		and	r3, r3, #2048
+ 204 0010 002B     		cmp	r3, #0
+ 205 0012 41D0     		beq	.L9
+ 206              	.LBB6:
+ 145:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     struct extctx *ctxp;
+ 146:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 147:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     /* Current PSP value.*/
+ 148:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     asm volatile ("mrs     %0, PSP" : "=r" (ctxp) : : "memory");
+ 207              		.loc 1 148 0
+ 208              	@ 148 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 209 0014 EFF30983 		mrs     r3, PSP
+ 210              	@ 0 "" 2
+ 211              		.thumb
+ 212 0018 0193     		str	r3, [sp, #4]
+ 149:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 150:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     /* Adding an artificial exception return context, there is no need to
+ 151:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****        populate it fully.*/
+ 152:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     ctxp--;
+ 213              		.loc 1 152 0
+ 214 001a 019B     		ldr	r3, [sp, #4]
+ 215 001c 683B     		subs	r3, r3, #104
+ 216 001e 0193     		str	r3, [sp, #4]
+ 153:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     asm volatile ("msr     PSP, %0" : : "r" (ctxp) : "memory");
+ 217              		.loc 1 153 0
+ 218 0020 019B     		ldr	r3, [sp, #4]
+ 219              	@ 153 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 220 0022 83F30988 		msr     PSP, r3
+ 221              	@ 0 "" 2
+ 154:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     ctxp->xpsr = (regarm_t)0x01000000;
+ 222              		.loc 1 154 0
+ 223              		.thumb
+ 224 0026 019B     		ldr	r3, [sp, #4]
+ 225 0028 4FF08072 		mov	r2, #16777216
+ 226 002c DA61     		str	r2, [r3, #28]
+ 155:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 156:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     /* The exit sequence is different depending on if a preemption is
+ 157:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****        required or not.*/
+ 158:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     if (chSchIsPreemptionRequired()) {
+ 227              		.loc 1 158 0
+ 228 002e 1E4B     		ldr	r3, .L15+4
+ 229 0030 9B69     		ldr	r3, [r3, #24]
+ 230 0032 93F82330 		ldrb	r3, [r3, #35]	@ zero_extendqisi2
+ 231 0036 002B     		cmp	r3, #0
+ 232 0038 0BD0     		beq	.L10
+ 233              		.loc 1 158 0 is_stmt 0 discriminator 1
+ 234 003a 1B4B     		ldr	r3, .L15+4
+ 235 003c 1B68     		ldr	r3, [r3]
+ 236 003e 9A68     		ldr	r2, [r3, #8]
+ 237 0040 194B     		ldr	r3, .L15+4
+ 238 0042 9B69     		ldr	r3, [r3, #24]
+ 239 0044 9B68     		ldr	r3, [r3, #8]
+ 240 0046 9A42     		cmp	r2, r3
+ 241 0048 94BF     		ite	ls
+ 242 004a 0023     		movls	r3, #0
+ 243 004c 0123     		movhi	r3, #1
+ 244 004e DBB2     		uxtb	r3, r3
+ 245 0050 0AE0     		b	.L11
+ 246              	.L10:
+ 247              		.loc 1 158 0 discriminator 2
+ 248 0052 154B     		ldr	r3, .L15+4
+ 249 0054 1B68     		ldr	r3, [r3]
+ 250 0056 9A68     		ldr	r2, [r3, #8]
+ 251 0058 134B     		ldr	r3, .L15+4
+ 252 005a 9B69     		ldr	r3, [r3, #24]
+ 253 005c 9B68     		ldr	r3, [r3, #8]
+ 254 005e 9A42     		cmp	r2, r3
+ 255 0060 34BF     		ite	cc
+ 256 0062 0023     		movcc	r3, #0
+ 257 0064 0123     		movcs	r3, #1
+ 258 0066 DBB2     		uxtb	r3, r3
+ 259              	.L11:
+ 260              		.loc 1 158 0 discriminator 3
+ 261 0068 002B     		cmp	r3, #0
+ 262 006a 05D0     		beq	.L12
+ 159:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       /* Preemption is required we need to enforce a context switch.*/
+ 160:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       ctxp->pc = (void *)_port_switch_from_isr;
+ 263              		.loc 1 160 0 is_stmt 1
+ 264 006c 019B     		ldr	r3, [sp, #4]
+ 265 006e 0F4A     		ldr	r2, .L15+8
+ 266 0070 9A61     		str	r2, [r3, #24]
+ 161:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if CORTEX_USE_FPU
+ 162:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       /* Triggering a lazy FPU state save.*/
+ 163:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       asm volatile ("vmrs    APSR_nzcv, FPSCR" : : : "memory");
+ 267              		.loc 1 163 0
+ 268              	@ 163 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 269 0072 F1EE10FA 		vmrs    APSR_nzcv, FPSCR
+ 270              	@ 0 "" 2
+ 271              		.thumb
+ 272 0076 02E0     		b	.L13
+ 273              	.L12:
+ 164:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif
+ 165:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     }
+ 166:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     else {
+ 167:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       /* Preemption not required, we just need to exit the exception
+ 168:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****          atomically.*/
+ 169:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       ctxp->pc = (void *)_port_exit_from_isr;
+ 274              		.loc 1 169 0
+ 275 0078 019B     		ldr	r3, [sp, #4]
+ 276 007a 0D4A     		ldr	r2, .L15+12
+ 277 007c 9A61     		str	r2, [r3, #24]
+ 278              	.L13:
+ 279              	.LBB7:
+ 170:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     }
+ 171:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 172:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if CORTEX_USE_FPU
+ 173:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     {
+ 174:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       uint32_t fpccr;
+ 175:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 176:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       /* Saving the special register SCB_FPCCR into the reserved offset of
+ 177:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****          the Cortex-M4 exception frame.*/
+ 178:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       (ctxp + 1)->fpccr = (regarm_t)(fpccr = SCB_FPCCR);
+ 280              		.loc 1 178 0
+ 281 007e 019B     		ldr	r3, [sp, #4]
+ 282 0080 6833     		adds	r3, r3, #104
+ 283 0082 0C4A     		ldr	r2, .L15+16
+ 284 0084 5268     		ldr	r2, [r2, #4]
+ 285 0086 0092     		str	r2, [sp]
+ 286 0088 009A     		ldr	r2, [sp]
+ 287 008a 5A66     		str	r2, [r3, #100]
+ 179:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 180:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       /* Now the FPCCR is modified in order to not restore the FPU status
+ 181:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****          from the artificial return context.*/
+ 182:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****       SCB_FPCCR = fpccr | FPCCR_LSPACT;
+ 288              		.loc 1 182 0
+ 289 008c 094B     		ldr	r3, .L15+16
+ 290 008e 009A     		ldr	r2, [sp]
+ 291 0090 42F00102 		orr	r2, r2, #1
+ 292 0094 5A60     		str	r2, [r3, #4]
+ 293              	.LBE7:
+ 183:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     }
+ 184:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif
+ 185:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 186:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     /* Note, returning without unlocking is intentional, this is done in
+ 187:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****        order to keep the rest of the context switch atomic.*/
+ 188:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     return;
+ 294              		.loc 1 188 0
+ 295 0096 02E0     		b	.L8
+ 296              	.L9:
+ 297              	.LBE6:
+ 298              	.LBB8:
+ 189:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   }
+ 190:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   port_unlock_from_isr();
+ 299              		.loc 1 190 0
+ 300 0098 0023     		movs	r3, #0
+ 301              	@ 190 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 302 009a 83F31188 		msr     BASEPRI, r3
+ 303              	@ 0 "" 2
+ 304              		.thumb
+ 305              	.L8:
+ 306              	.LBE8:
+ 191:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** }
+ 307              		.loc 1 191 0
+ 308 009e 02B0     		add	sp, sp, #8
+ 309              		@ sp needed
+ 310 00a0 7047     		bx	lr
+ 311              	.L16:
+ 312 00a2 00BF     		.align	2
+ 313              	.L15:
+ 314 00a4 00ED00E0 		.word	-536810240
+ 315 00a8 00000000 		.word	rlist
+ 316 00ac 00000000 		.word	_port_switch_from_isr
+ 317 00b0 0C000000 		.word	_port_exit_from_isr
+ 318 00b4 30EF00E0 		.word	-536809680
+ 319              		.cfi_endproc
+ 320              	.LFE10:
+ 322 00b8 AFF30080 		.section	.text._port_switch_from_isr,"ax",%progbits
+ 322      AFF30080 
+ 323              		.align	2
+ 324              		.p2align 4,,15
+ 325              		.global	_port_switch_from_isr
+ 326              		.thumb
+ 327              		.thumb_func
+ 329              	_port_switch_from_isr:
+ 330              	.LFB11:
+ 192:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 193:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /**
+ 194:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @brief   Post-IRQ switch code.
+ 195:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @details Exception handlers return here for context switching.
+ 196:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  */
+ 197:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if !defined(__DOXYGEN__)
+ 198:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** __attribute__((naked))
+ 199:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif
+ 200:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** void _port_switch_from_isr(void) {
+ 331              		.loc 1 200 0
+ 332              		.cfi_startproc
+ 333              		@ Naked Function: prologue and epilogue provided by programmer.
+ 334              		@ args = 0, pretend = 0, frame = 0
+ 335              		@ frame_needed = 0, uses_anonymous_args = 0
+ 201:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 202:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   dbg_check_lock();
+ 336              		.loc 1 202 0
+ 337 0000 FFF7FEFF 		bl	dbg_check_lock
+ 203:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   chSchDoReschedule();
+ 338              		.loc 1 203 0
+ 339 0004 FFF7FEFF 		bl	chSchDoReschedule
+ 204:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   dbg_check_unlock();
+ 340              		.loc 1 204 0
+ 341 0008 FFF7FEFF 		bl	dbg_check_unlock
+ 205:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("_port_exit_from_isr:" : : : "memory");
+ 342              		.loc 1 205 0
+ 343              	@ 205 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 344              		_port_exit_from_isr:
+ 345              	@ 0 "" 2
+ 206:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if !CORTEX_SIMPLIFIED_PRIORITY || defined(__DOXYGEN__)
+ 207:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("svc     #0");
+ 346              		.loc 1 207 0
+ 347              	@ 207 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 348 000c 00DF     		svc     #0
+ 349              	@ 0 "" 2
+ 208:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #else /* CORTEX_SIMPLIFIED_PRIORITY */
+ 209:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   SCB_ICSR = ICSR_PENDSVSET;
+ 210:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   port_unlock();
+ 211:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   while (TRUE)
+ 212:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****     ;
+ 213:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif /* CORTEX_SIMPLIFIED_PRIORITY */
+ 214:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** }
+ 350              		.loc 1 214 0
+ 351              		.thumb
+ 352              		.cfi_endproc
+ 353              	.LFE11:
+ 355 000e 00BF     		.section	.text._port_switch,"ax",%progbits
+ 356              		.align	2
+ 357              		.p2align 4,,15
+ 358              		.global	_port_switch
+ 359              		.thumb
+ 360              		.thumb_func
+ 362              	_port_switch:
+ 363              	.LFB12:
+ 215:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 216:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /**
+ 217:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @brief   Performs a context switch between two threads.
+ 218:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @details This is the most critical code in any port, this function
+ 219:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  *          is responsible for the context switch between 2 threads.
+ 220:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @note    The implementation of this code affects <b>directly</b> the context
+ 221:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  *          switch performance so optimize here as much as you can.
+ 222:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  *
+ 223:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @param[in] ntp       the thread to be switched in
+ 224:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @param[in] otp       the thread to be switched out
+ 225:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  */
+ 226:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if !defined(__DOXYGEN__)
+ 227:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** __attribute__((naked))
+ 228:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif
+ 229:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** void _port_switch(Thread *ntp, Thread *otp) {
+ 364              		.loc 1 229 0
+ 365              		.cfi_startproc
+ 366              		@ Naked Function: prologue and epilogue provided by programmer.
+ 367              		@ args = 0, pretend = 0, frame = 0
+ 368              		@ frame_needed = 0, uses_anonymous_args = 0
+ 369 0000 0346     		mov	r3, r0
+ 370 0002 0A46     		mov	r2, r1
+ 230:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 231:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("push    {r4, r5, r6, r7, r8, r9, r10, r11, lr}"
+ 371              		.loc 1 231 0
+ 372              	@ 231 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 373 0004 2DE9F04F 		push    {r4, r5, r6, r7, r8, r9, r10, r11, lr}
+ 374              	@ 0 "" 2
+ 232:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****                 : : : "memory");
+ 233:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if CORTEX_USE_FPU
+ 234:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("vpush   {s16-s31}" : : : "memory");
+ 375              		.loc 1 234 0
+ 376              	@ 234 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 377 0008 2DED108A 		vpush   {s16-s31}
+ 378              	@ 0 "" 2
+ 235:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif
+ 236:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 237:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("str     sp, [%1, #12]                          \n\t"
+ 379              		.loc 1 237 0
+ 380              	@ 237 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 381 000c C2F80CD0 		str     sp, [r2, #12]                          
+ 382 0010 D3F80CD0 		ldr     sp, [r3, #12]
+ 383              	@ 0 "" 2
+ 238:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****                 "ldr     sp, [%0, #12]" : : "r" (ntp), "r" (otp));
+ 239:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 240:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #if CORTEX_USE_FPU
+ 241:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("vpop    {s16-s31}" : : : "memory");
+ 384              		.loc 1 241 0
+ 385              	@ 241 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 386 0014 BDEC108A 		vpop    {s16-s31}
+ 387              	@ 0 "" 2
+ 242:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** #endif
+ 243:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("pop     {r4, r5, r6, r7, r8, r9, r10, r11, pc}"
+ 388              		.loc 1 243 0
+ 389              	@ 243 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 390 0018 BDE8F08F 		pop     {r4, r5, r6, r7, r8, r9, r10, r11, pc}
+ 391              	@ 0 "" 2
+ 244:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****                 : : : "memory");
+ 245:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** }
+ 392              		.loc 1 245 0
+ 393              		.thumb
+ 394              		.cfi_endproc
+ 395              	.LFE12:
+ 397 001c AFF30080 		.section	.text._port_thread_start,"ax",%progbits
+ 398              		.align	2
+ 399              		.p2align 4,,15
+ 400              		.global	_port_thread_start
+ 401              		.thumb
+ 402              		.thumb_func
+ 404              	_port_thread_start:
+ 405              	.LFB13:
+ 246:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 247:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** /**
+ 248:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @brief   Start a thread by invoking its work function.
+ 249:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  * @details If the work function returns @p chThdExit() is automatically
+ 250:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  *          invoked.
+ 251:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****  */
+ 252:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** void _port_thread_start(void) {
+ 406              		.loc 1 252 0
+ 407              		.cfi_startproc
+ 408              		@ args = 0, pretend = 0, frame = 0
+ 409              		@ frame_needed = 0, uses_anonymous_args = 0
+ 410 0000 08B5     		push	{r3, lr}
+ 411              		.cfi_def_cfa_offset 8
+ 412              		.cfi_offset 3, -8
+ 413              		.cfi_offset 14, -4
+ 253:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** 
+ 254:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   chSysUnlock();
+ 414              		.loc 1 254 0
+ 415 0002 FFF7FEFF 		bl	dbg_check_unlock
+ 416              	.LBB9:
+ 417 0006 0023     		movs	r3, #0
+ 418              	@ 254 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 419 0008 83F31188 		msr     BASEPRI, r3
+ 420              	@ 0 "" 2
+ 421              		.thumb
+ 422              	.LBE9:
+ 255:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****   asm volatile ("mov     r0, r5                                 \n\t"
+ 423              		.loc 1 255 0
+ 424              	@ 255 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c" 1
+ 425 000c 2846     		mov     r0, r5                                 
+ 426 000e A047     		blx     r4                                     
+ 427 0010 FFF7FEFF 		bl      chThdExit
+ 428              	@ 0 "" 2
+ 256:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****                 "blx     r4                                     \n\t"
+ 257:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c ****                 "bl      chThdExit");
+ 258:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.c **** }
+ 429              		.loc 1 258 0
+ 430              		.thumb
+ 431 0014 08BD     		pop	{r3, pc}
+ 432              		.cfi_endproc
+ 433              	.LFE13:
+ 435 0016 00BFAFF3 		.text
+ 435      0080AFF3 
+ 435      0080
+ 436              	.Letext0:
+ 437              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 438              		.file 3 "/usr/include/newlib/stdint.h"
+ 439              		.file 4 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 440              		.file 5 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 441              		.file 6 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 442              		.file 7 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 443              		.file 8 "/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.h"
+ 444              		.file 9 "/usr/src/chibiostest/os/kernel/include/chschd.h"
+ 445              		.file 10 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chcore_v7m.c
+     /tmp/ccnDWqfy.s:20     .text.SysTickVector:0000000000000000 $t
+     /tmp/ccnDWqfy.s:26     .text.SysTickVector:0000000000000000 SysTickVector
+     /tmp/ccnDWqfy.s:183    .text._port_irq_epilogue:0000000000000000 _port_irq_epilogue
+     /tmp/ccnDWqfy.s:68     .text.SVCallVector:0000000000000000 $t
+     /tmp/ccnDWqfy.s:74     .text.SVCallVector:0000000000000000 SVCallVector
+     /tmp/ccnDWqfy.s:125    .text.SVCallVector:0000000000000030 $d
+     /tmp/ccnDWqfy.s:130    .text._port_init:0000000000000000 $t
+     /tmp/ccnDWqfy.s:136    .text._port_init:0000000000000000 _port_init
+     /tmp/ccnDWqfy.s:171    .text._port_init:000000000000002c $d
+     /tmp/ccnDWqfy.s:177    .text._port_irq_epilogue:0000000000000000 $t
+     /tmp/ccnDWqfy.s:314    .text._port_irq_epilogue:00000000000000a4 $d
+     /tmp/ccnDWqfy.s:329    .text._port_switch_from_isr:0000000000000000 _port_switch_from_isr
+     /tmp/ccnDWqfy.s:344    .text._port_switch_from_isr:000000000000000c _port_exit_from_isr
+     /tmp/ccnDWqfy.s:323    .text._port_switch_from_isr:0000000000000000 $t
+     /tmp/ccnDWqfy.s:356    .text._port_switch:0000000000000000 $t
+     /tmp/ccnDWqfy.s:362    .text._port_switch:0000000000000000 _port_switch
+     /tmp/ccnDWqfy.s:398    .text._port_thread_start:0000000000000000 $t
+     /tmp/ccnDWqfy.s:404    .text._port_thread_start:0000000000000000 _port_thread_start
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccnDWqfy.s:129    .text.SVCallVector:0000000000000034 $t
+     /tmp/ccnDWqfy.s:176    .text._port_init:0000000000000034 $t
+     /tmp/ccnDWqfy.s:322    .text._port_irq_epilogue:00000000000000b8 $t
+
+UNDEFINED SYMBOLS
+dbg_check_enter_isr
+dbg_check_lock_from_isr
+chSysTimerHandlerI
+dbg_check_unlock_from_isr
+dbg_check_leave_isr
+nvicSetSystemHandlerPriority
+rlist
+dbg_check_lock
+chSchDoReschedule
+dbg_check_unlock
+chThdExit

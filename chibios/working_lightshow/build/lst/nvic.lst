@@ -1,0 +1,312 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"nvic.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.nvicEnableVector,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.global	nvicEnableVector
+  23              		.thumb
+  24              		.thumb_func
+  26              	nvicEnableVector:
+  27              	.LFB7:
+  28              		.file 1 "/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c"
+   1:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** /*
+   2:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+   5:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+   7:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+  12:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+  17:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** */
+  20:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+  21:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** /**
+  22:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @file    common/ARMCMx/nvic.c
+  23:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @brief   Cortex-Mx NVIC support code.
+  24:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  *
+  25:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @addtogroup COMMON_ARMCMx_NVIC
+  26:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @{
+  27:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  */
+  28:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+  29:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** #include "ch.h"
+  30:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** #include "nvic.h"
+  31:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+  32:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** /**
+  33:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @brief   Sets the priority of an interrupt handler and enables it.
+  34:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @note    The parameters are not tested for correctness.
+  35:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  *
+  36:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @param[in] n         the interrupt number
+  37:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @param[in] prio      the interrupt priority mask
+  38:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  */
+  39:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** void nvicEnableVector(uint32_t n, uint32_t prio) {
+  29              		.loc 1 39 0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 16
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34 0000 10B4     		push	{r4}
+  35              		.cfi_def_cfa_offset 4
+  36              		.cfi_offset 4, -4
+  37 0002 85B0     		sub	sp, sp, #20
+  38              		.cfi_def_cfa_offset 24
+  39 0004 0190     		str	r0, [sp, #4]
+  40 0006 0091     		str	r1, [sp]
+  40:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****   unsigned sh = (n & 3) << 3;
+  41              		.loc 1 40 0
+  42 0008 019B     		ldr	r3, [sp, #4]
+  43 000a 03F00303 		and	r3, r3, #3
+  44 000e DB00     		lsls	r3, r3, #3
+  45 0010 0393     		str	r3, [sp, #12]
+  41:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+  42:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****   NVIC_IPR(n >> 2) = (NVIC_IPR(n >> 2) & ~(0xFF << sh)) | (prio << sh);
+  46              		.loc 1 42 0
+  47 0012 194B     		ldr	r3, .L2
+  48 0014 019A     		ldr	r2, [sp, #4]
+  49 0016 9208     		lsrs	r2, r2, #2
+  50 0018 1749     		ldr	r1, .L2
+  51 001a 0198     		ldr	r0, [sp, #4]
+  52 001c 8008     		lsrs	r0, r0, #2
+  53 001e C030     		adds	r0, r0, #192
+  54 0020 51F82000 		ldr	r0, [r1, r0, lsl #2]
+  55 0024 0399     		ldr	r1, [sp, #12]
+  56 0026 FF24     		movs	r4, #255
+  57 0028 04FA01F1 		lsl	r1, r4, r1
+  58 002c C943     		mvns	r1, r1
+  59 002e 0840     		ands	r0, r0, r1
+  60 0030 0399     		ldr	r1, [sp, #12]
+  61 0032 009C     		ldr	r4, [sp]
+  62 0034 04FA01F1 		lsl	r1, r4, r1
+  63 0038 0143     		orrs	r1, r1, r0
+  64 003a C032     		adds	r2, r2, #192
+  65 003c 43F82210 		str	r1, [r3, r2, lsl #2]
+  43:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****   NVIC_ICPR(n >> 5) = 1 << (n & 0x1F);
+  66              		.loc 1 43 0
+  67 0040 0D4B     		ldr	r3, .L2
+  68 0042 019A     		ldr	r2, [sp, #4]
+  69 0044 5209     		lsrs	r2, r2, #5
+  70 0046 0199     		ldr	r1, [sp, #4]
+  71 0048 01F01F01 		and	r1, r1, #31
+  72 004c 0120     		movs	r0, #1
+  73 004e 00FA01F1 		lsl	r1, r0, r1
+  74 0052 6032     		adds	r2, r2, #96
+  75 0054 43F82210 		str	r1, [r3, r2, lsl #2]
+  44:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****   NVIC_ISER(n >> 5) = 1 << (n & 0x1F);
+  76              		.loc 1 44 0
+  77 0058 074B     		ldr	r3, .L2
+  78 005a 019A     		ldr	r2, [sp, #4]
+  79 005c 5209     		lsrs	r2, r2, #5
+  80 005e 0199     		ldr	r1, [sp, #4]
+  81 0060 01F01F01 		and	r1, r1, #31
+  82 0064 0120     		movs	r0, #1
+  83 0066 00FA01F1 		lsl	r1, r0, r1
+  84 006a 43F82210 		str	r1, [r3, r2, lsl #2]
+  45:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** }
+  85              		.loc 1 45 0
+  86 006e 05B0     		add	sp, sp, #20
+  87              		@ sp needed
+  88 0070 5DF8044B 		ldr	r4, [sp], #4
+  89 0074 7047     		bx	lr
+  90              	.L3:
+  91 0076 00BF     		.align	2
+  92              	.L2:
+  93 0078 00E100E0 		.word	-536813312
+  94              		.cfi_endproc
+  95              	.LFE7:
+  97 007c AFF30080 		.section	.text.nvicDisableVector,"ax",%progbits
+  98              		.align	2
+  99              		.p2align 4,,15
+ 100              		.global	nvicDisableVector
+ 101              		.thumb
+ 102              		.thumb_func
+ 104              	nvicDisableVector:
+ 105              	.LFB8:
+  46:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+  47:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** /**
+  48:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @brief   Disables an interrupt handler.
+  49:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @note    The parameters are not tested for correctness.
+  50:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  *
+  51:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @param[in] n         the interrupt number
+  52:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  */
+  53:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** void nvicDisableVector(uint32_t n) {
+ 106              		.loc 1 53 0
+ 107              		.cfi_startproc
+ 108              		@ args = 0, pretend = 0, frame = 16
+ 109              		@ frame_needed = 0, uses_anonymous_args = 0
+ 110              		@ link register save eliminated.
+ 111 0000 10B4     		push	{r4}
+ 112              		.cfi_def_cfa_offset 4
+ 113              		.cfi_offset 4, -4
+ 114 0002 85B0     		sub	sp, sp, #20
+ 115              		.cfi_def_cfa_offset 24
+ 116 0004 0190     		str	r0, [sp, #4]
+  54:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****   unsigned sh = (n & 3) << 3;
+ 117              		.loc 1 54 0
+ 118 0006 019B     		ldr	r3, [sp, #4]
+ 119 0008 03F00303 		and	r3, r3, #3
+ 120 000c DB00     		lsls	r3, r3, #3
+ 121 000e 0393     		str	r3, [sp, #12]
+  55:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+  56:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****   NVIC_ICER(n >> 5) = 1 << (n & 0x1F);
+ 122              		.loc 1 56 0
+ 123 0010 104B     		ldr	r3, .L5
+ 124 0012 019A     		ldr	r2, [sp, #4]
+ 125 0014 5209     		lsrs	r2, r2, #5
+ 126 0016 0199     		ldr	r1, [sp, #4]
+ 127 0018 01F01F01 		and	r1, r1, #31
+ 128 001c 0120     		movs	r0, #1
+ 129 001e 00FA01F1 		lsl	r1, r0, r1
+ 130 0022 2032     		adds	r2, r2, #32
+ 131 0024 43F82210 		str	r1, [r3, r2, lsl #2]
+  57:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****   NVIC_IPR(n >> 2) = NVIC_IPR(n >> 2) & ~(0xFF << sh);
+ 132              		.loc 1 57 0
+ 133 0028 0A4B     		ldr	r3, .L5
+ 134 002a 019A     		ldr	r2, [sp, #4]
+ 135 002c 9208     		lsrs	r2, r2, #2
+ 136 002e 0949     		ldr	r1, .L5
+ 137 0030 0198     		ldr	r0, [sp, #4]
+ 138 0032 8008     		lsrs	r0, r0, #2
+ 139 0034 C030     		adds	r0, r0, #192
+ 140 0036 51F82000 		ldr	r0, [r1, r0, lsl #2]
+ 141 003a 0399     		ldr	r1, [sp, #12]
+ 142 003c FF24     		movs	r4, #255
+ 143 003e 04FA01F1 		lsl	r1, r4, r1
+ 144 0042 C943     		mvns	r1, r1
+ 145 0044 0140     		ands	r1, r1, r0
+ 146 0046 C032     		adds	r2, r2, #192
+ 147 0048 43F82210 		str	r1, [r3, r2, lsl #2]
+  58:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** }
+ 148              		.loc 1 58 0
+ 149 004c 05B0     		add	sp, sp, #20
+ 150              		@ sp needed
+ 151 004e 5DF8044B 		ldr	r4, [sp], #4
+ 152 0052 7047     		bx	lr
+ 153              	.L6:
+ 154              		.align	2
+ 155              	.L5:
+ 156 0054 00E100E0 		.word	-536813312
+ 157              		.cfi_endproc
+ 158              	.LFE8:
+ 160 0058 AFF30080 		.section	.text.nvicSetSystemHandlerPriority,"ax",%progbits
+ 160      AFF30080 
+ 161              		.align	2
+ 162              		.p2align 4,,15
+ 163              		.global	nvicSetSystemHandlerPriority
+ 164              		.thumb
+ 165              		.thumb_func
+ 167              	nvicSetSystemHandlerPriority:
+ 168              	.LFB9:
+  59:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+  60:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** /**
+  61:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @brief   Changes the priority of a system handler.
+  62:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @note    The parameters are not tested for correctness.
+  63:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  *
+  64:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @param[in] handler   the system handler number
+  65:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  * @param[in] prio      the system handler priority mask
+  66:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****  */
+  67:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** void nvicSetSystemHandlerPriority(uint32_t handler, uint32_t prio) {
+ 169              		.loc 1 67 0
+ 170              		.cfi_startproc
+ 171              		@ args = 0, pretend = 0, frame = 16
+ 172              		@ frame_needed = 0, uses_anonymous_args = 0
+ 173              		@ link register save eliminated.
+ 174 0000 10B4     		push	{r4}
+ 175              		.cfi_def_cfa_offset 4
+ 176              		.cfi_offset 4, -4
+ 177 0002 85B0     		sub	sp, sp, #20
+ 178              		.cfi_def_cfa_offset 24
+ 179 0004 0190     		str	r0, [sp, #4]
+ 180 0006 0091     		str	r1, [sp]
+  68:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****   unsigned sh = (handler & 3) * 8;
+ 181              		.loc 1 68 0
+ 182 0008 019B     		ldr	r3, [sp, #4]
+ 183 000a 03F00303 		and	r3, r3, #3
+ 184 000e DB00     		lsls	r3, r3, #3
+ 185 0010 0393     		str	r3, [sp, #12]
+  69:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** 
+  70:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****   SCB_SHPR(handler >> 2) = (SCB_SHPR(handler >> 2) &
+ 186              		.loc 1 70 0
+ 187 0012 0D4B     		ldr	r3, .L8
+ 188 0014 019A     		ldr	r2, [sp, #4]
+ 189 0016 9208     		lsrs	r2, r2, #2
+ 190 0018 0B49     		ldr	r1, .L8
+ 191 001a 0198     		ldr	r0, [sp, #4]
+ 192 001c 8008     		lsrs	r0, r0, #2
+ 193 001e 0630     		adds	r0, r0, #6
+ 194 0020 51F82000 		ldr	r0, [r1, r0, lsl #2]
+  71:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****                            ~(0xFF << sh)) | (prio << sh);
+ 195              		.loc 1 71 0
+ 196 0024 0399     		ldr	r1, [sp, #12]
+ 197 0026 FF24     		movs	r4, #255
+ 198 0028 04FA01F1 		lsl	r1, r4, r1
+ 199 002c C943     		mvns	r1, r1
+  70:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****                            ~(0xFF << sh)) | (prio << sh);
+ 200              		.loc 1 70 0
+ 201 002e 0840     		ands	r0, r0, r1
+ 202              		.loc 1 71 0
+ 203 0030 0399     		ldr	r1, [sp, #12]
+ 204 0032 009C     		ldr	r4, [sp]
+ 205 0034 04FA01F1 		lsl	r1, r4, r1
+ 206 0038 0143     		orrs	r1, r1, r0
+  70:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c ****                            ~(0xFF << sh)) | (prio << sh);
+ 207              		.loc 1 70 0
+ 208 003a 0632     		adds	r2, r2, #6
+ 209 003c 43F82210 		str	r1, [r3, r2, lsl #2]
+  72:/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.c **** }
+ 210              		.loc 1 72 0
+ 211 0040 05B0     		add	sp, sp, #20
+ 212              		@ sp needed
+ 213 0042 5DF8044B 		ldr	r4, [sp], #4
+ 214 0046 7047     		bx	lr
+ 215              	.L9:
+ 216              		.align	2
+ 217              	.L8:
+ 218 0048 00ED00E0 		.word	-536810240
+ 219              		.cfi_endproc
+ 220              	.LFE9:
+ 222 004c AFF30080 		.text
+ 223              	.Letext0:
+ 224              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 225              		.file 3 "/usr/include/newlib/stdint.h"
+ 226              		.file 4 "/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 nvic.c
+     /tmp/ccQgleBC.s:20     .text.nvicEnableVector:0000000000000000 $t
+     /tmp/ccQgleBC.s:26     .text.nvicEnableVector:0000000000000000 nvicEnableVector
+     /tmp/ccQgleBC.s:93     .text.nvicEnableVector:0000000000000078 $d
+     /tmp/ccQgleBC.s:98     .text.nvicDisableVector:0000000000000000 $t
+     /tmp/ccQgleBC.s:104    .text.nvicDisableVector:0000000000000000 nvicDisableVector
+     /tmp/ccQgleBC.s:156    .text.nvicDisableVector:0000000000000054 $d
+     /tmp/ccQgleBC.s:161    .text.nvicSetSystemHandlerPriority:0000000000000000 $t
+     /tmp/ccQgleBC.s:167    .text.nvicSetSystemHandlerPriority:0000000000000000 nvicSetSystemHandlerPriority
+     /tmp/ccQgleBC.s:218    .text.nvicSetSystemHandlerPriority:0000000000000048 $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccQgleBC.s:97     .text.nvicEnableVector:000000000000007c $t
+     /tmp/ccQgleBC.s:160    .text.nvicDisableVector:0000000000000058 $t
+     /tmp/ccQgleBC.s:222    .text.nvicSetSystemHandlerPriority:000000000000004c $t
+
+NO UNDEFINED SYMBOLS

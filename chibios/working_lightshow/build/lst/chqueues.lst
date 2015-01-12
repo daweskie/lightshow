@@ -1,0 +1,1718 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chqueues.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.queue_insert,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.thumb
+  23              		.thumb_func
+  25              	queue_insert:
+  26              	.LFB1:
+  27              		.file 1 "/usr/src/chibiostest/os/kernel/include/chinline.h"
+   1:/usr/src/chibiostest/os/kernel/include/chinline.h **** /*
+   2:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/include/chinline.h ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   5:/usr/src/chibiostest/os/kernel/include/chinline.h ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   7:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/include/chinline.h ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/include/chinline.h ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/include/chinline.h ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  12:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/include/chinline.h ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/include/chinline.h ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/include/chinline.h ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  17:/usr/src/chibiostest/os/kernel/include/chinline.h ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/include/chinline.h ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/include/chinline.h **** */
+  20:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  21:/usr/src/chibiostest/os/kernel/include/chinline.h **** /**
+  22:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @file    chinline.h
+  23:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @brief   Kernel inlined functions.
+  24:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @details In this file there are a set of inlined functions if the
+  25:/usr/src/chibiostest/os/kernel/include/chinline.h ****  *          @p CH_OPTIMIZE_SPEED is enabled.
+  26:/usr/src/chibiostest/os/kernel/include/chinline.h ****  */
+  27:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  28:/usr/src/chibiostest/os/kernel/include/chinline.h **** #ifndef _CHINLINE_H_
+  29:/usr/src/chibiostest/os/kernel/include/chinline.h **** #define _CHINLINE_H_
+  30:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  31:/usr/src/chibiostest/os/kernel/include/chinline.h **** /* If the performance code path has been chosen then all the following
+  32:/usr/src/chibiostest/os/kernel/include/chinline.h ****    functions are inlined into the various kernel modules.*/
+  33:/usr/src/chibiostest/os/kernel/include/chinline.h **** #if CH_OPTIMIZE_SPEED
+  34:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void prio_insert(Thread *tp, ThreadsQueue *tqp) {
+  35:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  36:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *cp = (Thread *)tqp;
+  37:/usr/src/chibiostest/os/kernel/include/chinline.h ****   do {
+  38:/usr/src/chibiostest/os/kernel/include/chinline.h ****     cp = cp->p_next;
+  39:/usr/src/chibiostest/os/kernel/include/chinline.h ****   } while ((cp != (Thread *)tqp) && (cp->p_prio >= tp->p_prio));
+  40:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = cp;
+  41:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = cp->p_prev;
+  42:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = cp->p_prev = tp;
+  43:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  44:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  45:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void queue_insert(Thread *tp, ThreadsQueue *tqp) {
+  28              		.loc 1 45 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33 0000 82B0     		sub	sp, sp, #8
+  34              		.cfi_def_cfa_offset 8
+  35 0002 0190     		str	r0, [sp, #4]
+  36 0004 0091     		str	r1, [sp]
+  46:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  47:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = (Thread *)tqp;
+  37              		.loc 1 47 0
+  38 0006 019B     		ldr	r3, [sp, #4]
+  39 0008 009A     		ldr	r2, [sp]
+  40 000a 1A60     		str	r2, [r3]
+  48:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = tqp->p_prev;
+  41              		.loc 1 48 0
+  42 000c 009B     		ldr	r3, [sp]
+  43 000e 5A68     		ldr	r2, [r3, #4]
+  44 0010 019B     		ldr	r3, [sp, #4]
+  45 0012 5A60     		str	r2, [r3, #4]
+  49:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = tqp->p_prev = tp;
+  46              		.loc 1 49 0
+  47 0014 019B     		ldr	r3, [sp, #4]
+  48 0016 5B68     		ldr	r3, [r3, #4]
+  49 0018 009A     		ldr	r2, [sp]
+  50 001a 0199     		ldr	r1, [sp, #4]
+  51 001c 5160     		str	r1, [r2, #4]
+  52 001e 009A     		ldr	r2, [sp]
+  53 0020 5268     		ldr	r2, [r2, #4]
+  54 0022 1A60     		str	r2, [r3]
+  50:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  55              		.loc 1 50 0
+  56 0024 02B0     		add	sp, sp, #8
+  57              		@ sp needed
+  58 0026 7047     		bx	lr
+  59              		.cfi_endproc
+  60              	.LFE1:
+  62 0028 AFF30080 		.section	.text.fifo_remove,"ax",%progbits
+  62      AFF30080 
+  63              		.align	2
+  64              		.p2align 4,,15
+  65              		.thumb
+  66              		.thumb_func
+  68              	fifo_remove:
+  69              	.LFB2:
+  51:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  52:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *fifo_remove(ThreadsQueue *tqp) {
+  70              		.loc 1 52 0
+  71              		.cfi_startproc
+  72              		@ args = 0, pretend = 0, frame = 16
+  73              		@ frame_needed = 0, uses_anonymous_args = 0
+  74              		@ link register save eliminated.
+  75 0000 84B0     		sub	sp, sp, #16
+  76              		.cfi_def_cfa_offset 16
+  77 0002 0190     		str	r0, [sp, #4]
+  53:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *tp = tqp->p_next;
+  78              		.loc 1 53 0
+  79 0004 019B     		ldr	r3, [sp, #4]
+  80 0006 1B68     		ldr	r3, [r3]
+  81 0008 0393     		str	r3, [sp, #12]
+  54:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  55:/usr/src/chibiostest/os/kernel/include/chinline.h ****   (tqp->p_next = tp->p_next)->p_prev = (Thread *)tqp;
+  82              		.loc 1 55 0
+  83 000a 039B     		ldr	r3, [sp, #12]
+  84 000c 1A68     		ldr	r2, [r3]
+  85 000e 019B     		ldr	r3, [sp, #4]
+  86 0010 1A60     		str	r2, [r3]
+  87 0012 019B     		ldr	r3, [sp, #4]
+  88 0014 1B68     		ldr	r3, [r3]
+  89 0016 019A     		ldr	r2, [sp, #4]
+  90 0018 5A60     		str	r2, [r3, #4]
+  56:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+  91              		.loc 1 56 0
+  92 001a 039B     		ldr	r3, [sp, #12]
+  57:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  93              		.loc 1 57 0
+  94 001c 1846     		mov	r0, r3
+  95 001e 04B0     		add	sp, sp, #16
+  96              		@ sp needed
+  97 0020 7047     		bx	lr
+  98              		.cfi_endproc
+  99              	.LFE2:
+ 101 0022 00BFAFF3 		.section	.text.qwait,"ax",%progbits
+ 101      0080AFF3 
+ 101      0080AFF3 
+ 101      0080
+ 102              		.align	2
+ 103              		.p2align 4,,15
+ 104              		.thumb
+ 105              		.thumb_func
+ 107              	qwait:
+ 108              	.LFB7:
+ 109              		.file 2 "/usr/src/chibiostest/os/kernel/src/chqueues.c"
+   1:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chqueues.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chqueues.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+  21:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+  22:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @file    chqueues.c
+  23:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   I/O Queues code.
+  24:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+  25:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @addtogroup io_queues
+  26:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details ChibiOS/RT queues are mostly used in serial-like device drivers.
+  27:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          The device drivers are usually designed to have a lower side
+  28:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          (lower driver, it is usually an interrupt service routine) and an
+  29:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          upper side (upper driver, accessed by the application threads).<br>
+  30:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          There are several kind of queues:<br>
+  31:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          - <b>Input queue</b>, unidirectional queue where the writer is the
+  32:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *            lower side and the reader is the upper side.
+  33:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          - <b>Output queue</b>, unidirectional queue where the writer is the
+  34:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *            upper side and the reader is the lower side.
+  35:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          - <b>Full duplex queue</b>, bidirectional queue. Full duplex queues
+  36:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *            are implemented by pairing an input queue and an output queue
+  37:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *            together.
+  38:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          .
+  39:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @pre     In order to use the I/O queues the @p CH_USE_QUEUES option must
+  40:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          be enabled in @p chconf.h.
+  41:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @{
+  42:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+  43:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+  44:/usr/src/chibiostest/os/kernel/src/chqueues.c **** #include "ch.h"
+  45:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+  46:/usr/src/chibiostest/os/kernel/src/chqueues.c **** #if CH_USE_QUEUES || defined(__DOXYGEN__)
+  47:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+  48:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+  49:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Puts the invoking thread into the queue's threads queue.
+  50:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+  51:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[out] qp       pointer to an @p GenericQueue structure
+  52:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] time      the number of ticks before the operation timeouts,
+  53:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      the following special values are allowed:
+  54:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      - @a TIME_IMMEDIATE immediate timeout.
+  55:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      - @a TIME_INFINITE no timeout.
+  56:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      .
+  57:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @return              A message specifying how the invoking thread has been
+  58:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      released from threads queue.
+  59:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_OK         is the normal exit, thread signaled.
+  60:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_RESET      if the queue has been reset.
+  61:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_TIMEOUT    if the queue operation timed out.
+  62:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+  63:/usr/src/chibiostest/os/kernel/src/chqueues.c **** static msg_t qwait(GenericQueue *qp, systime_t time) {
+ 110              		.loc 2 63 0
+ 111              		.cfi_startproc
+ 112              		@ args = 0, pretend = 0, frame = 8
+ 113              		@ frame_needed = 0, uses_anonymous_args = 0
+ 114 0000 00B5     		push	{lr}
+ 115              		.cfi_def_cfa_offset 4
+ 116              		.cfi_offset 14, -4
+ 117 0002 83B0     		sub	sp, sp, #12
+ 118              		.cfi_def_cfa_offset 16
+ 119 0004 0190     		str	r0, [sp, #4]
+ 120 0006 0091     		str	r1, [sp]
+  64:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+  65:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (TIME_IMMEDIATE == time)
+ 121              		.loc 2 65 0
+ 122 0008 009B     		ldr	r3, [sp]
+ 123 000a 002B     		cmp	r3, #0
+ 124 000c 02D1     		bne	.L5
+  66:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     return Q_TIMEOUT;
+ 125              		.loc 2 66 0
+ 126 000e 4FF0FF33 		mov	r3, #-1
+ 127 0012 0FE0     		b	.L6
+ 128              	.L5:
+  67:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   currp->p_u.wtobjp = qp;
+ 129              		.loc 2 67 0
+ 130 0014 094B     		ldr	r3, .L7
+ 131 0016 9B69     		ldr	r3, [r3, #24]
+ 132 0018 019A     		ldr	r2, [sp, #4]
+ 133 001a 9A62     		str	r2, [r3, #40]
+  68:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   queue_insert(currp, &qp->q_waiting);
+ 134              		.loc 2 68 0
+ 135 001c 074B     		ldr	r3, .L7
+ 136 001e 9A69     		ldr	r2, [r3, #24]
+ 137 0020 019B     		ldr	r3, [sp, #4]
+ 138 0022 1046     		mov	r0, r2
+ 139 0024 1946     		mov	r1, r3
+ 140 0026 FFF7FEFF 		bl	queue_insert
+  69:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   return chSchGoSleepTimeoutS(THD_STATE_WTQUEUE, time);
+ 141              		.loc 2 69 0
+ 142 002a 0D20     		movs	r0, #13
+ 143 002c 0099     		ldr	r1, [sp]
+ 144 002e FFF7FEFF 		bl	chSchGoSleepTimeoutS
+ 145 0032 0346     		mov	r3, r0
+ 146              	.L6:
+  70:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 147              		.loc 2 70 0
+ 148 0034 1846     		mov	r0, r3
+ 149 0036 03B0     		add	sp, sp, #12
+ 150              		@ sp needed
+ 151 0038 5DF804FB 		ldr	pc, [sp], #4
+ 152              	.L8:
+ 153              		.align	2
+ 154              	.L7:
+ 155 003c 00000000 		.word	rlist
+ 156              		.cfi_endproc
+ 157              	.LFE7:
+ 159              		.section	.text.chIQInit,"ax",%progbits
+ 160              		.align	2
+ 161              		.p2align 4,,15
+ 162              		.global	chIQInit
+ 163              		.thumb
+ 164              		.thumb_func
+ 166              	chIQInit:
+ 167              	.LFB8:
+  71:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+  72:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+  73:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Initializes an input queue.
+  74:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details A Semaphore is internally initialized and works as a counter of
+  75:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          the bytes contained in the queue.
+  76:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @note    The callback is invoked from within the S-Locked system state,
+  77:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          see @ref system_states.
+  78:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+  79:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[out] iqp      pointer to an @p InputQueue structure
+  80:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] bp        pointer to a memory area allocated as queue buffer
+  81:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] size      size of the queue buffer
+  82:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] infy      pointer to a callback function that is invoked when
+  83:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      data is read from the queue. The value can be @p NULL.
+  84:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] link      application defined pointer
+  85:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+  86:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @init
+  87:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+  88:/usr/src/chibiostest/os/kernel/src/chqueues.c **** void chIQInit(InputQueue *iqp, uint8_t *bp, size_t size, qnotify_t infy,
+  89:/usr/src/chibiostest/os/kernel/src/chqueues.c ****               void *link) {
+ 168              		.loc 2 89 0
+ 169              		.cfi_startproc
+ 170              		@ args = 4, pretend = 0, frame = 16
+ 171              		@ frame_needed = 0, uses_anonymous_args = 0
+ 172              		@ link register save eliminated.
+ 173 0000 84B0     		sub	sp, sp, #16
+ 174              		.cfi_def_cfa_offset 16
+ 175 0002 0390     		str	r0, [sp, #12]
+ 176 0004 0291     		str	r1, [sp, #8]
+ 177 0006 0192     		str	r2, [sp, #4]
+ 178 0008 0093     		str	r3, [sp]
+  90:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+  91:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   queue_init(&iqp->q_waiting);
+ 179              		.loc 2 91 0
+ 180 000a 039A     		ldr	r2, [sp, #12]
+ 181 000c 039B     		ldr	r3, [sp, #12]
+ 182 000e 5A60     		str	r2, [r3, #4]
+ 183 0010 039B     		ldr	r3, [sp, #12]
+ 184 0012 5A68     		ldr	r2, [r3, #4]
+ 185 0014 039B     		ldr	r3, [sp, #12]
+ 186 0016 1A60     		str	r2, [r3]
+  92:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   iqp->q_counter = 0;
+ 187              		.loc 2 92 0
+ 188 0018 039B     		ldr	r3, [sp, #12]
+ 189 001a 0022     		movs	r2, #0
+ 190 001c 9A60     		str	r2, [r3, #8]
+  93:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   iqp->q_buffer = iqp->q_rdptr = iqp->q_wrptr = bp;
+ 191              		.loc 2 93 0
+ 192 001e 039B     		ldr	r3, [sp, #12]
+ 193 0020 029A     		ldr	r2, [sp, #8]
+ 194 0022 5A61     		str	r2, [r3, #20]
+ 195 0024 039B     		ldr	r3, [sp, #12]
+ 196 0026 5A69     		ldr	r2, [r3, #20]
+ 197 0028 039B     		ldr	r3, [sp, #12]
+ 198 002a 9A61     		str	r2, [r3, #24]
+ 199 002c 039B     		ldr	r3, [sp, #12]
+ 200 002e 9A69     		ldr	r2, [r3, #24]
+ 201 0030 039B     		ldr	r3, [sp, #12]
+ 202 0032 DA60     		str	r2, [r3, #12]
+  94:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   iqp->q_top = bp + size;
+ 203              		.loc 2 94 0
+ 204 0034 029A     		ldr	r2, [sp, #8]
+ 205 0036 019B     		ldr	r3, [sp, #4]
+ 206 0038 1A44     		add	r2, r2, r3
+ 207 003a 039B     		ldr	r3, [sp, #12]
+ 208 003c 1A61     		str	r2, [r3, #16]
+  95:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   iqp->q_notify = infy;
+ 209              		.loc 2 95 0
+ 210 003e 039B     		ldr	r3, [sp, #12]
+ 211 0040 009A     		ldr	r2, [sp]
+ 212 0042 DA61     		str	r2, [r3, #28]
+  96:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   iqp->q_link = link;
+ 213              		.loc 2 96 0
+ 214 0044 039B     		ldr	r3, [sp, #12]
+ 215 0046 049A     		ldr	r2, [sp, #16]
+ 216 0048 1A62     		str	r2, [r3, #32]
+  97:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 217              		.loc 2 97 0
+ 218 004a 04B0     		add	sp, sp, #16
+ 219              		@ sp needed
+ 220 004c 7047     		bx	lr
+ 221              		.cfi_endproc
+ 222              	.LFE8:
+ 224 004e 00BF     		.section	.text.chIQResetI,"ax",%progbits
+ 225              		.align	2
+ 226              		.p2align 4,,15
+ 227              		.global	chIQResetI
+ 228              		.thumb
+ 229              		.thumb_func
+ 231              	chIQResetI:
+ 232              	.LFB9:
+  98:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+  99:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+ 100:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Resets an input queue.
+ 101:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details All the data in the input queue is erased and lost, any waiting
+ 102:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          thread is resumed with status @p Q_RESET.
+ 103:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @note    A reset operation can be used by a low level driver in order to
+ 104:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          obtain immediate attention from the high level layers.
+ 105:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 106:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] iqp       pointer to an @p InputQueue structure
+ 107:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 108:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @iclass
+ 109:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+ 110:/usr/src/chibiostest/os/kernel/src/chqueues.c **** void chIQResetI(InputQueue *iqp) {
+ 233              		.loc 2 110 0
+ 234              		.cfi_startproc
+ 235              		@ args = 0, pretend = 0, frame = 8
+ 236              		@ frame_needed = 0, uses_anonymous_args = 0
+ 237 0000 00B5     		push	{lr}
+ 238              		.cfi_def_cfa_offset 4
+ 239              		.cfi_offset 14, -4
+ 240 0002 83B0     		sub	sp, sp, #12
+ 241              		.cfi_def_cfa_offset 16
+ 242 0004 0190     		str	r0, [sp, #4]
+ 111:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 112:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chDbgCheckClassI();
+ 243              		.loc 2 112 0
+ 244 0006 FFF7FEFF 		bl	chDbgCheckClassI
+ 113:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 114:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   iqp->q_rdptr = iqp->q_wrptr = iqp->q_buffer;
+ 245              		.loc 2 114 0
+ 246 000a 019B     		ldr	r3, [sp, #4]
+ 247 000c DA68     		ldr	r2, [r3, #12]
+ 248 000e 019B     		ldr	r3, [sp, #4]
+ 249 0010 5A61     		str	r2, [r3, #20]
+ 250 0012 019B     		ldr	r3, [sp, #4]
+ 251 0014 5A69     		ldr	r2, [r3, #20]
+ 252 0016 019B     		ldr	r3, [sp, #4]
+ 253 0018 9A61     		str	r2, [r3, #24]
+ 115:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   iqp->q_counter = 0;
+ 254              		.loc 2 115 0
+ 255 001a 019B     		ldr	r3, [sp, #4]
+ 256 001c 0022     		movs	r2, #0
+ 257 001e 9A60     		str	r2, [r3, #8]
+ 116:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   while (notempty(&iqp->q_waiting))
+ 258              		.loc 2 116 0
+ 259 0020 0BE0     		b	.L11
+ 260              	.L12:
+ 117:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     chSchReadyI(fifo_remove(&iqp->q_waiting))->p_u.rdymsg = Q_RESET;
+ 261              		.loc 2 117 0
+ 262 0022 019B     		ldr	r3, [sp, #4]
+ 263 0024 1846     		mov	r0, r3
+ 264 0026 FFF7FEFF 		bl	fifo_remove
+ 265 002a 0346     		mov	r3, r0
+ 266 002c 1846     		mov	r0, r3
+ 267 002e FFF7FEFF 		bl	chSchReadyI
+ 268 0032 0346     		mov	r3, r0
+ 269 0034 6FF00102 		mvn	r2, #1
+ 270 0038 9A62     		str	r2, [r3, #40]
+ 271              	.L11:
+ 116:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   while (notempty(&iqp->q_waiting))
+ 272              		.loc 2 116 0 discriminator 1
+ 273 003a 019B     		ldr	r3, [sp, #4]
+ 274 003c 1A68     		ldr	r2, [r3]
+ 275 003e 019B     		ldr	r3, [sp, #4]
+ 276 0040 9A42     		cmp	r2, r3
+ 277 0042 EED1     		bne	.L12
+ 118:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 278              		.loc 2 118 0
+ 279 0044 03B0     		add	sp, sp, #12
+ 280              		@ sp needed
+ 281 0046 5DF804FB 		ldr	pc, [sp], #4
+ 282              		.cfi_endproc
+ 283              	.LFE9:
+ 285 004a 00BFAFF3 		.section	.text.chIQPutI,"ax",%progbits
+ 285      0080
+ 286              		.align	2
+ 287              		.p2align 4,,15
+ 288              		.global	chIQPutI
+ 289              		.thumb
+ 290              		.thumb_func
+ 292              	chIQPutI:
+ 293              	.LFB10:
+ 119:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 120:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+ 121:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Input queue write.
+ 122:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details A byte value is written into the low end of an input queue.
+ 123:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 124:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] iqp       pointer to an @p InputQueue structure
+ 125:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] b         the byte value to be written in the queue
+ 126:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @return              The operation status.
+ 127:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_OK         if the operation has been completed with success.
+ 128:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_FULL       if the queue is full and the operation cannot be
+ 129:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      completed.
+ 130:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 131:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @iclass
+ 132:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+ 133:/usr/src/chibiostest/os/kernel/src/chqueues.c **** msg_t chIQPutI(InputQueue *iqp, uint8_t b) {
+ 294              		.loc 2 133 0
+ 295              		.cfi_startproc
+ 296              		@ args = 0, pretend = 0, frame = 8
+ 297              		@ frame_needed = 0, uses_anonymous_args = 0
+ 298 0000 00B5     		push	{lr}
+ 299              		.cfi_def_cfa_offset 4
+ 300              		.cfi_offset 14, -4
+ 301 0002 83B0     		sub	sp, sp, #12
+ 302              		.cfi_def_cfa_offset 16
+ 303 0004 0190     		str	r0, [sp, #4]
+ 304 0006 0B46     		mov	r3, r1
+ 305 0008 8DF80330 		strb	r3, [sp, #3]
+ 134:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 135:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chDbgCheckClassI();
+ 306              		.loc 2 135 0
+ 307 000c FFF7FEFF 		bl	chDbgCheckClassI
+ 136:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 137:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (chIQIsFullI(iqp))
+ 308              		.loc 2 137 0
+ 309 0010 019B     		ldr	r3, [sp, #4]
+ 310 0012 5A69     		ldr	r2, [r3, #20]
+ 311 0014 019B     		ldr	r3, [sp, #4]
+ 312 0016 9B69     		ldr	r3, [r3, #24]
+ 313 0018 9A42     		cmp	r2, r3
+ 314 001a 06D1     		bne	.L14
+ 315              		.loc 2 137 0 is_stmt 0 discriminator 1
+ 316 001c 019B     		ldr	r3, [sp, #4]
+ 317 001e 9B68     		ldr	r3, [r3, #8]
+ 318 0020 002B     		cmp	r3, #0
+ 319 0022 02D0     		beq	.L14
+ 138:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     return Q_FULL;
+ 320              		.loc 2 138 0 is_stmt 1
+ 321 0024 6FF00303 		mvn	r3, #3
+ 322 0028 27E0     		b	.L15
+ 323              	.L14:
+ 139:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 140:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   iqp->q_counter++;
+ 324              		.loc 2 140 0
+ 325 002a 019B     		ldr	r3, [sp, #4]
+ 326 002c 9B68     		ldr	r3, [r3, #8]
+ 327 002e 5A1C     		adds	r2, r3, #1
+ 328 0030 019B     		ldr	r3, [sp, #4]
+ 329 0032 9A60     		str	r2, [r3, #8]
+ 141:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   *iqp->q_wrptr++ = b;
+ 330              		.loc 2 141 0
+ 331 0034 019B     		ldr	r3, [sp, #4]
+ 332 0036 5B69     		ldr	r3, [r3, #20]
+ 333 0038 591C     		adds	r1, r3, #1
+ 334 003a 019A     		ldr	r2, [sp, #4]
+ 335 003c 5161     		str	r1, [r2, #20]
+ 336 003e 9DF80320 		ldrb	r2, [sp, #3]
+ 337 0042 1A70     		strb	r2, [r3]
+ 142:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (iqp->q_wrptr >= iqp->q_top)
+ 338              		.loc 2 142 0
+ 339 0044 019B     		ldr	r3, [sp, #4]
+ 340 0046 5A69     		ldr	r2, [r3, #20]
+ 341 0048 019B     		ldr	r3, [sp, #4]
+ 342 004a 1B69     		ldr	r3, [r3, #16]
+ 343 004c 9A42     		cmp	r2, r3
+ 344 004e 03D3     		bcc	.L16
+ 143:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     iqp->q_wrptr = iqp->q_buffer;
+ 345              		.loc 2 143 0
+ 346 0050 019B     		ldr	r3, [sp, #4]
+ 347 0052 DA68     		ldr	r2, [r3, #12]
+ 348 0054 019B     		ldr	r3, [sp, #4]
+ 349 0056 5A61     		str	r2, [r3, #20]
+ 350              	.L16:
+ 144:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 145:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (notempty(&iqp->q_waiting))
+ 351              		.loc 2 145 0
+ 352 0058 019B     		ldr	r3, [sp, #4]
+ 353 005a 1A68     		ldr	r2, [r3]
+ 354 005c 019B     		ldr	r3, [sp, #4]
+ 355 005e 9A42     		cmp	r2, r3
+ 356 0060 0AD0     		beq	.L17
+ 146:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     chSchReadyI(fifo_remove(&iqp->q_waiting))->p_u.rdymsg = Q_OK;
+ 357              		.loc 2 146 0
+ 358 0062 019B     		ldr	r3, [sp, #4]
+ 359 0064 1846     		mov	r0, r3
+ 360 0066 FFF7FEFF 		bl	fifo_remove
+ 361 006a 0346     		mov	r3, r0
+ 362 006c 1846     		mov	r0, r3
+ 363 006e FFF7FEFF 		bl	chSchReadyI
+ 364 0072 0346     		mov	r3, r0
+ 365 0074 0022     		movs	r2, #0
+ 366 0076 9A62     		str	r2, [r3, #40]
+ 367              	.L17:
+ 147:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 148:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   return Q_OK;
+ 368              		.loc 2 148 0
+ 369 0078 0023     		movs	r3, #0
+ 370              	.L15:
+ 149:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 371              		.loc 2 149 0
+ 372 007a 1846     		mov	r0, r3
+ 373 007c 03B0     		add	sp, sp, #12
+ 374              		@ sp needed
+ 375 007e 5DF804FB 		ldr	pc, [sp], #4
+ 376              		.cfi_endproc
+ 377              	.LFE10:
+ 379 0082 00BFAFF3 		.section	.text.chIQGetTimeout,"ax",%progbits
+ 379      0080AFF3 
+ 379      0080AFF3 
+ 379      0080
+ 380              		.align	2
+ 381              		.p2align 4,,15
+ 382              		.global	chIQGetTimeout
+ 383              		.thumb
+ 384              		.thumb_func
+ 386              	chIQGetTimeout:
+ 387              	.LFB11:
+ 150:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 151:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+ 152:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Input queue read with timeout.
+ 153:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details This function reads a byte value from an input queue. If the queue
+ 154:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          is empty then the calling thread is suspended until a byte arrives
+ 155:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          in the queue or a timeout occurs.
+ 156:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @note    The callback is invoked before reading the character from the
+ 157:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          buffer or before entering the state @p THD_STATE_WTQUEUE.
+ 158:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 159:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] iqp       pointer to an @p InputQueue structure
+ 160:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] time      the number of ticks before the operation timeouts,
+ 161:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      the following special values are allowed:
+ 162:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      - @a TIME_IMMEDIATE immediate timeout.
+ 163:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      - @a TIME_INFINITE no timeout.
+ 164:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      .
+ 165:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @return              A byte value from the queue.
+ 166:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_TIMEOUT    if the specified time expired.
+ 167:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_RESET      if the queue has been reset.
+ 168:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 169:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @api
+ 170:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+ 171:/usr/src/chibiostest/os/kernel/src/chqueues.c **** msg_t chIQGetTimeout(InputQueue *iqp, systime_t time) {
+ 388              		.loc 2 171 0
+ 389              		.cfi_startproc
+ 390              		@ args = 0, pretend = 0, frame = 16
+ 391              		@ frame_needed = 0, uses_anonymous_args = 0
+ 392 0000 00B5     		push	{lr}
+ 393              		.cfi_def_cfa_offset 4
+ 394              		.cfi_offset 14, -4
+ 395 0002 85B0     		sub	sp, sp, #20
+ 396              		.cfi_def_cfa_offset 24
+ 397 0004 0190     		str	r0, [sp, #4]
+ 398 0006 0091     		str	r1, [sp]
+ 399              	.LBB2:
+ 172:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   uint8_t b;
+ 173:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 174:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chSysLock();
+ 400              		.loc 2 174 0
+ 401 0008 2023     		movs	r3, #32
+ 402              	@ 174 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 403 000a 83F31188 		msr     BASEPRI, r3
+ 404              	@ 0 "" 2
+ 405              		.thumb
+ 406              	.LBE2:
+ 407 000e FFF7FEFF 		bl	dbg_check_lock
+ 175:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (iqp->q_notify)
+ 408              		.loc 2 175 0
+ 409 0012 019B     		ldr	r3, [sp, #4]
+ 410 0014 DB69     		ldr	r3, [r3, #28]
+ 411 0016 002B     		cmp	r3, #0
+ 412 0018 04D0     		beq	.L19
+ 176:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     iqp->q_notify(iqp);
+ 413              		.loc 2 176 0
+ 414 001a 019B     		ldr	r3, [sp, #4]
+ 415 001c DB69     		ldr	r3, [r3, #28]
+ 416 001e 0198     		ldr	r0, [sp, #4]
+ 417 0020 9847     		blx	r3
+ 177:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 178:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   while (chIQIsEmptyI(iqp)) {
+ 418              		.loc 2 178 0
+ 419 0022 0FE0     		b	.L20
+ 420              	.L19:
+ 421 0024 0EE0     		b	.L20
+ 422              	.L22:
+ 423              	.LBB3:
+ 179:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     msg_t msg;
+ 180:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     if ((msg = qwait((GenericQueue *)iqp, time)) < Q_OK) {
+ 424              		.loc 2 180 0
+ 425 0026 0198     		ldr	r0, [sp, #4]
+ 426 0028 0099     		ldr	r1, [sp]
+ 427 002a FFF7FEFF 		bl	qwait
+ 428 002e 0390     		str	r0, [sp, #12]
+ 429 0030 039B     		ldr	r3, [sp, #12]
+ 430 0032 002B     		cmp	r3, #0
+ 431 0034 06DA     		bge	.L20
+ 181:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       chSysUnlock();
+ 432              		.loc 2 181 0
+ 433 0036 FFF7FEFF 		bl	dbg_check_unlock
+ 434              	.LBB4:
+ 435 003a 0023     		movs	r3, #0
+ 436              	@ 181 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 437 003c 83F31188 		msr     BASEPRI, r3
+ 438              	@ 0 "" 2
+ 439              		.thumb
+ 440              	.LBE4:
+ 182:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       return msg;
+ 441              		.loc 2 182 0
+ 442 0040 039B     		ldr	r3, [sp, #12]
+ 443 0042 21E0     		b	.L21
+ 444              	.L20:
+ 445              	.LBE3:
+ 178:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     msg_t msg;
+ 446              		.loc 2 178 0 discriminator 1
+ 447 0044 019B     		ldr	r3, [sp, #4]
+ 448 0046 9B68     		ldr	r3, [r3, #8]
+ 449 0048 002B     		cmp	r3, #0
+ 450 004a ECD0     		beq	.L22
+ 183:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     }
+ 184:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   }
+ 185:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 186:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   iqp->q_counter--;
+ 451              		.loc 2 186 0
+ 452 004c 019B     		ldr	r3, [sp, #4]
+ 453 004e 9B68     		ldr	r3, [r3, #8]
+ 454 0050 5A1E     		subs	r2, r3, #1
+ 455 0052 019B     		ldr	r3, [sp, #4]
+ 456 0054 9A60     		str	r2, [r3, #8]
+ 187:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   b = *iqp->q_rdptr++;
+ 457              		.loc 2 187 0
+ 458 0056 019B     		ldr	r3, [sp, #4]
+ 459 0058 9B69     		ldr	r3, [r3, #24]
+ 460 005a 591C     		adds	r1, r3, #1
+ 461 005c 019A     		ldr	r2, [sp, #4]
+ 462 005e 9161     		str	r1, [r2, #24]
+ 463 0060 1B78     		ldrb	r3, [r3]
+ 464 0062 8DF80B30 		strb	r3, [sp, #11]
+ 188:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (iqp->q_rdptr >= iqp->q_top)
+ 465              		.loc 2 188 0
+ 466 0066 019B     		ldr	r3, [sp, #4]
+ 467 0068 9A69     		ldr	r2, [r3, #24]
+ 468 006a 019B     		ldr	r3, [sp, #4]
+ 469 006c 1B69     		ldr	r3, [r3, #16]
+ 470 006e 9A42     		cmp	r2, r3
+ 471 0070 03D3     		bcc	.L23
+ 189:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     iqp->q_rdptr = iqp->q_buffer;
+ 472              		.loc 2 189 0
+ 473 0072 019B     		ldr	r3, [sp, #4]
+ 474 0074 DA68     		ldr	r2, [r3, #12]
+ 475 0076 019B     		ldr	r3, [sp, #4]
+ 476 0078 9A61     		str	r2, [r3, #24]
+ 477              	.L23:
+ 190:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 191:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chSysUnlock();
+ 478              		.loc 2 191 0
+ 479 007a FFF7FEFF 		bl	dbg_check_unlock
+ 480              	.LBB5:
+ 481 007e 0023     		movs	r3, #0
+ 482              	@ 191 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 483 0080 83F31188 		msr     BASEPRI, r3
+ 484              	@ 0 "" 2
+ 485              		.thumb
+ 486              	.LBE5:
+ 192:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   return b;
+ 487              		.loc 2 192 0
+ 488 0084 9DF80B30 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 489              	.L21:
+ 193:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 490              		.loc 2 193 0
+ 491 0088 1846     		mov	r0, r3
+ 492 008a 05B0     		add	sp, sp, #20
+ 493              		@ sp needed
+ 494 008c 5DF804FB 		ldr	pc, [sp], #4
+ 495              		.cfi_endproc
+ 496              	.LFE11:
+ 498              		.section	.rodata
+ 499              		.align	2
+ 500              	.LC0:
+ 501 0000 22636849 		.ascii	"\"chIQReadTimeout\"()\000"
+ 501      51526561 
+ 501      6454696D 
+ 501      656F7574 
+ 501      22282900 
+ 502              		.section	.text.chIQReadTimeout,"ax",%progbits
+ 503              		.align	2
+ 504              		.p2align 4,,15
+ 505              		.global	chIQReadTimeout
+ 506              		.thumb
+ 507              		.thumb_func
+ 509              	chIQReadTimeout:
+ 510              	.LFB12:
+ 194:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 195:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+ 196:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Input queue read with timeout.
+ 197:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details The function reads data from an input queue into a buffer. The
+ 198:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          operation completes when the specified amount of data has been
+ 199:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          transferred or after the specified timeout or if the queue has
+ 200:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          been reset.
+ 201:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @note    The function is not atomic, if you need atomicity it is suggested
+ 202:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          to use a semaphore or a mutex for mutual exclusion.
+ 203:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @note    The callback is invoked before reading each character from the
+ 204:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          buffer or before entering the state @p THD_STATE_WTQUEUE.
+ 205:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 206:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] iqp       pointer to an @p InputQueue structure
+ 207:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[out] bp       pointer to the data buffer
+ 208:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] n         the maximum amount of data to be transferred, the
+ 209:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      value 0 is reserved
+ 210:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] time      the number of ticks before the operation timeouts,
+ 211:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      the following special values are allowed:
+ 212:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      - @a TIME_IMMEDIATE immediate timeout.
+ 213:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      - @a TIME_INFINITE no timeout.
+ 214:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      .
+ 215:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @return              The number of bytes effectively transferred.
+ 216:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 217:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @api
+ 218:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+ 219:/usr/src/chibiostest/os/kernel/src/chqueues.c **** size_t chIQReadTimeout(InputQueue *iqp, uint8_t *bp,
+ 220:/usr/src/chibiostest/os/kernel/src/chqueues.c ****                        size_t n, systime_t time) {
+ 511              		.loc 2 220 0
+ 512              		.cfi_startproc
+ 513              		@ args = 0, pretend = 0, frame = 24
+ 514              		@ frame_needed = 0, uses_anonymous_args = 0
+ 515 0000 00B5     		push	{lr}
+ 516              		.cfi_def_cfa_offset 4
+ 517              		.cfi_offset 14, -4
+ 518 0002 87B0     		sub	sp, sp, #28
+ 519              		.cfi_def_cfa_offset 32
+ 520 0004 0390     		str	r0, [sp, #12]
+ 521 0006 0291     		str	r1, [sp, #8]
+ 522 0008 0192     		str	r2, [sp, #4]
+ 523 000a 0093     		str	r3, [sp]
+ 221:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   qnotify_t nfy = iqp->q_notify;
+ 524              		.loc 2 221 0
+ 525 000c 039B     		ldr	r3, [sp, #12]
+ 526 000e DB69     		ldr	r3, [r3, #28]
+ 527 0010 0493     		str	r3, [sp, #16]
+ 222:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   size_t r = 0;
+ 528              		.loc 2 222 0
+ 529 0012 0023     		movs	r3, #0
+ 530 0014 0593     		str	r3, [sp, #20]
+ 223:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 224:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chDbgCheck(n > 0, "chIQReadTimeout");
+ 531              		.loc 2 224 0
+ 532 0016 019B     		ldr	r3, [sp, #4]
+ 533 0018 002B     		cmp	r3, #0
+ 534 001a 02D1     		bne	.L25
+ 535              		.loc 2 224 0 is_stmt 0 discriminator 1
+ 536 001c 2A48     		ldr	r0, .L33
+ 537 001e FFF7FEFF 		bl	chDbgPanic
+ 538              	.L25:
+ 539              	.LBB6:
+ 225:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 226:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chSysLock();
+ 540              		.loc 2 226 0 is_stmt 1
+ 541 0022 2023     		movs	r3, #32
+ 542              	@ 226 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 543 0024 83F31188 		msr     BASEPRI, r3
+ 544              	@ 0 "" 2
+ 545              		.thumb
+ 546              	.LBE6:
+ 547 0028 FFF7FEFF 		bl	dbg_check_lock
+ 548              	.L32:
+ 227:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   while (TRUE) {
+ 228:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     if (nfy)
+ 549              		.loc 2 228 0
+ 550 002c 049B     		ldr	r3, [sp, #16]
+ 551 002e 002B     		cmp	r3, #0
+ 552 0030 03D0     		beq	.L26
+ 229:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       nfy(iqp);
+ 553              		.loc 2 229 0
+ 554 0032 049B     		ldr	r3, [sp, #16]
+ 555 0034 0398     		ldr	r0, [sp, #12]
+ 556 0036 9847     		blx	r3
+ 230:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 231:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     while (chIQIsEmptyI(iqp)) {
+ 557              		.loc 2 231 0
+ 558 0038 0EE0     		b	.L27
+ 559              	.L26:
+ 560 003a 0DE0     		b	.L27
+ 561              	.L29:
+ 232:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       if (qwait((GenericQueue *)iqp, time) != Q_OK) {
+ 562              		.loc 2 232 0
+ 563 003c 0398     		ldr	r0, [sp, #12]
+ 564 003e 0099     		ldr	r1, [sp]
+ 565 0040 FFF7FEFF 		bl	qwait
+ 566 0044 0346     		mov	r3, r0
+ 567 0046 002B     		cmp	r3, #0
+ 568 0048 06D0     		beq	.L27
+ 233:/usr/src/chibiostest/os/kernel/src/chqueues.c ****         chSysUnlock();
+ 569              		.loc 2 233 0
+ 570 004a FFF7FEFF 		bl	dbg_check_unlock
+ 571              	.LBB7:
+ 572 004e 0023     		movs	r3, #0
+ 573              	@ 233 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 574 0050 83F31188 		msr     BASEPRI, r3
+ 575              	@ 0 "" 2
+ 576              		.thumb
+ 577              	.LBE7:
+ 234:/usr/src/chibiostest/os/kernel/src/chqueues.c ****         return r;
+ 578              		.loc 2 234 0
+ 579 0054 059B     		ldr	r3, [sp, #20]
+ 580 0056 32E0     		b	.L28
+ 581              	.L27:
+ 231:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       if (qwait((GenericQueue *)iqp, time) != Q_OK) {
+ 582              		.loc 2 231 0 discriminator 1
+ 583 0058 039B     		ldr	r3, [sp, #12]
+ 584 005a 9B68     		ldr	r3, [r3, #8]
+ 585 005c 002B     		cmp	r3, #0
+ 586 005e EDD0     		beq	.L29
+ 235:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       }
+ 236:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     }
+ 237:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 238:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     iqp->q_counter--;
+ 587              		.loc 2 238 0
+ 588 0060 039B     		ldr	r3, [sp, #12]
+ 589 0062 9B68     		ldr	r3, [r3, #8]
+ 590 0064 5A1E     		subs	r2, r3, #1
+ 591 0066 039B     		ldr	r3, [sp, #12]
+ 592 0068 9A60     		str	r2, [r3, #8]
+ 239:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     *bp++ = *iqp->q_rdptr++;
+ 593              		.loc 2 239 0
+ 594 006a 029B     		ldr	r3, [sp, #8]
+ 595 006c 5A1C     		adds	r2, r3, #1
+ 596 006e 0292     		str	r2, [sp, #8]
+ 597 0070 039A     		ldr	r2, [sp, #12]
+ 598 0072 9269     		ldr	r2, [r2, #24]
+ 599 0074 501C     		adds	r0, r2, #1
+ 600 0076 0399     		ldr	r1, [sp, #12]
+ 601 0078 8861     		str	r0, [r1, #24]
+ 602 007a 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 603 007c 1A70     		strb	r2, [r3]
+ 240:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     if (iqp->q_rdptr >= iqp->q_top)
+ 604              		.loc 2 240 0
+ 605 007e 039B     		ldr	r3, [sp, #12]
+ 606 0080 9A69     		ldr	r2, [r3, #24]
+ 607 0082 039B     		ldr	r3, [sp, #12]
+ 608 0084 1B69     		ldr	r3, [r3, #16]
+ 609 0086 9A42     		cmp	r2, r3
+ 610 0088 03D3     		bcc	.L30
+ 241:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       iqp->q_rdptr = iqp->q_buffer;
+ 611              		.loc 2 241 0
+ 612 008a 039B     		ldr	r3, [sp, #12]
+ 613 008c DA68     		ldr	r2, [r3, #12]
+ 614 008e 039B     		ldr	r3, [sp, #12]
+ 615 0090 9A61     		str	r2, [r3, #24]
+ 616              	.L30:
+ 242:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 243:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     chSysUnlock(); /* Gives a preemption chance in a controlled point.*/
+ 617              		.loc 2 243 0
+ 618 0092 FFF7FEFF 		bl	dbg_check_unlock
+ 619              	.LBB8:
+ 620 0096 0023     		movs	r3, #0
+ 621              	@ 243 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 622 0098 83F31188 		msr     BASEPRI, r3
+ 623              	@ 0 "" 2
+ 624              		.thumb
+ 625              	.LBE8:
+ 244:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     r++;
+ 626              		.loc 2 244 0
+ 627 009c 059B     		ldr	r3, [sp, #20]
+ 628 009e 0133     		adds	r3, r3, #1
+ 629 00a0 0593     		str	r3, [sp, #20]
+ 245:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     if (--n == 0)
+ 630              		.loc 2 245 0
+ 631 00a2 019B     		ldr	r3, [sp, #4]
+ 632 00a4 013B     		subs	r3, r3, #1
+ 633 00a6 0193     		str	r3, [sp, #4]
+ 634 00a8 019B     		ldr	r3, [sp, #4]
+ 635 00aa 002B     		cmp	r3, #0
+ 636 00ac 01D1     		bne	.L31
+ 246:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       return r;
+ 637              		.loc 2 246 0
+ 638 00ae 059B     		ldr	r3, [sp, #20]
+ 639 00b0 05E0     		b	.L28
+ 640              	.L31:
+ 641              	.LBB9:
+ 247:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 248:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     chSysLock();
+ 642              		.loc 2 248 0
+ 643 00b2 2023     		movs	r3, #32
+ 644              	@ 248 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 645 00b4 83F31188 		msr     BASEPRI, r3
+ 646              	@ 0 "" 2
+ 647              		.thumb
+ 648              	.LBE9:
+ 649 00b8 FFF7FEFF 		bl	dbg_check_lock
+ 249:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   }
+ 650              		.loc 2 249 0
+ 651 00bc B6E7     		b	.L32
+ 652              	.L28:
+ 250:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 653              		.loc 2 250 0
+ 654 00be 1846     		mov	r0, r3
+ 655 00c0 07B0     		add	sp, sp, #28
+ 656              		@ sp needed
+ 657 00c2 5DF804FB 		ldr	pc, [sp], #4
+ 658              	.L34:
+ 659 00c6 00BF     		.align	2
+ 660              	.L33:
+ 661 00c8 00000000 		.word	.LC0
+ 662              		.cfi_endproc
+ 663              	.LFE12:
+ 665 00cc AFF30080 		.section	.text.chOQInit,"ax",%progbits
+ 666              		.align	2
+ 667              		.p2align 4,,15
+ 668              		.global	chOQInit
+ 669              		.thumb
+ 670              		.thumb_func
+ 672              	chOQInit:
+ 673              	.LFB13:
+ 251:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 252:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+ 253:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Initializes an output queue.
+ 254:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details A Semaphore is internally initialized and works as a counter of
+ 255:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          the free bytes in the queue.
+ 256:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @note    The callback is invoked from within the S-Locked system state,
+ 257:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          see @ref system_states.
+ 258:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 259:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[out] oqp      pointer to an @p OutputQueue structure
+ 260:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] bp        pointer to a memory area allocated as queue buffer
+ 261:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] size      size of the queue buffer
+ 262:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] onfy      pointer to a callback function that is invoked when
+ 263:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      data is written to the queue. The value can be @p NULL.
+ 264:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] link      application defined pointer
+ 265:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 266:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @init
+ 267:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+ 268:/usr/src/chibiostest/os/kernel/src/chqueues.c **** void chOQInit(OutputQueue *oqp, uint8_t *bp, size_t size, qnotify_t onfy,
+ 269:/usr/src/chibiostest/os/kernel/src/chqueues.c ****               void *link) {
+ 674              		.loc 2 269 0
+ 675              		.cfi_startproc
+ 676              		@ args = 4, pretend = 0, frame = 16
+ 677              		@ frame_needed = 0, uses_anonymous_args = 0
+ 678              		@ link register save eliminated.
+ 679 0000 84B0     		sub	sp, sp, #16
+ 680              		.cfi_def_cfa_offset 16
+ 681 0002 0390     		str	r0, [sp, #12]
+ 682 0004 0291     		str	r1, [sp, #8]
+ 683 0006 0192     		str	r2, [sp, #4]
+ 684 0008 0093     		str	r3, [sp]
+ 270:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 271:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   queue_init(&oqp->q_waiting);
+ 685              		.loc 2 271 0
+ 686 000a 039A     		ldr	r2, [sp, #12]
+ 687 000c 039B     		ldr	r3, [sp, #12]
+ 688 000e 5A60     		str	r2, [r3, #4]
+ 689 0010 039B     		ldr	r3, [sp, #12]
+ 690 0012 5A68     		ldr	r2, [r3, #4]
+ 691 0014 039B     		ldr	r3, [sp, #12]
+ 692 0016 1A60     		str	r2, [r3]
+ 272:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   oqp->q_counter = size;
+ 693              		.loc 2 272 0
+ 694 0018 039B     		ldr	r3, [sp, #12]
+ 695 001a 019A     		ldr	r2, [sp, #4]
+ 696 001c 9A60     		str	r2, [r3, #8]
+ 273:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   oqp->q_buffer = oqp->q_rdptr = oqp->q_wrptr = bp;
+ 697              		.loc 2 273 0
+ 698 001e 039B     		ldr	r3, [sp, #12]
+ 699 0020 029A     		ldr	r2, [sp, #8]
+ 700 0022 5A61     		str	r2, [r3, #20]
+ 701 0024 039B     		ldr	r3, [sp, #12]
+ 702 0026 5A69     		ldr	r2, [r3, #20]
+ 703 0028 039B     		ldr	r3, [sp, #12]
+ 704 002a 9A61     		str	r2, [r3, #24]
+ 705 002c 039B     		ldr	r3, [sp, #12]
+ 706 002e 9A69     		ldr	r2, [r3, #24]
+ 707 0030 039B     		ldr	r3, [sp, #12]
+ 708 0032 DA60     		str	r2, [r3, #12]
+ 274:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   oqp->q_top = bp + size;
+ 709              		.loc 2 274 0
+ 710 0034 029A     		ldr	r2, [sp, #8]
+ 711 0036 019B     		ldr	r3, [sp, #4]
+ 712 0038 1A44     		add	r2, r2, r3
+ 713 003a 039B     		ldr	r3, [sp, #12]
+ 714 003c 1A61     		str	r2, [r3, #16]
+ 275:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   oqp->q_notify = onfy;
+ 715              		.loc 2 275 0
+ 716 003e 039B     		ldr	r3, [sp, #12]
+ 717 0040 009A     		ldr	r2, [sp]
+ 718 0042 DA61     		str	r2, [r3, #28]
+ 276:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   oqp->q_link = link;
+ 719              		.loc 2 276 0
+ 720 0044 039B     		ldr	r3, [sp, #12]
+ 721 0046 049A     		ldr	r2, [sp, #16]
+ 722 0048 1A62     		str	r2, [r3, #32]
+ 277:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 723              		.loc 2 277 0
+ 724 004a 04B0     		add	sp, sp, #16
+ 725              		@ sp needed
+ 726 004c 7047     		bx	lr
+ 727              		.cfi_endproc
+ 728              	.LFE13:
+ 730 004e 00BF     		.section	.text.chOQResetI,"ax",%progbits
+ 731              		.align	2
+ 732              		.p2align 4,,15
+ 733              		.global	chOQResetI
+ 734              		.thumb
+ 735              		.thumb_func
+ 737              	chOQResetI:
+ 738              	.LFB14:
+ 278:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 279:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+ 280:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Resets an output queue.
+ 281:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details All the data in the output queue is erased and lost, any waiting
+ 282:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          thread is resumed with status @p Q_RESET.
+ 283:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @note    A reset operation can be used by a low level driver in order to
+ 284:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          obtain immediate attention from the high level layers.
+ 285:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 286:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] oqp       pointer to an @p OutputQueue structure
+ 287:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 288:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @iclass
+ 289:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+ 290:/usr/src/chibiostest/os/kernel/src/chqueues.c **** void chOQResetI(OutputQueue *oqp) {
+ 739              		.loc 2 290 0
+ 740              		.cfi_startproc
+ 741              		@ args = 0, pretend = 0, frame = 8
+ 742              		@ frame_needed = 0, uses_anonymous_args = 0
+ 743 0000 00B5     		push	{lr}
+ 744              		.cfi_def_cfa_offset 4
+ 745              		.cfi_offset 14, -4
+ 746 0002 83B0     		sub	sp, sp, #12
+ 747              		.cfi_def_cfa_offset 16
+ 748 0004 0190     		str	r0, [sp, #4]
+ 291:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 292:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chDbgCheckClassI();
+ 749              		.loc 2 292 0
+ 750 0006 FFF7FEFF 		bl	chDbgCheckClassI
+ 293:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 294:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   oqp->q_rdptr = oqp->q_wrptr = oqp->q_buffer;
+ 751              		.loc 2 294 0
+ 752 000a 019B     		ldr	r3, [sp, #4]
+ 753 000c DA68     		ldr	r2, [r3, #12]
+ 754 000e 019B     		ldr	r3, [sp, #4]
+ 755 0010 5A61     		str	r2, [r3, #20]
+ 756 0012 019B     		ldr	r3, [sp, #4]
+ 757 0014 5A69     		ldr	r2, [r3, #20]
+ 758 0016 019B     		ldr	r3, [sp, #4]
+ 759 0018 9A61     		str	r2, [r3, #24]
+ 295:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   oqp->q_counter = chQSizeI(oqp);
+ 760              		.loc 2 295 0
+ 761 001a 019B     		ldr	r3, [sp, #4]
+ 762 001c 1B69     		ldr	r3, [r3, #16]
+ 763 001e 1A46     		mov	r2, r3
+ 764 0020 019B     		ldr	r3, [sp, #4]
+ 765 0022 DB68     		ldr	r3, [r3, #12]
+ 766 0024 D31A     		subs	r3, r2, r3
+ 767 0026 1A46     		mov	r2, r3
+ 768 0028 019B     		ldr	r3, [sp, #4]
+ 769 002a 9A60     		str	r2, [r3, #8]
+ 296:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   while (notempty(&oqp->q_waiting))
+ 770              		.loc 2 296 0
+ 771 002c 0BE0     		b	.L37
+ 772              	.L38:
+ 297:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     chSchReadyI(fifo_remove(&oqp->q_waiting))->p_u.rdymsg = Q_RESET;
+ 773              		.loc 2 297 0
+ 774 002e 019B     		ldr	r3, [sp, #4]
+ 775 0030 1846     		mov	r0, r3
+ 776 0032 FFF7FEFF 		bl	fifo_remove
+ 777 0036 0346     		mov	r3, r0
+ 778 0038 1846     		mov	r0, r3
+ 779 003a FFF7FEFF 		bl	chSchReadyI
+ 780 003e 0346     		mov	r3, r0
+ 781 0040 6FF00102 		mvn	r2, #1
+ 782 0044 9A62     		str	r2, [r3, #40]
+ 783              	.L37:
+ 296:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   while (notempty(&oqp->q_waiting))
+ 784              		.loc 2 296 0 discriminator 1
+ 785 0046 019B     		ldr	r3, [sp, #4]
+ 786 0048 1A68     		ldr	r2, [r3]
+ 787 004a 019B     		ldr	r3, [sp, #4]
+ 788 004c 9A42     		cmp	r2, r3
+ 789 004e EED1     		bne	.L38
+ 298:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 790              		.loc 2 298 0
+ 791 0050 03B0     		add	sp, sp, #12
+ 792              		@ sp needed
+ 793 0052 5DF804FB 		ldr	pc, [sp], #4
+ 794              		.cfi_endproc
+ 795              	.LFE14:
+ 797 0056 00BFAFF3 		.section	.text.chOQPutTimeout,"ax",%progbits
+ 797      0080AFF3 
+ 797      0080
+ 798              		.align	2
+ 799              		.p2align 4,,15
+ 800              		.global	chOQPutTimeout
+ 801              		.thumb
+ 802              		.thumb_func
+ 804              	chOQPutTimeout:
+ 805              	.LFB15:
+ 299:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 300:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+ 301:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Output queue write with timeout.
+ 302:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details This function writes a byte value to an output queue. If the queue
+ 303:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          is full then the calling thread is suspended until there is space
+ 304:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          in the queue or a timeout occurs.
+ 305:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @note    The callback is invoked after writing the character into the
+ 306:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          buffer.
+ 307:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 308:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] oqp       pointer to an @p OutputQueue structure
+ 309:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] b         the byte value to be written in the queue
+ 310:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] time      the number of ticks before the operation timeouts,
+ 311:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      the following special values are allowed:
+ 312:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      - @a TIME_IMMEDIATE immediate timeout.
+ 313:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      - @a TIME_INFINITE no timeout.
+ 314:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      .
+ 315:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @return              The operation status.
+ 316:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_OK         if the operation succeeded.
+ 317:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_TIMEOUT    if the specified time expired.
+ 318:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_RESET      if the queue has been reset.
+ 319:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 320:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @api
+ 321:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+ 322:/usr/src/chibiostest/os/kernel/src/chqueues.c **** msg_t chOQPutTimeout(OutputQueue *oqp, uint8_t b, systime_t time) {
+ 806              		.loc 2 322 0
+ 807              		.cfi_startproc
+ 808              		@ args = 0, pretend = 0, frame = 24
+ 809              		@ frame_needed = 0, uses_anonymous_args = 0
+ 810 0000 00B5     		push	{lr}
+ 811              		.cfi_def_cfa_offset 4
+ 812              		.cfi_offset 14, -4
+ 813 0002 87B0     		sub	sp, sp, #28
+ 814              		.cfi_def_cfa_offset 32
+ 815 0004 0390     		str	r0, [sp, #12]
+ 816 0006 0B46     		mov	r3, r1
+ 817 0008 0192     		str	r2, [sp, #4]
+ 818 000a 8DF80B30 		strb	r3, [sp, #11]
+ 819              	.LBB10:
+ 323:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 324:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chSysLock();
+ 820              		.loc 2 324 0
+ 821 000e 2023     		movs	r3, #32
+ 822              	@ 324 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 823 0010 83F31188 		msr     BASEPRI, r3
+ 824              	@ 0 "" 2
+ 825              		.thumb
+ 826              	.LBE10:
+ 827 0014 FFF7FEFF 		bl	dbg_check_lock
+ 325:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   while (chOQIsFullI(oqp)) {
+ 828              		.loc 2 325 0
+ 829 0018 0EE0     		b	.L40
+ 830              	.L42:
+ 831              	.LBB11:
+ 326:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     msg_t msg;
+ 327:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 328:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     if ((msg = qwait((GenericQueue *)oqp, time)) < Q_OK) {
+ 832              		.loc 2 328 0
+ 833 001a 0398     		ldr	r0, [sp, #12]
+ 834 001c 0199     		ldr	r1, [sp, #4]
+ 835 001e FFF7FEFF 		bl	qwait
+ 836 0022 0590     		str	r0, [sp, #20]
+ 837 0024 059B     		ldr	r3, [sp, #20]
+ 838 0026 002B     		cmp	r3, #0
+ 839 0028 06DA     		bge	.L40
+ 329:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       chSysUnlock();
+ 840              		.loc 2 329 0
+ 841 002a FFF7FEFF 		bl	dbg_check_unlock
+ 842              	.LBB12:
+ 843 002e 0023     		movs	r3, #0
+ 844              	@ 329 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 845 0030 83F31188 		msr     BASEPRI, r3
+ 846              	@ 0 "" 2
+ 847              		.thumb
+ 848              	.LBE12:
+ 330:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       return msg;
+ 849              		.loc 2 330 0
+ 850 0034 059B     		ldr	r3, [sp, #20]
+ 851 0036 28E0     		b	.L41
+ 852              	.L40:
+ 853              	.LBE11:
+ 325:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     msg_t msg;
+ 854              		.loc 2 325 0 discriminator 1
+ 855 0038 039B     		ldr	r3, [sp, #12]
+ 856 003a 9B68     		ldr	r3, [r3, #8]
+ 857 003c 002B     		cmp	r3, #0
+ 858 003e ECD0     		beq	.L42
+ 331:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     }
+ 332:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   }
+ 333:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 334:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   oqp->q_counter--;
+ 859              		.loc 2 334 0
+ 860 0040 039B     		ldr	r3, [sp, #12]
+ 861 0042 9B68     		ldr	r3, [r3, #8]
+ 862 0044 5A1E     		subs	r2, r3, #1
+ 863 0046 039B     		ldr	r3, [sp, #12]
+ 864 0048 9A60     		str	r2, [r3, #8]
+ 335:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   *oqp->q_wrptr++ = b;
+ 865              		.loc 2 335 0
+ 866 004a 039B     		ldr	r3, [sp, #12]
+ 867 004c 5B69     		ldr	r3, [r3, #20]
+ 868 004e 591C     		adds	r1, r3, #1
+ 869 0050 039A     		ldr	r2, [sp, #12]
+ 870 0052 5161     		str	r1, [r2, #20]
+ 871 0054 9DF80B20 		ldrb	r2, [sp, #11]
+ 872 0058 1A70     		strb	r2, [r3]
+ 336:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (oqp->q_wrptr >= oqp->q_top)
+ 873              		.loc 2 336 0
+ 874 005a 039B     		ldr	r3, [sp, #12]
+ 875 005c 5A69     		ldr	r2, [r3, #20]
+ 876 005e 039B     		ldr	r3, [sp, #12]
+ 877 0060 1B69     		ldr	r3, [r3, #16]
+ 878 0062 9A42     		cmp	r2, r3
+ 879 0064 03D3     		bcc	.L43
+ 337:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     oqp->q_wrptr = oqp->q_buffer;
+ 880              		.loc 2 337 0
+ 881 0066 039B     		ldr	r3, [sp, #12]
+ 882 0068 DA68     		ldr	r2, [r3, #12]
+ 883 006a 039B     		ldr	r3, [sp, #12]
+ 884 006c 5A61     		str	r2, [r3, #20]
+ 885              	.L43:
+ 338:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 339:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (oqp->q_notify)
+ 886              		.loc 2 339 0
+ 887 006e 039B     		ldr	r3, [sp, #12]
+ 888 0070 DB69     		ldr	r3, [r3, #28]
+ 889 0072 002B     		cmp	r3, #0
+ 890 0074 03D0     		beq	.L44
+ 340:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     oqp->q_notify(oqp);
+ 891              		.loc 2 340 0
+ 892 0076 039B     		ldr	r3, [sp, #12]
+ 893 0078 DB69     		ldr	r3, [r3, #28]
+ 894 007a 0398     		ldr	r0, [sp, #12]
+ 895 007c 9847     		blx	r3
+ 896              	.L44:
+ 341:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 342:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chSysUnlock();
+ 897              		.loc 2 342 0
+ 898 007e FFF7FEFF 		bl	dbg_check_unlock
+ 899              	.LBB13:
+ 900 0082 0023     		movs	r3, #0
+ 901              	@ 342 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 902 0084 83F31188 		msr     BASEPRI, r3
+ 903              	@ 0 "" 2
+ 904              		.thumb
+ 905              	.LBE13:
+ 343:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   return Q_OK;
+ 906              		.loc 2 343 0
+ 907 0088 0023     		movs	r3, #0
+ 908              	.L41:
+ 344:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 909              		.loc 2 344 0
+ 910 008a 1846     		mov	r0, r3
+ 911 008c 07B0     		add	sp, sp, #28
+ 912              		@ sp needed
+ 913 008e 5DF804FB 		ldr	pc, [sp], #4
+ 914              		.cfi_endproc
+ 915              	.LFE15:
+ 917 0092 00BFAFF3 		.section	.text.chOQGetI,"ax",%progbits
+ 917      0080AFF3 
+ 917      0080AFF3 
+ 917      0080
+ 918              		.align	2
+ 919              		.p2align 4,,15
+ 920              		.global	chOQGetI
+ 921              		.thumb
+ 922              		.thumb_func
+ 924              	chOQGetI:
+ 925              	.LFB16:
+ 345:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 346:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+ 347:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Output queue read.
+ 348:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details A byte value is read from the low end of an output queue.
+ 349:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 350:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] oqp       pointer to an @p OutputQueue structure
+ 351:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @return              The byte value from the queue.
+ 352:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @retval Q_EMPTY      if the queue is empty.
+ 353:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 354:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @iclass
+ 355:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+ 356:/usr/src/chibiostest/os/kernel/src/chqueues.c **** msg_t chOQGetI(OutputQueue *oqp) {
+ 926              		.loc 2 356 0
+ 927              		.cfi_startproc
+ 928              		@ args = 0, pretend = 0, frame = 16
+ 929              		@ frame_needed = 0, uses_anonymous_args = 0
+ 930 0000 00B5     		push	{lr}
+ 931              		.cfi_def_cfa_offset 4
+ 932              		.cfi_offset 14, -4
+ 933 0002 85B0     		sub	sp, sp, #20
+ 934              		.cfi_def_cfa_offset 24
+ 935 0004 0190     		str	r0, [sp, #4]
+ 357:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   uint8_t b;
+ 358:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 359:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chDbgCheckClassI();
+ 936              		.loc 2 359 0
+ 937 0006 FFF7FEFF 		bl	chDbgCheckClassI
+ 360:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 361:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (chOQIsEmptyI(oqp))
+ 938              		.loc 2 361 0
+ 939 000a 019B     		ldr	r3, [sp, #4]
+ 940 000c 5A69     		ldr	r2, [r3, #20]
+ 941 000e 019B     		ldr	r3, [sp, #4]
+ 942 0010 9B69     		ldr	r3, [r3, #24]
+ 943 0012 9A42     		cmp	r2, r3
+ 944 0014 06D1     		bne	.L46
+ 945              		.loc 2 361 0 is_stmt 0 discriminator 1
+ 946 0016 019B     		ldr	r3, [sp, #4]
+ 947 0018 9B68     		ldr	r3, [r3, #8]
+ 948 001a 002B     		cmp	r3, #0
+ 949 001c 02D0     		beq	.L46
+ 362:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     return Q_EMPTY;
+ 950              		.loc 2 362 0 is_stmt 1
+ 951 001e 6FF00203 		mvn	r3, #2
+ 952 0022 28E0     		b	.L47
+ 953              	.L46:
+ 363:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 364:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   oqp->q_counter++;
+ 954              		.loc 2 364 0
+ 955 0024 019B     		ldr	r3, [sp, #4]
+ 956 0026 9B68     		ldr	r3, [r3, #8]
+ 957 0028 5A1C     		adds	r2, r3, #1
+ 958 002a 019B     		ldr	r3, [sp, #4]
+ 959 002c 9A60     		str	r2, [r3, #8]
+ 365:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   b = *oqp->q_rdptr++;
+ 960              		.loc 2 365 0
+ 961 002e 019B     		ldr	r3, [sp, #4]
+ 962 0030 9B69     		ldr	r3, [r3, #24]
+ 963 0032 591C     		adds	r1, r3, #1
+ 964 0034 019A     		ldr	r2, [sp, #4]
+ 965 0036 9161     		str	r1, [r2, #24]
+ 966 0038 1B78     		ldrb	r3, [r3]
+ 967 003a 8DF80F30 		strb	r3, [sp, #15]
+ 366:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (oqp->q_rdptr >= oqp->q_top)
+ 968              		.loc 2 366 0
+ 969 003e 019B     		ldr	r3, [sp, #4]
+ 970 0040 9A69     		ldr	r2, [r3, #24]
+ 971 0042 019B     		ldr	r3, [sp, #4]
+ 972 0044 1B69     		ldr	r3, [r3, #16]
+ 973 0046 9A42     		cmp	r2, r3
+ 974 0048 03D3     		bcc	.L48
+ 367:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     oqp->q_rdptr = oqp->q_buffer;
+ 975              		.loc 2 367 0
+ 976 004a 019B     		ldr	r3, [sp, #4]
+ 977 004c DA68     		ldr	r2, [r3, #12]
+ 978 004e 019B     		ldr	r3, [sp, #4]
+ 979 0050 9A61     		str	r2, [r3, #24]
+ 980              	.L48:
+ 368:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 369:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   if (notempty(&oqp->q_waiting))
+ 981              		.loc 2 369 0
+ 982 0052 019B     		ldr	r3, [sp, #4]
+ 983 0054 1A68     		ldr	r2, [r3]
+ 984 0056 019B     		ldr	r3, [sp, #4]
+ 985 0058 9A42     		cmp	r2, r3
+ 986 005a 0AD0     		beq	.L49
+ 370:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     chSchReadyI(fifo_remove(&oqp->q_waiting))->p_u.rdymsg = Q_OK;
+ 987              		.loc 2 370 0
+ 988 005c 019B     		ldr	r3, [sp, #4]
+ 989 005e 1846     		mov	r0, r3
+ 990 0060 FFF7FEFF 		bl	fifo_remove
+ 991 0064 0346     		mov	r3, r0
+ 992 0066 1846     		mov	r0, r3
+ 993 0068 FFF7FEFF 		bl	chSchReadyI
+ 994 006c 0346     		mov	r3, r0
+ 995 006e 0022     		movs	r2, #0
+ 996 0070 9A62     		str	r2, [r3, #40]
+ 997              	.L49:
+ 371:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 372:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   return b;
+ 998              		.loc 2 372 0
+ 999 0072 9DF80F30 		ldrb	r3, [sp, #15]	@ zero_extendqisi2
+ 1000              	.L47:
+ 373:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 1001              		.loc 2 373 0
+ 1002 0076 1846     		mov	r0, r3
+ 1003 0078 05B0     		add	sp, sp, #20
+ 1004              		@ sp needed
+ 1005 007a 5DF804FB 		ldr	pc, [sp], #4
+ 1006              		.cfi_endproc
+ 1007              	.LFE16:
+ 1009 007e 00BF     		.section	.rodata
+ 1010              		.align	2
+ 1011              	.LC1:
+ 1012 0014 2263684F 		.ascii	"\"chOQWriteTimeout\"()\000"
+ 1012      51577269 
+ 1012      74655469 
+ 1012      6D656F75 
+ 1012      74222829 
+ 1013 0029 000000   		.section	.text.chOQWriteTimeout,"ax",%progbits
+ 1014              		.align	2
+ 1015              		.p2align 4,,15
+ 1016              		.global	chOQWriteTimeout
+ 1017              		.thumb
+ 1018              		.thumb_func
+ 1020              	chOQWriteTimeout:
+ 1021              	.LFB17:
+ 374:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 375:/usr/src/chibiostest/os/kernel/src/chqueues.c **** /**
+ 376:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @brief   Output queue write with timeout.
+ 377:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @details The function writes data from a buffer to an output queue. The
+ 378:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          operation completes when the specified amount of data has been
+ 379:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          transferred or after the specified timeout or if the queue has
+ 380:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          been reset.
+ 381:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @note    The function is not atomic, if you need atomicity it is suggested
+ 382:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          to use a semaphore or a mutex for mutual exclusion.
+ 383:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @note    The callback is invoked after writing each character into the
+ 384:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *          buffer.
+ 385:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 386:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] oqp       pointer to an @p OutputQueue structure
+ 387:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[out] bp       pointer to the data buffer
+ 388:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] n         the maximum amount of data to be transferred, the
+ 389:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      value 0 is reserved
+ 390:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @param[in] time      the number of ticks before the operation timeouts,
+ 391:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      the following special values are allowed:
+ 392:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      - @a TIME_IMMEDIATE immediate timeout.
+ 393:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      - @a TIME_INFINITE no timeout.
+ 394:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *                      .
+ 395:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @return              The number of bytes effectively transferred.
+ 396:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  *
+ 397:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  * @api
+ 398:/usr/src/chibiostest/os/kernel/src/chqueues.c ****  */
+ 399:/usr/src/chibiostest/os/kernel/src/chqueues.c **** size_t chOQWriteTimeout(OutputQueue *oqp, const uint8_t *bp,
+ 400:/usr/src/chibiostest/os/kernel/src/chqueues.c ****                         size_t n, systime_t time) {
+ 1022              		.loc 2 400 0
+ 1023              		.cfi_startproc
+ 1024              		@ args = 0, pretend = 0, frame = 24
+ 1025              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1026 0000 00B5     		push	{lr}
+ 1027              		.cfi_def_cfa_offset 4
+ 1028              		.cfi_offset 14, -4
+ 1029 0002 87B0     		sub	sp, sp, #28
+ 1030              		.cfi_def_cfa_offset 32
+ 1031 0004 0390     		str	r0, [sp, #12]
+ 1032 0006 0291     		str	r1, [sp, #8]
+ 1033 0008 0192     		str	r2, [sp, #4]
+ 1034 000a 0093     		str	r3, [sp]
+ 401:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   qnotify_t nfy = oqp->q_notify;
+ 1035              		.loc 2 401 0
+ 1036 000c 039B     		ldr	r3, [sp, #12]
+ 1037 000e DB69     		ldr	r3, [r3, #28]
+ 1038 0010 0493     		str	r3, [sp, #16]
+ 402:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   size_t w = 0;
+ 1039              		.loc 2 402 0
+ 1040 0012 0023     		movs	r3, #0
+ 1041 0014 0593     		str	r3, [sp, #20]
+ 403:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 404:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chDbgCheck(n > 0, "chOQWriteTimeout");
+ 1042              		.loc 2 404 0
+ 1043 0016 019B     		ldr	r3, [sp, #4]
+ 1044 0018 002B     		cmp	r3, #0
+ 1045 001a 02D1     		bne	.L51
+ 1046              		.loc 2 404 0 is_stmt 0 discriminator 1
+ 1047 001c 2A48     		ldr	r0, .L59
+ 1048 001e FFF7FEFF 		bl	chDbgPanic
+ 1049              	.L51:
+ 1050              	.LBB14:
+ 405:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 406:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   chSysLock();
+ 1051              		.loc 2 406 0 is_stmt 1
+ 1052 0022 2023     		movs	r3, #32
+ 1053              	@ 406 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 1054 0024 83F31188 		msr     BASEPRI, r3
+ 1055              	@ 0 "" 2
+ 1056              		.thumb
+ 1057              	.LBE14:
+ 1058 0028 FFF7FEFF 		bl	dbg_check_lock
+ 407:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   while (TRUE) {
+ 408:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     while (chOQIsFullI(oqp)) {
+ 1059              		.loc 2 408 0
+ 1060 002c 0DE0     		b	.L52
+ 1061              	.L54:
+ 409:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       if (qwait((GenericQueue *)oqp, time) != Q_OK) {
+ 1062              		.loc 2 409 0
+ 1063 002e 0398     		ldr	r0, [sp, #12]
+ 1064 0030 0099     		ldr	r1, [sp]
+ 1065 0032 FFF7FEFF 		bl	qwait
+ 1066 0036 0346     		mov	r3, r0
+ 1067 0038 002B     		cmp	r3, #0
+ 1068 003a 06D0     		beq	.L52
+ 410:/usr/src/chibiostest/os/kernel/src/chqueues.c ****         chSysUnlock();
+ 1069              		.loc 2 410 0
+ 1070 003c FFF7FEFF 		bl	dbg_check_unlock
+ 1071              	.LBB15:
+ 1072 0040 0023     		movs	r3, #0
+ 1073              	@ 410 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 1074 0042 83F31188 		msr     BASEPRI, r3
+ 1075              	@ 0 "" 2
+ 1076              		.thumb
+ 1077              	.LBE15:
+ 411:/usr/src/chibiostest/os/kernel/src/chqueues.c ****         return w;
+ 1078              		.loc 2 411 0
+ 1079 0046 059B     		ldr	r3, [sp, #20]
+ 1080 0048 39E0     		b	.L53
+ 1081              	.L52:
+ 408:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       if (qwait((GenericQueue *)oqp, time) != Q_OK) {
+ 1082              		.loc 2 408 0 discriminator 1
+ 1083 004a 039B     		ldr	r3, [sp, #12]
+ 1084 004c 9B68     		ldr	r3, [r3, #8]
+ 1085 004e 002B     		cmp	r3, #0
+ 1086 0050 EDD0     		beq	.L54
+ 412:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       }
+ 413:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     }
+ 414:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     oqp->q_counter--;
+ 1087              		.loc 2 414 0
+ 1088 0052 039B     		ldr	r3, [sp, #12]
+ 1089 0054 9B68     		ldr	r3, [r3, #8]
+ 1090 0056 5A1E     		subs	r2, r3, #1
+ 1091 0058 039B     		ldr	r3, [sp, #12]
+ 1092 005a 9A60     		str	r2, [r3, #8]
+ 415:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     *oqp->q_wrptr++ = *bp++;
+ 1093              		.loc 2 415 0
+ 1094 005c 039B     		ldr	r3, [sp, #12]
+ 1095 005e 5B69     		ldr	r3, [r3, #20]
+ 1096 0060 591C     		adds	r1, r3, #1
+ 1097 0062 039A     		ldr	r2, [sp, #12]
+ 1098 0064 5161     		str	r1, [r2, #20]
+ 1099 0066 029A     		ldr	r2, [sp, #8]
+ 1100 0068 511C     		adds	r1, r2, #1
+ 1101 006a 0291     		str	r1, [sp, #8]
+ 1102 006c 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 1103 006e 1A70     		strb	r2, [r3]
+ 416:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     if (oqp->q_wrptr >= oqp->q_top)
+ 1104              		.loc 2 416 0
+ 1105 0070 039B     		ldr	r3, [sp, #12]
+ 1106 0072 5A69     		ldr	r2, [r3, #20]
+ 1107 0074 039B     		ldr	r3, [sp, #12]
+ 1108 0076 1B69     		ldr	r3, [r3, #16]
+ 1109 0078 9A42     		cmp	r2, r3
+ 1110 007a 03D3     		bcc	.L55
+ 417:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       oqp->q_wrptr = oqp->q_buffer;
+ 1111              		.loc 2 417 0
+ 1112 007c 039B     		ldr	r3, [sp, #12]
+ 1113 007e DA68     		ldr	r2, [r3, #12]
+ 1114 0080 039B     		ldr	r3, [sp, #12]
+ 1115 0082 5A61     		str	r2, [r3, #20]
+ 1116              	.L55:
+ 418:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 419:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     if (nfy)
+ 1117              		.loc 2 419 0
+ 1118 0084 049B     		ldr	r3, [sp, #16]
+ 1119 0086 002B     		cmp	r3, #0
+ 1120 0088 02D0     		beq	.L56
+ 420:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       nfy(oqp);
+ 1121              		.loc 2 420 0
+ 1122 008a 049B     		ldr	r3, [sp, #16]
+ 1123 008c 0398     		ldr	r0, [sp, #12]
+ 1124 008e 9847     		blx	r3
+ 1125              	.L56:
+ 421:/usr/src/chibiostest/os/kernel/src/chqueues.c **** 
+ 422:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     chSysUnlock(); /* Gives a preemption chance in a controlled point.*/
+ 1126              		.loc 2 422 0
+ 1127 0090 FFF7FEFF 		bl	dbg_check_unlock
+ 1128              	.LBB16:
+ 1129 0094 0023     		movs	r3, #0
+ 1130              	@ 422 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 1131 0096 83F31188 		msr     BASEPRI, r3
+ 1132              	@ 0 "" 2
+ 1133              		.thumb
+ 1134              	.LBE16:
+ 423:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     w++;
+ 1135              		.loc 2 423 0
+ 1136 009a 059B     		ldr	r3, [sp, #20]
+ 1137 009c 0133     		adds	r3, r3, #1
+ 1138 009e 0593     		str	r3, [sp, #20]
+ 424:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     if (--n == 0)
+ 1139              		.loc 2 424 0
+ 1140 00a0 019B     		ldr	r3, [sp, #4]
+ 1141 00a2 013B     		subs	r3, r3, #1
+ 1142 00a4 0193     		str	r3, [sp, #4]
+ 1143 00a6 019B     		ldr	r3, [sp, #4]
+ 1144 00a8 002B     		cmp	r3, #0
+ 1145 00aa 01D1     		bne	.L57
+ 425:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       return w;
+ 1146              		.loc 2 425 0
+ 1147 00ac 059B     		ldr	r3, [sp, #20]
+ 1148 00ae 06E0     		b	.L53
+ 1149              	.L57:
+ 1150              	.LBB17:
+ 426:/usr/src/chibiostest/os/kernel/src/chqueues.c ****     chSysLock();
+ 1151              		.loc 2 426 0
+ 1152 00b0 2023     		movs	r3, #32
+ 1153              	@ 426 "/usr/src/chibiostest/os/kernel/src/chqueues.c" 1
+ 1154 00b2 83F31188 		msr     BASEPRI, r3
+ 1155              	@ 0 "" 2
+ 1156              		.thumb
+ 1157              	.LBE17:
+ 1158 00b6 FFF7FEFF 		bl	dbg_check_lock
+ 427:/usr/src/chibiostest/os/kernel/src/chqueues.c ****   }
+ 1159              		.loc 2 427 0
+ 1160 00ba 00BF     		nop
+ 408:/usr/src/chibiostest/os/kernel/src/chqueues.c ****       if (qwait((GenericQueue *)oqp, time) != Q_OK) {
+ 1161              		.loc 2 408 0
+ 1162 00bc C5E7     		b	.L52
+ 1163              	.L53:
+ 428:/usr/src/chibiostest/os/kernel/src/chqueues.c **** }
+ 1164              		.loc 2 428 0
+ 1165 00be 1846     		mov	r0, r3
+ 1166 00c0 07B0     		add	sp, sp, #28
+ 1167              		@ sp needed
+ 1168 00c2 5DF804FB 		ldr	pc, [sp], #4
+ 1169              	.L60:
+ 1170 00c6 00BF     		.align	2
+ 1171              	.L59:
+ 1172 00c8 14000000 		.word	.LC1
+ 1173              		.cfi_endproc
+ 1174              	.LFE17:
+ 1176 00cc AFF30080 		.text
+ 1177              	.Letext0:
+ 1178              		.file 3 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
+ 1179              		.file 4 "/usr/include/newlib/machine/_default_types.h"
+ 1180              		.file 5 "/usr/include/newlib/stdint.h"
+ 1181              		.file 6 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 1182              		.file 7 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 1183              		.file 8 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 1184              		.file 9 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 1185              		.file 10 "/usr/src/chibiostest/os/kernel/include/chschd.h"
+ 1186              		.file 11 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+ 1187              		.file 12 "/usr/src/chibiostest/os/kernel/include/chqueues.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chqueues.c
+     /tmp/ccTSjZnr.s:20     .text.queue_insert:0000000000000000 $t
+     /tmp/ccTSjZnr.s:25     .text.queue_insert:0000000000000000 queue_insert
+     /tmp/ccTSjZnr.s:63     .text.fifo_remove:0000000000000000 $t
+     /tmp/ccTSjZnr.s:68     .text.fifo_remove:0000000000000000 fifo_remove
+     /tmp/ccTSjZnr.s:102    .text.qwait:0000000000000000 $t
+     /tmp/ccTSjZnr.s:107    .text.qwait:0000000000000000 qwait
+     /tmp/ccTSjZnr.s:155    .text.qwait:000000000000003c $d
+     /tmp/ccTSjZnr.s:160    .text.chIQInit:0000000000000000 $t
+     /tmp/ccTSjZnr.s:166    .text.chIQInit:0000000000000000 chIQInit
+     /tmp/ccTSjZnr.s:225    .text.chIQResetI:0000000000000000 $t
+     /tmp/ccTSjZnr.s:231    .text.chIQResetI:0000000000000000 chIQResetI
+     /tmp/ccTSjZnr.s:286    .text.chIQPutI:0000000000000000 $t
+     /tmp/ccTSjZnr.s:292    .text.chIQPutI:0000000000000000 chIQPutI
+     /tmp/ccTSjZnr.s:380    .text.chIQGetTimeout:0000000000000000 $t
+     /tmp/ccTSjZnr.s:386    .text.chIQGetTimeout:0000000000000000 chIQGetTimeout
+     /tmp/ccTSjZnr.s:499    .rodata:0000000000000000 $d
+     /tmp/ccTSjZnr.s:503    .text.chIQReadTimeout:0000000000000000 $t
+     /tmp/ccTSjZnr.s:509    .text.chIQReadTimeout:0000000000000000 chIQReadTimeout
+     /tmp/ccTSjZnr.s:661    .text.chIQReadTimeout:00000000000000c8 $d
+     /tmp/ccTSjZnr.s:666    .text.chOQInit:0000000000000000 $t
+     /tmp/ccTSjZnr.s:672    .text.chOQInit:0000000000000000 chOQInit
+     /tmp/ccTSjZnr.s:731    .text.chOQResetI:0000000000000000 $t
+     /tmp/ccTSjZnr.s:737    .text.chOQResetI:0000000000000000 chOQResetI
+     /tmp/ccTSjZnr.s:798    .text.chOQPutTimeout:0000000000000000 $t
+     /tmp/ccTSjZnr.s:804    .text.chOQPutTimeout:0000000000000000 chOQPutTimeout
+     /tmp/ccTSjZnr.s:918    .text.chOQGetI:0000000000000000 $t
+     /tmp/ccTSjZnr.s:924    .text.chOQGetI:0000000000000000 chOQGetI
+     /tmp/ccTSjZnr.s:1014   .text.chOQWriteTimeout:0000000000000000 $t
+     /tmp/ccTSjZnr.s:1020   .text.chOQWriteTimeout:0000000000000000 chOQWriteTimeout
+     /tmp/ccTSjZnr.s:1172   .text.chOQWriteTimeout:00000000000000c8 $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccTSjZnr.s:665    .text.chIQReadTimeout:00000000000000cc $t
+     /tmp/ccTSjZnr.s:1176   .text.chOQWriteTimeout:00000000000000cc $t
+
+UNDEFINED SYMBOLS
+chSchGoSleepTimeoutS
+rlist
+chDbgCheckClassI
+chSchReadyI
+dbg_check_lock
+dbg_check_unlock
+chDbgPanic

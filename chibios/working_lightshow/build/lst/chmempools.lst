@@ -1,0 +1,607 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chmempools.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.rodata
+  20              		.align	2
+  21              	.LC0:
+  22 0000 22636850 		.ascii	"\"chPoolInit\"()\000"
+  22      6F6F6C49 
+  22      6E697422 
+  22      282900
+  23              		.section	.text.chPoolInit,"ax",%progbits
+  24              		.align	2
+  25              		.p2align 4,,15
+  26              		.global	chPoolInit
+  27              		.thumb
+  28              		.thumb_func
+  30              	chPoolInit:
+  31              	.LFB7:
+  32              		.file 1 "/usr/src/chibiostest/os/kernel/src/chmempools.c"
+   1:/usr/src/chibiostest/os/kernel/src/chmempools.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chmempools.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chmempools.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  21:/usr/src/chibiostest/os/kernel/src/chmempools.c **** /**
+  22:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @file    chmempools.c
+  23:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @brief   Memory Pools code.
+  24:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+  25:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @addtogroup pools
+  26:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @details Memory Pools related APIs and services.
+  27:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          <h2>Operation mode</h2>
+  28:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          The Memory Pools APIs allow to allocate/free fixed size objects in
+  29:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          <b>constant time</b> and reliably without memory fragmentation
+  30:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          problems.<br>
+  31:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          Memory Pools do not enforce any alignment constraint on the
+  32:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          contained object however the objects must be properly aligned
+  33:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          to contain a pointer to void.
+  34:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     In order to use the memory pools APIs the @p CH_USE_MEMPOOLS option
+  35:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          must be enabled in @p chconf.h.
+  36:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @{
+  37:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  */
+  38:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  39:/usr/src/chibiostest/os/kernel/src/chmempools.c **** #include "ch.h"
+  40:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  41:/usr/src/chibiostest/os/kernel/src/chmempools.c **** #if CH_USE_MEMPOOLS || defined(__DOXYGEN__)
+  42:/usr/src/chibiostest/os/kernel/src/chmempools.c **** /**
+  43:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @brief   Initializes an empty memory pool.
+  44:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @note    The size is internally aligned to be a multiple of the
+  45:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          @p stkalign_t type size.
+  46:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+  47:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[out] mp       pointer to a @p MemoryPool structure
+  48:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] size      the size of the objects contained in this memory pool,
+  49:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *                      the minimum accepted size is the size of a pointer to
+  50:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *                      void.
+  51:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] provider  memory provider function for the memory pool or
+  52:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *                      @p NULL if the pool is not allowed to grow
+  53:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *                      automatically
+  54:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+  55:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @init
+  56:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  */
+  57:/usr/src/chibiostest/os/kernel/src/chmempools.c **** void chPoolInit(MemoryPool *mp, size_t size, memgetfunc_t provider) {
+  33              		.loc 1 57 0
+  34              		.cfi_startproc
+  35              		@ args = 0, pretend = 0, frame = 16
+  36              		@ frame_needed = 0, uses_anonymous_args = 0
+  37 0000 00B5     		push	{lr}
+  38              		.cfi_def_cfa_offset 4
+  39              		.cfi_offset 14, -4
+  40 0002 85B0     		sub	sp, sp, #20
+  41              		.cfi_def_cfa_offset 24
+  42 0004 0390     		str	r0, [sp, #12]
+  43 0006 0291     		str	r1, [sp, #8]
+  44 0008 0192     		str	r2, [sp, #4]
+  58:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  59:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chDbgCheck((mp != NULL) && (size >= sizeof(void *)), "chPoolInit");
+  45              		.loc 1 59 0
+  46 000a 039B     		ldr	r3, [sp, #12]
+  47 000c 002B     		cmp	r3, #0
+  48 000e 02D0     		beq	.L2
+  49              		.loc 1 59 0 is_stmt 0 discriminator 2
+  50 0010 029B     		ldr	r3, [sp, #8]
+  51 0012 032B     		cmp	r3, #3
+  52 0014 02D8     		bhi	.L3
+  53              	.L2:
+  54              		.loc 1 59 0 discriminator 1
+  55 0016 0748     		ldr	r0, .L4
+  56 0018 FFF7FEFF 		bl	chDbgPanic
+  57              	.L3:
+  60:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  61:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   mp->mp_next = NULL;
+  58              		.loc 1 61 0 is_stmt 1
+  59 001c 039B     		ldr	r3, [sp, #12]
+  60 001e 0022     		movs	r2, #0
+  61 0020 1A60     		str	r2, [r3]
+  62:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   mp->mp_object_size = size;
+  62              		.loc 1 62 0
+  63 0022 039B     		ldr	r3, [sp, #12]
+  64 0024 029A     		ldr	r2, [sp, #8]
+  65 0026 5A60     		str	r2, [r3, #4]
+  63:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   mp->mp_provider = provider;
+  66              		.loc 1 63 0
+  67 0028 039B     		ldr	r3, [sp, #12]
+  68 002a 019A     		ldr	r2, [sp, #4]
+  69 002c 9A60     		str	r2, [r3, #8]
+  64:/usr/src/chibiostest/os/kernel/src/chmempools.c **** }
+  70              		.loc 1 64 0
+  71 002e 05B0     		add	sp, sp, #20
+  72              		@ sp needed
+  73 0030 5DF804FB 		ldr	pc, [sp], #4
+  74              	.L5:
+  75              		.align	2
+  76              	.L4:
+  77 0034 00000000 		.word	.LC0
+  78              		.cfi_endproc
+  79              	.LFE7:
+  81 0038 AFF30080 		.section	.rodata
+  81      AFF30080 
+  82 000f 00       		.align	2
+  83              	.LC1:
+  84 0010 22636850 		.ascii	"\"chPoolLoadArray\"()\000"
+  84      6F6F6C4C 
+  84      6F616441 
+  84      72726179 
+  84      22282900 
+  85              		.section	.text.chPoolLoadArray,"ax",%progbits
+  86              		.align	2
+  87              		.p2align 4,,15
+  88              		.global	chPoolLoadArray
+  89              		.thumb
+  90              		.thumb_func
+  92              	chPoolLoadArray:
+  93              	.LFB8:
+  65:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  66:/usr/src/chibiostest/os/kernel/src/chmempools.c **** /**
+  67:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @brief   Loads a memory pool with an array of static objects.
+  68:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     The memory pool must be already been initialized.
+  69:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     The array elements must be of the right size for the specified
+  70:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          memory pool.
+  71:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @post    The memory pool contains the elements of the input array.
+  72:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+  73:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] mp        pointer to a @p MemoryPool structure
+  74:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] p         pointer to the array first element
+  75:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] n         number of elements in the array
+  76:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+  77:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @api
+  78:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  */
+  79:/usr/src/chibiostest/os/kernel/src/chmempools.c **** void chPoolLoadArray(MemoryPool *mp, void *p, size_t n) {
+  94              		.loc 1 79 0
+  95              		.cfi_startproc
+  96              		@ args = 0, pretend = 0, frame = 16
+  97              		@ frame_needed = 0, uses_anonymous_args = 0
+  98 0000 00B5     		push	{lr}
+  99              		.cfi_def_cfa_offset 4
+ 100              		.cfi_offset 14, -4
+ 101 0002 85B0     		sub	sp, sp, #20
+ 102              		.cfi_def_cfa_offset 24
+ 103 0004 0390     		str	r0, [sp, #12]
+ 104 0006 0291     		str	r1, [sp, #8]
+ 105 0008 0192     		str	r2, [sp, #4]
+  80:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  81:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chDbgCheck((mp != NULL) && (n != 0), "chPoolLoadArray");
+ 106              		.loc 1 81 0
+ 107 000a 039B     		ldr	r3, [sp, #12]
+ 108 000c 002B     		cmp	r3, #0
+ 109 000e 02D0     		beq	.L7
+ 110              		.loc 1 81 0 is_stmt 0 discriminator 2
+ 111 0010 019B     		ldr	r3, [sp, #4]
+ 112 0012 002B     		cmp	r3, #0
+ 113 0014 03D1     		bne	.L8
+ 114              	.L7:
+ 115              		.loc 1 81 0 discriminator 1
+ 116 0016 0B48     		ldr	r0, .L11
+ 117 0018 FFF7FEFF 		bl	chDbgPanic
+  82:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  83:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   while (n) {
+ 118              		.loc 1 83 0 is_stmt 1 discriminator 1
+ 119 001c 0CE0     		b	.L9
+ 120              	.L8:
+ 121              		.loc 1 83 0 is_stmt 0
+ 122 001e 0BE0     		b	.L9
+ 123              	.L10:
+  84:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     chPoolAdd(mp, p);
+ 124              		.loc 1 84 0 is_stmt 1
+ 125 0020 0398     		ldr	r0, [sp, #12]
+ 126 0022 0299     		ldr	r1, [sp, #8]
+ 127 0024 FFF7FEFF 		bl	chPoolFree
+  85:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     p = (void *)(((uint8_t *)p) + mp->mp_object_size);
+ 128              		.loc 1 85 0
+ 129 0028 039B     		ldr	r3, [sp, #12]
+ 130 002a 5B68     		ldr	r3, [r3, #4]
+ 131 002c 029A     		ldr	r2, [sp, #8]
+ 132 002e 1344     		add	r3, r3, r2
+ 133 0030 0293     		str	r3, [sp, #8]
+  86:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     n--;
+ 134              		.loc 1 86 0
+ 135 0032 019B     		ldr	r3, [sp, #4]
+ 136 0034 013B     		subs	r3, r3, #1
+ 137 0036 0193     		str	r3, [sp, #4]
+ 138              	.L9:
+  83:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     chPoolAdd(mp, p);
+ 139              		.loc 1 83 0 discriminator 1
+ 140 0038 019B     		ldr	r3, [sp, #4]
+ 141 003a 002B     		cmp	r3, #0
+ 142 003c F0D1     		bne	.L10
+  87:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   }
+  88:/usr/src/chibiostest/os/kernel/src/chmempools.c **** }
+ 143              		.loc 1 88 0
+ 144 003e 05B0     		add	sp, sp, #20
+ 145              		@ sp needed
+ 146 0040 5DF804FB 		ldr	pc, [sp], #4
+ 147              	.L12:
+ 148              		.align	2
+ 149              	.L11:
+ 150 0044 10000000 		.word	.LC1
+ 151              		.cfi_endproc
+ 152              	.LFE8:
+ 154 0048 AFF30080 		.section	.rodata
+ 154      AFF30080 
+ 155              		.align	2
+ 156              	.LC2:
+ 157 0024 22636850 		.ascii	"\"chPoolAllocI\"()\000"
+ 157      6F6F6C41 
+ 157      6C6C6F63 
+ 157      49222829 
+ 157      00
+ 158              		.section	.text.chPoolAllocI,"ax",%progbits
+ 159              		.align	2
+ 160              		.p2align 4,,15
+ 161              		.global	chPoolAllocI
+ 162              		.thumb
+ 163              		.thumb_func
+ 165              	chPoolAllocI:
+ 166              	.LFB9:
+  89:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+  90:/usr/src/chibiostest/os/kernel/src/chmempools.c **** /**
+  91:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @brief   Allocates an object from a memory pool.
+  92:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     The memory pool must be already been initialized.
+  93:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+  94:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] mp        pointer to a @p MemoryPool structure
+  95:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @return              The pointer to the allocated object.
+  96:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @retval NULL         if pool is empty.
+  97:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+  98:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @iclass
+  99:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  */
+ 100:/usr/src/chibiostest/os/kernel/src/chmempools.c **** void *chPoolAllocI(MemoryPool *mp) {
+ 167              		.loc 1 100 0
+ 168              		.cfi_startproc
+ 169              		@ args = 0, pretend = 0, frame = 16
+ 170              		@ frame_needed = 0, uses_anonymous_args = 0
+ 171 0000 00B5     		push	{lr}
+ 172              		.cfi_def_cfa_offset 4
+ 173              		.cfi_offset 14, -4
+ 174 0002 85B0     		sub	sp, sp, #20
+ 175              		.cfi_def_cfa_offset 24
+ 176 0004 0190     		str	r0, [sp, #4]
+ 101:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   void *objp;
+ 102:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+ 103:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chDbgCheckClassI();
+ 177              		.loc 1 103 0
+ 178 0006 FFF7FEFF 		bl	chDbgCheckClassI
+ 104:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chDbgCheck(mp != NULL, "chPoolAllocI");
+ 179              		.loc 1 104 0
+ 180 000a 019B     		ldr	r3, [sp, #4]
+ 181 000c 002B     		cmp	r3, #0
+ 182 000e 02D1     		bne	.L14
+ 183              		.loc 1 104 0 is_stmt 0 discriminator 1
+ 184 0010 0F48     		ldr	r0, .L18
+ 185 0012 FFF7FEFF 		bl	chDbgPanic
+ 186              	.L14:
+ 105:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+ 106:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   if ((objp = mp->mp_next) != NULL)
+ 187              		.loc 1 106 0 is_stmt 1
+ 188 0016 019B     		ldr	r3, [sp, #4]
+ 189 0018 1B68     		ldr	r3, [r3]
+ 190 001a 0393     		str	r3, [sp, #12]
+ 191 001c 039B     		ldr	r3, [sp, #12]
+ 192 001e 002B     		cmp	r3, #0
+ 193 0020 05D0     		beq	.L15
+ 107:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     mp->mp_next = mp->mp_next->ph_next;
+ 194              		.loc 1 107 0
+ 195 0022 019B     		ldr	r3, [sp, #4]
+ 196 0024 1B68     		ldr	r3, [r3]
+ 197 0026 1A68     		ldr	r2, [r3]
+ 198 0028 019B     		ldr	r3, [sp, #4]
+ 199 002a 1A60     		str	r2, [r3]
+ 200 002c 0AE0     		b	.L16
+ 201              	.L15:
+ 108:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   else if (mp->mp_provider != NULL)
+ 202              		.loc 1 108 0
+ 203 002e 019B     		ldr	r3, [sp, #4]
+ 204 0030 9B68     		ldr	r3, [r3, #8]
+ 205 0032 002B     		cmp	r3, #0
+ 206 0034 06D0     		beq	.L16
+ 109:/usr/src/chibiostest/os/kernel/src/chmempools.c ****     objp = mp->mp_provider(mp->mp_object_size);
+ 207              		.loc 1 109 0
+ 208 0036 019B     		ldr	r3, [sp, #4]
+ 209 0038 9B68     		ldr	r3, [r3, #8]
+ 210 003a 019A     		ldr	r2, [sp, #4]
+ 211 003c 5268     		ldr	r2, [r2, #4]
+ 212 003e 1046     		mov	r0, r2
+ 213 0040 9847     		blx	r3
+ 214 0042 0390     		str	r0, [sp, #12]
+ 215              	.L16:
+ 110:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   return objp;
+ 216              		.loc 1 110 0
+ 217 0044 039B     		ldr	r3, [sp, #12]
+ 111:/usr/src/chibiostest/os/kernel/src/chmempools.c **** }
+ 218              		.loc 1 111 0
+ 219 0046 1846     		mov	r0, r3
+ 220 0048 05B0     		add	sp, sp, #20
+ 221              		@ sp needed
+ 222 004a 5DF804FB 		ldr	pc, [sp], #4
+ 223              	.L19:
+ 224 004e 00BF     		.align	2
+ 225              	.L18:
+ 226 0050 24000000 		.word	.LC2
+ 227              		.cfi_endproc
+ 228              	.LFE9:
+ 230 0054 AFF30080 		.section	.text.chPoolAlloc,"ax",%progbits
+ 230      AFF30080 
+ 230      AFF30080 
+ 231              		.align	2
+ 232              		.p2align 4,,15
+ 233              		.global	chPoolAlloc
+ 234              		.thumb
+ 235              		.thumb_func
+ 237              	chPoolAlloc:
+ 238              	.LFB10:
+ 112:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+ 113:/usr/src/chibiostest/os/kernel/src/chmempools.c **** /**
+ 114:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @brief   Allocates an object from a memory pool.
+ 115:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     The memory pool must be already been initialized.
+ 116:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+ 117:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] mp        pointer to a @p MemoryPool structure
+ 118:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @return              The pointer to the allocated object.
+ 119:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @retval NULL         if pool is empty.
+ 120:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+ 121:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @api
+ 122:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  */
+ 123:/usr/src/chibiostest/os/kernel/src/chmempools.c **** void *chPoolAlloc(MemoryPool *mp) {
+ 239              		.loc 1 123 0
+ 240              		.cfi_startproc
+ 241              		@ args = 0, pretend = 0, frame = 16
+ 242              		@ frame_needed = 0, uses_anonymous_args = 0
+ 243 0000 00B5     		push	{lr}
+ 244              		.cfi_def_cfa_offset 4
+ 245              		.cfi_offset 14, -4
+ 246 0002 85B0     		sub	sp, sp, #20
+ 247              		.cfi_def_cfa_offset 24
+ 248 0004 0190     		str	r0, [sp, #4]
+ 249              	.LBB2:
+ 124:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   void *objp;
+ 125:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+ 126:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chSysLock();
+ 250              		.loc 1 126 0
+ 251 0006 2023     		movs	r3, #32
+ 252              	@ 126 "/usr/src/chibiostest/os/kernel/src/chmempools.c" 1
+ 253 0008 83F31188 		msr     BASEPRI, r3
+ 254              	@ 0 "" 2
+ 255              		.thumb
+ 256              	.LBE2:
+ 257 000c FFF7FEFF 		bl	dbg_check_lock
+ 127:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   objp = chPoolAllocI(mp);
+ 258              		.loc 1 127 0
+ 259 0010 0198     		ldr	r0, [sp, #4]
+ 260 0012 FFF7FEFF 		bl	chPoolAllocI
+ 261 0016 0390     		str	r0, [sp, #12]
+ 128:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chSysUnlock();
+ 262              		.loc 1 128 0
+ 263 0018 FFF7FEFF 		bl	dbg_check_unlock
+ 264              	.LBB3:
+ 265 001c 0023     		movs	r3, #0
+ 266              	@ 128 "/usr/src/chibiostest/os/kernel/src/chmempools.c" 1
+ 267 001e 83F31188 		msr     BASEPRI, r3
+ 268              	@ 0 "" 2
+ 269              		.thumb
+ 270              	.LBE3:
+ 129:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   return objp;
+ 271              		.loc 1 129 0
+ 272 0022 039B     		ldr	r3, [sp, #12]
+ 130:/usr/src/chibiostest/os/kernel/src/chmempools.c **** }
+ 273              		.loc 1 130 0
+ 274 0024 1846     		mov	r0, r3
+ 275 0026 05B0     		add	sp, sp, #20
+ 276              		@ sp needed
+ 277 0028 5DF804FB 		ldr	pc, [sp], #4
+ 278              		.cfi_endproc
+ 279              	.LFE10:
+ 281 002c AFF30080 		.section	.rodata
+ 282 0035 000000   		.align	2
+ 283              	.LC3:
+ 284 0038 22636850 		.ascii	"\"chPoolFreeI\"()\000"
+ 284      6F6F6C46 
+ 284      72656549 
+ 284      22282900 
+ 285              		.section	.text.chPoolFreeI,"ax",%progbits
+ 286              		.align	2
+ 287              		.p2align 4,,15
+ 288              		.global	chPoolFreeI
+ 289              		.thumb
+ 290              		.thumb_func
+ 292              	chPoolFreeI:
+ 293              	.LFB11:
+ 131:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+ 132:/usr/src/chibiostest/os/kernel/src/chmempools.c **** /**
+ 133:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @brief   Releases an object into a memory pool.
+ 134:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     The memory pool must be already been initialized.
+ 135:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     The freed object must be of the right size for the specified
+ 136:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          memory pool.
+ 137:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     The object must be properly aligned to contain a pointer to void.
+ 138:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+ 139:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] mp        pointer to a @p MemoryPool structure
+ 140:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] objp      the pointer to the object to be released
+ 141:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+ 142:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @iclass
+ 143:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  */
+ 144:/usr/src/chibiostest/os/kernel/src/chmempools.c **** void chPoolFreeI(MemoryPool *mp, void *objp) {
+ 294              		.loc 1 144 0
+ 295              		.cfi_startproc
+ 296              		@ args = 0, pretend = 0, frame = 16
+ 297              		@ frame_needed = 0, uses_anonymous_args = 0
+ 298 0000 00B5     		push	{lr}
+ 299              		.cfi_def_cfa_offset 4
+ 300              		.cfi_offset 14, -4
+ 301 0002 85B0     		sub	sp, sp, #20
+ 302              		.cfi_def_cfa_offset 24
+ 303 0004 0190     		str	r0, [sp, #4]
+ 304 0006 0091     		str	r1, [sp]
+ 145:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   struct pool_header *php = objp;
+ 305              		.loc 1 145 0
+ 306 0008 009B     		ldr	r3, [sp]
+ 307 000a 0393     		str	r3, [sp, #12]
+ 146:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+ 147:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chDbgCheckClassI();
+ 308              		.loc 1 147 0
+ 309 000c FFF7FEFF 		bl	chDbgCheckClassI
+ 148:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chDbgCheck((mp != NULL) && (objp != NULL), "chPoolFreeI");
+ 310              		.loc 1 148 0
+ 311 0010 019B     		ldr	r3, [sp, #4]
+ 312 0012 002B     		cmp	r3, #0
+ 313 0014 02D0     		beq	.L23
+ 314              		.loc 1 148 0 is_stmt 0 discriminator 2
+ 315 0016 009B     		ldr	r3, [sp]
+ 316 0018 002B     		cmp	r3, #0
+ 317 001a 02D1     		bne	.L24
+ 318              	.L23:
+ 319              		.loc 1 148 0 discriminator 1
+ 320 001c 0648     		ldr	r0, .L25
+ 321 001e FFF7FEFF 		bl	chDbgPanic
+ 322              	.L24:
+ 149:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+ 150:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   php->ph_next = mp->mp_next;
+ 323              		.loc 1 150 0 is_stmt 1
+ 324 0022 019B     		ldr	r3, [sp, #4]
+ 325 0024 1A68     		ldr	r2, [r3]
+ 326 0026 039B     		ldr	r3, [sp, #12]
+ 327 0028 1A60     		str	r2, [r3]
+ 151:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   mp->mp_next = php;
+ 328              		.loc 1 151 0
+ 329 002a 019B     		ldr	r3, [sp, #4]
+ 330 002c 039A     		ldr	r2, [sp, #12]
+ 331 002e 1A60     		str	r2, [r3]
+ 152:/usr/src/chibiostest/os/kernel/src/chmempools.c **** }
+ 332              		.loc 1 152 0
+ 333 0030 05B0     		add	sp, sp, #20
+ 334              		@ sp needed
+ 335 0032 5DF804FB 		ldr	pc, [sp], #4
+ 336              	.L26:
+ 337 0036 00BF     		.align	2
+ 338              	.L25:
+ 339 0038 38000000 		.word	.LC3
+ 340              		.cfi_endproc
+ 341              	.LFE11:
+ 343 003c AFF30080 		.section	.text.chPoolFree,"ax",%progbits
+ 344              		.align	2
+ 345              		.p2align 4,,15
+ 346              		.global	chPoolFree
+ 347              		.thumb
+ 348              		.thumb_func
+ 350              	chPoolFree:
+ 351              	.LFB12:
+ 153:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+ 154:/usr/src/chibiostest/os/kernel/src/chmempools.c **** /**
+ 155:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @brief   Releases an object into a memory pool.
+ 156:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     The memory pool must be already been initialized.
+ 157:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     The freed object must be of the right size for the specified
+ 158:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *          memory pool.
+ 159:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @pre     The object must be properly aligned to contain a pointer to void.
+ 160:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+ 161:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] mp        pointer to a @p MemoryPool structure
+ 162:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @param[in] objp      the pointer to the object to be released
+ 163:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  *
+ 164:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  * @api
+ 165:/usr/src/chibiostest/os/kernel/src/chmempools.c ****  */
+ 166:/usr/src/chibiostest/os/kernel/src/chmempools.c **** void chPoolFree(MemoryPool *mp, void *objp) {
+ 352              		.loc 1 166 0
+ 353              		.cfi_startproc
+ 354              		@ args = 0, pretend = 0, frame = 8
+ 355              		@ frame_needed = 0, uses_anonymous_args = 0
+ 356 0000 00B5     		push	{lr}
+ 357              		.cfi_def_cfa_offset 4
+ 358              		.cfi_offset 14, -4
+ 359 0002 83B0     		sub	sp, sp, #12
+ 360              		.cfi_def_cfa_offset 16
+ 361 0004 0190     		str	r0, [sp, #4]
+ 362 0006 0091     		str	r1, [sp]
+ 363              	.LBB4:
+ 167:/usr/src/chibiostest/os/kernel/src/chmempools.c **** 
+ 168:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chSysLock();
+ 364              		.loc 1 168 0
+ 365 0008 2023     		movs	r3, #32
+ 366              	@ 168 "/usr/src/chibiostest/os/kernel/src/chmempools.c" 1
+ 367 000a 83F31188 		msr     BASEPRI, r3
+ 368              	@ 0 "" 2
+ 369              		.thumb
+ 370              	.LBE4:
+ 371 000e FFF7FEFF 		bl	dbg_check_lock
+ 169:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chPoolFreeI(mp, objp);
+ 372              		.loc 1 169 0
+ 373 0012 0198     		ldr	r0, [sp, #4]
+ 374 0014 0099     		ldr	r1, [sp]
+ 375 0016 FFF7FEFF 		bl	chPoolFreeI
+ 170:/usr/src/chibiostest/os/kernel/src/chmempools.c ****   chSysUnlock();
+ 376              		.loc 1 170 0
+ 377 001a FFF7FEFF 		bl	dbg_check_unlock
+ 378              	.LBB5:
+ 379 001e 0023     		movs	r3, #0
+ 380              	@ 170 "/usr/src/chibiostest/os/kernel/src/chmempools.c" 1
+ 381 0020 83F31188 		msr     BASEPRI, r3
+ 382              	@ 0 "" 2
+ 383              		.thumb
+ 384              	.LBE5:
+ 171:/usr/src/chibiostest/os/kernel/src/chmempools.c **** }
+ 385              		.loc 1 171 0
+ 386 0024 03B0     		add	sp, sp, #12
+ 387              		@ sp needed
+ 388 0026 5DF804FB 		ldr	pc, [sp], #4
+ 389              		.cfi_endproc
+ 390              	.LFE12:
+ 392 002a 00BFAFF3 		.text
+ 392      0080
+ 393              	.Letext0:
+ 394              		.file 2 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
+ 395              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 396              		.file 4 "/usr/include/newlib/stdint.h"
+ 397              		.file 5 "/usr/src/chibiostest/os/kernel/include/chmemcore.h"
+ 398              		.file 6 "/usr/src/chibiostest/os/kernel/include/chmempools.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chmempools.c
+     /tmp/ccq1iVxD.s:20     .rodata:0000000000000000 $d
+     /tmp/ccq1iVxD.s:24     .text.chPoolInit:0000000000000000 $t
+     /tmp/ccq1iVxD.s:30     .text.chPoolInit:0000000000000000 chPoolInit
+     /tmp/ccq1iVxD.s:77     .text.chPoolInit:0000000000000034 $d
+     /tmp/ccq1iVxD.s:86     .text.chPoolLoadArray:0000000000000000 $t
+     /tmp/ccq1iVxD.s:92     .text.chPoolLoadArray:0000000000000000 chPoolLoadArray
+     /tmp/ccq1iVxD.s:350    .text.chPoolFree:0000000000000000 chPoolFree
+     /tmp/ccq1iVxD.s:150    .text.chPoolLoadArray:0000000000000044 $d
+     /tmp/ccq1iVxD.s:159    .text.chPoolAllocI:0000000000000000 $t
+     /tmp/ccq1iVxD.s:165    .text.chPoolAllocI:0000000000000000 chPoolAllocI
+     /tmp/ccq1iVxD.s:226    .text.chPoolAllocI:0000000000000050 $d
+     /tmp/ccq1iVxD.s:231    .text.chPoolAlloc:0000000000000000 $t
+     /tmp/ccq1iVxD.s:237    .text.chPoolAlloc:0000000000000000 chPoolAlloc
+     /tmp/ccq1iVxD.s:286    .text.chPoolFreeI:0000000000000000 $t
+     /tmp/ccq1iVxD.s:292    .text.chPoolFreeI:0000000000000000 chPoolFreeI
+     /tmp/ccq1iVxD.s:339    .text.chPoolFreeI:0000000000000038 $d
+     /tmp/ccq1iVxD.s:344    .text.chPoolFree:0000000000000000 $t
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccq1iVxD.s:81     .text.chPoolInit:0000000000000038 $t
+     /tmp/ccq1iVxD.s:154    .text.chPoolLoadArray:0000000000000048 $t
+     /tmp/ccq1iVxD.s:230    .text.chPoolAllocI:0000000000000054 $t
+     /tmp/ccq1iVxD.s:343    .text.chPoolFreeI:000000000000003c $t
+
+UNDEFINED SYMBOLS
+chDbgPanic
+chDbgCheckClassI
+dbg_check_lock
+dbg_check_unlock

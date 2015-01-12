@@ -1,0 +1,1646 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chthreads.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.list_insert,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.thumb
+  23              		.thumb_func
+  25              	list_insert:
+  26              	.LFB5:
+  27              		.file 1 "/usr/src/chibiostest/os/kernel/include/chinline.h"
+   1:/usr/src/chibiostest/os/kernel/include/chinline.h **** /*
+   2:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/include/chinline.h ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   5:/usr/src/chibiostest/os/kernel/include/chinline.h ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   7:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/include/chinline.h ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/include/chinline.h ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/include/chinline.h ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  12:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/include/chinline.h ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/include/chinline.h ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/include/chinline.h ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  17:/usr/src/chibiostest/os/kernel/include/chinline.h ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/include/chinline.h ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/include/chinline.h **** */
+  20:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  21:/usr/src/chibiostest/os/kernel/include/chinline.h **** /**
+  22:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @file    chinline.h
+  23:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @brief   Kernel inlined functions.
+  24:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @details In this file there are a set of inlined functions if the
+  25:/usr/src/chibiostest/os/kernel/include/chinline.h ****  *          @p CH_OPTIMIZE_SPEED is enabled.
+  26:/usr/src/chibiostest/os/kernel/include/chinline.h ****  */
+  27:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  28:/usr/src/chibiostest/os/kernel/include/chinline.h **** #ifndef _CHINLINE_H_
+  29:/usr/src/chibiostest/os/kernel/include/chinline.h **** #define _CHINLINE_H_
+  30:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  31:/usr/src/chibiostest/os/kernel/include/chinline.h **** /* If the performance code path has been chosen then all the following
+  32:/usr/src/chibiostest/os/kernel/include/chinline.h ****    functions are inlined into the various kernel modules.*/
+  33:/usr/src/chibiostest/os/kernel/include/chinline.h **** #if CH_OPTIMIZE_SPEED
+  34:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void prio_insert(Thread *tp, ThreadsQueue *tqp) {
+  35:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  36:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *cp = (Thread *)tqp;
+  37:/usr/src/chibiostest/os/kernel/include/chinline.h ****   do {
+  38:/usr/src/chibiostest/os/kernel/include/chinline.h ****     cp = cp->p_next;
+  39:/usr/src/chibiostest/os/kernel/include/chinline.h ****   } while ((cp != (Thread *)tqp) && (cp->p_prio >= tp->p_prio));
+  40:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = cp;
+  41:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = cp->p_prev;
+  42:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = cp->p_prev = tp;
+  43:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  44:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  45:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void queue_insert(Thread *tp, ThreadsQueue *tqp) {
+  46:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  47:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = (Thread *)tqp;
+  48:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = tqp->p_prev;
+  49:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = tqp->p_prev = tp;
+  50:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  51:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  52:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *fifo_remove(ThreadsQueue *tqp) {
+  53:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *tp = tqp->p_next;
+  54:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  55:/usr/src/chibiostest/os/kernel/include/chinline.h ****   (tqp->p_next = tp->p_next)->p_prev = (Thread *)tqp;
+  56:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+  57:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  58:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  59:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *lifo_remove(ThreadsQueue *tqp) {
+  60:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *tp = tqp->p_prev;
+  61:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  62:/usr/src/chibiostest/os/kernel/include/chinline.h ****   (tqp->p_prev = tp->p_prev)->p_next = (Thread *)tqp;
+  63:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+  64:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  65:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  66:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *dequeue(Thread *tp) {
+  67:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  68:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = tp->p_next;
+  69:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next->p_prev = tp->p_prev;
+  70:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+  71:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  72:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  73:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void list_insert(Thread *tp, ThreadsList *tlp) {
+  28              		.loc 1 73 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33 0000 82B0     		sub	sp, sp, #8
+  34              		.cfi_def_cfa_offset 8
+  35 0002 0190     		str	r0, [sp, #4]
+  36 0004 0091     		str	r1, [sp]
+  74:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  75:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = tlp->p_next;
+  37              		.loc 1 75 0
+  38 0006 009B     		ldr	r3, [sp]
+  39 0008 1A68     		ldr	r2, [r3]
+  40 000a 019B     		ldr	r3, [sp, #4]
+  41 000c 1A60     		str	r2, [r3]
+  76:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tlp->p_next = tp;
+  42              		.loc 1 76 0
+  43 000e 009B     		ldr	r3, [sp]
+  44 0010 019A     		ldr	r2, [sp, #4]
+  45 0012 1A60     		str	r2, [r3]
+  77:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  46              		.loc 1 77 0
+  47 0014 02B0     		add	sp, sp, #8
+  48              		@ sp needed
+  49 0016 7047     		bx	lr
+  50              		.cfi_endproc
+  51              	.LFE5:
+  53 0018 AFF30080 		.section	.text.list_remove,"ax",%progbits
+  53      AFF30080 
+  54              		.align	2
+  55              		.p2align 4,,15
+  56              		.thumb
+  57              		.thumb_func
+  59              	list_remove:
+  60              	.LFB6:
+  78:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  79:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *list_remove(ThreadsList *tlp) {
+  61              		.loc 1 79 0
+  62              		.cfi_startproc
+  63              		@ args = 0, pretend = 0, frame = 16
+  64              		@ frame_needed = 0, uses_anonymous_args = 0
+  65              		@ link register save eliminated.
+  66 0000 84B0     		sub	sp, sp, #16
+  67              		.cfi_def_cfa_offset 16
+  68 0002 0190     		str	r0, [sp, #4]
+  80:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  81:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *tp = tlp->p_next;
+  69              		.loc 1 81 0
+  70 0004 019B     		ldr	r3, [sp, #4]
+  71 0006 1B68     		ldr	r3, [r3]
+  72 0008 0393     		str	r3, [sp, #12]
+  82:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tlp->p_next = tp->p_next;
+  73              		.loc 1 82 0
+  74 000a 039B     		ldr	r3, [sp, #12]
+  75 000c 1A68     		ldr	r2, [r3]
+  76 000e 019B     		ldr	r3, [sp, #4]
+  77 0010 1A60     		str	r2, [r3]
+  83:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+  78              		.loc 1 83 0
+  79 0012 039B     		ldr	r3, [sp, #12]
+  84:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  80              		.loc 1 84 0
+  81 0014 1846     		mov	r0, r3
+  82 0016 04B0     		add	sp, sp, #16
+  83              		@ sp needed
+  84 0018 7047     		bx	lr
+  85              		.cfi_endproc
+  86              	.LFE6:
+  88 001a 00BFAFF3 		.section	.text._thread_init,"ax",%progbits
+  88      0080
+  89              		.align	2
+  90              		.p2align 4,,15
+  91              		.global	_thread_init
+  92              		.thumb
+  93              		.thumb_func
+  95              	_thread_init:
+  96              	.LFB7:
+  97              		.file 2 "/usr/src/chibiostest/os/kernel/src/chthreads.c"
+   1:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chthreads.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chthreads.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+  21:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+  22:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @file    chthreads.c
+  23:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Threads code.
+  24:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+  25:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @addtogroup threads
+  26:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @details Threads related APIs and services.
+  27:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+  28:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          <h2>Operation mode</h2>
+  29:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          A thread is an abstraction of an independent instructions flow.
+  30:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          In ChibiOS/RT a thread is represented by a "C" function owning
+  31:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          a processor context, state informations and a dedicated stack
+  32:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          area. In this scenario static variables are shared among all
+  33:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          threads while automatic variables are local to the thread.<br>
+  34:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          Operations defined for threads:
+  35:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          - <b>Create</b>, a thread is started on the specified thread
+  36:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            function. This operation is available in multiple variants,
+  37:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            both static and dynamic.
+  38:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          - <b>Exit</b>, a thread terminates by returning from its top
+  39:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            level function or invoking a specific API, the thread can
+  40:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            return a value that can be retrieved by other threads.
+  41:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          - <b>Wait</b>, a thread waits for the termination of another
+  42:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            thread and retrieves its return value.
+  43:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          - <b>Resume</b>, a thread created in suspended state is started.
+  44:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          - <b>Sleep</b>, the execution of a thread is suspended for the
+  45:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            specified amount of time or the specified future absolute time
+  46:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            is reached.
+  47:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          - <b>SetPriority</b>, a thread changes its own priority level.
+  48:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          - <b>Yield</b>, a thread voluntarily renounces to its time slot.
+  49:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          .
+  50:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          The threads subsystem is implicitly included in kernel however
+  51:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          some of its part may be excluded by disabling them in @p chconf.h,
+  52:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          see the @p CH_USE_WAITEXIT and @p CH_USE_DYNAMIC configuration
+  53:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          options.
+  54:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @{
+  55:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+  56:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+  57:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #include "ch.h"
+  58:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+  59:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+  60:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Initializes a thread structure.
+  61:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @note    This is an internal functions, do not use it in application code.
+  62:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+  63:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] tp        pointer to the thread
+  64:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] prio      the priority level for the new thread
+  65:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @return              The same thread pointer passed as parameter.
+  66:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+  67:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @notapi
+  68:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+  69:/usr/src/chibiostest/os/kernel/src/chthreads.c **** Thread *_thread_init(Thread *tp, tprio_t prio) {
+  98              		.loc 2 69 0
+  99              		.cfi_startproc
+ 100              		@ args = 0, pretend = 0, frame = 8
+ 101              		@ frame_needed = 0, uses_anonymous_args = 0
+ 102              		@ link register save eliminated.
+ 103 0000 82B0     		sub	sp, sp, #8
+ 104              		.cfi_def_cfa_offset 8
+ 105 0002 0190     		str	r0, [sp, #4]
+ 106 0004 0091     		str	r1, [sp]
+  70:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+  71:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_prio = prio;
+ 107              		.loc 2 71 0
+ 108 0006 019B     		ldr	r3, [sp, #4]
+ 109 0008 009A     		ldr	r2, [sp]
+ 110 000a 9A60     		str	r2, [r3, #8]
+  72:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_state = THD_STATE_SUSPENDED;
+ 111              		.loc 2 72 0
+ 112 000c 019B     		ldr	r3, [sp, #4]
+ 113 000e 0222     		movs	r2, #2
+ 114 0010 83F82020 		strb	r2, [r3, #32]
+  73:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_flags = THD_MEM_MODE_STATIC;
+ 115              		.loc 2 73 0
+ 116 0014 019B     		ldr	r3, [sp, #4]
+ 117 0016 0022     		movs	r2, #0
+ 118 0018 83F82120 		strb	r2, [r3, #33]
+  74:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_TIME_QUANTUM > 0
+  75:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_preempt = CH_TIME_QUANTUM;
+ 119              		.loc 2 75 0
+ 120 001c 019B     		ldr	r3, [sp, #4]
+ 121 001e 1422     		movs	r2, #20
+ 122 0020 83F82320 		strb	r2, [r3, #35]
+  76:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+  77:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_MUTEXES
+  78:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_realprio = prio;
+ 123              		.loc 2 78 0
+ 124 0024 019B     		ldr	r3, [sp, #4]
+ 125 0026 009A     		ldr	r2, [sp]
+ 126 0028 5A64     		str	r2, [r3, #68]
+  79:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_mtxlist = NULL;
+ 127              		.loc 2 79 0
+ 128 002a 019B     		ldr	r3, [sp, #4]
+ 129 002c 0022     		movs	r2, #0
+ 130 002e 1A64     		str	r2, [r3, #64]
+  80:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+  81:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_EVENTS
+  82:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_epending = 0;
+ 131              		.loc 2 82 0
+ 132 0030 019B     		ldr	r3, [sp, #4]
+ 133 0032 0022     		movs	r2, #0
+ 134 0034 DA63     		str	r2, [r3, #60]
+  83:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+  84:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_DBG_THREADS_PROFILING
+  85:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_time = 0;
+ 135              		.loc 2 85 0
+ 136 0036 019B     		ldr	r3, [sp, #4]
+ 137 0038 0022     		movs	r2, #0
+ 138 003a 5A62     		str	r2, [r3, #36]
+  86:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+  87:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_DYNAMIC
+  88:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_refs = 1;
+ 139              		.loc 2 88 0
+ 140 003c 019B     		ldr	r3, [sp, #4]
+ 141 003e 0122     		movs	r2, #1
+ 142 0040 83F82220 		strb	r2, [r3, #34]
+  89:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+  90:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_REGISTRY
+  91:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_name = NULL;
+ 143              		.loc 2 91 0
+ 144 0044 019B     		ldr	r3, [sp, #4]
+ 145 0046 0022     		movs	r2, #0
+ 146 0048 9A61     		str	r2, [r3, #24]
+  92:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   REG_INSERT(tp);
+ 147              		.loc 2 92 0
+ 148 004a 019B     		ldr	r3, [sp, #4]
+ 149 004c 124A     		ldr	r2, .L6
+ 150 004e 1A61     		str	r2, [r3, #16]
+ 151 0050 114B     		ldr	r3, .L6
+ 152 0052 5A69     		ldr	r2, [r3, #20]
+ 153 0054 019B     		ldr	r3, [sp, #4]
+ 154 0056 5A61     		str	r2, [r3, #20]
+ 155 0058 019B     		ldr	r3, [sp, #4]
+ 156 005a 5B69     		ldr	r3, [r3, #20]
+ 157 005c 0E4A     		ldr	r2, .L6
+ 158 005e 0199     		ldr	r1, [sp, #4]
+ 159 0060 5161     		str	r1, [r2, #20]
+ 160 0062 0D4A     		ldr	r2, .L6
+ 161 0064 5269     		ldr	r2, [r2, #20]
+ 162 0066 1A61     		str	r2, [r3, #16]
+  93:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+  94:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_WAITEXIT
+  95:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   list_init(&tp->p_waiting);
+ 163              		.loc 2 95 0
+ 164 0068 019B     		ldr	r3, [sp, #4]
+ 165 006a 03F12C02 		add	r2, r3, #44
+ 166 006e 019B     		ldr	r3, [sp, #4]
+ 167 0070 DA62     		str	r2, [r3, #44]
+  96:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+  97:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_MESSAGES
+  98:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   queue_init(&tp->p_msgqueue);
+ 168              		.loc 2 98 0
+ 169 0072 019B     		ldr	r3, [sp, #4]
+ 170 0074 03F13002 		add	r2, r3, #48
+ 171 0078 019B     		ldr	r3, [sp, #4]
+ 172 007a 5A63     		str	r2, [r3, #52]
+ 173 007c 019B     		ldr	r3, [sp, #4]
+ 174 007e 5A6B     		ldr	r2, [r3, #52]
+ 175 0080 019B     		ldr	r3, [sp, #4]
+ 176 0082 1A63     		str	r2, [r3, #48]
+  99:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+ 100:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_DBG_ENABLE_STACK_CHECK
+ 101:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_stklimit = (stkalign_t *)(tp + 1);
+ 177              		.loc 2 101 0
+ 178 0084 019B     		ldr	r3, [sp, #4]
+ 179 0086 03F14C02 		add	r2, r3, #76
+ 180 008a 019B     		ldr	r3, [sp, #4]
+ 181 008c DA61     		str	r2, [r3, #28]
+ 102:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+ 103:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if defined(THREAD_EXT_INIT_HOOK)
+ 104:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   THREAD_EXT_INIT_HOOK(tp);
+ 105:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+ 106:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   return tp;
+ 182              		.loc 2 106 0
+ 183 008e 019B     		ldr	r3, [sp, #4]
+ 107:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 184              		.loc 2 107 0
+ 185 0090 1846     		mov	r0, r3
+ 186 0092 02B0     		add	sp, sp, #8
+ 187              		@ sp needed
+ 188 0094 7047     		bx	lr
+ 189              	.L7:
+ 190 0096 00BF     		.align	2
+ 191              	.L6:
+ 192 0098 00000000 		.word	rlist
+ 193              		.cfi_endproc
+ 194              	.LFE7:
+ 196 009c AFF30080 		.section	.text._thread_memfill,"ax",%progbits
+ 197              		.align	2
+ 198              		.p2align 4,,15
+ 199              		.global	_thread_memfill
+ 200              		.thumb
+ 201              		.thumb_func
+ 203              	_thread_memfill:
+ 204              	.LFB8:
+ 108:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 109:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_DBG_FILL_THREADS || defined(__DOXYGEN__)
+ 110:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 111:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Memory fill utility.
+ 112:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 113:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] startp    first address to fill
+ 114:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] endp      last address to fill +1
+ 115:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] v         filler value
+ 116:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 117:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @notapi
+ 118:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 119:/usr/src/chibiostest/os/kernel/src/chthreads.c **** void _thread_memfill(uint8_t *startp, uint8_t *endp, uint8_t v) {
+ 205              		.loc 2 119 0
+ 206              		.cfi_startproc
+ 207              		@ args = 0, pretend = 0, frame = 16
+ 208              		@ frame_needed = 0, uses_anonymous_args = 0
+ 209              		@ link register save eliminated.
+ 210 0000 84B0     		sub	sp, sp, #16
+ 211              		.cfi_def_cfa_offset 16
+ 212 0002 0390     		str	r0, [sp, #12]
+ 213 0004 0291     		str	r1, [sp, #8]
+ 214 0006 1346     		mov	r3, r2
+ 215 0008 8DF80730 		strb	r3, [sp, #7]
+ 120:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 121:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   while (startp < endp)
+ 216              		.loc 2 121 0
+ 217 000c 05E0     		b	.L9
+ 218              	.L10:
+ 122:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     *startp++ = v;
+ 219              		.loc 2 122 0
+ 220 000e 039B     		ldr	r3, [sp, #12]
+ 221 0010 5A1C     		adds	r2, r3, #1
+ 222 0012 0392     		str	r2, [sp, #12]
+ 223 0014 9DF80720 		ldrb	r2, [sp, #7]
+ 224 0018 1A70     		strb	r2, [r3]
+ 225              	.L9:
+ 121:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     *startp++ = v;
+ 226              		.loc 2 121 0 discriminator 1
+ 227 001a 039A     		ldr	r2, [sp, #12]
+ 228 001c 029B     		ldr	r3, [sp, #8]
+ 229 001e 9A42     		cmp	r2, r3
+ 230 0020 F5D3     		bcc	.L10
+ 123:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 231              		.loc 2 123 0
+ 232 0022 04B0     		add	sp, sp, #16
+ 233              		@ sp needed
+ 234 0024 7047     		bx	lr
+ 235              		.cfi_endproc
+ 236              	.LFE8:
+ 238 0026 00BFAFF3 		.section	.rodata
+ 238      0080AFF3 
+ 238      0080
+ 239              		.align	2
+ 240              	.LC0:
+ 241 0000 22636854 		.ascii	"\"chThdCreateI\"()\000"
+ 241      68644372 
+ 241      65617465 
+ 241      49222829 
+ 241      00
+ 242              		.section	.text.chThdCreateI,"ax",%progbits
+ 243              		.align	2
+ 244              		.p2align 4,,15
+ 245              		.global	chThdCreateI
+ 246              		.thumb
+ 247              		.thumb_func
+ 249              	chThdCreateI:
+ 250              	.LFB9:
+ 124:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif /* CH_DBG_FILL_THREADS */
+ 125:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 126:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 127:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Creates a new thread into a static memory area.
+ 128:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @details The new thread is initialized but not inserted in the ready list,
+ 129:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          the initial state is @p THD_STATE_SUSPENDED.
+ 130:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @post    The initialized thread can be subsequently started by invoking
+ 131:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          @p chThdResume(), @p chThdResumeI() or @p chSchWakeupS()
+ 132:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          depending on the execution context.
+ 133:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @note    A thread can terminate by calling @p chThdExit() or by simply
+ 134:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          returning from its main function.
+ 135:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @note    Threads created using this function do not obey to the
+ 136:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          @p CH_DBG_FILL_THREADS debug option because it would keep
+ 137:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          the kernel locked for too much time.
+ 138:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 139:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[out] wsp      pointer to a working area dedicated to the thread stack
+ 140:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] size      size of the working area
+ 141:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] prio      the priority level for the new thread
+ 142:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] pf        the thread function
+ 143:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] arg       an argument passed to the thread function. It can be
+ 144:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *                      @p NULL.
+ 145:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @return              The pointer to the @p Thread structure allocated for
+ 146:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *                      the thread into the working space area.
+ 147:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 148:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @iclass
+ 149:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 150:/usr/src/chibiostest/os/kernel/src/chthreads.c **** Thread *chThdCreateI(void *wsp, size_t size,
+ 151:/usr/src/chibiostest/os/kernel/src/chthreads.c ****                      tprio_t prio, tfunc_t pf, void *arg) {
+ 251              		.loc 2 151 0
+ 252              		.cfi_startproc
+ 253              		@ args = 4, pretend = 0, frame = 24
+ 254              		@ frame_needed = 0, uses_anonymous_args = 0
+ 255 0000 00B5     		push	{lr}
+ 256              		.cfi_def_cfa_offset 4
+ 257              		.cfi_offset 14, -4
+ 258 0002 87B0     		sub	sp, sp, #28
+ 259              		.cfi_def_cfa_offset 32
+ 260 0004 0390     		str	r0, [sp, #12]
+ 261 0006 0291     		str	r1, [sp, #8]
+ 262 0008 0192     		str	r2, [sp, #4]
+ 263 000a 0093     		str	r3, [sp]
+ 152:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   /* Thread structure is layed out in the lower part of the thread workspace.*/
+ 153:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   Thread *tp = wsp;
+ 264              		.loc 2 153 0
+ 265 000c 039B     		ldr	r3, [sp, #12]
+ 266 000e 0593     		str	r3, [sp, #20]
+ 154:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 155:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chDbgCheckClassI();
+ 267              		.loc 2 155 0
+ 268 0010 FFF7FEFF 		bl	chDbgCheckClassI
+ 156:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 157:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chDbgCheck((wsp != NULL) && (size >= THD_WA_SIZE(0)) &&
+ 269              		.loc 2 157 0
+ 270 0014 039B     		ldr	r3, [sp, #12]
+ 271 0016 002B     		cmp	r3, #0
+ 272 0018 09D0     		beq	.L12
+ 273              		.loc 2 157 0 is_stmt 0 discriminator 2
+ 274 001a 029B     		ldr	r3, [sp, #8]
+ 275 001c B3F59C7F 		cmp	r3, #312
+ 276 0020 05D3     		bcc	.L12
+ 277              		.loc 2 157 0 discriminator 1
+ 278 0022 019B     		ldr	r3, [sp, #4]
+ 279 0024 7F2B     		cmp	r3, #127
+ 280 0026 02D8     		bhi	.L12
+ 281 0028 009B     		ldr	r3, [sp]
+ 282 002a 002B     		cmp	r3, #0
+ 283 002c 02D1     		bne	.L13
+ 284              	.L12:
+ 285 002e 0F48     		ldr	r0, .L15
+ 286 0030 FFF7FEFF 		bl	chDbgPanic
+ 287              	.L13:
+ 158:/usr/src/chibiostest/os/kernel/src/chthreads.c ****              (prio <= HIGHPRIO) && (pf != NULL),
+ 159:/usr/src/chibiostest/os/kernel/src/chthreads.c ****              "chThdCreateI");
+ 160:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   SETUP_CONTEXT(wsp, size, pf, arg);
+ 288              		.loc 2 160 0 is_stmt 1
+ 289 0034 029B     		ldr	r3, [sp, #8]
+ 290 0036 643B     		subs	r3, r3, #100
+ 291 0038 039A     		ldr	r2, [sp, #12]
+ 292 003a 1A44     		add	r2, r2, r3
+ 293 003c 059B     		ldr	r3, [sp, #20]
+ 294 003e DA60     		str	r2, [r3, #12]
+ 295 0040 059B     		ldr	r3, [sp, #20]
+ 296 0042 DB68     		ldr	r3, [r3, #12]
+ 297 0044 009A     		ldr	r2, [sp]
+ 298 0046 1A64     		str	r2, [r3, #64]
+ 299 0048 059B     		ldr	r3, [sp, #20]
+ 300 004a DB68     		ldr	r3, [r3, #12]
+ 301 004c 089A     		ldr	r2, [sp, #32]
+ 302 004e 5A64     		str	r2, [r3, #68]
+ 303 0050 059B     		ldr	r3, [sp, #20]
+ 304 0052 DB68     		ldr	r3, [r3, #12]
+ 305 0054 064A     		ldr	r2, .L15+4
+ 306 0056 1A66     		str	r2, [r3, #96]
+ 161:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   return _thread_init(tp, prio);
+ 307              		.loc 2 161 0
+ 308 0058 0598     		ldr	r0, [sp, #20]
+ 309 005a 0199     		ldr	r1, [sp, #4]
+ 310 005c FFF7FEFF 		bl	_thread_init
+ 311 0060 0346     		mov	r3, r0
+ 162:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 312              		.loc 2 162 0
+ 313 0062 1846     		mov	r0, r3
+ 314 0064 07B0     		add	sp, sp, #28
+ 315              		@ sp needed
+ 316 0066 5DF804FB 		ldr	pc, [sp], #4
+ 317              	.L16:
+ 318 006a 00BF     		.align	2
+ 319              	.L15:
+ 320 006c 00000000 		.word	.LC0
+ 321 0070 00000000 		.word	_port_thread_start
+ 322              		.cfi_endproc
+ 323              	.LFE9:
+ 325 0074 AFF30080 		.section	.text.chThdCreateStatic,"ax",%progbits
+ 325      AFF30080 
+ 325      AFF30080 
+ 326              		.align	2
+ 327              		.p2align 4,,15
+ 328              		.global	chThdCreateStatic
+ 329              		.thumb
+ 330              		.thumb_func
+ 332              	chThdCreateStatic:
+ 333              	.LFB10:
+ 163:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 164:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 165:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Creates a new thread into a static memory area.
+ 166:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @note    A thread can terminate by calling @p chThdExit() or by simply
+ 167:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          returning from its main function.
+ 168:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 169:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[out] wsp      pointer to a working area dedicated to the thread stack
+ 170:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] size      size of the working area
+ 171:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] prio      the priority level for the new thread
+ 172:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] pf        the thread function
+ 173:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] arg       an argument passed to the thread function. It can be
+ 174:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *                      @p NULL.
+ 175:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @return              The pointer to the @p Thread structure allocated for
+ 176:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *                      the thread into the working space area.
+ 177:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 178:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @api
+ 179:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 180:/usr/src/chibiostest/os/kernel/src/chthreads.c **** Thread *chThdCreateStatic(void *wsp, size_t size,
+ 181:/usr/src/chibiostest/os/kernel/src/chthreads.c ****                           tprio_t prio, tfunc_t pf, void *arg) {
+ 334              		.loc 2 181 0
+ 335              		.cfi_startproc
+ 336              		@ args = 4, pretend = 0, frame = 24
+ 337              		@ frame_needed = 0, uses_anonymous_args = 0
+ 338 0000 00B5     		push	{lr}
+ 339              		.cfi_def_cfa_offset 4
+ 340              		.cfi_offset 14, -4
+ 341 0002 89B0     		sub	sp, sp, #36
+ 342              		.cfi_def_cfa_offset 40
+ 343 0004 0590     		str	r0, [sp, #20]
+ 344 0006 0491     		str	r1, [sp, #16]
+ 345 0008 0392     		str	r2, [sp, #12]
+ 346 000a 0293     		str	r3, [sp, #8]
+ 182:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   Thread *tp;
+ 183:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   
+ 184:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_DBG_FILL_THREADS
+ 185:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   _thread_memfill((uint8_t *)wsp,
+ 347              		.loc 2 185 0
+ 348 000c 059B     		ldr	r3, [sp, #20]
+ 349 000e 4C33     		adds	r3, r3, #76
+ 350 0010 0598     		ldr	r0, [sp, #20]
+ 351 0012 1946     		mov	r1, r3
+ 352 0014 FF22     		movs	r2, #255
+ 353 0016 FFF7FEFF 		bl	_thread_memfill
+ 186:/usr/src/chibiostest/os/kernel/src/chthreads.c ****                   (uint8_t *)wsp + sizeof(Thread),
+ 187:/usr/src/chibiostest/os/kernel/src/chthreads.c ****                   CH_THREAD_FILL_VALUE);
+ 188:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   _thread_memfill((uint8_t *)wsp + sizeof(Thread),
+ 354              		.loc 2 188 0
+ 355 001a 059B     		ldr	r3, [sp, #20]
+ 356 001c 03F14C02 		add	r2, r3, #76
+ 357 0020 0599     		ldr	r1, [sp, #20]
+ 358 0022 049B     		ldr	r3, [sp, #16]
+ 359 0024 0B44     		add	r3, r3, r1
+ 360 0026 1046     		mov	r0, r2
+ 361 0028 1946     		mov	r1, r3
+ 362 002a 5522     		movs	r2, #85
+ 363 002c FFF7FEFF 		bl	_thread_memfill
+ 364              	.LBB2:
+ 189:/usr/src/chibiostest/os/kernel/src/chthreads.c ****                   (uint8_t *)wsp + size,
+ 190:/usr/src/chibiostest/os/kernel/src/chthreads.c ****                   CH_STACK_FILL_VALUE);
+ 191:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+ 192:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysLock();
+ 365              		.loc 2 192 0
+ 366 0030 2023     		movs	r3, #32
+ 367              	@ 192 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 368 0032 83F31188 		msr     BASEPRI, r3
+ 369              	@ 0 "" 2
+ 370              		.thumb
+ 371              	.LBE2:
+ 372 0036 FFF7FEFF 		bl	dbg_check_lock
+ 193:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSchWakeupS(tp = chThdCreateI(wsp, size, prio, pf, arg), RDY_OK);
+ 373              		.loc 2 193 0
+ 374 003a 0A9B     		ldr	r3, [sp, #40]
+ 375 003c 0093     		str	r3, [sp]
+ 376 003e 0598     		ldr	r0, [sp, #20]
+ 377 0040 0499     		ldr	r1, [sp, #16]
+ 378 0042 039A     		ldr	r2, [sp, #12]
+ 379 0044 029B     		ldr	r3, [sp, #8]
+ 380 0046 FFF7FEFF 		bl	chThdCreateI
+ 381 004a 0790     		str	r0, [sp, #28]
+ 382 004c 0798     		ldr	r0, [sp, #28]
+ 383 004e 0021     		movs	r1, #0
+ 384 0050 FFF7FEFF 		bl	chSchWakeupS
+ 194:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysUnlock();
+ 385              		.loc 2 194 0
+ 386 0054 FFF7FEFF 		bl	dbg_check_unlock
+ 387              	.LBB3:
+ 388 0058 0023     		movs	r3, #0
+ 389              	@ 194 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 390 005a 83F31188 		msr     BASEPRI, r3
+ 391              	@ 0 "" 2
+ 392              		.thumb
+ 393              	.LBE3:
+ 195:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   return tp;
+ 394              		.loc 2 195 0
+ 395 005e 079B     		ldr	r3, [sp, #28]
+ 196:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 396              		.loc 2 196 0
+ 397 0060 1846     		mov	r0, r3
+ 398 0062 09B0     		add	sp, sp, #36
+ 399              		@ sp needed
+ 400 0064 5DF804FB 		ldr	pc, [sp], #4
+ 401              		.cfi_endproc
+ 402              	.LFE10:
+ 404 0068 AFF30080 		.section	.rodata
+ 404      AFF30080 
+ 405 0011 000000   		.align	2
+ 406              	.LC1:
+ 407 0014 22636854 		.ascii	"\"chThdSetPriority\"()\000"
+ 407      68645365 
+ 407      74507269 
+ 407      6F726974 
+ 407      79222829 
+ 408              		.section	.text.chThdSetPriority,"ax",%progbits
+ 409              		.align	2
+ 410              		.p2align 4,,15
+ 411              		.global	chThdSetPriority
+ 412              		.thumb
+ 413              		.thumb_func
+ 415              	chThdSetPriority:
+ 416              	.LFB11:
+ 197:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 198:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 199:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Changes the running thread priority level then reschedules if
+ 200:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          necessary.
+ 201:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @note    The function returns the real thread priority regardless of the
+ 202:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          current priority that could be higher than the real priority
+ 203:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          because the priority inheritance mechanism.
+ 204:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 205:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] newprio   the new priority level of the running thread
+ 206:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @return              The old priority level.
+ 207:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 208:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @api
+ 209:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 210:/usr/src/chibiostest/os/kernel/src/chthreads.c **** tprio_t chThdSetPriority(tprio_t newprio) {
+ 417              		.loc 2 210 0
+ 418              		.cfi_startproc
+ 419              		@ args = 0, pretend = 0, frame = 16
+ 420              		@ frame_needed = 0, uses_anonymous_args = 0
+ 421 0000 00B5     		push	{lr}
+ 422              		.cfi_def_cfa_offset 4
+ 423              		.cfi_offset 14, -4
+ 424 0002 85B0     		sub	sp, sp, #20
+ 425              		.cfi_def_cfa_offset 24
+ 426 0004 0190     		str	r0, [sp, #4]
+ 211:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tprio_t oldprio;
+ 212:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 213:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chDbgCheck(newprio <= HIGHPRIO, "chThdSetPriority");
+ 427              		.loc 2 213 0
+ 428 0006 019B     		ldr	r3, [sp, #4]
+ 429 0008 7F2B     		cmp	r3, #127
+ 430 000a 02D9     		bls	.L20
+ 431              		.loc 2 213 0 is_stmt 0 discriminator 1
+ 432 000c 1648     		ldr	r0, .L24
+ 433 000e FFF7FEFF 		bl	chDbgPanic
+ 434              	.L20:
+ 435              	.LBB4:
+ 214:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 215:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysLock();
+ 436              		.loc 2 215 0 is_stmt 1
+ 437 0012 2023     		movs	r3, #32
+ 438              	@ 215 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 439 0014 83F31188 		msr     BASEPRI, r3
+ 440              	@ 0 "" 2
+ 441              		.thumb
+ 442              	.LBE4:
+ 443 0018 FFF7FEFF 		bl	dbg_check_lock
+ 216:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_MUTEXES
+ 217:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   oldprio = currp->p_realprio;
+ 444              		.loc 2 217 0
+ 445 001c 134B     		ldr	r3, .L24+4
+ 446 001e 9B69     		ldr	r3, [r3, #24]
+ 447 0020 5B6C     		ldr	r3, [r3, #68]
+ 448 0022 0393     		str	r3, [sp, #12]
+ 218:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   if ((currp->p_prio == currp->p_realprio) || (newprio > currp->p_prio))
+ 449              		.loc 2 218 0
+ 450 0024 114B     		ldr	r3, .L24+4
+ 451 0026 9B69     		ldr	r3, [r3, #24]
+ 452 0028 9A68     		ldr	r2, [r3, #8]
+ 453 002a 104B     		ldr	r3, .L24+4
+ 454 002c 9B69     		ldr	r3, [r3, #24]
+ 455 002e 5B6C     		ldr	r3, [r3, #68]
+ 456 0030 9A42     		cmp	r2, r3
+ 457 0032 05D0     		beq	.L21
+ 458              		.loc 2 218 0 is_stmt 0 discriminator 1
+ 459 0034 0D4B     		ldr	r3, .L24+4
+ 460 0036 9B69     		ldr	r3, [r3, #24]
+ 461 0038 9A68     		ldr	r2, [r3, #8]
+ 462 003a 019B     		ldr	r3, [sp, #4]
+ 463 003c 9A42     		cmp	r2, r3
+ 464 003e 03D2     		bcs	.L22
+ 465              	.L21:
+ 219:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     currp->p_prio = newprio;
+ 466              		.loc 2 219 0 is_stmt 1
+ 467 0040 0A4B     		ldr	r3, .L24+4
+ 468 0042 9B69     		ldr	r3, [r3, #24]
+ 469 0044 019A     		ldr	r2, [sp, #4]
+ 470 0046 9A60     		str	r2, [r3, #8]
+ 471              	.L22:
+ 220:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   currp->p_realprio = newprio;
+ 472              		.loc 2 220 0
+ 473 0048 084B     		ldr	r3, .L24+4
+ 474 004a 9B69     		ldr	r3, [r3, #24]
+ 475 004c 019A     		ldr	r2, [sp, #4]
+ 476 004e 5A64     		str	r2, [r3, #68]
+ 221:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #else
+ 222:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   oldprio = currp->p_prio;
+ 223:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   currp->p_prio = newprio;
+ 224:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+ 225:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSchRescheduleS();
+ 477              		.loc 2 225 0
+ 478 0050 FFF7FEFF 		bl	chSchRescheduleS
+ 226:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysUnlock();
+ 479              		.loc 2 226 0
+ 480 0054 FFF7FEFF 		bl	dbg_check_unlock
+ 481              	.LBB5:
+ 482 0058 0023     		movs	r3, #0
+ 483              	@ 226 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 484 005a 83F31188 		msr     BASEPRI, r3
+ 485              	@ 0 "" 2
+ 486              		.thumb
+ 487              	.LBE5:
+ 227:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   return oldprio;
+ 488              		.loc 2 227 0
+ 489 005e 039B     		ldr	r3, [sp, #12]
+ 228:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 490              		.loc 2 228 0
+ 491 0060 1846     		mov	r0, r3
+ 492 0062 05B0     		add	sp, sp, #20
+ 493              		@ sp needed
+ 494 0064 5DF804FB 		ldr	pc, [sp], #4
+ 495              	.L25:
+ 496              		.align	2
+ 497              	.L24:
+ 498 0068 14000000 		.word	.LC1
+ 499 006c 00000000 		.word	rlist
+ 500              		.cfi_endproc
+ 501              	.LFE11:
+ 503              		.section	.rodata
+ 504 0029 000000   		.align	2
+ 505              	.LC2:
+ 506 002c 63685468 		.ascii	"chThdResume(), #1\000"
+ 506      64526573 
+ 506      756D6528 
+ 506      292C2023 
+ 506      3100
+ 507              		.section	.text.chThdResume,"ax",%progbits
+ 508              		.align	2
+ 509              		.p2align 4,,15
+ 510              		.global	chThdResume
+ 511              		.thumb
+ 512              		.thumb_func
+ 514              	chThdResume:
+ 515              	.LFB12:
+ 229:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 230:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 231:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Resumes a suspended thread.
+ 232:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @pre     The specified thread pointer must refer to an initialized thread
+ 233:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          in the @p THD_STATE_SUSPENDED state.
+ 234:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @post    The specified thread is immediately started or put in the ready
+ 235:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          list depending on the relative priority levels.
+ 236:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @note    Use this function to start threads created with @p chThdInit().
+ 237:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 238:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] tp        pointer to the thread
+ 239:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @return              The pointer to the thread.
+ 240:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 241:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @api
+ 242:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 243:/usr/src/chibiostest/os/kernel/src/chthreads.c **** Thread *chThdResume(Thread *tp) {
+ 516              		.loc 2 243 0
+ 517              		.cfi_startproc
+ 518              		@ args = 0, pretend = 0, frame = 8
+ 519              		@ frame_needed = 0, uses_anonymous_args = 0
+ 520 0000 00B5     		push	{lr}
+ 521              		.cfi_def_cfa_offset 4
+ 522              		.cfi_offset 14, -4
+ 523 0002 83B0     		sub	sp, sp, #12
+ 524              		.cfi_def_cfa_offset 16
+ 525 0004 0190     		str	r0, [sp, #4]
+ 526              	.LBB6:
+ 244:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 245:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysLock();
+ 527              		.loc 2 245 0
+ 528 0006 2023     		movs	r3, #32
+ 529              	@ 245 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 530 0008 83F31188 		msr     BASEPRI, r3
+ 531              	@ 0 "" 2
+ 532              		.thumb
+ 533              	.LBE6:
+ 534 000c FFF7FEFF 		bl	dbg_check_lock
+ 246:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chDbgAssert(tp->p_state == THD_STATE_SUSPENDED,
+ 535              		.loc 2 246 0
+ 536 0010 019B     		ldr	r3, [sp, #4]
+ 537 0012 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 538 0016 022B     		cmp	r3, #2
+ 539 0018 02D0     		beq	.L27
+ 540              		.loc 2 246 0 is_stmt 0 discriminator 1
+ 541 001a 0848     		ldr	r0, .L29
+ 542 001c FFF7FEFF 		bl	chDbgPanic
+ 543              	.L27:
+ 247:/usr/src/chibiostest/os/kernel/src/chthreads.c ****               "chThdResume(), #1",
+ 248:/usr/src/chibiostest/os/kernel/src/chthreads.c ****               "thread not in THD_STATE_SUSPENDED state");
+ 249:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSchWakeupS(tp, RDY_OK);
+ 544              		.loc 2 249 0 is_stmt 1
+ 545 0020 0198     		ldr	r0, [sp, #4]
+ 546 0022 0021     		movs	r1, #0
+ 547 0024 FFF7FEFF 		bl	chSchWakeupS
+ 250:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysUnlock();
+ 548              		.loc 2 250 0
+ 549 0028 FFF7FEFF 		bl	dbg_check_unlock
+ 550              	.LBB7:
+ 551 002c 0023     		movs	r3, #0
+ 552              	@ 250 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 553 002e 83F31188 		msr     BASEPRI, r3
+ 554              	@ 0 "" 2
+ 555              		.thumb
+ 556              	.LBE7:
+ 251:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   return tp;
+ 557              		.loc 2 251 0
+ 558 0032 019B     		ldr	r3, [sp, #4]
+ 252:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 559              		.loc 2 252 0
+ 560 0034 1846     		mov	r0, r3
+ 561 0036 03B0     		add	sp, sp, #12
+ 562              		@ sp needed
+ 563 0038 5DF804FB 		ldr	pc, [sp], #4
+ 564              	.L30:
+ 565              		.align	2
+ 566              	.L29:
+ 567 003c 2C000000 		.word	.LC2
+ 568              		.cfi_endproc
+ 569              	.LFE12:
+ 571              		.section	.text.chThdTerminate,"ax",%progbits
+ 572              		.align	2
+ 573              		.p2align 4,,15
+ 574              		.global	chThdTerminate
+ 575              		.thumb
+ 576              		.thumb_func
+ 578              	chThdTerminate:
+ 579              	.LFB13:
+ 253:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 254:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 255:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Requests a thread termination.
+ 256:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @pre     The target thread must be written to invoke periodically
+ 257:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          @p chThdShouldTerminate() and terminate cleanly if it returns
+ 258:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          @p TRUE.
+ 259:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @post    The specified thread will terminate after detecting the termination
+ 260:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          condition.
+ 261:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 262:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] tp        pointer to the thread
+ 263:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 264:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @api
+ 265:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 266:/usr/src/chibiostest/os/kernel/src/chthreads.c **** void chThdTerminate(Thread *tp) {
+ 580              		.loc 2 266 0
+ 581              		.cfi_startproc
+ 582              		@ args = 0, pretend = 0, frame = 8
+ 583              		@ frame_needed = 0, uses_anonymous_args = 0
+ 584 0000 00B5     		push	{lr}
+ 585              		.cfi_def_cfa_offset 4
+ 586              		.cfi_offset 14, -4
+ 587 0002 83B0     		sub	sp, sp, #12
+ 588              		.cfi_def_cfa_offset 16
+ 589 0004 0190     		str	r0, [sp, #4]
+ 590              	.LBB8:
+ 267:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 268:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysLock();
+ 591              		.loc 2 268 0
+ 592 0006 2023     		movs	r3, #32
+ 593              	@ 268 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 594 0008 83F31188 		msr     BASEPRI, r3
+ 595              	@ 0 "" 2
+ 596              		.thumb
+ 597              	.LBE8:
+ 598 000c FFF7FEFF 		bl	dbg_check_lock
+ 269:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_flags |= THD_TERMINATE;
+ 599              		.loc 2 269 0
+ 600 0010 019B     		ldr	r3, [sp, #4]
+ 601 0012 93F82130 		ldrb	r3, [r3, #33]	@ zero_extendqisi2
+ 602 0016 43F00403 		orr	r3, r3, #4
+ 603 001a DAB2     		uxtb	r2, r3
+ 604 001c 019B     		ldr	r3, [sp, #4]
+ 605 001e 83F82120 		strb	r2, [r3, #33]
+ 270:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysUnlock();
+ 606              		.loc 2 270 0
+ 607 0022 FFF7FEFF 		bl	dbg_check_unlock
+ 608              	.LBB9:
+ 609 0026 0023     		movs	r3, #0
+ 610              	@ 270 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 611 0028 83F31188 		msr     BASEPRI, r3
+ 612              	@ 0 "" 2
+ 613              		.thumb
+ 614              	.LBE9:
+ 271:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 615              		.loc 2 271 0
+ 616 002c 03B0     		add	sp, sp, #12
+ 617              		@ sp needed
+ 618 002e 5DF804FB 		ldr	pc, [sp], #4
+ 619              		.cfi_endproc
+ 620              	.LFE13:
+ 622 0032 00BFAFF3 		.section	.rodata
+ 622      0080AFF3 
+ 622      0080AFF3 
+ 622      0080
+ 623 003e 0000     		.align	2
+ 624              	.LC3:
+ 625 0040 22636854 		.ascii	"\"chThdSleep\"()\000"
+ 625      6864536C 
+ 625      65657022 
+ 625      282900
+ 626              		.section	.text.chThdSleep,"ax",%progbits
+ 627              		.align	2
+ 628              		.p2align 4,,15
+ 629              		.global	chThdSleep
+ 630              		.thumb
+ 631              		.thumb_func
+ 633              	chThdSleep:
+ 634              	.LFB14:
+ 272:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 273:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 274:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Suspends the invoking thread for the specified time.
+ 275:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 276:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] time      the delay in system ticks, the special values are
+ 277:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *                      handled as follow:
+ 278:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *                      - @a TIME_INFINITE the thread enters an infinite sleep
+ 279:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *                        state.
+ 280:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *                      - @a TIME_IMMEDIATE this value is not allowed.
+ 281:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *                      .
+ 282:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 283:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @api
+ 284:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 285:/usr/src/chibiostest/os/kernel/src/chthreads.c **** void chThdSleep(systime_t time) {
+ 635              		.loc 2 285 0
+ 636              		.cfi_startproc
+ 637              		@ args = 0, pretend = 0, frame = 8
+ 638              		@ frame_needed = 0, uses_anonymous_args = 0
+ 639 0000 00B5     		push	{lr}
+ 640              		.cfi_def_cfa_offset 4
+ 641              		.cfi_offset 14, -4
+ 642 0002 83B0     		sub	sp, sp, #12
+ 643              		.cfi_def_cfa_offset 16
+ 644 0004 0190     		str	r0, [sp, #4]
+ 286:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 287:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chDbgCheck(time != TIME_IMMEDIATE, "chThdSleep");
+ 645              		.loc 2 287 0
+ 646 0006 019B     		ldr	r3, [sp, #4]
+ 647 0008 002B     		cmp	r3, #0
+ 648 000a 02D1     		bne	.L33
+ 649              		.loc 2 287 0 is_stmt 0 discriminator 1
+ 650 000c 0948     		ldr	r0, .L34
+ 651 000e FFF7FEFF 		bl	chDbgPanic
+ 652              	.L33:
+ 653              	.LBB10:
+ 288:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 289:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysLock();
+ 654              		.loc 2 289 0 is_stmt 1
+ 655 0012 2023     		movs	r3, #32
+ 656              	@ 289 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 657 0014 83F31188 		msr     BASEPRI, r3
+ 658              	@ 0 "" 2
+ 659              		.thumb
+ 660              	.LBE10:
+ 661 0018 FFF7FEFF 		bl	dbg_check_lock
+ 290:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chThdSleepS(time);
+ 662              		.loc 2 290 0
+ 663 001c 0620     		movs	r0, #6
+ 664 001e 0199     		ldr	r1, [sp, #4]
+ 665 0020 FFF7FEFF 		bl	chSchGoSleepTimeoutS
+ 291:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysUnlock();
+ 666              		.loc 2 291 0
+ 667 0024 FFF7FEFF 		bl	dbg_check_unlock
+ 668              	.LBB11:
+ 669 0028 0023     		movs	r3, #0
+ 670              	@ 291 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 671 002a 83F31188 		msr     BASEPRI, r3
+ 672              	@ 0 "" 2
+ 673              		.thumb
+ 674              	.LBE11:
+ 292:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 675              		.loc 2 292 0
+ 676 002e 03B0     		add	sp, sp, #12
+ 677              		@ sp needed
+ 678 0030 5DF804FB 		ldr	pc, [sp], #4
+ 679              	.L35:
+ 680              		.align	2
+ 681              	.L34:
+ 682 0034 40000000 		.word	.LC3
+ 683              		.cfi_endproc
+ 684              	.LFE14:
+ 686 0038 AFF30080 		.section	.text.chThdSleepUntil,"ax",%progbits
+ 686      AFF30080 
+ 687              		.align	2
+ 688              		.p2align 4,,15
+ 689              		.global	chThdSleepUntil
+ 690              		.thumb
+ 691              		.thumb_func
+ 693              	chThdSleepUntil:
+ 694              	.LFB15:
+ 293:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 294:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 295:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Suspends the invoking thread until the system time arrives to the
+ 296:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          specified value.
+ 297:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 298:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] time      absolute system time
+ 299:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 300:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @api
+ 301:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 302:/usr/src/chibiostest/os/kernel/src/chthreads.c **** void chThdSleepUntil(systime_t time) {
+ 695              		.loc 2 302 0
+ 696              		.cfi_startproc
+ 697              		@ args = 0, pretend = 0, frame = 8
+ 698              		@ frame_needed = 0, uses_anonymous_args = 0
+ 699 0000 00B5     		push	{lr}
+ 700              		.cfi_def_cfa_offset 4
+ 701              		.cfi_offset 14, -4
+ 702 0002 83B0     		sub	sp, sp, #12
+ 703              		.cfi_def_cfa_offset 16
+ 704 0004 0190     		str	r0, [sp, #4]
+ 705              	.LBB12:
+ 303:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 304:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysLock();
+ 706              		.loc 2 304 0
+ 707 0006 2023     		movs	r3, #32
+ 708              	@ 304 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 709 0008 83F31188 		msr     BASEPRI, r3
+ 710              	@ 0 "" 2
+ 711              		.thumb
+ 712              	.LBE12:
+ 713 000c FFF7FEFF 		bl	dbg_check_lock
+ 305:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   if ((time -= chTimeNow()) > 0)
+ 714              		.loc 2 305 0
+ 715 0010 094B     		ldr	r3, .L38
+ 716 0012 DB68     		ldr	r3, [r3, #12]
+ 717 0014 019A     		ldr	r2, [sp, #4]
+ 718 0016 D31A     		subs	r3, r2, r3
+ 719 0018 0193     		str	r3, [sp, #4]
+ 720 001a 019B     		ldr	r3, [sp, #4]
+ 721 001c 002B     		cmp	r3, #0
+ 722 001e 03D0     		beq	.L37
+ 306:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     chThdSleepS(time);
+ 723              		.loc 2 306 0
+ 724 0020 0620     		movs	r0, #6
+ 725 0022 0199     		ldr	r1, [sp, #4]
+ 726 0024 FFF7FEFF 		bl	chSchGoSleepTimeoutS
+ 727              	.L37:
+ 307:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysUnlock();
+ 728              		.loc 2 307 0
+ 729 0028 FFF7FEFF 		bl	dbg_check_unlock
+ 730              	.LBB13:
+ 731 002c 0023     		movs	r3, #0
+ 732              	@ 307 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 733 002e 83F31188 		msr     BASEPRI, r3
+ 734              	@ 0 "" 2
+ 735              		.thumb
+ 736              	.LBE13:
+ 308:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 737              		.loc 2 308 0
+ 738 0032 03B0     		add	sp, sp, #12
+ 739              		@ sp needed
+ 740 0034 5DF804FB 		ldr	pc, [sp], #4
+ 741              	.L39:
+ 742              		.align	2
+ 743              	.L38:
+ 744 0038 00000000 		.word	vtlist
+ 745              		.cfi_endproc
+ 746              	.LFE15:
+ 748 003c AFF30080 		.section	.text.chThdYield,"ax",%progbits
+ 749              		.align	2
+ 750              		.p2align 4,,15
+ 751              		.global	chThdYield
+ 752              		.thumb
+ 753              		.thumb_func
+ 755              	chThdYield:
+ 756              	.LFB16:
+ 309:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 310:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 311:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Yields the time slot.
+ 312:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @details Yields the CPU control to the next thread in the ready list with
+ 313:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          equal priority, if any.
+ 314:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 315:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @api
+ 316:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 317:/usr/src/chibiostest/os/kernel/src/chthreads.c **** void chThdYield(void) {
+ 757              		.loc 2 317 0
+ 758              		.cfi_startproc
+ 759              		@ args = 0, pretend = 0, frame = 0
+ 760              		@ frame_needed = 0, uses_anonymous_args = 0
+ 761 0000 08B5     		push	{r3, lr}
+ 762              		.cfi_def_cfa_offset 8
+ 763              		.cfi_offset 3, -8
+ 764              		.cfi_offset 14, -4
+ 765              	.LBB14:
+ 318:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 319:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysLock();
+ 766              		.loc 2 319 0
+ 767 0002 2023     		movs	r3, #32
+ 768              	@ 319 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 769 0004 83F31188 		msr     BASEPRI, r3
+ 770              	@ 0 "" 2
+ 771              		.thumb
+ 772              	.LBE14:
+ 773 0008 FFF7FEFF 		bl	dbg_check_lock
+ 320:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSchDoYieldS();
+ 774              		.loc 2 320 0
+ 775 000c 074B     		ldr	r3, .L42
+ 776 000e 1B68     		ldr	r3, [r3]
+ 777 0010 9A68     		ldr	r2, [r3, #8]
+ 778 0012 064B     		ldr	r3, .L42
+ 779 0014 9B69     		ldr	r3, [r3, #24]
+ 780 0016 9B68     		ldr	r3, [r3, #8]
+ 781 0018 9A42     		cmp	r2, r3
+ 782 001a 01D3     		bcc	.L41
+ 783              		.loc 2 320 0 is_stmt 0 discriminator 1
+ 784 001c FFF7FEFF 		bl	chSchDoRescheduleBehind
+ 785              	.L41:
+ 321:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysUnlock();
+ 786              		.loc 2 321 0 is_stmt 1
+ 787 0020 FFF7FEFF 		bl	dbg_check_unlock
+ 788              	.LBB15:
+ 789 0024 0023     		movs	r3, #0
+ 790              	@ 321 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 791 0026 83F31188 		msr     BASEPRI, r3
+ 792              	@ 0 "" 2
+ 793              		.thumb
+ 794              	.LBE15:
+ 322:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 795              		.loc 2 322 0
+ 796 002a 08BD     		pop	{r3, pc}
+ 797              	.L43:
+ 798              		.align	2
+ 799              	.L42:
+ 800 002c 00000000 		.word	rlist
+ 801              		.cfi_endproc
+ 802              	.LFE16:
+ 804              		.section	.text.chThdExit,"ax",%progbits
+ 805              		.align	2
+ 806              		.p2align 4,,15
+ 807              		.global	chThdExit
+ 808              		.thumb
+ 809              		.thumb_func
+ 811              	chThdExit:
+ 812              	.LFB17:
+ 323:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 324:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 325:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Terminates the current thread.
+ 326:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @details The thread goes in the @p THD_STATE_FINAL state holding the
+ 327:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          specified exit status code, other threads can retrieve the
+ 328:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          exit status code by invoking the function @p chThdWait().
+ 329:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @post    Eventual code after this function will never be executed,
+ 330:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          this function never returns. The compiler has no way to
+ 331:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          know this so do not assume that the compiler would remove
+ 332:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          the dead code.
+ 333:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 334:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] msg       thread exit code
+ 335:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 336:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @api
+ 337:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 338:/usr/src/chibiostest/os/kernel/src/chthreads.c **** void chThdExit(msg_t msg) {
+ 813              		.loc 2 338 0
+ 814              		.cfi_startproc
+ 815              		@ args = 0, pretend = 0, frame = 8
+ 816              		@ frame_needed = 0, uses_anonymous_args = 0
+ 817 0000 00B5     		push	{lr}
+ 818              		.cfi_def_cfa_offset 4
+ 819              		.cfi_offset 14, -4
+ 820 0002 83B0     		sub	sp, sp, #12
+ 821              		.cfi_def_cfa_offset 16
+ 822 0004 0190     		str	r0, [sp, #4]
+ 823              	.LBB16:
+ 339:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 340:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysLock();
+ 824              		.loc 2 340 0
+ 825 0006 2023     		movs	r3, #32
+ 826              	@ 340 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 827 0008 83F31188 		msr     BASEPRI, r3
+ 828              	@ 0 "" 2
+ 829              		.thumb
+ 830              	.LBE16:
+ 831 000c FFF7FEFF 		bl	dbg_check_lock
+ 341:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chThdExitS(msg);
+ 832              		.loc 2 341 0
+ 833 0010 0198     		ldr	r0, [sp, #4]
+ 834 0012 FFF7FEFF 		bl	chThdExitS
+ 342:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   /* The thread never returns here.*/
+ 343:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 835              		.loc 2 343 0
+ 836 0016 03B0     		add	sp, sp, #12
+ 837              		@ sp needed
+ 838 0018 5DF804FB 		ldr	pc, [sp], #4
+ 839              		.cfi_endproc
+ 840              	.LFE17:
+ 842              		.section	.rodata
+ 843 004f 00       		.align	2
+ 844              	.LC4:
+ 845 0050 63685468 		.ascii	"chThdExitS(), #1\000"
+ 845      64457869 
+ 845      74532829 
+ 845      2C202331 
+ 845      00
+ 846              		.section	.text.chThdExitS,"ax",%progbits
+ 847              		.align	2
+ 848              		.p2align 4,,15
+ 849              		.global	chThdExitS
+ 850              		.thumb
+ 851              		.thumb_func
+ 853              	chThdExitS:
+ 854              	.LFB18:
+ 344:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 345:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 346:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Terminates the current thread.
+ 347:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @details The thread goes in the @p THD_STATE_FINAL state holding the
+ 348:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          specified exit status code, other threads can retrieve the
+ 349:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          exit status code by invoking the function @p chThdWait().
+ 350:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @post    Eventual code after this function will never be executed,
+ 351:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          this function never returns. The compiler has no way to
+ 352:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          know this so do not assume that the compiler would remove
+ 353:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          the dead code.
+ 354:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 355:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] msg       thread exit code
+ 356:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 357:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @sclass
+ 358:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 359:/usr/src/chibiostest/os/kernel/src/chthreads.c **** void chThdExitS(msg_t msg) {
+ 855              		.loc 2 359 0
+ 856              		.cfi_startproc
+ 857              		@ args = 0, pretend = 0, frame = 16
+ 858              		@ frame_needed = 0, uses_anonymous_args = 0
+ 859 0000 00B5     		push	{lr}
+ 860              		.cfi_def_cfa_offset 4
+ 861              		.cfi_offset 14, -4
+ 862 0002 85B0     		sub	sp, sp, #20
+ 863              		.cfi_def_cfa_offset 24
+ 864 0004 0190     		str	r0, [sp, #4]
+ 360:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   Thread *tp = currp;
+ 865              		.loc 2 360 0
+ 866 0006 184B     		ldr	r3, .L49
+ 867 0008 9B69     		ldr	r3, [r3, #24]
+ 868 000a 0393     		str	r3, [sp, #12]
+ 361:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 362:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   tp->p_u.exitcode = msg;
+ 869              		.loc 2 362 0
+ 870 000c 039B     		ldr	r3, [sp, #12]
+ 871 000e 019A     		ldr	r2, [sp, #4]
+ 872 0010 9A62     		str	r2, [r3, #40]
+ 363:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if defined(THREAD_EXT_EXIT_HOOK)
+ 364:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   THREAD_EXT_EXIT_HOOK(tp);
+ 365:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+ 366:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_WAITEXIT
+ 367:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   while (notempty(&tp->p_waiting))
+ 873              		.loc 2 367 0
+ 874 0012 08E0     		b	.L46
+ 875              	.L47:
+ 368:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     chSchReadyI(list_remove(&tp->p_waiting));
+ 876              		.loc 2 368 0
+ 877 0014 039B     		ldr	r3, [sp, #12]
+ 878 0016 2C33     		adds	r3, r3, #44
+ 879 0018 1846     		mov	r0, r3
+ 880 001a FFF7FEFF 		bl	list_remove
+ 881 001e 0346     		mov	r3, r0
+ 882 0020 1846     		mov	r0, r3
+ 883 0022 FFF7FEFF 		bl	chSchReadyI
+ 884              	.L46:
+ 367:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     chSchReadyI(list_remove(&tp->p_waiting));
+ 885              		.loc 2 367 0 discriminator 1
+ 886 0026 039B     		ldr	r3, [sp, #12]
+ 887 0028 DA6A     		ldr	r2, [r3, #44]
+ 888 002a 039B     		ldr	r3, [sp, #12]
+ 889 002c 2C33     		adds	r3, r3, #44
+ 890 002e 9A42     		cmp	r2, r3
+ 891 0030 F0D1     		bne	.L47
+ 369:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+ 370:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_REGISTRY
+ 371:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   /* Static threads are immediately removed from the registry because
+ 372:/usr/src/chibiostest/os/kernel/src/chthreads.c ****      there is no memory to recover.*/
+ 373:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   if ((tp->p_flags & THD_MEM_MODE_MASK) == THD_MEM_MODE_STATIC)
+ 892              		.loc 2 373 0
+ 893 0032 039B     		ldr	r3, [sp, #12]
+ 894 0034 93F82130 		ldrb	r3, [r3, #33]	@ zero_extendqisi2
+ 895 0038 03F00303 		and	r3, r3, #3
+ 896 003c 002B     		cmp	r3, #0
+ 897 003e 09D1     		bne	.L48
+ 374:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     REG_REMOVE(tp);
+ 898              		.loc 2 374 0
+ 899 0040 039B     		ldr	r3, [sp, #12]
+ 900 0042 5B69     		ldr	r3, [r3, #20]
+ 901 0044 039A     		ldr	r2, [sp, #12]
+ 902 0046 1269     		ldr	r2, [r2, #16]
+ 903 0048 1A61     		str	r2, [r3, #16]
+ 904 004a 039B     		ldr	r3, [sp, #12]
+ 905 004c 1B69     		ldr	r3, [r3, #16]
+ 906 004e 039A     		ldr	r2, [sp, #12]
+ 907 0050 5269     		ldr	r2, [r2, #20]
+ 908 0052 5A61     		str	r2, [r3, #20]
+ 909              	.L48:
+ 375:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+ 376:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSchGoSleepS(THD_STATE_FINAL);
+ 910              		.loc 2 376 0
+ 911 0054 0E20     		movs	r0, #14
+ 912 0056 FFF7FEFF 		bl	chSchGoSleepS
+ 377:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   /* The thread never returns here.*/
+ 378:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chDbgAssert(FALSE, "chThdExitS(), #1", "zombies apocalypse");
+ 913              		.loc 2 378 0
+ 914 005a 0448     		ldr	r0, .L49+4
+ 915 005c FFF7FEFF 		bl	chDbgPanic
+ 379:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 916              		.loc 2 379 0
+ 917 0060 05B0     		add	sp, sp, #20
+ 918              		@ sp needed
+ 919 0062 5DF804FB 		ldr	pc, [sp], #4
+ 920              	.L50:
+ 921 0066 00BF     		.align	2
+ 922              	.L49:
+ 923 0068 00000000 		.word	rlist
+ 924 006c 50000000 		.word	.LC4
+ 925              		.cfi_endproc
+ 926              	.LFE18:
+ 928              		.section	.rodata
+ 929 0061 000000   		.align	2
+ 930              	.LC5:
+ 931 0064 22636854 		.ascii	"\"chThdWait\"()\000"
+ 931      68645761 
+ 931      69742228 
+ 931      2900
+ 932 0072 0000     		.align	2
+ 933              	.LC6:
+ 934 0074 63685468 		.ascii	"chThdWait(), #1\000"
+ 934      64576169 
+ 934      7428292C 
+ 934      20233100 
+ 935              		.align	2
+ 936              	.LC7:
+ 937 0084 63685468 		.ascii	"chThdWait(), #2\000"
+ 937      64576169 
+ 937      7428292C 
+ 937      20233200 
+ 938              		.section	.text.chThdWait,"ax",%progbits
+ 939              		.align	2
+ 940              		.p2align 4,,15
+ 941              		.global	chThdWait
+ 942              		.thumb
+ 943              		.thumb_func
+ 945              	chThdWait:
+ 946              	.LFB19:
+ 380:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 381:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_WAITEXIT || defined(__DOXYGEN__)
+ 382:/usr/src/chibiostest/os/kernel/src/chthreads.c **** /**
+ 383:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @brief   Blocks the execution of the invoking thread until the specified
+ 384:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          thread terminates then the exit code is returned.
+ 385:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @details This function waits for the specified thread to terminate then
+ 386:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          decrements its reference counter, if the counter reaches zero then
+ 387:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          the thread working area is returned to the proper allocator.<br>
+ 388:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          The memory used by the exited thread is handled in different ways
+ 389:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          depending on the API that spawned the thread:
+ 390:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          - If the thread was spawned by @p chThdCreateStatic() or by
+ 391:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            @p chThdInit() then nothing happens and the thread working area
+ 392:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            is not released or modified in any way. This is the default,
+ 393:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            totally static, behavior.
+ 394:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          - If the thread was spawned by @p chThdCreateFromHeap() then
+ 395:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            the working area is returned to the system heap.
+ 396:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          - If the thread was spawned by @p chThdCreateFromMemoryPool()
+ 397:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *            then the working area is returned to the owning memory pool.
+ 398:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          .
+ 399:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @pre     The configuration option @p CH_USE_WAITEXIT must be enabled in
+ 400:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          order to use this function.
+ 401:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @post    Enabling @p chThdWait() requires 2-4 (depending on the
+ 402:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          architecture) extra bytes in the @p Thread structure.
+ 403:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @post    After invoking @p chThdWait() the thread pointer becomes invalid
+ 404:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          and must not be used as parameter for further system calls.
+ 405:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @note    If @p CH_USE_DYNAMIC is not specified this function just waits for
+ 406:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *          the thread termination, no memory allocators are involved.
+ 407:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 408:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @param[in] tp        pointer to the thread
+ 409:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @return              The exit code from the terminated thread.
+ 410:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  *
+ 411:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  * @api
+ 412:/usr/src/chibiostest/os/kernel/src/chthreads.c ****  */
+ 413:/usr/src/chibiostest/os/kernel/src/chthreads.c **** msg_t chThdWait(Thread *tp) {
+ 947              		.loc 2 413 0
+ 948              		.cfi_startproc
+ 949              		@ args = 0, pretend = 0, frame = 16
+ 950              		@ frame_needed = 0, uses_anonymous_args = 0
+ 951 0000 00B5     		push	{lr}
+ 952              		.cfi_def_cfa_offset 4
+ 953              		.cfi_offset 14, -4
+ 954 0002 85B0     		sub	sp, sp, #20
+ 955              		.cfi_def_cfa_offset 24
+ 956 0004 0190     		str	r0, [sp, #4]
+ 414:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   msg_t msg;
+ 415:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 416:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chDbgCheck(tp != NULL, "chThdWait");
+ 957              		.loc 2 416 0
+ 958 0006 019B     		ldr	r3, [sp, #4]
+ 959 0008 002B     		cmp	r3, #0
+ 960 000a 02D1     		bne	.L52
+ 961              		.loc 2 416 0 is_stmt 0 discriminator 1
+ 962 000c 1B48     		ldr	r0, .L57
+ 963 000e FFF7FEFF 		bl	chDbgPanic
+ 964              	.L52:
+ 965              	.LBB17:
+ 417:/usr/src/chibiostest/os/kernel/src/chthreads.c **** 
+ 418:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysLock();
+ 966              		.loc 2 418 0 is_stmt 1
+ 967 0012 2023     		movs	r3, #32
+ 968              	@ 418 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 969 0014 83F31188 		msr     BASEPRI, r3
+ 970              	@ 0 "" 2
+ 971              		.thumb
+ 972              	.LBE17:
+ 973 0018 FFF7FEFF 		bl	dbg_check_lock
+ 419:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chDbgAssert(tp != currp, "chThdWait(), #1", "waiting self");
+ 974              		.loc 2 419 0
+ 975 001c 184B     		ldr	r3, .L57+4
+ 976 001e 9A69     		ldr	r2, [r3, #24]
+ 977 0020 019B     		ldr	r3, [sp, #4]
+ 978 0022 9A42     		cmp	r2, r3
+ 979 0024 02D1     		bne	.L53
+ 980              		.loc 2 419 0 is_stmt 0 discriminator 1
+ 981 0026 1748     		ldr	r0, .L57+8
+ 982 0028 FFF7FEFF 		bl	chDbgPanic
+ 983              	.L53:
+ 420:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_DYNAMIC
+ 421:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chDbgAssert(tp->p_refs > 0, "chThdWait(), #2", "not referenced");
+ 984              		.loc 2 421 0 is_stmt 1
+ 985 002c 019B     		ldr	r3, [sp, #4]
+ 986 002e 93F82230 		ldrb	r3, [r3, #34]	@ zero_extendqisi2
+ 987 0032 002B     		cmp	r3, #0
+ 988 0034 02D1     		bne	.L54
+ 989              		.loc 2 421 0 is_stmt 0 discriminator 1
+ 990 0036 1448     		ldr	r0, .L57+12
+ 991 0038 FFF7FEFF 		bl	chDbgPanic
+ 992              	.L54:
+ 422:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+ 423:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   if (tp->p_state != THD_STATE_FINAL) {
+ 993              		.loc 2 423 0 is_stmt 1
+ 994 003c 019B     		ldr	r3, [sp, #4]
+ 995 003e 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 996 0042 0E2B     		cmp	r3, #14
+ 997 0044 0AD0     		beq	.L55
+ 424:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     list_insert(currp, &tp->p_waiting);
+ 998              		.loc 2 424 0
+ 999 0046 0E4B     		ldr	r3, .L57+4
+ 1000 0048 9A69     		ldr	r2, [r3, #24]
+ 1001 004a 019B     		ldr	r3, [sp, #4]
+ 1002 004c 2C33     		adds	r3, r3, #44
+ 1003 004e 1046     		mov	r0, r2
+ 1004 0050 1946     		mov	r1, r3
+ 1005 0052 FFF7FEFF 		bl	list_insert
+ 425:/usr/src/chibiostest/os/kernel/src/chthreads.c ****     chSchGoSleepS(THD_STATE_WTEXIT);
+ 1006              		.loc 2 425 0
+ 1007 0056 0720     		movs	r0, #7
+ 1008 0058 FFF7FEFF 		bl	chSchGoSleepS
+ 1009              	.L55:
+ 426:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   }
+ 427:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   msg = tp->p_u.exitcode;
+ 1010              		.loc 2 427 0
+ 1011 005c 019B     		ldr	r3, [sp, #4]
+ 1012 005e 9B6A     		ldr	r3, [r3, #40]
+ 1013 0060 0393     		str	r3, [sp, #12]
+ 428:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chSysUnlock();
+ 1014              		.loc 2 428 0
+ 1015 0062 FFF7FEFF 		bl	dbg_check_unlock
+ 1016              	.LBB18:
+ 1017 0066 0023     		movs	r3, #0
+ 1018              	@ 428 "/usr/src/chibiostest/os/kernel/src/chthreads.c" 1
+ 1019 0068 83F31188 		msr     BASEPRI, r3
+ 1020              	@ 0 "" 2
+ 1021              		.thumb
+ 1022              	.LBE18:
+ 429:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #if CH_USE_DYNAMIC
+ 430:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   chThdRelease(tp);
+ 1023              		.loc 2 430 0
+ 1024 006c 0198     		ldr	r0, [sp, #4]
+ 1025 006e FFF7FEFF 		bl	chThdRelease
+ 431:/usr/src/chibiostest/os/kernel/src/chthreads.c **** #endif
+ 432:/usr/src/chibiostest/os/kernel/src/chthreads.c ****   return msg;
+ 1026              		.loc 2 432 0
+ 1027 0072 039B     		ldr	r3, [sp, #12]
+ 433:/usr/src/chibiostest/os/kernel/src/chthreads.c **** }
+ 1028              		.loc 2 433 0
+ 1029 0074 1846     		mov	r0, r3
+ 1030 0076 05B0     		add	sp, sp, #20
+ 1031              		@ sp needed
+ 1032 0078 5DF804FB 		ldr	pc, [sp], #4
+ 1033              	.L58:
+ 1034              		.align	2
+ 1035              	.L57:
+ 1036 007c 64000000 		.word	.LC5
+ 1037 0080 00000000 		.word	rlist
+ 1038 0084 74000000 		.word	.LC6
+ 1039 0088 84000000 		.word	.LC7
+ 1040              		.cfi_endproc
+ 1041              	.LFE19:
+ 1043 008c AFF30080 		.text
+ 1044              	.Letext0:
+ 1045              		.file 3 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
+ 1046              		.file 4 "/usr/include/newlib/machine/_default_types.h"
+ 1047              		.file 5 "/usr/include/newlib/stdint.h"
+ 1048              		.file 6 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 1049              		.file 7 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 1050              		.file 8 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 1051              		.file 9 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 1052              		.file 10 "/usr/src/chibiostest/os/kernel/include/chvt.h"
+ 1053              		.file 11 "/usr/src/chibiostest/os/kernel/include/chschd.h"
+ 1054              		.file 12 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chthreads.c
+     /tmp/ccPSfdLY.s:20     .text.list_insert:0000000000000000 $t
+     /tmp/ccPSfdLY.s:25     .text.list_insert:0000000000000000 list_insert
+     /tmp/ccPSfdLY.s:54     .text.list_remove:0000000000000000 $t
+     /tmp/ccPSfdLY.s:59     .text.list_remove:0000000000000000 list_remove
+     /tmp/ccPSfdLY.s:89     .text._thread_init:0000000000000000 $t
+     /tmp/ccPSfdLY.s:95     .text._thread_init:0000000000000000 _thread_init
+     /tmp/ccPSfdLY.s:192    .text._thread_init:0000000000000098 $d
+     /tmp/ccPSfdLY.s:197    .text._thread_memfill:0000000000000000 $t
+     /tmp/ccPSfdLY.s:203    .text._thread_memfill:0000000000000000 _thread_memfill
+     /tmp/ccPSfdLY.s:239    .rodata:0000000000000000 $d
+     /tmp/ccPSfdLY.s:243    .text.chThdCreateI:0000000000000000 $t
+     /tmp/ccPSfdLY.s:249    .text.chThdCreateI:0000000000000000 chThdCreateI
+     /tmp/ccPSfdLY.s:320    .text.chThdCreateI:000000000000006c $d
+     /tmp/ccPSfdLY.s:326    .text.chThdCreateStatic:0000000000000000 $t
+     /tmp/ccPSfdLY.s:332    .text.chThdCreateStatic:0000000000000000 chThdCreateStatic
+     /tmp/ccPSfdLY.s:409    .text.chThdSetPriority:0000000000000000 $t
+     /tmp/ccPSfdLY.s:415    .text.chThdSetPriority:0000000000000000 chThdSetPriority
+     /tmp/ccPSfdLY.s:498    .text.chThdSetPriority:0000000000000068 $d
+     /tmp/ccPSfdLY.s:508    .text.chThdResume:0000000000000000 $t
+     /tmp/ccPSfdLY.s:514    .text.chThdResume:0000000000000000 chThdResume
+     /tmp/ccPSfdLY.s:567    .text.chThdResume:000000000000003c $d
+     /tmp/ccPSfdLY.s:572    .text.chThdTerminate:0000000000000000 $t
+     /tmp/ccPSfdLY.s:578    .text.chThdTerminate:0000000000000000 chThdTerminate
+     /tmp/ccPSfdLY.s:627    .text.chThdSleep:0000000000000000 $t
+     /tmp/ccPSfdLY.s:633    .text.chThdSleep:0000000000000000 chThdSleep
+     /tmp/ccPSfdLY.s:682    .text.chThdSleep:0000000000000034 $d
+     /tmp/ccPSfdLY.s:687    .text.chThdSleepUntil:0000000000000000 $t
+     /tmp/ccPSfdLY.s:693    .text.chThdSleepUntil:0000000000000000 chThdSleepUntil
+     /tmp/ccPSfdLY.s:744    .text.chThdSleepUntil:0000000000000038 $d
+     /tmp/ccPSfdLY.s:749    .text.chThdYield:0000000000000000 $t
+     /tmp/ccPSfdLY.s:755    .text.chThdYield:0000000000000000 chThdYield
+     /tmp/ccPSfdLY.s:800    .text.chThdYield:000000000000002c $d
+     /tmp/ccPSfdLY.s:805    .text.chThdExit:0000000000000000 $t
+     /tmp/ccPSfdLY.s:811    .text.chThdExit:0000000000000000 chThdExit
+     /tmp/ccPSfdLY.s:853    .text.chThdExitS:0000000000000000 chThdExitS
+     /tmp/ccPSfdLY.s:847    .text.chThdExitS:0000000000000000 $t
+     /tmp/ccPSfdLY.s:923    .text.chThdExitS:0000000000000068 $d
+     /tmp/ccPSfdLY.s:939    .text.chThdWait:0000000000000000 $t
+     /tmp/ccPSfdLY.s:945    .text.chThdWait:0000000000000000 chThdWait
+     /tmp/ccPSfdLY.s:1036   .text.chThdWait:000000000000007c $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccPSfdLY.s:196    .text._thread_init:000000000000009c $t
+     /tmp/ccPSfdLY.s:325    .text.chThdCreateI:0000000000000074 $t
+     /tmp/ccPSfdLY.s:686    .text.chThdSleep:0000000000000038 $t
+     /tmp/ccPSfdLY.s:748    .text.chThdSleepUntil:000000000000003c $t
+     /tmp/ccPSfdLY.s:1043   .text.chThdWait:000000000000008c $t
+
+UNDEFINED SYMBOLS
+rlist
+chDbgCheckClassI
+chDbgPanic
+_port_thread_start
+dbg_check_lock
+chSchWakeupS
+dbg_check_unlock
+chSchRescheduleS
+chSchGoSleepTimeoutS
+vtlist
+chSchDoRescheduleBehind
+chSchReadyI
+chSchGoSleepS
+chThdRelease

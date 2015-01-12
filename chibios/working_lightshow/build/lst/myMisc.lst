@@ -1,0 +1,1753 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"myMisc.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.bss.SDU1,"aw",%nobits
+  20              		.align	2
+  23              	SDU1:
+  24 0000 00000000 		.space	600
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  25              		.section	.rodata
+  26              		.align	2
+  27              	.LC0:
+  28 0000 55736167 		.ascii	"Usage: mem\015\012\000"
+  28      653A206D 
+  28      656D0D0A 
+  28      00
+  29 000d 000000   		.align	2
+  30              	.LC1:
+  31 0010 636F7265 		.ascii	"core free memory : %u bytes\015\012\000"
+  31      20667265 
+  31      65206D65 
+  31      6D6F7279 
+  31      203A2025 
+  32 002e 0000     		.align	2
+  33              	.LC2:
+  34 0030 68656170 		.ascii	"heap fragments    : %u\015\012\000"
+  34      20667261 
+  34      676D656E 
+  34      74732020 
+  34      20203A20 
+  35 0049 000000   		.align	2
+  36              	.LC3:
+  37 004c 68656170 		.ascii	"heap free total  : %u bytes\015\012\000"
+  37      20667265 
+  37      6520746F 
+  37      74616C20 
+  37      203A2025 
+  38              		.section	.text.cmd_mem,"ax",%progbits
+  39              		.align	2
+  40              		.p2align 4,,15
+  41              		.global	cmd_mem
+  42              		.thumb
+  43              		.thumb_func
+  45              	cmd_mem:
+  46              	.LFB118:
+  47              		.file 1 "myMisc.c"
+   1:myMisc.c      **** #include <stdlib.h>
+   2:myMisc.c      **** #include <string.h>
+   3:myMisc.c      **** #include <ctype.h>
+   4:myMisc.c      **** 
+   5:myMisc.c      **** #include "ch.h"
+   6:myMisc.c      **** #include "hal.h"
+   7:myMisc.c      **** 
+   8:myMisc.c      **** #include "chprintf.h"
+   9:myMisc.c      **** 
+  10:myMisc.c      **** #include "myMisc.h"
+  11:myMisc.c      **** 
+  12:myMisc.c      **** 
+  13:myMisc.c      **** /*===========================================================================*/
+  14:myMisc.c      **** /* Generic code.															 */
+  15:myMisc.c      **** /*===========================================================================*/
+  16:myMisc.c      **** 
+  17:myMisc.c      **** /* Virtual serial port over USB.*/
+  18:myMisc.c      **** static SerialUSBDriver SDU1;
+  19:myMisc.c      **** 
+  20:myMisc.c      **** 
+  21:myMisc.c      **** void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[])
+  22:myMisc.c      **** {
+  48              		.loc 1 22 0
+  49              		.cfi_startproc
+  50              		@ args = 0, pretend = 0, frame = 24
+  51              		@ frame_needed = 0, uses_anonymous_args = 0
+  52 0000 00B5     		push	{lr}
+  53              		.cfi_def_cfa_offset 4
+  54              		.cfi_offset 14, -4
+  55 0002 87B0     		sub	sp, sp, #28
+  56              		.cfi_def_cfa_offset 32
+  57 0004 0390     		str	r0, [sp, #12]
+  58 0006 0291     		str	r1, [sp, #8]
+  59 0008 0192     		str	r2, [sp, #4]
+  23:myMisc.c      ****     size_t n, size;
+  24:myMisc.c      **** 
+  25:myMisc.c      ****     (void)argv;
+  26:myMisc.c      ****     if (argc > 0)
+  60              		.loc 1 26 0
+  61 000a 029B     		ldr	r3, [sp, #8]
+  62 000c 002B     		cmp	r3, #0
+  63 000e 04DD     		ble	.L2
+  27:myMisc.c      ****     {
+  28:myMisc.c      ****         chprintf(chp, "Usage: mem\r\n");
+  64              		.loc 1 28 0
+  65 0010 0398     		ldr	r0, [sp, #12]
+  66 0012 1049     		ldr	r1, .L4
+  67 0014 FFF7FEFF 		bl	chprintf
+  68 0018 18E0     		b	.L1
+  69              	.L2:
+  29:myMisc.c      ****         return;
+  30:myMisc.c      ****     }
+  31:myMisc.c      ****     n = chHeapStatus(NULL, &size);
+  70              		.loc 1 31 0
+  71 001a 04AB     		add	r3, sp, #16
+  72 001c 0020     		movs	r0, #0
+  73 001e 1946     		mov	r1, r3
+  74 0020 FFF7FEFF 		bl	chHeapStatus
+  75 0024 0590     		str	r0, [sp, #20]
+  32:myMisc.c      ****     chprintf(chp, "core free memory : %u bytes\r\n", chCoreStatus());
+  76              		.loc 1 32 0
+  77 0026 FFF7FEFF 		bl	chCoreStatus
+  78 002a 0346     		mov	r3, r0
+  79 002c 0398     		ldr	r0, [sp, #12]
+  80 002e 0A49     		ldr	r1, .L4+4
+  81 0030 1A46     		mov	r2, r3
+  82 0032 FFF7FEFF 		bl	chprintf
+  33:myMisc.c      ****     chprintf(chp, "heap fragments    : %u\r\n", n);
+  83              		.loc 1 33 0
+  84 0036 0398     		ldr	r0, [sp, #12]
+  85 0038 0849     		ldr	r1, .L4+8
+  86 003a 059A     		ldr	r2, [sp, #20]
+  87 003c FFF7FEFF 		bl	chprintf
+  34:myMisc.c      ****     chprintf(chp, "heap free total  : %u bytes\r\n", size);
+  88              		.loc 1 34 0
+  89 0040 049B     		ldr	r3, [sp, #16]
+  90 0042 0398     		ldr	r0, [sp, #12]
+  91 0044 0649     		ldr	r1, .L4+12
+  92 0046 1A46     		mov	r2, r3
+  93 0048 FFF7FEFF 		bl	chprintf
+  94              	.L1:
+  35:myMisc.c      **** }
+  95              		.loc 1 35 0
+  96 004c 07B0     		add	sp, sp, #28
+  97              		@ sp needed
+  98 004e 5DF804FB 		ldr	pc, [sp], #4
+  99              	.L5:
+ 100 0052 00BF     		.align	2
+ 101              	.L4:
+ 102 0054 00000000 		.word	.LC0
+ 103 0058 10000000 		.word	.LC1
+ 104 005c 30000000 		.word	.LC2
+ 105 0060 4C000000 		.word	.LC3
+ 106              		.cfi_endproc
+ 107              	.LFE118:
+ 109 0064 AFF30080 		.section	.rodata
+ 109      AFF30080 
+ 109      AFF30080 
+ 110 006a 0000     		.align	2
+ 111              	.LC4:
+ 112 006c 55736167 		.ascii	"Usage: threads\015\012\000"
+ 112      653A2074 
+ 112      68726561 
+ 112      64730D0A 
+ 112      00
+ 113 007d 000000   		.align	2
+ 114              	.LC5:
+ 115 0080 25313073 		.ascii	"%10s %10s %6s %6s %11s %7s %17s \015\012\000"
+ 115      20253130 
+ 115      73202536 
+ 115      73202536 
+ 115      73202531 
+ 116 00a3 00       		.align	2
+ 117              	.LC6:
+ 118 00a4 61646400 		.ascii	"add\000"
+ 119              		.align	2
+ 120              	.LC7:
+ 121 00a8 73746163 		.ascii	"stack\000"
+ 121      6B00
+ 122 00ae 0000     		.align	2
+ 123              	.LC8:
+ 124 00b0 7072696F 		.ascii	"prio\000"
+ 124      00
+ 125 00b5 000000   		.align	2
+ 126              	.LC9:
+ 127 00b8 72656673 		.ascii	"refs\000"
+ 127      00
+ 128 00bd 000000   		.align	2
+ 129              	.LC10:
+ 130 00c0 73746174 		.ascii	"state\000"
+ 130      6500
+ 131 00c6 0000     		.align	2
+ 132              	.LC11:
+ 133 00c8 74696D65 		.ascii	"time\000"
+ 133      00
+ 134 00cd 000000   		.align	2
+ 135              	.LC12:
+ 136 00d0 6E616D65 		.ascii	"name\000"
+ 136      00
+ 137 00d5 000000   		.align	2
+ 138              	.LC13:
+ 139 00d8 252E3130 		.ascii	"%.10lx %.10lx %6lu %6lu %11s %7lu %17.15s \015\012\000"
+ 139      6C782025 
+ 139      2E31306C 
+ 139      78202536 
+ 139      6C752025 
+ 140              		.section	.text.cmd_threads,"ax",%progbits
+ 141              		.align	2
+ 142              		.p2align 4,,15
+ 143              		.global	cmd_threads
+ 144              		.thumb
+ 145              		.thumb_func
+ 147              	cmd_threads:
+ 148              	.LFB119:
+  36:myMisc.c      **** 
+  37:myMisc.c      **** void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[])
+  38:myMisc.c      **** {
+ 149              		.loc 1 38 0
+ 150              		.cfi_startproc
+ 151              		@ args = 0, pretend = 0, frame = 24
+ 152              		@ frame_needed = 0, uses_anonymous_args = 0
+ 153 0000 70B5     		push	{r4, r5, r6, lr}
+ 154              		.cfi_def_cfa_offset 16
+ 155              		.cfi_offset 4, -16
+ 156              		.cfi_offset 5, -12
+ 157              		.cfi_offset 6, -8
+ 158              		.cfi_offset 14, -4
+ 159 0002 8CB0     		sub	sp, sp, #48
+ 160              		.cfi_def_cfa_offset 64
+ 161 0004 0990     		str	r0, [sp, #36]
+ 162 0006 0891     		str	r1, [sp, #32]
+ 163 0008 0792     		str	r2, [sp, #28]
+  39:myMisc.c      ****     static const char *states[] = {THD_STATE_NAMES};
+  40:myMisc.c      ****     Thread *tp;
+  41:myMisc.c      **** 
+  42:myMisc.c      ****     (void)argv;
+  43:myMisc.c      ****     if (argc > 0)
+ 164              		.loc 1 43 0
+ 165 000a 089B     		ldr	r3, [sp, #32]
+ 166 000c 002B     		cmp	r3, #0
+ 167 000e 04DD     		ble	.L7
+  44:myMisc.c      ****     {
+  45:myMisc.c      ****         chprintf(chp, "Usage: threads\r\n");
+ 168              		.loc 1 45 0
+ 169 0010 0998     		ldr	r0, [sp, #36]
+ 170 0012 1F49     		ldr	r1, .L10
+ 171 0014 FFF7FEFF 		bl	chprintf
+  46:myMisc.c      ****         return;
+ 172              		.loc 1 46 0
+ 173 0018 37E0     		b	.L6
+ 174              	.L7:
+  47:myMisc.c      ****     }
+  48:myMisc.c      ****     chprintf(chp, "%10s %10s %6s %6s %11s %7s %17s \r\n",
+ 175              		.loc 1 48 0
+ 176 001a 1E4B     		ldr	r3, .L10+4
+ 177 001c 0093     		str	r3, [sp]
+ 178 001e 1E4B     		ldr	r3, .L10+8
+ 179 0020 0193     		str	r3, [sp, #4]
+ 180 0022 1E4B     		ldr	r3, .L10+12
+ 181 0024 0293     		str	r3, [sp, #8]
+ 182 0026 1E4B     		ldr	r3, .L10+16
+ 183 0028 0393     		str	r3, [sp, #12]
+ 184 002a 1E4B     		ldr	r3, .L10+20
+ 185 002c 0493     		str	r3, [sp, #16]
+ 186 002e 0998     		ldr	r0, [sp, #36]
+ 187 0030 1D49     		ldr	r1, .L10+24
+ 188 0032 1E4A     		ldr	r2, .L10+28
+ 189 0034 1E4B     		ldr	r3, .L10+32
+ 190 0036 FFF7FEFF 		bl	chprintf
+  49:myMisc.c      ****              "add", "stack", "prio", "refs", "state", "time", "name");
+  50:myMisc.c      ****     tp = chRegFirstThread();
+ 191              		.loc 1 50 0
+ 192 003a FFF7FEFF 		bl	chRegFirstThread
+ 193 003e 0B90     		str	r0, [sp, #44]
+ 194              	.L9:
+  51:myMisc.c      ****     do
+  52:myMisc.c      ****     {
+  53:myMisc.c      ****         chprintf(chp, "%.10lx %.10lx %6lu %6lu %11s %7lu %17.15s \r\n",
+ 195              		.loc 1 53 0 discriminator 1
+ 196 0040 0B9A     		ldr	r2, [sp, #44]
+  54:myMisc.c      ****                  (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
+ 197              		.loc 1 54 0 discriminator 1
+ 198 0042 0B9B     		ldr	r3, [sp, #44]
+ 199 0044 DB68     		ldr	r3, [r3, #12]
+  53:myMisc.c      ****                  (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
+ 200              		.loc 1 53 0 discriminator 1
+ 201 0046 0B99     		ldr	r1, [sp, #44]
+ 202 0048 8E68     		ldr	r6, [r1, #8]
+  55:myMisc.c      ****                  (uint32_t)tp->p_prio, (uint32_t)(tp->p_refs - 1),
+ 203              		.loc 1 55 0 discriminator 1
+ 204 004a 0B99     		ldr	r1, [sp, #44]
+ 205 004c 91F82210 		ldrb	r1, [r1, #34]	@ zero_extendqisi2
+ 206 0050 0139     		subs	r1, r1, #1
+  53:myMisc.c      ****                  (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
+ 207              		.loc 1 53 0 discriminator 1
+ 208 0052 0D46     		mov	r5, r1
+  56:myMisc.c      ****                  states[tp->p_state], (uint32_t)tp->p_time,
+ 209              		.loc 1 56 0 discriminator 1
+ 210 0054 0B99     		ldr	r1, [sp, #44]
+ 211 0056 91F82010 		ldrb	r1, [r1, #32]	@ zero_extendqisi2
+  53:myMisc.c      ****                  (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
+ 212              		.loc 1 53 0 discriminator 1
+ 213 005a 0846     		mov	r0, r1
+ 214 005c 1549     		ldr	r1, .L10+36
+ 215 005e 51F82040 		ldr	r4, [r1, r0, lsl #2]
+ 216 0062 0B99     		ldr	r1, [sp, #44]
+ 217 0064 486A     		ldr	r0, [r1, #36]
+  57:myMisc.c      ****                  (uint32_t)tp->p_name);
+ 218              		.loc 1 57 0 discriminator 1
+ 219 0066 0B99     		ldr	r1, [sp, #44]
+ 220 0068 8969     		ldr	r1, [r1, #24]
+  53:myMisc.c      ****                  (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
+ 221              		.loc 1 53 0 discriminator 1
+ 222 006a 0096     		str	r6, [sp]
+ 223 006c 0195     		str	r5, [sp, #4]
+ 224 006e 0294     		str	r4, [sp, #8]
+ 225 0070 0390     		str	r0, [sp, #12]
+ 226 0072 0491     		str	r1, [sp, #16]
+ 227 0074 0998     		ldr	r0, [sp, #36]
+ 228 0076 1049     		ldr	r1, .L10+40
+ 229 0078 FFF7FEFF 		bl	chprintf
+  58:myMisc.c      ****         tp = chRegNextThread(tp);
+ 230              		.loc 1 58 0 discriminator 1
+ 231 007c 0B98     		ldr	r0, [sp, #44]
+ 232 007e FFF7FEFF 		bl	chRegNextThread
+ 233 0082 0B90     		str	r0, [sp, #44]
+  59:myMisc.c      ****     }
+  60:myMisc.c      ****     while (tp != NULL);
+ 234              		.loc 1 60 0 discriminator 1
+ 235 0084 0B9B     		ldr	r3, [sp, #44]
+ 236 0086 002B     		cmp	r3, #0
+ 237 0088 DAD1     		bne	.L9
+ 238              	.L6:
+  61:myMisc.c      **** }
+ 239              		.loc 1 61 0
+ 240 008a 0CB0     		add	sp, sp, #48
+ 241              		@ sp needed
+ 242 008c 70BD     		pop	{r4, r5, r6, pc}
+ 243              	.L11:
+ 244 008e 00BF     		.align	2
+ 245              	.L10:
+ 246 0090 6C000000 		.word	.LC4
+ 247 0094 B0000000 		.word	.LC8
+ 248 0098 B8000000 		.word	.LC9
+ 249 009c C0000000 		.word	.LC10
+ 250 00a0 C8000000 		.word	.LC11
+ 251 00a4 D0000000 		.word	.LC12
+ 252 00a8 80000000 		.word	.LC5
+ 253 00ac A4000000 		.word	.LC6
+ 254 00b0 A8000000 		.word	.LC7
+ 255 00b4 00000000 		.word	states.7728
+ 256 00b8 D8000000 		.word	.LC13
+ 257              		.cfi_endproc
+ 258              	.LFE119:
+ 260 00bc AFF30080 		.section	.rodata
+ 261 0105 000000   		.align	2
+ 262              	.LC14:
+ 263 0108 55736167 		.ascii	"Usage: toggle #led\015\012\000"
+ 263      653A2074 
+ 263      6F67676C 
+ 263      6520236C 
+ 263      65640D0A 
+ 264              		.section	.text.cmd_toggle,"ax",%progbits
+ 265              		.align	2
+ 266              		.p2align 4,,15
+ 267              		.global	cmd_toggle
+ 268              		.thumb
+ 269              		.thumb_func
+ 271              	cmd_toggle:
+ 272              	.LFB120:
+  62:myMisc.c      **** 
+  63:myMisc.c      **** void cmd_toggle(BaseSequentialStream *chp, int argc, char *argv[])
+  64:myMisc.c      **** {
+ 273              		.loc 1 64 0
+ 274              		.cfi_startproc
+ 275              		@ args = 0, pretend = 0, frame = 16
+ 276              		@ frame_needed = 0, uses_anonymous_args = 0
+ 277 0000 00B5     		push	{lr}
+ 278              		.cfi_def_cfa_offset 4
+ 279              		.cfi_offset 14, -4
+ 280 0002 85B0     		sub	sp, sp, #20
+ 281              		.cfi_def_cfa_offset 24
+ 282 0004 0390     		str	r0, [sp, #12]
+ 283 0006 0291     		str	r1, [sp, #8]
+ 284 0008 0192     		str	r2, [sp, #4]
+  65:myMisc.c      ****     (void)argv;
+  66:myMisc.c      ****     if (argc != 1)
+ 285              		.loc 1 66 0
+ 286 000a 029B     		ldr	r3, [sp, #8]
+ 287 000c 012B     		cmp	r3, #1
+ 288 000e 04D0     		beq	.L13
+  67:myMisc.c      ****     {
+  68:myMisc.c      ****         chprintf(chp, "Usage: toggle #led\r\n");
+ 289              		.loc 1 68 0
+ 290 0010 0398     		ldr	r0, [sp, #12]
+ 291 0012 1B49     		ldr	r1, .L18
+ 292 0014 FFF7FEFF 		bl	chprintf
+  69:myMisc.c      ****         return;
+ 293              		.loc 1 69 0
+ 294 0018 2EE0     		b	.L12
+ 295              	.L13:
+  70:myMisc.c      ****     }
+  71:myMisc.c      ****     if(argv[0][0]=='1')
+ 296              		.loc 1 71 0
+ 297 001a 019B     		ldr	r3, [sp, #4]
+ 298 001c 1B68     		ldr	r3, [r3]
+ 299 001e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 300 0020 312B     		cmp	r3, #49
+ 301 0022 06D1     		bne	.L15
+  72:myMisc.c      ****     {
+  73:myMisc.c      ****         palTogglePad(GPIOD, GPIOD_LED3);
+ 302              		.loc 1 73 0
+ 303 0024 174B     		ldr	r3, .L18+4
+ 304 0026 174A     		ldr	r2, .L18+4
+ 305 0028 5269     		ldr	r2, [r2, #20]
+ 306 002a 82F40052 		eor	r2, r2, #8192
+ 307 002e 5A61     		str	r2, [r3, #20]
+ 308 0030 22E0     		b	.L12
+ 309              	.L15:
+  74:myMisc.c      ****     }
+  75:myMisc.c      ****     else if(argv[0][0]=='2')
+ 310              		.loc 1 75 0
+ 311 0032 019B     		ldr	r3, [sp, #4]
+ 312 0034 1B68     		ldr	r3, [r3]
+ 313 0036 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 314 0038 322B     		cmp	r3, #50
+ 315 003a 06D1     		bne	.L16
+  76:myMisc.c      ****     {
+  77:myMisc.c      ****         palTogglePad(GPIOD, GPIOD_LED4);
+ 316              		.loc 1 77 0
+ 317 003c 114B     		ldr	r3, .L18+4
+ 318 003e 114A     		ldr	r2, .L18+4
+ 319 0040 5269     		ldr	r2, [r2, #20]
+ 320 0042 82F48052 		eor	r2, r2, #4096
+ 321 0046 5A61     		str	r2, [r3, #20]
+ 322 0048 16E0     		b	.L12
+ 323              	.L16:
+  78:myMisc.c      ****     }
+  79:myMisc.c      ****     else if(argv[0][0]=='3')
+ 324              		.loc 1 79 0
+ 325 004a 019B     		ldr	r3, [sp, #4]
+ 326 004c 1B68     		ldr	r3, [r3]
+ 327 004e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 328 0050 332B     		cmp	r3, #51
+ 329 0052 06D1     		bne	.L17
+  80:myMisc.c      ****     {
+  81:myMisc.c      ****         palTogglePad(GPIOD, GPIOD_LED5);
+ 330              		.loc 1 81 0
+ 331 0054 0B4B     		ldr	r3, .L18+4
+ 332 0056 0B4A     		ldr	r2, .L18+4
+ 333 0058 5269     		ldr	r2, [r2, #20]
+ 334 005a 82F48042 		eor	r2, r2, #16384
+ 335 005e 5A61     		str	r2, [r3, #20]
+ 336 0060 0AE0     		b	.L12
+ 337              	.L17:
+  82:myMisc.c      ****     }
+  83:myMisc.c      ****     else if(argv[0][0]=='4')
+ 338              		.loc 1 83 0
+ 339 0062 019B     		ldr	r3, [sp, #4]
+ 340 0064 1B68     		ldr	r3, [r3]
+ 341 0066 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 342 0068 342B     		cmp	r3, #52
+ 343 006a 05D1     		bne	.L12
+  84:myMisc.c      ****     {
+  85:myMisc.c      ****         palTogglePad(GPIOD, GPIOD_LED6);
+ 344              		.loc 1 85 0
+ 345 006c 054B     		ldr	r3, .L18+4
+ 346 006e 054A     		ldr	r2, .L18+4
+ 347 0070 5269     		ldr	r2, [r2, #20]
+ 348 0072 82F40042 		eor	r2, r2, #32768
+ 349 0076 5A61     		str	r2, [r3, #20]
+ 350              	.L12:
+  86:myMisc.c      ****     }
+  87:myMisc.c      **** }
+ 351              		.loc 1 87 0
+ 352 0078 05B0     		add	sp, sp, #20
+ 353              		@ sp needed
+ 354 007a 5DF804FB 		ldr	pc, [sp], #4
+ 355              	.L19:
+ 356 007e 00BF     		.align	2
+ 357              	.L18:
+ 358 0080 08010000 		.word	.LC14
+ 359 0084 000C0240 		.word	1073875968
+ 360              		.cfi_endproc
+ 361              	.LFE120:
+ 363              		.global	blinkspeed
+ 364 0088 AFF30080 		.section	.data.blinkspeed,"aw",%progbits
+ 364      AFF30080 
+ 365              		.align	2
+ 368              	blinkspeed:
+ 369 0000 32000000 		.word	50
+ 370              		.global	blinkmin
+ 371              		.section	.data.blinkmin,"aw",%progbits
+ 372              		.align	2
+ 375              	blinkmin:
+ 376 0000 1E000000 		.word	30
+ 377              		.global	blinkmax
+ 378              		.section	.data.blinkmax,"aw",%progbits
+ 379              		.align	2
+ 382              	blinkmax:
+ 383 0000 2C010000 		.word	300
+ 384              		.section	.text.cmd_blinkspeed,"ax",%progbits
+ 385              		.align	2
+ 386              		.p2align 4,,15
+ 387              		.global	cmd_blinkspeed
+ 388              		.thumb
+ 389              		.thumb_func
+ 391              	cmd_blinkspeed:
+ 392              	.LFB121:
+  88:myMisc.c      **** 
+  89:myMisc.c      **** int blinkspeed = 50;
+  90:myMisc.c      **** int blinkmin = 30;
+  91:myMisc.c      **** int blinkmax = 300;
+  92:myMisc.c      **** 
+  93:myMisc.c      **** void cmd_blinkspeed(BaseSequentialStream *chp, int argc, char *argv[])
+  94:myMisc.c      **** {
+ 393              		.loc 1 94 0
+ 394              		.cfi_startproc
+ 395              		@ args = 0, pretend = 0, frame = 24
+ 396              		@ frame_needed = 0, uses_anonymous_args = 0
+ 397 0000 00B5     		push	{lr}
+ 398              		.cfi_def_cfa_offset 4
+ 399              		.cfi_offset 14, -4
+ 400 0002 87B0     		sub	sp, sp, #28
+ 401              		.cfi_def_cfa_offset 32
+ 402 0004 0390     		str	r0, [sp, #12]
+ 403 0006 0291     		str	r1, [sp, #8]
+ 404 0008 0192     		str	r2, [sp, #4]
+  95:myMisc.c      **** 
+  96:myMisc.c      ****     (void)argv;
+  97:myMisc.c      ****     int speed = 30;
+ 405              		.loc 1 97 0
+ 406 000a 1E23     		movs	r3, #30
+ 407 000c 0593     		str	r3, [sp, #20]
+  98:myMisc.c      ****     if (argc != 1)
+ 408              		.loc 1 98 0
+ 409 000e 029B     		ldr	r3, [sp, #8]
+ 410 0010 012B     		cmp	r3, #1
+ 411 0012 00D0     		beq	.L21
+  99:myMisc.c      ****     {
+ 100:myMisc.c      **** 
+ 101:myMisc.c      ****         return;
+ 412              		.loc 1 101 0
+ 413 0014 15E0     		b	.L20
+ 414              	.L21:
+ 102:myMisc.c      ****     }
+ 103:myMisc.c      ****     speed = atoi(argv[0]);
+ 415              		.loc 1 103 0
+ 416 0016 019B     		ldr	r3, [sp, #4]
+ 417 0018 1B68     		ldr	r3, [r3]
+ 418 001a 1846     		mov	r0, r3
+ 419 001c FFF7FEFF 		bl	atoi
+ 420 0020 0590     		str	r0, [sp, #20]
+ 104:myMisc.c      ****     if(speed > 5000)
+ 421              		.loc 1 104 0
+ 422 0022 059A     		ldr	r2, [sp, #20]
+ 423 0024 41F28833 		movw	r3, #5000
+ 424 0028 9A42     		cmp	r2, r3
+ 425 002a 02DD     		ble	.L23
+ 105:myMisc.c      ****         speed = 5000;
+ 426              		.loc 1 105 0
+ 427 002c 41F28833 		movw	r3, #5000
+ 428 0030 0593     		str	r3, [sp, #20]
+ 429              	.L23:
+ 106:myMisc.c      ****     if(speed < 5)
+ 430              		.loc 1 106 0
+ 431 0032 059B     		ldr	r3, [sp, #20]
+ 432 0034 042B     		cmp	r3, #4
+ 433 0036 01DC     		bgt	.L24
+ 107:myMisc.c      ****         speed = 5;
+ 434              		.loc 1 107 0
+ 435 0038 0523     		movs	r3, #5
+ 436 003a 0593     		str	r3, [sp, #20]
+ 437              	.L24:
+ 108:myMisc.c      ****     blinkspeed = speed;
+ 438              		.loc 1 108 0
+ 439 003c 024B     		ldr	r3, .L25
+ 440 003e 059A     		ldr	r2, [sp, #20]
+ 441 0040 1A60     		str	r2, [r3]
+ 442              	.L20:
+ 109:myMisc.c      **** }
+ 443              		.loc 1 109 0
+ 444 0042 07B0     		add	sp, sp, #28
+ 445              		@ sp needed
+ 446 0044 5DF804FB 		ldr	pc, [sp], #4
+ 447              	.L26:
+ 448              		.align	2
+ 449              	.L25:
+ 450 0048 00000000 		.word	blinkspeed
+ 451              		.cfi_endproc
+ 452              	.LFE121:
+ 454 004c AFF30080 		.section	.text.cmd_blinkspeed_min_ch,"ax",%progbits
+ 455              		.align	2
+ 456              		.p2align 4,,15
+ 457              		.global	cmd_blinkspeed_min_ch
+ 458              		.thumb
+ 459              		.thumb_func
+ 461              	cmd_blinkspeed_min_ch:
+ 462              	.LFB122:
+ 110:myMisc.c      **** void cmd_blinkspeed_min_ch(BaseSequentialStream *chp, int argc, char *argv[])
+ 111:myMisc.c      **** {
+ 463              		.loc 1 111 0
+ 464              		.cfi_startproc
+ 465              		@ args = 0, pretend = 0, frame = 24
+ 466              		@ frame_needed = 0, uses_anonymous_args = 0
+ 467 0000 00B5     		push	{lr}
+ 468              		.cfi_def_cfa_offset 4
+ 469              		.cfi_offset 14, -4
+ 470 0002 87B0     		sub	sp, sp, #28
+ 471              		.cfi_def_cfa_offset 32
+ 472 0004 0390     		str	r0, [sp, #12]
+ 473 0006 0291     		str	r1, [sp, #8]
+ 474 0008 0192     		str	r2, [sp, #4]
+ 112:myMisc.c      **** 
+ 113:myMisc.c      ****     (void)argv;
+ 114:myMisc.c      ****     int speed = 30;
+ 475              		.loc 1 114 0
+ 476 000a 1E23     		movs	r3, #30
+ 477 000c 0593     		str	r3, [sp, #20]
+ 115:myMisc.c      ****     if (argc != 1)
+ 478              		.loc 1 115 0
+ 479 000e 029B     		ldr	r3, [sp, #8]
+ 480 0010 012B     		cmp	r3, #1
+ 481 0012 00D0     		beq	.L28
+ 116:myMisc.c      ****     {
+ 117:myMisc.c      **** 
+ 118:myMisc.c      ****         return;
+ 482              		.loc 1 118 0
+ 483 0014 15E0     		b	.L27
+ 484              	.L28:
+ 119:myMisc.c      ****     }
+ 120:myMisc.c      ****     speed = atoi(argv[0]);
+ 485              		.loc 1 120 0
+ 486 0016 019B     		ldr	r3, [sp, #4]
+ 487 0018 1B68     		ldr	r3, [r3]
+ 488 001a 1846     		mov	r0, r3
+ 489 001c FFF7FEFF 		bl	atoi
+ 490 0020 0590     		str	r0, [sp, #20]
+ 121:myMisc.c      ****     if(speed > 5000)
+ 491              		.loc 1 121 0
+ 492 0022 059A     		ldr	r2, [sp, #20]
+ 493 0024 41F28833 		movw	r3, #5000
+ 494 0028 9A42     		cmp	r2, r3
+ 495 002a 02DD     		ble	.L30
+ 122:myMisc.c      ****         speed = 5000;
+ 496              		.loc 1 122 0
+ 497 002c 41F28833 		movw	r3, #5000
+ 498 0030 0593     		str	r3, [sp, #20]
+ 499              	.L30:
+ 123:myMisc.c      ****     if(speed < 5)
+ 500              		.loc 1 123 0
+ 501 0032 059B     		ldr	r3, [sp, #20]
+ 502 0034 042B     		cmp	r3, #4
+ 503 0036 01DC     		bgt	.L31
+ 124:myMisc.c      ****         speed = 5;
+ 504              		.loc 1 124 0
+ 505 0038 0523     		movs	r3, #5
+ 506 003a 0593     		str	r3, [sp, #20]
+ 507              	.L31:
+ 125:myMisc.c      ****     blinkmin = speed;
+ 508              		.loc 1 125 0
+ 509 003c 024B     		ldr	r3, .L32
+ 510 003e 059A     		ldr	r2, [sp, #20]
+ 511 0040 1A60     		str	r2, [r3]
+ 512              	.L27:
+ 126:myMisc.c      **** }
+ 513              		.loc 1 126 0
+ 514 0042 07B0     		add	sp, sp, #28
+ 515              		@ sp needed
+ 516 0044 5DF804FB 		ldr	pc, [sp], #4
+ 517              	.L33:
+ 518              		.align	2
+ 519              	.L32:
+ 520 0048 00000000 		.word	blinkmin
+ 521              		.cfi_endproc
+ 522              	.LFE122:
+ 524 004c AFF30080 		.section	.text.cmd_blinkspeed_max_ch,"ax",%progbits
+ 525              		.align	2
+ 526              		.p2align 4,,15
+ 527              		.global	cmd_blinkspeed_max_ch
+ 528              		.thumb
+ 529              		.thumb_func
+ 531              	cmd_blinkspeed_max_ch:
+ 532              	.LFB123:
+ 127:myMisc.c      **** void cmd_blinkspeed_max_ch(BaseSequentialStream *chp, int argc, char *argv[])
+ 128:myMisc.c      **** {
+ 533              		.loc 1 128 0
+ 534              		.cfi_startproc
+ 535              		@ args = 0, pretend = 0, frame = 24
+ 536              		@ frame_needed = 0, uses_anonymous_args = 0
+ 537 0000 00B5     		push	{lr}
+ 538              		.cfi_def_cfa_offset 4
+ 539              		.cfi_offset 14, -4
+ 540 0002 87B0     		sub	sp, sp, #28
+ 541              		.cfi_def_cfa_offset 32
+ 542 0004 0390     		str	r0, [sp, #12]
+ 543 0006 0291     		str	r1, [sp, #8]
+ 544 0008 0192     		str	r2, [sp, #4]
+ 129:myMisc.c      **** 
+ 130:myMisc.c      ****     (void)argv;
+ 131:myMisc.c      ****     int speed = 30;
+ 545              		.loc 1 131 0
+ 546 000a 1E23     		movs	r3, #30
+ 547 000c 0593     		str	r3, [sp, #20]
+ 132:myMisc.c      ****     if (argc != 1)
+ 548              		.loc 1 132 0
+ 549 000e 029B     		ldr	r3, [sp, #8]
+ 550 0010 012B     		cmp	r3, #1
+ 551 0012 00D0     		beq	.L35
+ 133:myMisc.c      ****     {
+ 134:myMisc.c      **** 
+ 135:myMisc.c      ****         return;
+ 552              		.loc 1 135 0
+ 553 0014 15E0     		b	.L34
+ 554              	.L35:
+ 136:myMisc.c      ****     }
+ 137:myMisc.c      ****     speed = atoi(argv[0]);
+ 555              		.loc 1 137 0
+ 556 0016 019B     		ldr	r3, [sp, #4]
+ 557 0018 1B68     		ldr	r3, [r3]
+ 558 001a 1846     		mov	r0, r3
+ 559 001c FFF7FEFF 		bl	atoi
+ 560 0020 0590     		str	r0, [sp, #20]
+ 138:myMisc.c      ****     if(speed > 5000)
+ 561              		.loc 1 138 0
+ 562 0022 059A     		ldr	r2, [sp, #20]
+ 563 0024 41F28833 		movw	r3, #5000
+ 564 0028 9A42     		cmp	r2, r3
+ 565 002a 02DD     		ble	.L37
+ 139:myMisc.c      ****         speed = 5000;
+ 566              		.loc 1 139 0
+ 567 002c 41F28833 		movw	r3, #5000
+ 568 0030 0593     		str	r3, [sp, #20]
+ 569              	.L37:
+ 140:myMisc.c      ****     if(speed < 5)
+ 570              		.loc 1 140 0
+ 571 0032 059B     		ldr	r3, [sp, #20]
+ 572 0034 042B     		cmp	r3, #4
+ 573 0036 01DC     		bgt	.L38
+ 141:myMisc.c      ****         speed = 5;
+ 574              		.loc 1 141 0
+ 575 0038 0523     		movs	r3, #5
+ 576 003a 0593     		str	r3, [sp, #20]
+ 577              	.L38:
+ 142:myMisc.c      ****     blinkmax = speed;
+ 578              		.loc 1 142 0
+ 579 003c 024B     		ldr	r3, .L39
+ 580 003e 059A     		ldr	r2, [sp, #20]
+ 581 0040 1A60     		str	r2, [r3]
+ 582              	.L34:
+ 143:myMisc.c      **** }
+ 583              		.loc 1 143 0
+ 584 0042 07B0     		add	sp, sp, #28
+ 585              		@ sp needed
+ 586 0044 5DF804FB 		ldr	pc, [sp], #4
+ 587              	.L40:
+ 588              		.align	2
+ 589              	.L39:
+ 590 0048 00000000 		.word	blinkmax
+ 591              		.cfi_endproc
+ 592              	.LFE123:
+ 594 004c AFF30080 		.section	.rodata
+ 595 011d 000000   		.align	2
+ 596              	.LC15:
+ 597 0120 43757272 		.ascii	"Current speed : %d [ms]\015\012\000"
+ 597      656E7420 
+ 597      73706565 
+ 597      64203A20 
+ 597      2564205B 
+ 598              		.section	.text.cmd_blinkspeed_now,"ax",%progbits
+ 599              		.align	2
+ 600              		.p2align 4,,15
+ 601              		.global	cmd_blinkspeed_now
+ 602              		.thumb
+ 603              		.thumb_func
+ 605              	cmd_blinkspeed_now:
+ 606              	.LFB124:
+ 144:myMisc.c      **** void cmd_blinkspeed_now(BaseSequentialStream *chp, int argc, char *argv[])
+ 145:myMisc.c      **** {
+ 607              		.loc 1 145 0
+ 608              		.cfi_startproc
+ 609              		@ args = 0, pretend = 0, frame = 16
+ 610              		@ frame_needed = 0, uses_anonymous_args = 0
+ 611 0000 00B5     		push	{lr}
+ 612              		.cfi_def_cfa_offset 4
+ 613              		.cfi_offset 14, -4
+ 614 0002 85B0     		sub	sp, sp, #20
+ 615              		.cfi_def_cfa_offset 24
+ 616 0004 0390     		str	r0, [sp, #12]
+ 617 0006 0291     		str	r1, [sp, #8]
+ 618 0008 0192     		str	r2, [sp, #4]
+ 146:myMisc.c      **** 
+ 147:myMisc.c      ****     (void)argv;
+ 148:myMisc.c      ****     if (argc != 1)
+ 619              		.loc 1 148 0
+ 620 000a 029B     		ldr	r3, [sp, #8]
+ 621 000c 012B     		cmp	r3, #1
+ 622 000e 07D0     		beq	.L41
+ 149:myMisc.c      ****     {
+ 150:myMisc.c      **** 
+ 151:myMisc.c      ****         chprintf(chp, "Current speed : %d [ms]\r\n", blinkspeed);
+ 623              		.loc 1 151 0
+ 624 0010 054B     		ldr	r3, .L43
+ 625 0012 1B68     		ldr	r3, [r3]
+ 626 0014 0398     		ldr	r0, [sp, #12]
+ 627 0016 0549     		ldr	r1, .L43+4
+ 628 0018 1A46     		mov	r2, r3
+ 629 001a FFF7FEFF 		bl	chprintf
+ 152:myMisc.c      ****         return;
+ 630              		.loc 1 152 0
+ 631 001e 00BF     		nop
+ 632              	.L41:
+ 153:myMisc.c      ****     }
+ 154:myMisc.c      **** 
+ 155:myMisc.c      **** }
+ 633              		.loc 1 155 0
+ 634 0020 05B0     		add	sp, sp, #20
+ 635              		@ sp needed
+ 636 0022 5DF804FB 		ldr	pc, [sp], #4
+ 637              	.L44:
+ 638 0026 00BF     		.align	2
+ 639              	.L43:
+ 640 0028 00000000 		.word	blinkspeed
+ 641 002c 20010000 		.word	.LC15
+ 642              		.cfi_endproc
+ 643              	.LFE124:
+ 645              		.section	.rodata
+ 646 013a 0000     		.align	2
+ 647              	.LC16:
+ 648 013c 4D696E69 		.ascii	"Minimum blink speed is %d [ms]\015\012\000"
+ 648      6D756D20 
+ 648      626C696E 
+ 648      6B207370 
+ 648      65656420 
+ 649              		.section	.text.cmd_blinkspeed_min,"ax",%progbits
+ 650              		.align	2
+ 651              		.p2align 4,,15
+ 652              		.global	cmd_blinkspeed_min
+ 653              		.thumb
+ 654              		.thumb_func
+ 656              	cmd_blinkspeed_min:
+ 657              	.LFB125:
+ 156:myMisc.c      **** 
+ 157:myMisc.c      **** void cmd_blinkspeed_min(BaseSequentialStream *chp, int argc, char *argv[])
+ 158:myMisc.c      **** {
+ 658              		.loc 1 158 0
+ 659              		.cfi_startproc
+ 660              		@ args = 0, pretend = 0, frame = 16
+ 661              		@ frame_needed = 0, uses_anonymous_args = 0
+ 662 0000 00B5     		push	{lr}
+ 663              		.cfi_def_cfa_offset 4
+ 664              		.cfi_offset 14, -4
+ 665 0002 85B0     		sub	sp, sp, #20
+ 666              		.cfi_def_cfa_offset 24
+ 667 0004 0390     		str	r0, [sp, #12]
+ 668 0006 0291     		str	r1, [sp, #8]
+ 669 0008 0192     		str	r2, [sp, #4]
+ 159:myMisc.c      **** 
+ 160:myMisc.c      ****     (void)argv;
+ 161:myMisc.c      ****     if (argc != 1)
+ 670              		.loc 1 161 0
+ 671 000a 029B     		ldr	r3, [sp, #8]
+ 672 000c 012B     		cmp	r3, #1
+ 673 000e 07D0     		beq	.L45
+ 162:myMisc.c      ****     {
+ 163:myMisc.c      **** 
+ 164:myMisc.c      ****         chprintf(chp, "Minimum blink speed is %d [ms]\r\n", blinkmin);
+ 674              		.loc 1 164 0
+ 675 0010 054B     		ldr	r3, .L47
+ 676 0012 1B68     		ldr	r3, [r3]
+ 677 0014 0398     		ldr	r0, [sp, #12]
+ 678 0016 0549     		ldr	r1, .L47+4
+ 679 0018 1A46     		mov	r2, r3
+ 680 001a FFF7FEFF 		bl	chprintf
+ 165:myMisc.c      ****         return;
+ 681              		.loc 1 165 0
+ 682 001e 00BF     		nop
+ 683              	.L45:
+ 166:myMisc.c      ****     }
+ 167:myMisc.c      **** 
+ 168:myMisc.c      **** }
+ 684              		.loc 1 168 0
+ 685 0020 05B0     		add	sp, sp, #20
+ 686              		@ sp needed
+ 687 0022 5DF804FB 		ldr	pc, [sp], #4
+ 688              	.L48:
+ 689 0026 00BF     		.align	2
+ 690              	.L47:
+ 691 0028 00000000 		.word	blinkmin
+ 692 002c 3C010000 		.word	.LC16
+ 693              		.cfi_endproc
+ 694              	.LFE125:
+ 696              		.section	.rodata
+ 697 015d 000000   		.align	2
+ 698              	.LC17:
+ 699 0160 4D617869 		.ascii	"Maximum blink speed is: %d [ms]\015\012\000"
+ 699      6D756D20 
+ 699      626C696E 
+ 699      6B207370 
+ 699      65656420 
+ 700              		.section	.text.cmd_blinkspeed_max,"ax",%progbits
+ 701              		.align	2
+ 702              		.p2align 4,,15
+ 703              		.global	cmd_blinkspeed_max
+ 704              		.thumb
+ 705              		.thumb_func
+ 707              	cmd_blinkspeed_max:
+ 708              	.LFB126:
+ 169:myMisc.c      **** 
+ 170:myMisc.c      **** void cmd_blinkspeed_max(BaseSequentialStream *chp, int argc, char *argv[])
+ 171:myMisc.c      **** {
+ 709              		.loc 1 171 0
+ 710              		.cfi_startproc
+ 711              		@ args = 0, pretend = 0, frame = 16
+ 712              		@ frame_needed = 0, uses_anonymous_args = 0
+ 713 0000 00B5     		push	{lr}
+ 714              		.cfi_def_cfa_offset 4
+ 715              		.cfi_offset 14, -4
+ 716 0002 85B0     		sub	sp, sp, #20
+ 717              		.cfi_def_cfa_offset 24
+ 718 0004 0390     		str	r0, [sp, #12]
+ 719 0006 0291     		str	r1, [sp, #8]
+ 720 0008 0192     		str	r2, [sp, #4]
+ 172:myMisc.c      **** 
+ 173:myMisc.c      ****     (void)argv;
+ 174:myMisc.c      ****     if (argc != 1)
+ 721              		.loc 1 174 0
+ 722 000a 029B     		ldr	r3, [sp, #8]
+ 723 000c 012B     		cmp	r3, #1
+ 724 000e 07D0     		beq	.L49
+ 175:myMisc.c      ****     {
+ 176:myMisc.c      **** 
+ 177:myMisc.c      ****         chprintf(chp, "Maximum blink speed is: %d [ms]\r\n", blinkmax);
+ 725              		.loc 1 177 0
+ 726 0010 054B     		ldr	r3, .L51
+ 727 0012 1B68     		ldr	r3, [r3]
+ 728 0014 0398     		ldr	r0, [sp, #12]
+ 729 0016 0549     		ldr	r1, .L51+4
+ 730 0018 1A46     		mov	r2, r3
+ 731 001a FFF7FEFF 		bl	chprintf
+ 178:myMisc.c      ****         return;
+ 732              		.loc 1 178 0
+ 733 001e 00BF     		nop
+ 734              	.L49:
+ 179:myMisc.c      ****     }
+ 180:myMisc.c      **** 
+ 181:myMisc.c      **** }
+ 735              		.loc 1 181 0
+ 736 0020 05B0     		add	sp, sp, #20
+ 737              		@ sp needed
+ 738 0022 5DF804FB 		ldr	pc, [sp], #4
+ 739              	.L52:
+ 740 0026 00BF     		.align	2
+ 741              	.L51:
+ 742 0028 00000000 		.word	blinkmax
+ 743 002c 60010000 		.word	.LC17
+ 744              		.cfi_endproc
+ 745              	.LFE126:
+ 747              		.global	dirway
+ 748              		.section	.bss.dirway,"aw",%nobits
+ 749              		.align	2
+ 752              	dirway:
+ 753 0000 00000000 		.space	4
+ 754              		.global	dir
+ 755              		.section	.bss.dir,"aw",%nobits
+ 756              		.align	2
+ 759              	dir:
+ 760 0000 00000000 		.space	4
+ 761              		.section	.rodata
+ 762 0182 0000     		.align	2
+ 763              	.LC18:
+ 764 0184 54686520 		.ascii	"The direction is clockwise.\015\012\000"
+ 764      64697265 
+ 764      6374696F 
+ 764      6E206973 
+ 764      20636C6F 
+ 765 01a2 0000     		.align	2
+ 766              	.LC19:
+ 767 01a4 54686520 		.ascii	"The direction is counter-clockwise.\015\012\000"
+ 767      64697265 
+ 767      6374696F 
+ 767      6E206973 
+ 767      20636F75 
+ 768              		.section	.text.cmd_way,"ax",%progbits
+ 769              		.align	2
+ 770              		.p2align 4,,15
+ 771              		.global	cmd_way
+ 772              		.thumb
+ 773              		.thumb_func
+ 775              	cmd_way:
+ 776              	.LFB127:
+ 182:myMisc.c      **** int dirway = 0;
+ 183:myMisc.c      **** int dir = 0;
+ 184:myMisc.c      **** void cmd_way(BaseSequentialStream *chp, int argc, char *argv[])
+ 185:myMisc.c      **** {
+ 777              		.loc 1 185 0
+ 778              		.cfi_startproc
+ 779              		@ args = 0, pretend = 0, frame = 16
+ 780              		@ frame_needed = 0, uses_anonymous_args = 0
+ 781 0000 00B5     		push	{lr}
+ 782              		.cfi_def_cfa_offset 4
+ 783              		.cfi_offset 14, -4
+ 784 0002 85B0     		sub	sp, sp, #20
+ 785              		.cfi_def_cfa_offset 24
+ 786 0004 0390     		str	r0, [sp, #12]
+ 787 0006 0291     		str	r1, [sp, #8]
+ 788 0008 0192     		str	r2, [sp, #4]
+ 186:myMisc.c      **** 
+ 187:myMisc.c      ****     (void)argv;
+ 188:myMisc.c      ****     if (argc != 1)
+ 789              		.loc 1 188 0
+ 790 000a 029B     		ldr	r3, [sp, #8]
+ 791 000c 012B     		cmp	r3, #1
+ 792 000e 11D0     		beq	.L53
+ 189:myMisc.c      ****     {
+ 190:myMisc.c      ****         if (dir == 1)
+ 793              		.loc 1 190 0
+ 794 0010 0A4B     		ldr	r3, .L57
+ 795 0012 1B68     		ldr	r3, [r3]
+ 796 0014 012B     		cmp	r3, #1
+ 797 0016 04D1     		bne	.L55
+ 191:myMisc.c      ****         {
+ 192:myMisc.c      ****          chprintf(chp, "The direction is clockwise.\r\n");
+ 798              		.loc 1 192 0
+ 799 0018 0398     		ldr	r0, [sp, #12]
+ 800 001a 0949     		ldr	r1, .L57+4
+ 801 001c FFF7FEFF 		bl	chprintf
+ 802 0020 07E0     		b	.L56
+ 803              	.L55:
+ 193:myMisc.c      ****         }
+ 194:myMisc.c      ****         else if (dir == 0)
+ 804              		.loc 1 194 0
+ 805 0022 064B     		ldr	r3, .L57
+ 806 0024 1B68     		ldr	r3, [r3]
+ 807 0026 002B     		cmp	r3, #0
+ 808 0028 03D1     		bne	.L56
+ 195:myMisc.c      ****         {
+ 196:myMisc.c      ****         chprintf(chp, "The direction is counter-clockwise.\r\n");
+ 809              		.loc 1 196 0
+ 810 002a 0398     		ldr	r0, [sp, #12]
+ 811 002c 0549     		ldr	r1, .L57+8
+ 812 002e FFF7FEFF 		bl	chprintf
+ 813              	.L56:
+ 197:myMisc.c      ****         }
+ 198:myMisc.c      **** 
+ 199:myMisc.c      ****         return;
+ 814              		.loc 1 199 0
+ 815 0032 00BF     		nop
+ 816              	.L53:
+ 200:myMisc.c      ****     }
+ 201:myMisc.c      **** 
+ 202:myMisc.c      **** }
+ 817              		.loc 1 202 0
+ 818 0034 05B0     		add	sp, sp, #20
+ 819              		@ sp needed
+ 820 0036 5DF804FB 		ldr	pc, [sp], #4
+ 821              	.L58:
+ 822 003a 00BF     		.align	2
+ 823              	.L57:
+ 824 003c 00000000 		.word	dir
+ 825 0040 84010000 		.word	.LC18
+ 826 0044 A4010000 		.word	.LC19
+ 827              		.cfi_endproc
+ 828              	.LFE127:
+ 830 0048 AFF30080 		.section	.rodata
+ 830      AFF30080 
+ 831 01ca 0000     		.align	2
+ 832              	.LC20:
+ 833 01cc 55736167 		.ascii	"Usage: 0 = clockwise and 0 = counter-clockwise.\015"
+ 833      653A2030 
+ 833      203D2063 
+ 833      6C6F636B 
+ 833      77697365 
+ 834 01fc 0A00     		.ascii	"\012\000"
+ 835              		.section	.text.cmd_way_ch,"ax",%progbits
+ 836              		.align	2
+ 837              		.p2align 4,,15
+ 838              		.global	cmd_way_ch
+ 839              		.thumb
+ 840              		.thumb_func
+ 842              	cmd_way_ch:
+ 843              	.LFB128:
+ 203:myMisc.c      **** 
+ 204:myMisc.c      **** void cmd_way_ch(BaseSequentialStream *chp, int argc, char *argv[])
+ 205:myMisc.c      **** {
+ 844              		.loc 1 205 0
+ 845              		.cfi_startproc
+ 846              		@ args = 0, pretend = 0, frame = 24
+ 847              		@ frame_needed = 0, uses_anonymous_args = 0
+ 848 0000 00B5     		push	{lr}
+ 849              		.cfi_def_cfa_offset 4
+ 850              		.cfi_offset 14, -4
+ 851 0002 87B0     		sub	sp, sp, #28
+ 852              		.cfi_def_cfa_offset 32
+ 853 0004 0390     		str	r0, [sp, #12]
+ 854 0006 0291     		str	r1, [sp, #8]
+ 855 0008 0192     		str	r2, [sp, #4]
+ 206:myMisc.c      **** 
+ 207:myMisc.c      ****     (void)argv;
+ 208:myMisc.c      ****     int speed = 30;
+ 856              		.loc 1 208 0
+ 857 000a 1E23     		movs	r3, #30
+ 858 000c 0593     		str	r3, [sp, #20]
+ 209:myMisc.c      **** 
+ 210:myMisc.c      ****     if (argc != 1)
+ 859              		.loc 1 210 0
+ 860 000e 029B     		ldr	r3, [sp, #8]
+ 861 0010 012B     		cmp	r3, #1
+ 862 0012 04D0     		beq	.L60
+ 211:myMisc.c      ****     {
+ 212:myMisc.c      ****         chprintf(chp, "Usage: 0 = clockwise and 0 = counter-clockwise.\r\n");
+ 863              		.loc 1 212 0
+ 864 0014 0398     		ldr	r0, [sp, #12]
+ 865 0016 0D49     		ldr	r1, .L64
+ 866 0018 FFF7FEFF 		bl	chprintf
+ 213:myMisc.c      ****         return;
+ 867              		.loc 1 213 0
+ 868 001c 12E0     		b	.L59
+ 869              	.L60:
+ 214:myMisc.c      **** 
+ 215:myMisc.c      ****     }
+ 216:myMisc.c      ****     speed = atoi(argv[0]);
+ 870              		.loc 1 216 0
+ 871 001e 019B     		ldr	r3, [sp, #4]
+ 872 0020 1B68     		ldr	r3, [r3]
+ 873 0022 1846     		mov	r0, r3
+ 874 0024 FFF7FEFF 		bl	atoi
+ 875 0028 0590     		str	r0, [sp, #20]
+ 217:myMisc.c      ****     if(speed > 1)
+ 876              		.loc 1 217 0
+ 877 002a 059B     		ldr	r3, [sp, #20]
+ 878 002c 012B     		cmp	r3, #1
+ 879 002e 01DD     		ble	.L62
+ 218:myMisc.c      ****         speed = 1;
+ 880              		.loc 1 218 0
+ 881 0030 0123     		movs	r3, #1
+ 882 0032 0593     		str	r3, [sp, #20]
+ 883              	.L62:
+ 219:myMisc.c      ****     if(speed < 0)
+ 884              		.loc 1 219 0
+ 885 0034 059B     		ldr	r3, [sp, #20]
+ 886 0036 002B     		cmp	r3, #0
+ 887 0038 01DA     		bge	.L63
+ 220:myMisc.c      ****         speed = 0;
+ 888              		.loc 1 220 0
+ 889 003a 0023     		movs	r3, #0
+ 890 003c 0593     		str	r3, [sp, #20]
+ 891              	.L63:
+ 221:myMisc.c      ****     dir = speed;
+ 892              		.loc 1 221 0
+ 893 003e 044B     		ldr	r3, .L64+4
+ 894 0040 059A     		ldr	r2, [sp, #20]
+ 895 0042 1A60     		str	r2, [r3]
+ 896              	.L59:
+ 222:myMisc.c      **** }
+ 897              		.loc 1 222 0
+ 898 0044 07B0     		add	sp, sp, #28
+ 899              		@ sp needed
+ 900 0046 5DF804FB 		ldr	pc, [sp], #4
+ 901              	.L65:
+ 902 004a 00BF     		.align	2
+ 903              	.L64:
+ 904 004c CC010000 		.word	.LC20
+ 905 0050 00000000 		.word	dir
+ 906              		.cfi_endproc
+ 907              	.LFE128:
+ 909 0054 AFF30080 		.section	.bss.waThread1,"aw",%nobits
+ 909      AFF30080 
+ 909      AFF30080 
+ 910              		.align	3
+ 913              	waThread1:
+ 914 0000 00000000 		.space	440
+ 914      00000000 
+ 914      00000000 
+ 914      00000000 
+ 914      00000000 
+ 915              		.section	.rodata
+ 916 01fe 0000     		.align	2
+ 917              	.LC21:
+ 918 0200 626C696E 		.ascii	"blinker1\000"
+ 918      6B657231 
+ 918      00
+ 919              		.section	.text.Thread1,"ax",%progbits
+ 920              		.align	2
+ 921              		.p2align 4,,15
+ 922              		.thumb
+ 923              		.thumb_func
+ 925              	Thread1:
+ 926              	.LFB129:
+ 223:myMisc.c      **** 
+ 224:myMisc.c      **** /*
+ 225:myMisc.c      ****  * Lightshow thread, times are in milliseconds.
+ 226:myMisc.c      ****  */
+ 227:myMisc.c      **** static WORKING_AREA(waThread1, 128);
+ 228:myMisc.c      **** 
+ 229:myMisc.c      **** 
+ 230:myMisc.c      **** static msg_t Thread1(void *arg)
+ 231:myMisc.c      **** {
+ 927              		.loc 1 231 0
+ 928              		.cfi_startproc
+ 929              		@ args = 0, pretend = 0, frame = 24
+ 930              		@ frame_needed = 0, uses_anonymous_args = 0
+ 931 0000 00B5     		push	{lr}
+ 932              		.cfi_def_cfa_offset 4
+ 933              		.cfi_offset 14, -4
+ 934 0002 87B0     		sub	sp, sp, #28
+ 935              		.cfi_def_cfa_offset 32
+ 936 0004 0190     		str	r0, [sp, #4]
+ 232:myMisc.c      ****     (void)arg;
+ 233:myMisc.c      ****     chRegSetThreadName("blinker1");
+ 937              		.loc 1 233 0
+ 938 0006 584B     		ldr	r3, .L79
+ 939 0008 9B69     		ldr	r3, [r3, #24]
+ 940 000a 584A     		ldr	r2, .L79+4
+ 941 000c 9A61     		str	r2, [r3, #24]
+ 234:myMisc.c      **** 
+ 235:myMisc.c      ****     int updown = 0;
+ 942              		.loc 1 235 0
+ 943 000e 0023     		movs	r3, #0
+ 944 0010 0593     		str	r3, [sp, #20]
+ 236:myMisc.c      **** 
+ 237:myMisc.c      ****     static int leds[] = { GPIOD_LED3 , GPIOD_LED5 , GPIOD_LED6 , GPIOD_LED4 };
+ 238:myMisc.c      ****     int curLed = 0;
+ 945              		.loc 1 238 0
+ 946 0012 0023     		movs	r3, #0
+ 947 0014 0493     		str	r3, [sp, #16]
+ 948              	.L78:
+ 949              	.LBB2:
+ 239:myMisc.c      ****     while (TRUE)
+ 240:myMisc.c      ****     {
+ 241:myMisc.c      **** 
+ 242:myMisc.c      ****         int i = 0;
+ 950              		.loc 1 242 0
+ 951 0016 0023     		movs	r3, #0
+ 952 0018 0393     		str	r3, [sp, #12]
+ 243:myMisc.c      **** 
+ 244:myMisc.c      ****         while ((palReadPad(GPIOA, GPIOA_BUTTON)) && (i < 30000))
+ 953              		.loc 1 244 0
+ 954 001a 4AE0     		b	.L67
+ 955              	.L75:
+ 245:myMisc.c      ****         {
+ 246:myMisc.c      ****             i++;
+ 956              		.loc 1 246 0
+ 957 001c 039B     		ldr	r3, [sp, #12]
+ 958 001e 0133     		adds	r3, r3, #1
+ 959 0020 0393     		str	r3, [sp, #12]
+ 247:myMisc.c      ****             if (i < 3000)
+ 960              		.loc 1 247 0
+ 961 0022 039A     		ldr	r2, [sp, #12]
+ 962 0024 40F6B733 		movw	r3, #2999
+ 963 0028 9A42     		cmp	r2, r3
+ 964 002a 0FDC     		bgt	.L68
+ 248:myMisc.c      ****             {
+ 249:myMisc.c      ****                 if(dir == 1)
+ 965              		.loc 1 249 0
+ 966 002c 504B     		ldr	r3, .L79+8
+ 967 002e 1B68     		ldr	r3, [r3]
+ 968 0030 012B     		cmp	r3, #1
+ 969 0032 03D1     		bne	.L69
+ 250:myMisc.c      ****                 {
+ 251:myMisc.c      ****                     dir = 0;
+ 970              		.loc 1 251 0
+ 971 0034 4E4B     		ldr	r3, .L79+8
+ 972 0036 0022     		movs	r2, #0
+ 973 0038 1A60     		str	r2, [r3]
+ 974 003a 37E0     		b	.L71
+ 975              	.L69:
+ 252:myMisc.c      ****                 }
+ 253:myMisc.c      ****                 else if(dir == 0)
+ 976              		.loc 1 253 0
+ 977 003c 4C4B     		ldr	r3, .L79+8
+ 978 003e 1B68     		ldr	r3, [r3]
+ 979 0040 002B     		cmp	r3, #0
+ 980 0042 33D1     		bne	.L71
+ 254:myMisc.c      ****                 {
+ 255:myMisc.c      ****                     dir = 1;
+ 981              		.loc 1 255 0
+ 982 0044 4A4B     		ldr	r3, .L79+8
+ 983 0046 0122     		movs	r2, #1
+ 984 0048 1A60     		str	r2, [r3]
+ 985 004a 2FE0     		b	.L71
+ 986              	.L68:
+ 256:myMisc.c      ****                 }
+ 257:myMisc.c      ****             }
+ 258:myMisc.c      **** 
+ 259:myMisc.c      ****             else if ( i > 5001)
+ 987              		.loc 1 259 0
+ 988 004c 039A     		ldr	r2, [sp, #12]
+ 989 004e 41F28933 		movw	r3, #5001
+ 990 0052 9A42     		cmp	r2, r3
+ 991 0054 2ADD     		ble	.L71
+ 260:myMisc.c      ****             {
+ 261:myMisc.c      ****                 if (updown == 0)
+ 992              		.loc 1 261 0
+ 993 0056 059B     		ldr	r3, [sp, #20]
+ 994 0058 002B     		cmp	r3, #0
+ 995 005a 12D1     		bne	.L72
+ 262:myMisc.c      ****                 {
+ 263:myMisc.c      ****                     blinkspeed  = blinkspeed + 30;
+ 996              		.loc 1 263 0
+ 997 005c 454B     		ldr	r3, .L79+12
+ 998 005e 1B68     		ldr	r3, [r3]
+ 999 0060 03F11E02 		add	r2, r3, #30
+ 1000 0064 434B     		ldr	r3, .L79+12
+ 1001 0066 1A60     		str	r2, [r3]
+ 264:myMisc.c      ****                     if (blinkspeed > blinkmax)
+ 1002              		.loc 1 264 0
+ 1003 0068 424B     		ldr	r3, .L79+12
+ 1004 006a 1A68     		ldr	r2, [r3]
+ 1005 006c 424B     		ldr	r3, .L79+16
+ 1006 006e 1B68     		ldr	r3, [r3]
+ 1007 0070 9A42     		cmp	r2, r3
+ 1008 0072 1BDD     		ble	.L71
+ 265:myMisc.c      ****                         {
+ 266:myMisc.c      ****                             blinkspeed = blinkmax;
+ 1009              		.loc 1 266 0
+ 1010 0074 404B     		ldr	r3, .L79+16
+ 1011 0076 1A68     		ldr	r2, [r3]
+ 1012 0078 3E4B     		ldr	r3, .L79+12
+ 1013 007a 1A60     		str	r2, [r3]
+ 267:myMisc.c      ****                             updown = 1;
+ 1014              		.loc 1 267 0
+ 1015 007c 0123     		movs	r3, #1
+ 1016 007e 0593     		str	r3, [sp, #20]
+ 1017 0080 14E0     		b	.L71
+ 1018              	.L72:
+ 268:myMisc.c      ****                         }
+ 269:myMisc.c      ****                 }
+ 270:myMisc.c      ****                 else if (updown == 1)
+ 1019              		.loc 1 270 0
+ 1020 0082 059B     		ldr	r3, [sp, #20]
+ 1021 0084 012B     		cmp	r3, #1
+ 1022 0086 11D1     		bne	.L71
+ 271:myMisc.c      ****                 {
+ 272:myMisc.c      ****                     blinkspeed = blinkspeed - 30;
+ 1023              		.loc 1 272 0
+ 1024 0088 3A4B     		ldr	r3, .L79+12
+ 1025 008a 1B68     		ldr	r3, [r3]
+ 1026 008c A3F11E02 		sub	r2, r3, #30
+ 1027 0090 384B     		ldr	r3, .L79+12
+ 1028 0092 1A60     		str	r2, [r3]
+ 273:myMisc.c      ****                     if (blinkspeed < blinkmin)
+ 1029              		.loc 1 273 0
+ 1030 0094 374B     		ldr	r3, .L79+12
+ 1031 0096 1A68     		ldr	r2, [r3]
+ 1032 0098 384B     		ldr	r3, .L79+20
+ 1033 009a 1B68     		ldr	r3, [r3]
+ 1034 009c 9A42     		cmp	r2, r3
+ 1035 009e 05DA     		bge	.L71
+ 274:myMisc.c      ****                     {
+ 275:myMisc.c      ****                         blinkspeed = blinkmin;
+ 1036              		.loc 1 275 0
+ 1037 00a0 364B     		ldr	r3, .L79+20
+ 1038 00a2 1A68     		ldr	r2, [r3]
+ 1039 00a4 334B     		ldr	r3, .L79+12
+ 1040 00a6 1A60     		str	r2, [r3]
+ 276:myMisc.c      ****                         updown = 0;
+ 1041              		.loc 1 276 0
+ 1042 00a8 0023     		movs	r3, #0
+ 1043 00aa 0593     		str	r3, [sp, #20]
+ 1044              	.L71:
+ 277:myMisc.c      ****                     }
+ 278:myMisc.c      **** 
+ 279:myMisc.c      ****                 }
+ 280:myMisc.c      **** 
+ 281:myMisc.c      ****             }
+ 282:myMisc.c      ****             chThdSleepMilliseconds(1);
+ 1045              		.loc 1 282 0
+ 1046 00ac 0120     		movs	r0, #1
+ 1047 00ae FFF7FEFF 		bl	chThdSleep
+ 1048              	.L67:
+ 244:myMisc.c      ****         {
+ 1049              		.loc 1 244 0 discriminator 1
+ 1050 00b2 334B     		ldr	r3, .L79+24
+ 1051 00b4 1B69     		ldr	r3, [r3, #16]
+ 1052 00b6 03F00103 		and	r3, r3, #1
+ 1053 00ba 002B     		cmp	r3, #0
+ 1054 00bc 04D0     		beq	.L74
+ 244:myMisc.c      ****         {
+ 1055              		.loc 1 244 0 is_stmt 0 discriminator 2
+ 1056 00be 039A     		ldr	r2, [sp, #12]
+ 1057 00c0 47F22F53 		movw	r3, #29999
+ 1058 00c4 9A42     		cmp	r2, r3
+ 1059 00c6 A9DD     		ble	.L75
+ 1060              	.L74:
+ 283:myMisc.c      ****             //chprintf((BaseSequentialStream*)&SDU1, "value of i : %d \r\n", i);
+ 284:myMisc.c      **** 
+ 285:myMisc.c      ****         }
+ 286:myMisc.c      **** 
+ 287:myMisc.c      ****         palSetPad(GPIOD, leds[ curLed ]);
+ 1061              		.loc 1 287 0 is_stmt 1
+ 1062 00c8 2E4B     		ldr	r3, .L79+28
+ 1063 00ca 2F4A     		ldr	r2, .L79+32
+ 1064 00cc 0499     		ldr	r1, [sp, #16]
+ 1065 00ce 52F82120 		ldr	r2, [r2, r1, lsl #2]
+ 1066 00d2 0121     		movs	r1, #1
+ 1067 00d4 01FA02F2 		lsl	r2, r1, r2
+ 1068 00d8 92B2     		uxth	r2, r2
+ 1069 00da 1A83     		strh	r2, [r3, #24]	@ movhi
+ 288:myMisc.c      ****         chThdSleepMilliseconds(blinkspeed);
+ 1070              		.loc 1 288 0
+ 1071 00dc 254B     		ldr	r3, .L79+12
+ 1072 00de 1B68     		ldr	r3, [r3]
+ 1073 00e0 013B     		subs	r3, r3, #1
+ 1074 00e2 42F21072 		movw	r2, #10000
+ 1075 00e6 02FB03F3 		mul	r3, r2, r3
+ 1076 00ea 284A     		ldr	r2, .L79+36
+ 1077 00ec 82FB0312 		smull	r1, r2, r2, r3
+ 1078 00f0 9211     		asrs	r2, r2, #6
+ 1079 00f2 DB17     		asrs	r3, r3, #31
+ 1080 00f4 D31A     		subs	r3, r2, r3
+ 1081 00f6 0133     		adds	r3, r3, #1
+ 1082 00f8 1846     		mov	r0, r3
+ 1083 00fa FFF7FEFF 		bl	chThdSleep
+ 289:myMisc.c      ****         palClearPad(GPIOD, leds[ curLed ]);
+ 1084              		.loc 1 289 0
+ 1085 00fe 214B     		ldr	r3, .L79+28
+ 1086 0100 214A     		ldr	r2, .L79+32
+ 1087 0102 0499     		ldr	r1, [sp, #16]
+ 1088 0104 52F82120 		ldr	r2, [r2, r1, lsl #2]
+ 1089 0108 0121     		movs	r1, #1
+ 1090 010a 01FA02F2 		lsl	r2, r1, r2
+ 1091 010e 92B2     		uxth	r2, r2
+ 1092 0110 5A83     		strh	r2, [r3, #26]	@ movhi
+ 290:myMisc.c      ****         chThdSleepMilliseconds(blinkspeed);
+ 1093              		.loc 1 290 0
+ 1094 0112 184B     		ldr	r3, .L79+12
+ 1095 0114 1B68     		ldr	r3, [r3]
+ 1096 0116 013B     		subs	r3, r3, #1
+ 1097 0118 42F21072 		movw	r2, #10000
+ 1098 011c 02FB03F3 		mul	r3, r2, r3
+ 1099 0120 1A4A     		ldr	r2, .L79+36
+ 1100 0122 82FB0312 		smull	r1, r2, r2, r3
+ 1101 0126 9211     		asrs	r2, r2, #6
+ 1102 0128 DB17     		asrs	r3, r3, #31
+ 1103 012a D31A     		subs	r3, r2, r3
+ 1104 012c 0133     		adds	r3, r3, #1
+ 1105 012e 1846     		mov	r0, r3
+ 1106 0130 FFF7FEFF 		bl	chThdSleep
+ 291:myMisc.c      **** 
+ 292:myMisc.c      ****         if (dir == 1 )
+ 1107              		.loc 1 292 0
+ 1108 0134 0E4B     		ldr	r3, .L79+8
+ 1109 0136 1B68     		ldr	r3, [r3]
+ 1110 0138 012B     		cmp	r3, #1
+ 1111 013a 07D1     		bne	.L76
+ 293:myMisc.c      ****         {
+ 294:myMisc.c      ****             curLed++;
+ 1112              		.loc 1 294 0
+ 1113 013c 049B     		ldr	r3, [sp, #16]
+ 1114 013e 0133     		adds	r3, r3, #1
+ 1115 0140 0493     		str	r3, [sp, #16]
+ 295:myMisc.c      ****             if (curLed > 3)
+ 1116              		.loc 1 295 0
+ 1117 0142 049B     		ldr	r3, [sp, #16]
+ 1118 0144 032B     		cmp	r3, #3
+ 1119 0146 01DD     		ble	.L76
+ 296:myMisc.c      ****             {
+ 297:myMisc.c      ****                 curLed = 0;
+ 1120              		.loc 1 297 0
+ 1121 0148 0023     		movs	r3, #0
+ 1122 014a 0493     		str	r3, [sp, #16]
+ 1123              	.L76:
+ 298:myMisc.c      ****             }
+ 299:myMisc.c      **** 
+ 300:myMisc.c      ****         }
+ 301:myMisc.c      ****         if (dir == 0)
+ 1124              		.loc 1 301 0
+ 1125 014c 084B     		ldr	r3, .L79+8
+ 1126 014e 1B68     		ldr	r3, [r3]
+ 1127 0150 002B     		cmp	r3, #0
+ 1128 0152 08D1     		bne	.L77
+ 302:myMisc.c      ****         {
+ 303:myMisc.c      ****             curLed--;
+ 1129              		.loc 1 303 0
+ 1130 0154 049B     		ldr	r3, [sp, #16]
+ 1131 0156 013B     		subs	r3, r3, #1
+ 1132 0158 0493     		str	r3, [sp, #16]
+ 304:myMisc.c      ****             if (curLed < 0 )
+ 1133              		.loc 1 304 0
+ 1134 015a 049B     		ldr	r3, [sp, #16]
+ 1135 015c 002B     		cmp	r3, #0
+ 1136 015e 02DA     		bge	.L77
+ 305:myMisc.c      ****             {
+ 306:myMisc.c      ****                 curLed = 3;
+ 1137              		.loc 1 306 0
+ 1138 0160 0323     		movs	r3, #3
+ 1139 0162 0493     		str	r3, [sp, #16]
+ 1140              	.LBE2:
+ 307:myMisc.c      ****             }
+ 308:myMisc.c      ****         }
+ 309:myMisc.c      **** 
+ 310:myMisc.c      ****     }
+ 1141              		.loc 1 310 0
+ 1142 0164 57E7     		b	.L78
+ 1143              	.L77:
+ 1144 0166 56E7     		b	.L78
+ 1145              	.L80:
+ 1146              		.align	2
+ 1147              	.L79:
+ 1148 0168 00000000 		.word	rlist
+ 1149 016c 00020000 		.word	.LC21
+ 1150 0170 00000000 		.word	dir
+ 1151 0174 00000000 		.word	blinkspeed
+ 1152 0178 00000000 		.word	blinkmax
+ 1153 017c 00000000 		.word	blinkmin
+ 1154 0180 00000240 		.word	1073872896
+ 1155 0184 000C0240 		.word	1073875968
+ 1156 0188 00000000 		.word	leds.7791
+ 1157 018c D34D6210 		.word	274877907
+ 1158              		.cfi_endproc
+ 1159              	.LFE129:
+ 1161              		.section	.text.startBlinker,"ax",%progbits
+ 1162              		.align	2
+ 1163              		.p2align 4,,15
+ 1164              		.global	startBlinker
+ 1165              		.thumb
+ 1166              		.thumb_func
+ 1168              	startBlinker:
+ 1169              	.LFB130:
+ 311:myMisc.c      **** 
+ 312:myMisc.c      ****     return 0;
+ 313:myMisc.c      **** }
+ 314:myMisc.c      **** 
+ 315:myMisc.c      **** 
+ 316:myMisc.c      **** void startBlinker(void)
+ 317:myMisc.c      **** {
+ 1170              		.loc 1 317 0
+ 1171              		.cfi_startproc
+ 1172              		@ args = 0, pretend = 0, frame = 0
+ 1173              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1174 0000 00B5     		push	{lr}
+ 1175              		.cfi_def_cfa_offset 4
+ 1176              		.cfi_offset 14, -4
+ 1177 0002 83B0     		sub	sp, sp, #12
+ 1178              		.cfi_def_cfa_offset 16
+ 318:myMisc.c      ****     chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
+ 1179              		.loc 1 318 0
+ 1180 0004 0023     		movs	r3, #0
+ 1181 0006 0093     		str	r3, [sp]
+ 1182 0008 0448     		ldr	r0, .L82
+ 1183 000a 4FF4DC71 		mov	r1, #440
+ 1184 000e 4022     		movs	r2, #64
+ 1185 0010 034B     		ldr	r3, .L82+4
+ 1186 0012 FFF7FEFF 		bl	chThdCreateStatic
+ 319:myMisc.c      **** 
+ 320:myMisc.c      **** }
+ 1187              		.loc 1 320 0
+ 1188 0016 03B0     		add	sp, sp, #12
+ 1189              		@ sp needed
+ 1190 0018 5DF804FB 		ldr	pc, [sp], #4
+ 1191              	.L83:
+ 1192              		.align	2
+ 1193              	.L82:
+ 1194 001c 00000000 		.word	waThread1
+ 1195 0020 00000000 		.word	Thread1
+ 1196              		.cfi_endproc
+ 1197              	.LFE130:
+ 1199 0024 AFF30080 		.section	.rodata
+ 1199      AFF30080 
+ 1199      AFF30080 
+ 1200 0209 000000   		.align	2
+ 1201              	.LC22:
+ 1202 020c 52454144 		.ascii	"READY\000"
+ 1202      5900
+ 1203 0212 0000     		.align	2
+ 1204              	.LC23:
+ 1205 0214 43555252 		.ascii	"CURRENT\000"
+ 1205      454E5400 
+ 1206              		.align	2
+ 1207              	.LC24:
+ 1208 021c 53555350 		.ascii	"SUSPENDED\000"
+ 1208      454E4445 
+ 1208      4400
+ 1209 0226 0000     		.align	2
+ 1210              	.LC25:
+ 1211 0228 57545345 		.ascii	"WTSEM\000"
+ 1211      4D00
+ 1212 022e 0000     		.align	2
+ 1213              	.LC26:
+ 1214 0230 57544D54 		.ascii	"WTMTX\000"
+ 1214      5800
+ 1215 0236 0000     		.align	2
+ 1216              	.LC27:
+ 1217 0238 5754434F 		.ascii	"WTCOND\000"
+ 1217      4E4400
+ 1218 023f 00       		.align	2
+ 1219              	.LC28:
+ 1220 0240 534C4545 		.ascii	"SLEEPING\000"
+ 1220      50494E47 
+ 1220      00
+ 1221 0249 000000   		.align	2
+ 1222              	.LC29:
+ 1223 024c 57544558 		.ascii	"WTEXIT\000"
+ 1223      495400
+ 1224 0253 00       		.align	2
+ 1225              	.LC30:
+ 1226 0254 57544F52 		.ascii	"WTOREVT\000"
+ 1226      45565400 
+ 1227              		.align	2
+ 1228              	.LC31:
+ 1229 025c 5754414E 		.ascii	"WTANDEVT\000"
+ 1229      44455654 
+ 1229      00
+ 1230 0265 000000   		.align	2
+ 1231              	.LC32:
+ 1232 0268 534E444D 		.ascii	"SNDMSGQ\000"
+ 1232      53475100 
+ 1233              		.align	2
+ 1234              	.LC33:
+ 1235 0270 534E444D 		.ascii	"SNDMSG\000"
+ 1235      534700
+ 1236 0277 00       		.align	2
+ 1237              	.LC34:
+ 1238 0278 57544D53 		.ascii	"WTMSG\000"
+ 1238      4700
+ 1239 027e 0000     		.align	2
+ 1240              	.LC35:
+ 1241 0280 57545155 		.ascii	"WTQUEUE\000"
+ 1241      45554500 
+ 1242              		.align	2
+ 1243              	.LC36:
+ 1244 0288 46494E41 		.ascii	"FINAL\000"
+ 1244      4C00
+ 1245 028e 0000     		.section	.data.states.7728,"aw",%progbits
+ 1246              		.align	2
+ 1249              	states.7728:
+ 1250 0000 0C020000 		.word	.LC22
+ 1251 0004 14020000 		.word	.LC23
+ 1252 0008 1C020000 		.word	.LC24
+ 1253 000c 28020000 		.word	.LC25
+ 1254 0010 30020000 		.word	.LC26
+ 1255 0014 38020000 		.word	.LC27
+ 1256 0018 40020000 		.word	.LC28
+ 1257 001c 4C020000 		.word	.LC29
+ 1258 0020 54020000 		.word	.LC30
+ 1259 0024 5C020000 		.word	.LC31
+ 1260 0028 68020000 		.word	.LC32
+ 1261 002c 70020000 		.word	.LC33
+ 1262 0030 78020000 		.word	.LC34
+ 1263 0034 80020000 		.word	.LC35
+ 1264 0038 88020000 		.word	.LC36
+ 1265              		.section	.data.leds.7791,"aw",%progbits
+ 1266              		.align	2
+ 1269              	leds.7791:
+ 1270 0000 0D000000 		.word	13
+ 1271 0004 0E000000 		.word	14
+ 1272 0008 0F000000 		.word	15
+ 1273 000c 0C000000 		.word	12
+ 1274              		.text
+ 1275              	.Letext0:
+ 1276              		.file 2 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
+ 1277              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 1278              		.file 4 "/usr/include/newlib/stdint.h"
+ 1279              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 1280              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 1281              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 1282              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 1283              		.file 9 "/usr/src/chibiostest/os/kernel/include/chschd.h"
+ 1284              		.file 10 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+ 1285              		.file 11 "/usr/src/chibiostest/os/kernel/include/chevents.h"
+ 1286              		.file 12 "/usr/src/chibiostest/os/kernel/include/chqueues.h"
+ 1287              		.file 13 "/usr/src/chibiostest/os/kernel/include/chstreams.h"
+ 1288              		.file 14 "/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.h"
+ 1289              		.file 15 "/usr/src/chibiostest/os/hal/include/usb.h"
+ 1290              		.file 16 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/usb_lld.h"
+ 1291              		.file 17 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/stm32_otg.h"
+ 1292              		.file 18 "/usr/src/chibiostest/os/hal/include/serial_usb.h"
+ 1293              		.file 19 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 myMisc.c
+     /tmp/ccMzOr34.s:20     .bss.SDU1:0000000000000000 $d
+     /tmp/ccMzOr34.s:23     .bss.SDU1:0000000000000000 SDU1
+     /tmp/ccMzOr34.s:26     .rodata:0000000000000000 $d
+     /tmp/ccMzOr34.s:39     .text.cmd_mem:0000000000000000 $t
+     /tmp/ccMzOr34.s:45     .text.cmd_mem:0000000000000000 cmd_mem
+     /tmp/ccMzOr34.s:102    .text.cmd_mem:0000000000000054 $d
+     /tmp/ccMzOr34.s:141    .text.cmd_threads:0000000000000000 $t
+     /tmp/ccMzOr34.s:147    .text.cmd_threads:0000000000000000 cmd_threads
+     /tmp/ccMzOr34.s:246    .text.cmd_threads:0000000000000090 $d
+     /tmp/ccMzOr34.s:1249   .data.states.7728:0000000000000000 states.7728
+     /tmp/ccMzOr34.s:265    .text.cmd_toggle:0000000000000000 $t
+     /tmp/ccMzOr34.s:271    .text.cmd_toggle:0000000000000000 cmd_toggle
+     /tmp/ccMzOr34.s:358    .text.cmd_toggle:0000000000000080 $d
+     /tmp/ccMzOr34.s:368    .data.blinkspeed:0000000000000000 blinkspeed
+     /tmp/ccMzOr34.s:365    .data.blinkspeed:0000000000000000 $d
+     /tmp/ccMzOr34.s:375    .data.blinkmin:0000000000000000 blinkmin
+     /tmp/ccMzOr34.s:372    .data.blinkmin:0000000000000000 $d
+     /tmp/ccMzOr34.s:382    .data.blinkmax:0000000000000000 blinkmax
+     /tmp/ccMzOr34.s:379    .data.blinkmax:0000000000000000 $d
+     /tmp/ccMzOr34.s:385    .text.cmd_blinkspeed:0000000000000000 $t
+     /tmp/ccMzOr34.s:391    .text.cmd_blinkspeed:0000000000000000 cmd_blinkspeed
+     /tmp/ccMzOr34.s:450    .text.cmd_blinkspeed:0000000000000048 $d
+     /tmp/ccMzOr34.s:455    .text.cmd_blinkspeed_min_ch:0000000000000000 $t
+     /tmp/ccMzOr34.s:461    .text.cmd_blinkspeed_min_ch:0000000000000000 cmd_blinkspeed_min_ch
+     /tmp/ccMzOr34.s:520    .text.cmd_blinkspeed_min_ch:0000000000000048 $d
+     /tmp/ccMzOr34.s:525    .text.cmd_blinkspeed_max_ch:0000000000000000 $t
+     /tmp/ccMzOr34.s:531    .text.cmd_blinkspeed_max_ch:0000000000000000 cmd_blinkspeed_max_ch
+     /tmp/ccMzOr34.s:590    .text.cmd_blinkspeed_max_ch:0000000000000048 $d
+     /tmp/ccMzOr34.s:599    .text.cmd_blinkspeed_now:0000000000000000 $t
+     /tmp/ccMzOr34.s:605    .text.cmd_blinkspeed_now:0000000000000000 cmd_blinkspeed_now
+     /tmp/ccMzOr34.s:640    .text.cmd_blinkspeed_now:0000000000000028 $d
+     /tmp/ccMzOr34.s:650    .text.cmd_blinkspeed_min:0000000000000000 $t
+     /tmp/ccMzOr34.s:656    .text.cmd_blinkspeed_min:0000000000000000 cmd_blinkspeed_min
+     /tmp/ccMzOr34.s:691    .text.cmd_blinkspeed_min:0000000000000028 $d
+     /tmp/ccMzOr34.s:701    .text.cmd_blinkspeed_max:0000000000000000 $t
+     /tmp/ccMzOr34.s:707    .text.cmd_blinkspeed_max:0000000000000000 cmd_blinkspeed_max
+     /tmp/ccMzOr34.s:742    .text.cmd_blinkspeed_max:0000000000000028 $d
+     /tmp/ccMzOr34.s:752    .bss.dirway:0000000000000000 dirway
+     /tmp/ccMzOr34.s:749    .bss.dirway:0000000000000000 $d
+     /tmp/ccMzOr34.s:759    .bss.dir:0000000000000000 dir
+     /tmp/ccMzOr34.s:756    .bss.dir:0000000000000000 $d
+     /tmp/ccMzOr34.s:769    .text.cmd_way:0000000000000000 $t
+     /tmp/ccMzOr34.s:775    .text.cmd_way:0000000000000000 cmd_way
+     /tmp/ccMzOr34.s:824    .text.cmd_way:000000000000003c $d
+     /tmp/ccMzOr34.s:836    .text.cmd_way_ch:0000000000000000 $t
+     /tmp/ccMzOr34.s:842    .text.cmd_way_ch:0000000000000000 cmd_way_ch
+     /tmp/ccMzOr34.s:904    .text.cmd_way_ch:000000000000004c $d
+     /tmp/ccMzOr34.s:910    .bss.waThread1:0000000000000000 $d
+     /tmp/ccMzOr34.s:913    .bss.waThread1:0000000000000000 waThread1
+     /tmp/ccMzOr34.s:920    .text.Thread1:0000000000000000 $t
+     /tmp/ccMzOr34.s:925    .text.Thread1:0000000000000000 Thread1
+     /tmp/ccMzOr34.s:1148   .text.Thread1:0000000000000168 $d
+     /tmp/ccMzOr34.s:1269   .data.leds.7791:0000000000000000 leds.7791
+     /tmp/ccMzOr34.s:1162   .text.startBlinker:0000000000000000 $t
+     /tmp/ccMzOr34.s:1168   .text.startBlinker:0000000000000000 startBlinker
+     /tmp/ccMzOr34.s:1194   .text.startBlinker:000000000000001c $d
+     /tmp/ccMzOr34.s:1246   .data.states.7728:0000000000000000 $d
+     /tmp/ccMzOr34.s:1266   .data.leds.7791:0000000000000000 $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccMzOr34.s:109    .text.cmd_mem:0000000000000064 $t
+     /tmp/ccMzOr34.s:260    .text.cmd_threads:00000000000000bc $t
+     /tmp/ccMzOr34.s:364    .text.cmd_toggle:0000000000000088 $t
+     /tmp/ccMzOr34.s:454    .text.cmd_blinkspeed:000000000000004c $t
+     /tmp/ccMzOr34.s:524    .text.cmd_blinkspeed_min_ch:000000000000004c $t
+     /tmp/ccMzOr34.s:594    .text.cmd_blinkspeed_max_ch:000000000000004c $t
+     /tmp/ccMzOr34.s:830    .text.cmd_way:0000000000000048 $t
+     /tmp/ccMzOr34.s:909    .text.cmd_way_ch:0000000000000054 $t
+     /tmp/ccMzOr34.s:1199   .text.startBlinker:0000000000000024 $t
+
+UNDEFINED SYMBOLS
+chprintf
+chHeapStatus
+chCoreStatus
+chRegFirstThread
+chRegNextThread
+atoi
+chThdSleep
+rlist
+chThdCreateStatic

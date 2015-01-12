@@ -1,0 +1,362 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"pal.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.rodata
+  20              		.align	2
+  21              	.LC0:
+  22 0000 2270616C 		.ascii	"\"palReadBus\"()\000"
+  22      52656164 
+  22      42757322 
+  22      282900
+  23              		.section	.text.palReadBus,"ax",%progbits
+  24              		.align	2
+  25              		.p2align 4,,15
+  26              		.global	palReadBus
+  27              		.thumb
+  28              		.thumb_func
+  30              	palReadBus:
+  31              	.LFB118:
+  32              		.file 1 "/usr/src/chibiostest/os/hal/src/pal.c"
+   1:/usr/src/chibiostest/os/hal/src/pal.c **** /*
+   2:/usr/src/chibiostest/os/hal/src/pal.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/hal/src/pal.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/hal/src/pal.c **** 
+   5:/usr/src/chibiostest/os/hal/src/pal.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/hal/src/pal.c **** 
+   7:/usr/src/chibiostest/os/hal/src/pal.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/hal/src/pal.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/hal/src/pal.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/hal/src/pal.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  12:/usr/src/chibiostest/os/hal/src/pal.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/hal/src/pal.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/hal/src/pal.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/hal/src/pal.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  17:/usr/src/chibiostest/os/hal/src/pal.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/hal/src/pal.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/hal/src/pal.c **** */
+  20:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  21:/usr/src/chibiostest/os/hal/src/pal.c **** /**
+  22:/usr/src/chibiostest/os/hal/src/pal.c ****  * @file    pal.c
+  23:/usr/src/chibiostest/os/hal/src/pal.c ****  * @brief   I/O Ports Abstraction Layer code.
+  24:/usr/src/chibiostest/os/hal/src/pal.c ****  *
+  25:/usr/src/chibiostest/os/hal/src/pal.c ****  * @addtogroup PAL
+  26:/usr/src/chibiostest/os/hal/src/pal.c ****  * @{
+  27:/usr/src/chibiostest/os/hal/src/pal.c ****  */
+  28:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  29:/usr/src/chibiostest/os/hal/src/pal.c **** #include "ch.h"
+  30:/usr/src/chibiostest/os/hal/src/pal.c **** #include "hal.h"
+  31:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  32:/usr/src/chibiostest/os/hal/src/pal.c **** #if HAL_USE_PAL || defined(__DOXYGEN__)
+  33:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  34:/usr/src/chibiostest/os/hal/src/pal.c **** /*===========================================================================*/
+  35:/usr/src/chibiostest/os/hal/src/pal.c **** /* Driver local definitions.                                                 */
+  36:/usr/src/chibiostest/os/hal/src/pal.c **** /*===========================================================================*/
+  37:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  38:/usr/src/chibiostest/os/hal/src/pal.c **** /*===========================================================================*/
+  39:/usr/src/chibiostest/os/hal/src/pal.c **** /* Driver exported variables.                                                */
+  40:/usr/src/chibiostest/os/hal/src/pal.c **** /*===========================================================================*/
+  41:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  42:/usr/src/chibiostest/os/hal/src/pal.c **** /*===========================================================================*/
+  43:/usr/src/chibiostest/os/hal/src/pal.c **** /* Driver local variables.                                                   */
+  44:/usr/src/chibiostest/os/hal/src/pal.c **** /*===========================================================================*/
+  45:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  46:/usr/src/chibiostest/os/hal/src/pal.c **** /*===========================================================================*/
+  47:/usr/src/chibiostest/os/hal/src/pal.c **** /* Driver local functions.                                                   */
+  48:/usr/src/chibiostest/os/hal/src/pal.c **** /*===========================================================================*/
+  49:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  50:/usr/src/chibiostest/os/hal/src/pal.c **** /*===========================================================================*/
+  51:/usr/src/chibiostest/os/hal/src/pal.c **** /* Driver exported functions.                                                */
+  52:/usr/src/chibiostest/os/hal/src/pal.c **** /*===========================================================================*/
+  53:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  54:/usr/src/chibiostest/os/hal/src/pal.c **** /**
+  55:/usr/src/chibiostest/os/hal/src/pal.c ****  * @brief   Read from an I/O bus.
+  56:/usr/src/chibiostest/os/hal/src/pal.c ****  * @note    The operation is not guaranteed to be atomic on all the
+  57:/usr/src/chibiostest/os/hal/src/pal.c ****  *          architectures, for atomicity and/or portability reasons you may
+  58:/usr/src/chibiostest/os/hal/src/pal.c ****  *          need to enclose port I/O operations between @p chSysLock() and
+  59:/usr/src/chibiostest/os/hal/src/pal.c ****  *          @p chSysUnlock().
+  60:/usr/src/chibiostest/os/hal/src/pal.c ****  * @note    The function internally uses the @p palReadGroup() macro. The use
+  61:/usr/src/chibiostest/os/hal/src/pal.c ****  *          of this function is preferred when you value code size, readability
+  62:/usr/src/chibiostest/os/hal/src/pal.c ****  *          and error checking over speed.
+  63:/usr/src/chibiostest/os/hal/src/pal.c ****  *
+  64:/usr/src/chibiostest/os/hal/src/pal.c ****  * @param[in] bus       the I/O bus, pointer to a @p IOBus structure
+  65:/usr/src/chibiostest/os/hal/src/pal.c ****  * @return              The bus logical states.
+  66:/usr/src/chibiostest/os/hal/src/pal.c ****  *
+  67:/usr/src/chibiostest/os/hal/src/pal.c ****  * @api
+  68:/usr/src/chibiostest/os/hal/src/pal.c ****  */
+  69:/usr/src/chibiostest/os/hal/src/pal.c **** ioportmask_t palReadBus(IOBus *bus) {
+  33              		.loc 1 69 0
+  34              		.cfi_startproc
+  35              		@ args = 0, pretend = 0, frame = 8
+  36              		@ frame_needed = 0, uses_anonymous_args = 0
+  37 0000 00B5     		push	{lr}
+  38              		.cfi_def_cfa_offset 4
+  39              		.cfi_offset 14, -4
+  40 0002 83B0     		sub	sp, sp, #12
+  41              		.cfi_def_cfa_offset 16
+  42 0004 0190     		str	r0, [sp, #4]
+  70:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  71:/usr/src/chibiostest/os/hal/src/pal.c ****   chDbgCheck((bus != NULL) &&
+  43              		.loc 1 71 0
+  44 0006 019B     		ldr	r3, [sp, #4]
+  45 0008 002B     		cmp	r3, #0
+  46 000a 03D0     		beq	.L2
+  47              		.loc 1 71 0 is_stmt 0 discriminator 2
+  48 000c 019B     		ldr	r3, [sp, #4]
+  49 000e 9B68     		ldr	r3, [r3, #8]
+  50 0010 0F2B     		cmp	r3, #15
+  51 0012 02D9     		bls	.L3
+  52              	.L2:
+  53              		.loc 1 71 0 discriminator 1
+  54 0014 0748     		ldr	r0, .L5
+  55 0016 FFF7FEFF 		bl	chDbgPanic
+  56              	.L3:
+  72:/usr/src/chibiostest/os/hal/src/pal.c ****              (bus->offset < PAL_IOPORTS_WIDTH), "palReadBus");
+  73:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  74:/usr/src/chibiostest/os/hal/src/pal.c ****   return palReadGroup(bus->portid, bus->mask, bus->offset);
+  57              		.loc 1 74 0 is_stmt 1
+  58 001a 019B     		ldr	r3, [sp, #4]
+  59 001c 1B68     		ldr	r3, [r3]
+  60 001e 1A69     		ldr	r2, [r3, #16]
+  61 0020 019B     		ldr	r3, [sp, #4]
+  62 0022 9B68     		ldr	r3, [r3, #8]
+  63 0024 DA40     		lsrs	r2, r2, r3
+  64 0026 019B     		ldr	r3, [sp, #4]
+  65 0028 5B68     		ldr	r3, [r3, #4]
+  66 002a 1340     		ands	r3, r3, r2
+  75:/usr/src/chibiostest/os/hal/src/pal.c **** }
+  67              		.loc 1 75 0
+  68 002c 1846     		mov	r0, r3
+  69 002e 03B0     		add	sp, sp, #12
+  70              		@ sp needed
+  71 0030 5DF804FB 		ldr	pc, [sp], #4
+  72              	.L6:
+  73              		.align	2
+  74              	.L5:
+  75 0034 00000000 		.word	.LC0
+  76              		.cfi_endproc
+  77              	.LFE118:
+  79 0038 AFF30080 		.section	.rodata
+  79      AFF30080 
+  80 000f 00       		.align	2
+  81              	.LC1:
+  82 0010 2270616C 		.ascii	"\"palWriteBus\"()\000"
+  82      57726974 
+  82      65427573 
+  82      22282900 
+  83              		.section	.text.palWriteBus,"ax",%progbits
+  84              		.align	2
+  85              		.p2align 4,,15
+  86              		.global	palWriteBus
+  87              		.thumb
+  88              		.thumb_func
+  90              	palWriteBus:
+  91              	.LFB119:
+  76:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  77:/usr/src/chibiostest/os/hal/src/pal.c **** /**
+  78:/usr/src/chibiostest/os/hal/src/pal.c ****  * @brief   Write to an I/O bus.
+  79:/usr/src/chibiostest/os/hal/src/pal.c ****  * @note    The operation is not guaranteed to be atomic on all the
+  80:/usr/src/chibiostest/os/hal/src/pal.c ****  *          architectures, for atomicity and/or portability reasons you may
+  81:/usr/src/chibiostest/os/hal/src/pal.c ****  *          need to enclose port I/O operations between @p chSysLock() and
+  82:/usr/src/chibiostest/os/hal/src/pal.c ****  *          @p chSysUnlock().
+  83:/usr/src/chibiostest/os/hal/src/pal.c ****  * @note    The default implementation is non atomic and not necessarily
+  84:/usr/src/chibiostest/os/hal/src/pal.c ****  *          optimal. Low level drivers may  optimize the function by using
+  85:/usr/src/chibiostest/os/hal/src/pal.c ****  *          specific hardware or coding.
+  86:/usr/src/chibiostest/os/hal/src/pal.c ****  *
+  87:/usr/src/chibiostest/os/hal/src/pal.c ****  * @param[in] bus       the I/O bus, pointer to a @p IOBus structure
+  88:/usr/src/chibiostest/os/hal/src/pal.c ****  * @param[in] bits      the bits to be written on the I/O bus. Values exceeding
+  89:/usr/src/chibiostest/os/hal/src/pal.c ****  *                      the bus width are masked so most significant bits are
+  90:/usr/src/chibiostest/os/hal/src/pal.c ****  *                      lost.
+  91:/usr/src/chibiostest/os/hal/src/pal.c ****  *
+  92:/usr/src/chibiostest/os/hal/src/pal.c ****  * @api
+  93:/usr/src/chibiostest/os/hal/src/pal.c ****  */
+  94:/usr/src/chibiostest/os/hal/src/pal.c **** void palWriteBus(IOBus *bus, ioportmask_t bits) {
+  92              		.loc 1 94 0
+  93              		.cfi_startproc
+  94              		@ args = 0, pretend = 0, frame = 8
+  95              		@ frame_needed = 0, uses_anonymous_args = 0
+  96 0000 00B5     		push	{lr}
+  97              		.cfi_def_cfa_offset 4
+  98              		.cfi_offset 14, -4
+  99 0002 83B0     		sub	sp, sp, #12
+ 100              		.cfi_def_cfa_offset 16
+ 101 0004 0190     		str	r0, [sp, #4]
+ 102 0006 0091     		str	r1, [sp]
+  95:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  96:/usr/src/chibiostest/os/hal/src/pal.c ****   chDbgCheck((bus != NULL) &&
+ 103              		.loc 1 96 0
+ 104 0008 019B     		ldr	r3, [sp, #4]
+ 105 000a 002B     		cmp	r3, #0
+ 106 000c 03D0     		beq	.L8
+ 107              		.loc 1 96 0 is_stmt 0 discriminator 2
+ 108 000e 019B     		ldr	r3, [sp, #4]
+ 109 0010 9B68     		ldr	r3, [r3, #8]
+ 110 0012 0F2B     		cmp	r3, #15
+ 111 0014 02D9     		bls	.L9
+ 112              	.L8:
+ 113              		.loc 1 96 0 discriminator 1
+ 114 0016 0D48     		ldr	r0, .L10
+ 115 0018 FFF7FEFF 		bl	chDbgPanic
+ 116              	.L9:
+  97:/usr/src/chibiostest/os/hal/src/pal.c ****              (bus->offset < PAL_IOPORTS_WIDTH), "palWriteBus");
+  98:/usr/src/chibiostest/os/hal/src/pal.c **** 
+  99:/usr/src/chibiostest/os/hal/src/pal.c ****   palWriteGroup(bus->portid, bus->mask, bus->offset, bits);
+ 117              		.loc 1 99 0 is_stmt 1
+ 118 001c 019B     		ldr	r3, [sp, #4]
+ 119 001e 1B68     		ldr	r3, [r3]
+ 120 0020 009A     		ldr	r2, [sp]
+ 121 0022 D143     		mvns	r1, r2
+ 122 0024 019A     		ldr	r2, [sp, #4]
+ 123 0026 5268     		ldr	r2, [r2, #4]
+ 124 0028 1140     		ands	r1, r1, r2
+ 125 002a 019A     		ldr	r2, [sp, #4]
+ 126 002c 9268     		ldr	r2, [r2, #8]
+ 127 002e 1032     		adds	r2, r2, #16
+ 128 0030 9140     		lsls	r1, r1, r2
+ 129 0032 019A     		ldr	r2, [sp, #4]
+ 130 0034 5068     		ldr	r0, [r2, #4]
+ 131 0036 009A     		ldr	r2, [sp]
+ 132 0038 1040     		ands	r0, r0, r2
+ 133 003a 019A     		ldr	r2, [sp, #4]
+ 134 003c 9268     		ldr	r2, [r2, #8]
+ 135 003e 00FA02F2 		lsl	r2, r0, r2
+ 136 0042 0A43     		orrs	r2, r2, r1
+ 137 0044 9A61     		str	r2, [r3, #24]
+ 100:/usr/src/chibiostest/os/hal/src/pal.c **** }
+ 138              		.loc 1 100 0
+ 139 0046 03B0     		add	sp, sp, #12
+ 140              		@ sp needed
+ 141 0048 5DF804FB 		ldr	pc, [sp], #4
+ 142              	.L11:
+ 143              		.align	2
+ 144              	.L10:
+ 145 004c 10000000 		.word	.LC1
+ 146              		.cfi_endproc
+ 147              	.LFE119:
+ 149              		.section	.rodata
+ 150              		.align	2
+ 151              	.LC2:
+ 152 0020 2270616C 		.ascii	"\"palSetBusMode\"()\000"
+ 152      53657442 
+ 152      75734D6F 
+ 152      64652228 
+ 152      2900
+ 153 0032 0000     		.section	.text.palSetBusMode,"ax",%progbits
+ 154              		.align	2
+ 155              		.p2align 4,,15
+ 156              		.global	palSetBusMode
+ 157              		.thumb
+ 158              		.thumb_func
+ 160              	palSetBusMode:
+ 161              	.LFB120:
+ 101:/usr/src/chibiostest/os/hal/src/pal.c **** 
+ 102:/usr/src/chibiostest/os/hal/src/pal.c **** /**
+ 103:/usr/src/chibiostest/os/hal/src/pal.c ****  * @brief   Programs a bus with the specified mode.
+ 104:/usr/src/chibiostest/os/hal/src/pal.c ****  * @note    The operation is not guaranteed to be atomic on all the
+ 105:/usr/src/chibiostest/os/hal/src/pal.c ****  *          architectures, for atomicity and/or portability reasons you may
+ 106:/usr/src/chibiostest/os/hal/src/pal.c ****  *          need to enclose port I/O operations between @p chSysLock() and
+ 107:/usr/src/chibiostest/os/hal/src/pal.c ****  *          @p chSysUnlock().
+ 108:/usr/src/chibiostest/os/hal/src/pal.c ****  * @note    The default implementation is non atomic and not necessarily
+ 109:/usr/src/chibiostest/os/hal/src/pal.c ****  *          optimal. Low level drivers may  optimize the function by using
+ 110:/usr/src/chibiostest/os/hal/src/pal.c ****  *          specific hardware or coding.
+ 111:/usr/src/chibiostest/os/hal/src/pal.c ****  *
+ 112:/usr/src/chibiostest/os/hal/src/pal.c ****  * @param[in] bus       the I/O bus, pointer to a @p IOBus structure
+ 113:/usr/src/chibiostest/os/hal/src/pal.c ****  * @param[in] mode      the mode
+ 114:/usr/src/chibiostest/os/hal/src/pal.c ****  *
+ 115:/usr/src/chibiostest/os/hal/src/pal.c ****  * @api
+ 116:/usr/src/chibiostest/os/hal/src/pal.c ****  */
+ 117:/usr/src/chibiostest/os/hal/src/pal.c **** void palSetBusMode(IOBus *bus, iomode_t mode) {
+ 162              		.loc 1 117 0
+ 163              		.cfi_startproc
+ 164              		@ args = 0, pretend = 0, frame = 8
+ 165              		@ frame_needed = 0, uses_anonymous_args = 0
+ 166 0000 00B5     		push	{lr}
+ 167              		.cfi_def_cfa_offset 4
+ 168              		.cfi_offset 14, -4
+ 169 0002 83B0     		sub	sp, sp, #12
+ 170              		.cfi_def_cfa_offset 16
+ 171 0004 0190     		str	r0, [sp, #4]
+ 172 0006 0091     		str	r1, [sp]
+ 118:/usr/src/chibiostest/os/hal/src/pal.c **** 
+ 119:/usr/src/chibiostest/os/hal/src/pal.c ****   chDbgCheck((bus != NULL) &&
+ 173              		.loc 1 119 0
+ 174 0008 019B     		ldr	r3, [sp, #4]
+ 175 000a 002B     		cmp	r3, #0
+ 176 000c 03D0     		beq	.L13
+ 177              		.loc 1 119 0 is_stmt 0 discriminator 2
+ 178 000e 019B     		ldr	r3, [sp, #4]
+ 179 0010 9B68     		ldr	r3, [r3, #8]
+ 180 0012 0F2B     		cmp	r3, #15
+ 181 0014 02D9     		bls	.L14
+ 182              	.L13:
+ 183              		.loc 1 119 0 discriminator 1
+ 184 0016 0948     		ldr	r0, .L15
+ 185 0018 FFF7FEFF 		bl	chDbgPanic
+ 186              	.L14:
+ 120:/usr/src/chibiostest/os/hal/src/pal.c ****              (bus->offset < PAL_IOPORTS_WIDTH), "palSetBusMode");
+ 121:/usr/src/chibiostest/os/hal/src/pal.c **** 
+ 122:/usr/src/chibiostest/os/hal/src/pal.c ****   palSetGroupMode(bus->portid, bus->mask, bus->offset, mode);
+ 187              		.loc 1 122 0 is_stmt 1
+ 188 001c 019B     		ldr	r3, [sp, #4]
+ 189 001e 1A68     		ldr	r2, [r3]
+ 190 0020 019B     		ldr	r3, [sp, #4]
+ 191 0022 5968     		ldr	r1, [r3, #4]
+ 192 0024 019B     		ldr	r3, [sp, #4]
+ 193 0026 9B68     		ldr	r3, [r3, #8]
+ 194 0028 01FA03F3 		lsl	r3, r1, r3
+ 195 002c 1046     		mov	r0, r2
+ 196 002e 1946     		mov	r1, r3
+ 197 0030 009A     		ldr	r2, [sp]
+ 198 0032 FFF7FEFF 		bl	_pal_lld_setgroupmode
+ 123:/usr/src/chibiostest/os/hal/src/pal.c **** }
+ 199              		.loc 1 123 0
+ 200 0036 03B0     		add	sp, sp, #12
+ 201              		@ sp needed
+ 202 0038 5DF804FB 		ldr	pc, [sp], #4
+ 203              	.L16:
+ 204              		.align	2
+ 205              	.L15:
+ 206 003c 20000000 		.word	.LC2
+ 207              		.cfi_endproc
+ 208              	.LFE120:
+ 210              		.text
+ 211              	.Letext0:
+ 212              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 213              		.file 3 "/usr/include/newlib/stdint.h"
+ 214              		.file 4 "/usr/src/chibiostest/os/hal/platforms/STM32/GPIOv2/pal_lld.h"
+ 215              		.file 5 "/usr/src/chibiostest/os/hal/include/pal.h"
+ 216              		.file 6 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 pal.c
+     /tmp/cciZU2Kt.s:20     .rodata:0000000000000000 $d
+     /tmp/cciZU2Kt.s:24     .text.palReadBus:0000000000000000 $t
+     /tmp/cciZU2Kt.s:30     .text.palReadBus:0000000000000000 palReadBus
+     /tmp/cciZU2Kt.s:75     .text.palReadBus:0000000000000034 $d
+     /tmp/cciZU2Kt.s:84     .text.palWriteBus:0000000000000000 $t
+     /tmp/cciZU2Kt.s:90     .text.palWriteBus:0000000000000000 palWriteBus
+     /tmp/cciZU2Kt.s:145    .text.palWriteBus:000000000000004c $d
+     /tmp/cciZU2Kt.s:154    .text.palSetBusMode:0000000000000000 $t
+     /tmp/cciZU2Kt.s:160    .text.palSetBusMode:0000000000000000 palSetBusMode
+     /tmp/cciZU2Kt.s:206    .text.palSetBusMode:000000000000003c $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/cciZU2Kt.s:79     .text.palReadBus:0000000000000038 $t
+
+UNDEFINED SYMBOLS
+chDbgPanic
+_pal_lld_setgroupmode

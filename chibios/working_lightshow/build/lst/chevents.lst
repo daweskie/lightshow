@@ -1,0 +1,2074 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chevents.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.rodata
+  20              		.align	2
+  21              	.LC0:
+  22 0000 22636845 		.ascii	"\"chEvtRegisterMask\"()\000"
+  22      76745265 
+  22      67697374 
+  22      65724D61 
+  22      736B2228 
+  23              		.section	.text.chEvtRegisterMask,"ax",%progbits
+  24              		.align	2
+  25              		.p2align 4,,15
+  26              		.global	chEvtRegisterMask
+  27              		.thumb
+  28              		.thumb_func
+  30              	chEvtRegisterMask:
+  31              	.LFB7:
+  32              		.file 1 "/usr/src/chibiostest/os/kernel/src/chevents.c"
+   1:/usr/src/chibiostest/os/kernel/src/chevents.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chevents.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chevents.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chevents.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chevents.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chevents.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chevents.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chevents.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chevents.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chevents.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chevents.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chevents.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chevents.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chevents.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chevents.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chevents.c **** /*
+  21:/usr/src/chibiostest/os/kernel/src/chevents.c ****    Concepts and parts of this file have been contributed by Scott (skute).
+  22:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+  23:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+  24:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+  25:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @file    chevents.c
+  26:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Events code.
+  27:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+  28:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @addtogroup events
+  29:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details Event Flags, Event Sources and Event Listeners.
+  30:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          <h2>Operation mode</h2>
+  31:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          Each thread has a mask of pending event flags inside its @p Thread
+  32:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          structure.
+  33:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          Operations defined for event flags:
+  34:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          - <b>Wait</b>, the invoking thread goes to sleep until a certain
+  35:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *            AND/OR combination of event flags becomes pending.
+  36:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          - <b>Clear</b>, a mask of event flags is cleared from the pending
+  37:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *            events mask, the cleared event flags mask is returned (only the
+  38:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *            flags that were actually pending and then cleared).
+  39:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          - <b>Signal</b>, an event mask is directly ORed to the mask of the
+  40:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *            signaled thread.
+  41:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          - <b>Broadcast</b>, each thread registered on an Event Source is
+  42:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *            signaled with the event flags specified in its Event Listener.
+  43:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          - <b>Dispatch</b>, an events mask is scanned and for each bit set
+  44:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *            to one an associated handler function is invoked. Bit masks are
+  45:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *            scanned from bit zero upward.
+  46:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          .
+  47:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          An Event Source is a special object that can be "broadcasted" by
+  48:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          a thread or an interrupt service routine. Broadcasting an Event
+  49:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          Source has the effect that all the threads registered on the
+  50:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          Event Source will be signaled with an events mask.<br>
+  51:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          An unlimited number of Event Sources can exists in a system and
+  52:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          each thread can be listening on an unlimited number of
+  53:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          them.
+  54:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @pre     In order to use the Events APIs the @p CH_USE_EVENTS option must be
+  55:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          enabled in @p chconf.h.
+  56:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @post    Enabling events requires 1-4 (depending on the architecture)
+  57:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          extra bytes in the @p Thread structure.
+  58:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @{
+  59:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+  60:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+  61:/usr/src/chibiostest/os/kernel/src/chevents.c **** #include "ch.h"
+  62:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+  63:/usr/src/chibiostest/os/kernel/src/chevents.c **** #if CH_USE_EVENTS || defined(__DOXYGEN__)
+  64:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+  65:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Registers an Event Listener on an Event Source.
+  66:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details Once a thread has registered as listener on an event source it
+  67:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          will be notified of all events broadcasted there.
+  68:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @note    Multiple Event Listeners can specify the same bits to be ORed to
+  69:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          different threads.
+  70:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+  71:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] esp       pointer to the  @p EventSource structure
+  72:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] elp       pointer to the @p EventListener structure
+  73:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      the mask of event flags to be ORed to the thread when
+  74:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      the event source is broadcasted
+  75:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+  76:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+  77:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+  78:/usr/src/chibiostest/os/kernel/src/chevents.c **** void chEvtRegisterMask(EventSource *esp, EventListener *elp, eventmask_t mask) {
+  33              		.loc 1 78 0
+  34              		.cfi_startproc
+  35              		@ args = 0, pretend = 0, frame = 16
+  36              		@ frame_needed = 0, uses_anonymous_args = 0
+  37 0000 00B5     		push	{lr}
+  38              		.cfi_def_cfa_offset 4
+  39              		.cfi_offset 14, -4
+  40 0002 85B0     		sub	sp, sp, #20
+  41              		.cfi_def_cfa_offset 24
+  42 0004 0390     		str	r0, [sp, #12]
+  43 0006 0291     		str	r1, [sp, #8]
+  44 0008 0192     		str	r2, [sp, #4]
+  79:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+  80:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chDbgCheck((esp != NULL) && (elp != NULL), "chEvtRegisterMask");
+  45              		.loc 1 80 0
+  46 000a 039B     		ldr	r3, [sp, #12]
+  47 000c 002B     		cmp	r3, #0
+  48 000e 02D0     		beq	.L2
+  49              		.loc 1 80 0 is_stmt 0 discriminator 2
+  50 0010 029B     		ldr	r3, [sp, #8]
+  51 0012 002B     		cmp	r3, #0
+  52 0014 02D1     		bne	.L3
+  53              	.L2:
+  54              		.loc 1 80 0 discriminator 1
+  55 0016 1048     		ldr	r0, .L4
+  56 0018 FFF7FEFF 		bl	chDbgPanic
+  57              	.L3:
+  58              	.LBB2:
+  81:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+  82:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+  59              		.loc 1 82 0 is_stmt 1
+  60 001c 2023     		movs	r3, #32
+  61              	@ 82 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+  62 001e 83F31188 		msr     BASEPRI, r3
+  63              	@ 0 "" 2
+  64              		.thumb
+  65              	.LBE2:
+  66 0022 FFF7FEFF 		bl	dbg_check_lock
+  83:/usr/src/chibiostest/os/kernel/src/chevents.c ****   elp->el_next     = esp->es_next;
+  67              		.loc 1 83 0
+  68 0026 039B     		ldr	r3, [sp, #12]
+  69 0028 1A68     		ldr	r2, [r3]
+  70 002a 029B     		ldr	r3, [sp, #8]
+  71 002c 1A60     		str	r2, [r3]
+  84:/usr/src/chibiostest/os/kernel/src/chevents.c ****   esp->es_next     = elp;
+  72              		.loc 1 84 0
+  73 002e 039B     		ldr	r3, [sp, #12]
+  74 0030 029A     		ldr	r2, [sp, #8]
+  75 0032 1A60     		str	r2, [r3]
+  85:/usr/src/chibiostest/os/kernel/src/chevents.c ****   elp->el_listener = currp;
+  76              		.loc 1 85 0
+  77 0034 094B     		ldr	r3, .L4+4
+  78 0036 9A69     		ldr	r2, [r3, #24]
+  79 0038 029B     		ldr	r3, [sp, #8]
+  80 003a 5A60     		str	r2, [r3, #4]
+  86:/usr/src/chibiostest/os/kernel/src/chevents.c ****   elp->el_mask     = mask;
+  81              		.loc 1 86 0
+  82 003c 029B     		ldr	r3, [sp, #8]
+  83 003e 019A     		ldr	r2, [sp, #4]
+  84 0040 9A60     		str	r2, [r3, #8]
+  87:/usr/src/chibiostest/os/kernel/src/chevents.c ****   elp->el_flags    = 0;
+  85              		.loc 1 87 0
+  86 0042 029B     		ldr	r3, [sp, #8]
+  87 0044 0022     		movs	r2, #0
+  88 0046 DA60     		str	r2, [r3, #12]
+  88:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+  89              		.loc 1 88 0
+  90 0048 FFF7FEFF 		bl	dbg_check_unlock
+  91              	.LBB3:
+  92 004c 0023     		movs	r3, #0
+  93              	@ 88 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+  94 004e 83F31188 		msr     BASEPRI, r3
+  95              	@ 0 "" 2
+  96              		.thumb
+  97              	.LBE3:
+  89:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+  98              		.loc 1 89 0
+  99 0052 05B0     		add	sp, sp, #20
+ 100              		@ sp needed
+ 101 0054 5DF804FB 		ldr	pc, [sp], #4
+ 102              	.L5:
+ 103              		.align	2
+ 104              	.L4:
+ 105 0058 00000000 		.word	.LC0
+ 106 005c 00000000 		.word	rlist
+ 107              		.cfi_endproc
+ 108              	.LFE7:
+ 110              		.section	.rodata
+ 111 0016 0000     		.align	2
+ 112              	.LC1:
+ 113 0018 22636845 		.ascii	"\"chEvtUnregister\"()\000"
+ 113      7674556E 
+ 113      72656769 
+ 113      73746572 
+ 113      22282900 
+ 114              		.section	.text.chEvtUnregister,"ax",%progbits
+ 115              		.align	2
+ 116              		.p2align 4,,15
+ 117              		.global	chEvtUnregister
+ 118              		.thumb
+ 119              		.thumb_func
+ 121              	chEvtUnregister:
+ 122              	.LFB8:
+  90:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+  91:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+  92:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Unregisters an Event Listener from its Event Source.
+  93:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @note    If the event listener is not registered on the specified event
+  94:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          source then the function does nothing.
+  95:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @note    For optimal performance it is better to perform the unregister
+  96:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          operations in inverse order of the register operations (elements
+  97:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          are found on top of the list).
+  98:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+  99:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] esp       pointer to the  @p EventSource structure
+ 100:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] elp       pointer to the @p EventListener structure
+ 101:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 102:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 103:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 104:/usr/src/chibiostest/os/kernel/src/chevents.c **** void chEvtUnregister(EventSource *esp, EventListener *elp) {
+ 123              		.loc 1 104 0
+ 124              		.cfi_startproc
+ 125              		@ args = 0, pretend = 0, frame = 16
+ 126              		@ frame_needed = 0, uses_anonymous_args = 0
+ 127 0000 00B5     		push	{lr}
+ 128              		.cfi_def_cfa_offset 4
+ 129              		.cfi_offset 14, -4
+ 130 0002 85B0     		sub	sp, sp, #20
+ 131              		.cfi_def_cfa_offset 24
+ 132 0004 0190     		str	r0, [sp, #4]
+ 133 0006 0091     		str	r1, [sp]
+ 105:/usr/src/chibiostest/os/kernel/src/chevents.c ****   EventListener *p;
+ 106:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 107:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chDbgCheck((esp != NULL) && (elp != NULL), "chEvtUnregister");
+ 134              		.loc 1 107 0
+ 135 0008 019B     		ldr	r3, [sp, #4]
+ 136 000a 002B     		cmp	r3, #0
+ 137 000c 02D0     		beq	.L7
+ 138              		.loc 1 107 0 is_stmt 0 discriminator 2
+ 139 000e 009B     		ldr	r3, [sp]
+ 140 0010 002B     		cmp	r3, #0
+ 141 0012 02D1     		bne	.L8
+ 142              	.L7:
+ 143              		.loc 1 107 0 discriminator 1
+ 144 0014 1248     		ldr	r0, .L13
+ 145 0016 FFF7FEFF 		bl	chDbgPanic
+ 146              	.L8:
+ 108:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 109:/usr/src/chibiostest/os/kernel/src/chevents.c ****   p = (EventListener *)esp;
+ 147              		.loc 1 109 0 is_stmt 1
+ 148 001a 019B     		ldr	r3, [sp, #4]
+ 149 001c 0393     		str	r3, [sp, #12]
+ 150              	.LBB4:
+ 110:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 151              		.loc 1 110 0
+ 152 001e 2023     		movs	r3, #32
+ 153              	@ 110 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 154 0020 83F31188 		msr     BASEPRI, r3
+ 155              	@ 0 "" 2
+ 156              		.thumb
+ 157              	.LBE4:
+ 158 0024 FFF7FEFF 		bl	dbg_check_lock
+ 111:/usr/src/chibiostest/os/kernel/src/chevents.c ****   while (p->el_next != (EventListener *)esp) {
+ 159              		.loc 1 111 0
+ 160 0028 0CE0     		b	.L9
+ 161              	.L12:
+ 112:/usr/src/chibiostest/os/kernel/src/chevents.c ****     if (p->el_next == elp) {
+ 162              		.loc 1 112 0
+ 163 002a 039B     		ldr	r3, [sp, #12]
+ 164 002c 1A68     		ldr	r2, [r3]
+ 165 002e 009B     		ldr	r3, [sp]
+ 166 0030 9A42     		cmp	r2, r3
+ 167 0032 04D1     		bne	.L10
+ 113:/usr/src/chibiostest/os/kernel/src/chevents.c ****       p->el_next = elp->el_next;
+ 168              		.loc 1 113 0
+ 169 0034 009B     		ldr	r3, [sp]
+ 170 0036 1A68     		ldr	r2, [r3]
+ 171 0038 039B     		ldr	r3, [sp, #12]
+ 172 003a 1A60     		str	r2, [r3]
+ 114:/usr/src/chibiostest/os/kernel/src/chevents.c ****       break;
+ 173              		.loc 1 114 0
+ 174 003c 07E0     		b	.L11
+ 175              	.L10:
+ 115:/usr/src/chibiostest/os/kernel/src/chevents.c ****     }
+ 116:/usr/src/chibiostest/os/kernel/src/chevents.c ****     p = p->el_next;
+ 176              		.loc 1 116 0
+ 177 003e 039B     		ldr	r3, [sp, #12]
+ 178 0040 1B68     		ldr	r3, [r3]
+ 179 0042 0393     		str	r3, [sp, #12]
+ 180              	.L9:
+ 111:/usr/src/chibiostest/os/kernel/src/chevents.c ****     if (p->el_next == elp) {
+ 181              		.loc 1 111 0 discriminator 1
+ 182 0044 039B     		ldr	r3, [sp, #12]
+ 183 0046 1A68     		ldr	r2, [r3]
+ 184 0048 019B     		ldr	r3, [sp, #4]
+ 185 004a 9A42     		cmp	r2, r3
+ 186 004c EDD1     		bne	.L12
+ 187              	.L11:
+ 117:/usr/src/chibiostest/os/kernel/src/chevents.c ****   }
+ 118:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 188              		.loc 1 118 0
+ 189 004e FFF7FEFF 		bl	dbg_check_unlock
+ 190              	.LBB5:
+ 191 0052 0023     		movs	r3, #0
+ 192              	@ 118 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 193 0054 83F31188 		msr     BASEPRI, r3
+ 194              	@ 0 "" 2
+ 195              		.thumb
+ 196              	.LBE5:
+ 119:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 197              		.loc 1 119 0
+ 198 0058 05B0     		add	sp, sp, #20
+ 199              		@ sp needed
+ 200 005a 5DF804FB 		ldr	pc, [sp], #4
+ 201              	.L14:
+ 202 005e 00BF     		.align	2
+ 203              	.L13:
+ 204 0060 18000000 		.word	.LC1
+ 205              		.cfi_endproc
+ 206              	.LFE8:
+ 208 0064 AFF30080 		.section	.text.chEvtGetAndClearEvents,"ax",%progbits
+ 208      AFF30080 
+ 208      AFF30080 
+ 209              		.align	2
+ 210              		.p2align 4,,15
+ 211              		.global	chEvtGetAndClearEvents
+ 212              		.thumb
+ 213              		.thumb_func
+ 215              	chEvtGetAndClearEvents:
+ 216              	.LFB9:
+ 120:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 121:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 122:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Clears the pending events specified in the mask.
+ 123:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 124:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      the events to be cleared
+ 125:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @return              The pending events that were cleared.
+ 126:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 127:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 128:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 129:/usr/src/chibiostest/os/kernel/src/chevents.c **** eventmask_t chEvtGetAndClearEvents(eventmask_t mask) {
+ 217              		.loc 1 129 0
+ 218              		.cfi_startproc
+ 219              		@ args = 0, pretend = 0, frame = 16
+ 220              		@ frame_needed = 0, uses_anonymous_args = 0
+ 221 0000 00B5     		push	{lr}
+ 222              		.cfi_def_cfa_offset 4
+ 223              		.cfi_offset 14, -4
+ 224 0002 85B0     		sub	sp, sp, #20
+ 225              		.cfi_def_cfa_offset 24
+ 226 0004 0190     		str	r0, [sp, #4]
+ 227              	.LBB6:
+ 130:/usr/src/chibiostest/os/kernel/src/chevents.c ****   eventmask_t m;
+ 131:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 132:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 228              		.loc 1 132 0
+ 229 0006 2023     		movs	r3, #32
+ 230              	@ 132 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 231 0008 83F31188 		msr     BASEPRI, r3
+ 232              	@ 0 "" 2
+ 233              		.thumb
+ 234              	.LBE6:
+ 235 000c FFF7FEFF 		bl	dbg_check_lock
+ 133:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 134:/usr/src/chibiostest/os/kernel/src/chevents.c ****   m = currp->p_epending & mask;
+ 236              		.loc 1 134 0
+ 237 0010 0C4B     		ldr	r3, .L17
+ 238 0012 9B69     		ldr	r3, [r3, #24]
+ 239 0014 DA6B     		ldr	r2, [r3, #60]
+ 240 0016 019B     		ldr	r3, [sp, #4]
+ 241 0018 1340     		ands	r3, r3, r2
+ 242 001a 0393     		str	r3, [sp, #12]
+ 135:/usr/src/chibiostest/os/kernel/src/chevents.c ****   currp->p_epending &= ~mask;
+ 243              		.loc 1 135 0
+ 244 001c 094B     		ldr	r3, .L17
+ 245 001e 9B69     		ldr	r3, [r3, #24]
+ 246 0020 084A     		ldr	r2, .L17
+ 247 0022 9269     		ldr	r2, [r2, #24]
+ 248 0024 D16B     		ldr	r1, [r2, #60]
+ 249 0026 019A     		ldr	r2, [sp, #4]
+ 250 0028 D243     		mvns	r2, r2
+ 251 002a 0A40     		ands	r2, r2, r1
+ 252 002c DA63     		str	r2, [r3, #60]
+ 136:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 137:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 253              		.loc 1 137 0
+ 254 002e FFF7FEFF 		bl	dbg_check_unlock
+ 255              	.LBB7:
+ 256 0032 0023     		movs	r3, #0
+ 257              	@ 137 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 258 0034 83F31188 		msr     BASEPRI, r3
+ 259              	@ 0 "" 2
+ 260              		.thumb
+ 261              	.LBE7:
+ 138:/usr/src/chibiostest/os/kernel/src/chevents.c ****   return m;
+ 262              		.loc 1 138 0
+ 263 0038 039B     		ldr	r3, [sp, #12]
+ 139:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 264              		.loc 1 139 0
+ 265 003a 1846     		mov	r0, r3
+ 266 003c 05B0     		add	sp, sp, #20
+ 267              		@ sp needed
+ 268 003e 5DF804FB 		ldr	pc, [sp], #4
+ 269              	.L18:
+ 270 0042 00BF     		.align	2
+ 271              	.L17:
+ 272 0044 00000000 		.word	rlist
+ 273              		.cfi_endproc
+ 274              	.LFE9:
+ 276 0048 AFF30080 		.section	.text.chEvtAddEvents,"ax",%progbits
+ 276      AFF30080 
+ 277              		.align	2
+ 278              		.p2align 4,,15
+ 279              		.global	chEvtAddEvents
+ 280              		.thumb
+ 281              		.thumb_func
+ 283              	chEvtAddEvents:
+ 284              	.LFB10:
+ 140:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 141:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 142:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Adds (OR) a set of event flags on the current thread, this is
+ 143:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          @b much faster than using @p chEvtBroadcast() or @p chEvtSignal().
+ 144:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 145:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      the event flags to be ORed
+ 146:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @return              The current pending events mask.
+ 147:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 148:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 149:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 150:/usr/src/chibiostest/os/kernel/src/chevents.c **** eventmask_t chEvtAddEvents(eventmask_t mask) {
+ 285              		.loc 1 150 0
+ 286              		.cfi_startproc
+ 287              		@ args = 0, pretend = 0, frame = 8
+ 288              		@ frame_needed = 0, uses_anonymous_args = 0
+ 289 0000 00B5     		push	{lr}
+ 290              		.cfi_def_cfa_offset 4
+ 291              		.cfi_offset 14, -4
+ 292 0002 83B0     		sub	sp, sp, #12
+ 293              		.cfi_def_cfa_offset 16
+ 294 0004 0190     		str	r0, [sp, #4]
+ 295              	.LBB8:
+ 151:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 152:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 296              		.loc 1 152 0
+ 297 0006 2023     		movs	r3, #32
+ 298              	@ 152 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 299 0008 83F31188 		msr     BASEPRI, r3
+ 300              	@ 0 "" 2
+ 301              		.thumb
+ 302              	.LBE8:
+ 303 000c FFF7FEFF 		bl	dbg_check_lock
+ 153:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 154:/usr/src/chibiostest/os/kernel/src/chevents.c ****   mask = (currp->p_epending |= mask);
+ 304              		.loc 1 154 0
+ 305 0010 094B     		ldr	r3, .L21
+ 306 0012 9B69     		ldr	r3, [r3, #24]
+ 307 0014 084A     		ldr	r2, .L21
+ 308 0016 9269     		ldr	r2, [r2, #24]
+ 309 0018 D16B     		ldr	r1, [r2, #60]
+ 310 001a 019A     		ldr	r2, [sp, #4]
+ 311 001c 0A43     		orrs	r2, r2, r1
+ 312 001e DA63     		str	r2, [r3, #60]
+ 313 0020 DB6B     		ldr	r3, [r3, #60]
+ 314 0022 0193     		str	r3, [sp, #4]
+ 155:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 156:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 315              		.loc 1 156 0
+ 316 0024 FFF7FEFF 		bl	dbg_check_unlock
+ 317              	.LBB9:
+ 318 0028 0023     		movs	r3, #0
+ 319              	@ 156 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 320 002a 83F31188 		msr     BASEPRI, r3
+ 321              	@ 0 "" 2
+ 322              		.thumb
+ 323              	.LBE9:
+ 157:/usr/src/chibiostest/os/kernel/src/chevents.c ****   return mask;
+ 324              		.loc 1 157 0
+ 325 002e 019B     		ldr	r3, [sp, #4]
+ 158:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 326              		.loc 1 158 0
+ 327 0030 1846     		mov	r0, r3
+ 328 0032 03B0     		add	sp, sp, #12
+ 329              		@ sp needed
+ 330 0034 5DF804FB 		ldr	pc, [sp], #4
+ 331              	.L22:
+ 332              		.align	2
+ 333              	.L21:
+ 334 0038 00000000 		.word	rlist
+ 335              		.cfi_endproc
+ 336              	.LFE10:
+ 338 003c AFF30080 		.section	.rodata
+ 339              		.align	2
+ 340              	.LC2:
+ 341 002c 22636845 		.ascii	"\"chEvtBroadcastMaskI\"()\000"
+ 341      76744272 
+ 341      6F616463 
+ 341      6173744D 
+ 341      61736B49 
+ 342              		.section	.text.chEvtBroadcastFlagsI,"ax",%progbits
+ 343              		.align	2
+ 344              		.p2align 4,,15
+ 345              		.global	chEvtBroadcastFlagsI
+ 346              		.thumb
+ 347              		.thumb_func
+ 349              	chEvtBroadcastFlagsI:
+ 350              	.LFB11:
+ 159:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 160:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 161:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Signals all the Event Listeners registered on the specified Event
+ 162:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          Source.
+ 163:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details This function variants ORs the specified event flags to all the
+ 164:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          threads registered on the @p EventSource in addition to the event
+ 165:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          flags specified by the threads themselves in the
+ 166:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          @p EventListener objects.
+ 167:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @post    This function does not reschedule so a call to a rescheduling
+ 168:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          function must be performed before unlocking the kernel. Note that
+ 169:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          interrupt handlers always reschedule on exit so an explicit
+ 170:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          reschedule must not be performed in ISRs.
+ 171:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 172:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] esp       pointer to the @p EventSource structure
+ 173:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] flags     the flags set to be added to the listener flags mask
+ 174:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 175:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @iclass
+ 176:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 177:/usr/src/chibiostest/os/kernel/src/chevents.c **** void chEvtBroadcastFlagsI(EventSource *esp, flagsmask_t flags) {
+ 351              		.loc 1 177 0
+ 352              		.cfi_startproc
+ 353              		@ args = 0, pretend = 0, frame = 16
+ 354              		@ frame_needed = 0, uses_anonymous_args = 0
+ 355 0000 00B5     		push	{lr}
+ 356              		.cfi_def_cfa_offset 4
+ 357              		.cfi_offset 14, -4
+ 358 0002 85B0     		sub	sp, sp, #20
+ 359              		.cfi_def_cfa_offset 24
+ 360 0004 0190     		str	r0, [sp, #4]
+ 361 0006 0091     		str	r1, [sp]
+ 178:/usr/src/chibiostest/os/kernel/src/chevents.c ****   EventListener *elp;
+ 179:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 180:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chDbgCheckClassI();
+ 362              		.loc 1 180 0
+ 363 0008 FFF7FEFF 		bl	chDbgCheckClassI
+ 181:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chDbgCheck(esp != NULL, "chEvtBroadcastMaskI");
+ 364              		.loc 1 181 0
+ 365 000c 019B     		ldr	r3, [sp, #4]
+ 366 000e 002B     		cmp	r3, #0
+ 367 0010 02D1     		bne	.L24
+ 368              		.loc 1 181 0 is_stmt 0 discriminator 1
+ 369 0012 0F48     		ldr	r0, .L27
+ 370 0014 FFF7FEFF 		bl	chDbgPanic
+ 371              	.L24:
+ 182:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 183:/usr/src/chibiostest/os/kernel/src/chevents.c ****   elp = esp->es_next;
+ 372              		.loc 1 183 0 is_stmt 1
+ 373 0018 019B     		ldr	r3, [sp, #4]
+ 374 001a 1B68     		ldr	r3, [r3]
+ 375 001c 0393     		str	r3, [sp, #12]
+ 184:/usr/src/chibiostest/os/kernel/src/chevents.c ****   while (elp != (EventListener *)esp) {
+ 376              		.loc 1 184 0
+ 377 001e 10E0     		b	.L25
+ 378              	.L26:
+ 185:/usr/src/chibiostest/os/kernel/src/chevents.c ****     elp->el_flags |= flags;
+ 379              		.loc 1 185 0
+ 380 0020 039B     		ldr	r3, [sp, #12]
+ 381 0022 DA68     		ldr	r2, [r3, #12]
+ 382 0024 009B     		ldr	r3, [sp]
+ 383 0026 1A43     		orrs	r2, r2, r3
+ 384 0028 039B     		ldr	r3, [sp, #12]
+ 385 002a DA60     		str	r2, [r3, #12]
+ 186:/usr/src/chibiostest/os/kernel/src/chevents.c ****     chEvtSignalI(elp->el_listener, elp->el_mask);
+ 386              		.loc 1 186 0
+ 387 002c 039B     		ldr	r3, [sp, #12]
+ 388 002e 5A68     		ldr	r2, [r3, #4]
+ 389 0030 039B     		ldr	r3, [sp, #12]
+ 390 0032 9B68     		ldr	r3, [r3, #8]
+ 391 0034 1046     		mov	r0, r2
+ 392 0036 1946     		mov	r1, r3
+ 393 0038 FFF7FEFF 		bl	chEvtSignalI
+ 187:/usr/src/chibiostest/os/kernel/src/chevents.c ****     elp = elp->el_next;
+ 394              		.loc 1 187 0
+ 395 003c 039B     		ldr	r3, [sp, #12]
+ 396 003e 1B68     		ldr	r3, [r3]
+ 397 0040 0393     		str	r3, [sp, #12]
+ 398              	.L25:
+ 184:/usr/src/chibiostest/os/kernel/src/chevents.c ****     elp->el_flags |= flags;
+ 399              		.loc 1 184 0 discriminator 1
+ 400 0042 039A     		ldr	r2, [sp, #12]
+ 401 0044 019B     		ldr	r3, [sp, #4]
+ 402 0046 9A42     		cmp	r2, r3
+ 403 0048 EAD1     		bne	.L26
+ 188:/usr/src/chibiostest/os/kernel/src/chevents.c ****   }
+ 189:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 404              		.loc 1 189 0
+ 405 004a 05B0     		add	sp, sp, #20
+ 406              		@ sp needed
+ 407 004c 5DF804FB 		ldr	pc, [sp], #4
+ 408              	.L28:
+ 409              		.align	2
+ 410              	.L27:
+ 411 0050 2C000000 		.word	.LC2
+ 412              		.cfi_endproc
+ 413              	.LFE11:
+ 415 0054 AFF30080 		.section	.text.chEvtGetAndClearFlags,"ax",%progbits
+ 415      AFF30080 
+ 415      AFF30080 
+ 416              		.align	2
+ 417              		.p2align 4,,15
+ 418              		.global	chEvtGetAndClearFlags
+ 419              		.thumb
+ 420              		.thumb_func
+ 422              	chEvtGetAndClearFlags:
+ 423              	.LFB12:
+ 190:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 191:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 192:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Returns the flags associated to an @p EventListener.
+ 193:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details The flags are returned and the @p EventListener flags mask is
+ 194:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          cleared.
+ 195:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 196:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] elp       pointer to the @p EventListener structure
+ 197:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @return              The flags added to the listener by the associated
+ 198:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      event source.
+ 199:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 200:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @iclass
+ 201:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 202:/usr/src/chibiostest/os/kernel/src/chevents.c **** flagsmask_t chEvtGetAndClearFlags(EventListener *elp) {
+ 424              		.loc 1 202 0
+ 425              		.cfi_startproc
+ 426              		@ args = 0, pretend = 0, frame = 16
+ 427              		@ frame_needed = 0, uses_anonymous_args = 0
+ 428 0000 00B5     		push	{lr}
+ 429              		.cfi_def_cfa_offset 4
+ 430              		.cfi_offset 14, -4
+ 431 0002 85B0     		sub	sp, sp, #20
+ 432              		.cfi_def_cfa_offset 24
+ 433 0004 0190     		str	r0, [sp, #4]
+ 434              	.LBB10:
+ 203:/usr/src/chibiostest/os/kernel/src/chevents.c ****   flagsmask_t flags;
+ 204:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 205:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 435              		.loc 1 205 0
+ 436 0006 2023     		movs	r3, #32
+ 437              	@ 205 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 438 0008 83F31188 		msr     BASEPRI, r3
+ 439              	@ 0 "" 2
+ 440              		.thumb
+ 441              	.LBE10:
+ 442 000c FFF7FEFF 		bl	dbg_check_lock
+ 206:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 207:/usr/src/chibiostest/os/kernel/src/chevents.c ****   flags = elp->el_flags;
+ 443              		.loc 1 207 0
+ 444 0010 019B     		ldr	r3, [sp, #4]
+ 445 0012 DB68     		ldr	r3, [r3, #12]
+ 446 0014 0393     		str	r3, [sp, #12]
+ 208:/usr/src/chibiostest/os/kernel/src/chevents.c ****   elp->el_flags = 0;
+ 447              		.loc 1 208 0
+ 448 0016 019B     		ldr	r3, [sp, #4]
+ 449 0018 0022     		movs	r2, #0
+ 450 001a DA60     		str	r2, [r3, #12]
+ 209:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 210:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 451              		.loc 1 210 0
+ 452 001c FFF7FEFF 		bl	dbg_check_unlock
+ 453              	.LBB11:
+ 454 0020 0023     		movs	r3, #0
+ 455              	@ 210 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 456 0022 83F31188 		msr     BASEPRI, r3
+ 457              	@ 0 "" 2
+ 458              		.thumb
+ 459              	.LBE11:
+ 211:/usr/src/chibiostest/os/kernel/src/chevents.c ****   return flags;
+ 460              		.loc 1 211 0
+ 461 0026 039B     		ldr	r3, [sp, #12]
+ 212:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 462              		.loc 1 212 0
+ 463 0028 1846     		mov	r0, r3
+ 464 002a 05B0     		add	sp, sp, #20
+ 465              		@ sp needed
+ 466 002c 5DF804FB 		ldr	pc, [sp], #4
+ 467              		.cfi_endproc
+ 468              	.LFE12:
+ 470              		.section	.rodata
+ 471              		.align	2
+ 472              	.LC3:
+ 473 0044 22636845 		.ascii	"\"chEvtSignal\"()\000"
+ 473      76745369 
+ 473      676E616C 
+ 473      22282900 
+ 474              		.section	.text.chEvtSignal,"ax",%progbits
+ 475              		.align	2
+ 476              		.p2align 4,,15
+ 477              		.global	chEvtSignal
+ 478              		.thumb
+ 479              		.thumb_func
+ 481              	chEvtSignal:
+ 482              	.LFB13:
+ 213:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 214:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 215:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Adds a set of event flags directly to specified @p Thread.
+ 216:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 217:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] tp        the thread to be signaled
+ 218:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      the event flags set to be ORed
+ 219:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 220:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 221:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 222:/usr/src/chibiostest/os/kernel/src/chevents.c **** void chEvtSignal(Thread *tp, eventmask_t mask) {
+ 483              		.loc 1 222 0
+ 484              		.cfi_startproc
+ 485              		@ args = 0, pretend = 0, frame = 8
+ 486              		@ frame_needed = 0, uses_anonymous_args = 0
+ 487 0000 00B5     		push	{lr}
+ 488              		.cfi_def_cfa_offset 4
+ 489              		.cfi_offset 14, -4
+ 490 0002 83B0     		sub	sp, sp, #12
+ 491              		.cfi_def_cfa_offset 16
+ 492 0004 0190     		str	r0, [sp, #4]
+ 493 0006 0091     		str	r1, [sp]
+ 223:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 224:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chDbgCheck(tp != NULL, "chEvtSignal");
+ 494              		.loc 1 224 0
+ 495 0008 019B     		ldr	r3, [sp, #4]
+ 496 000a 002B     		cmp	r3, #0
+ 497 000c 02D1     		bne	.L32
+ 498              		.loc 1 224 0 is_stmt 0 discriminator 1
+ 499 000e 0B48     		ldr	r0, .L33
+ 500 0010 FFF7FEFF 		bl	chDbgPanic
+ 501              	.L32:
+ 502              	.LBB12:
+ 225:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 226:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 503              		.loc 1 226 0 is_stmt 1
+ 504 0014 2023     		movs	r3, #32
+ 505              	@ 226 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 506 0016 83F31188 		msr     BASEPRI, r3
+ 507              	@ 0 "" 2
+ 508              		.thumb
+ 509              	.LBE12:
+ 510 001a FFF7FEFF 		bl	dbg_check_lock
+ 227:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chEvtSignalI(tp, mask);
+ 511              		.loc 1 227 0
+ 512 001e 0198     		ldr	r0, [sp, #4]
+ 513 0020 0099     		ldr	r1, [sp]
+ 514 0022 FFF7FEFF 		bl	chEvtSignalI
+ 228:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSchRescheduleS();
+ 515              		.loc 1 228 0
+ 516 0026 FFF7FEFF 		bl	chSchRescheduleS
+ 229:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 517              		.loc 1 229 0
+ 518 002a FFF7FEFF 		bl	dbg_check_unlock
+ 519              	.LBB13:
+ 520 002e 0023     		movs	r3, #0
+ 521              	@ 229 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 522 0030 83F31188 		msr     BASEPRI, r3
+ 523              	@ 0 "" 2
+ 524              		.thumb
+ 525              	.LBE13:
+ 230:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 526              		.loc 1 230 0
+ 527 0034 03B0     		add	sp, sp, #12
+ 528              		@ sp needed
+ 529 0036 5DF804FB 		ldr	pc, [sp], #4
+ 530              	.L34:
+ 531 003a 00BF     		.align	2
+ 532              	.L33:
+ 533 003c 44000000 		.word	.LC3
+ 534              		.cfi_endproc
+ 535              	.LFE13:
+ 537              		.section	.rodata
+ 538              		.align	2
+ 539              	.LC4:
+ 540 0054 22636845 		.ascii	"\"chEvtSignalI\"()\000"
+ 540      76745369 
+ 540      676E616C 
+ 540      49222829 
+ 540      00
+ 541              		.section	.text.chEvtSignalI,"ax",%progbits
+ 542              		.align	2
+ 543              		.p2align 4,,15
+ 544              		.global	chEvtSignalI
+ 545              		.thumb
+ 546              		.thumb_func
+ 548              	chEvtSignalI:
+ 549              	.LFB14:
+ 231:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 232:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 233:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Adds a set of event flags directly to specified @p Thread.
+ 234:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @post    This function does not reschedule so a call to a rescheduling
+ 235:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          function must be performed before unlocking the kernel. Note that
+ 236:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          interrupt handlers always reschedule on exit so an explicit
+ 237:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          reschedule must not be performed in ISRs.
+ 238:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 239:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] tp        the thread to be signaled
+ 240:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      the event flags set to be ORed
+ 241:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 242:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @iclass
+ 243:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 244:/usr/src/chibiostest/os/kernel/src/chevents.c **** void chEvtSignalI(Thread *tp, eventmask_t mask) {
+ 550              		.loc 1 244 0
+ 551              		.cfi_startproc
+ 552              		@ args = 0, pretend = 0, frame = 8
+ 553              		@ frame_needed = 0, uses_anonymous_args = 0
+ 554 0000 00B5     		push	{lr}
+ 555              		.cfi_def_cfa_offset 4
+ 556              		.cfi_offset 14, -4
+ 557 0002 83B0     		sub	sp, sp, #12
+ 558              		.cfi_def_cfa_offset 16
+ 559 0004 0190     		str	r0, [sp, #4]
+ 560 0006 0091     		str	r1, [sp]
+ 245:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 246:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chDbgCheckClassI();
+ 561              		.loc 1 246 0
+ 562 0008 FFF7FEFF 		bl	chDbgCheckClassI
+ 247:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chDbgCheck(tp != NULL, "chEvtSignalI");
+ 563              		.loc 1 247 0
+ 564 000c 019B     		ldr	r3, [sp, #4]
+ 565 000e 002B     		cmp	r3, #0
+ 566 0010 02D1     		bne	.L36
+ 567              		.loc 1 247 0 is_stmt 0 discriminator 1
+ 568 0012 1648     		ldr	r0, .L40
+ 569 0014 FFF7FEFF 		bl	chDbgPanic
+ 570              	.L36:
+ 248:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 249:/usr/src/chibiostest/os/kernel/src/chevents.c ****   tp->p_epending |= mask;
+ 571              		.loc 1 249 0 is_stmt 1
+ 572 0018 019B     		ldr	r3, [sp, #4]
+ 573 001a DA6B     		ldr	r2, [r3, #60]
+ 574 001c 009B     		ldr	r3, [sp]
+ 575 001e 1A43     		orrs	r2, r2, r3
+ 576 0020 019B     		ldr	r3, [sp, #4]
+ 577 0022 DA63     		str	r2, [r3, #60]
+ 250:/usr/src/chibiostest/os/kernel/src/chevents.c ****   /* Test on the AND/OR conditions wait states.*/
+ 251:/usr/src/chibiostest/os/kernel/src/chevents.c ****   if (((tp->p_state == THD_STATE_WTOREVT) &&
+ 578              		.loc 1 251 0
+ 579 0024 019B     		ldr	r3, [sp, #4]
+ 580 0026 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 581 002a 082B     		cmp	r3, #8
+ 582 002c 06D1     		bne	.L37
+ 252:/usr/src/chibiostest/os/kernel/src/chevents.c ****        ((tp->p_epending & tp->p_u.ewmask) != 0)) ||
+ 583              		.loc 1 252 0 discriminator 1
+ 584 002e 019B     		ldr	r3, [sp, #4]
+ 585 0030 DA6B     		ldr	r2, [r3, #60]
+ 586 0032 019B     		ldr	r3, [sp, #4]
+ 587 0034 9B6A     		ldr	r3, [r3, #40]
+ 588 0036 1340     		ands	r3, r3, r2
+ 251:/usr/src/chibiostest/os/kernel/src/chevents.c ****        ((tp->p_epending & tp->p_u.ewmask) != 0)) ||
+ 589              		.loc 1 251 0 discriminator 1
+ 590 0038 002B     		cmp	r3, #0
+ 591 003a 0DD1     		bne	.L38
+ 592              	.L37:
+ 253:/usr/src/chibiostest/os/kernel/src/chevents.c ****       ((tp->p_state == THD_STATE_WTANDEVT) &&
+ 593              		.loc 1 253 0
+ 594 003c 019B     		ldr	r3, [sp, #4]
+ 595 003e 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 252:/usr/src/chibiostest/os/kernel/src/chevents.c ****        ((tp->p_epending & tp->p_u.ewmask) != 0)) ||
+ 596              		.loc 1 252 0
+ 597 0042 092B     		cmp	r3, #9
+ 598 0044 0ED1     		bne	.L35
+ 254:/usr/src/chibiostest/os/kernel/src/chevents.c ****        ((tp->p_epending & tp->p_u.ewmask) == tp->p_u.ewmask)))
+ 599              		.loc 1 254 0
+ 600 0046 019B     		ldr	r3, [sp, #4]
+ 601 0048 DA6B     		ldr	r2, [r3, #60]
+ 602 004a 019B     		ldr	r3, [sp, #4]
+ 603 004c 9B6A     		ldr	r3, [r3, #40]
+ 604 004e 1A40     		ands	r2, r2, r3
+ 605 0050 019B     		ldr	r3, [sp, #4]
+ 606 0052 9B6A     		ldr	r3, [r3, #40]
+ 253:/usr/src/chibiostest/os/kernel/src/chevents.c ****       ((tp->p_state == THD_STATE_WTANDEVT) &&
+ 607              		.loc 1 253 0
+ 608 0054 9A42     		cmp	r2, r3
+ 609 0056 05D1     		bne	.L35
+ 610              	.L38:
+ 255:/usr/src/chibiostest/os/kernel/src/chevents.c ****     chSchReadyI(tp)->p_u.rdymsg = RDY_OK;
+ 611              		.loc 1 255 0
+ 612 0058 0198     		ldr	r0, [sp, #4]
+ 613 005a FFF7FEFF 		bl	chSchReadyI
+ 614 005e 0346     		mov	r3, r0
+ 615 0060 0022     		movs	r2, #0
+ 616 0062 9A62     		str	r2, [r3, #40]
+ 617              	.L35:
+ 256:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 618              		.loc 1 256 0
+ 619 0064 03B0     		add	sp, sp, #12
+ 620              		@ sp needed
+ 621 0066 5DF804FB 		ldr	pc, [sp], #4
+ 622              	.L41:
+ 623 006a 00BF     		.align	2
+ 624              	.L40:
+ 625 006c 54000000 		.word	.LC4
+ 626              		.cfi_endproc
+ 627              	.LFE14:
+ 629              		.section	.text.chEvtBroadcastFlags,"ax",%progbits
+ 630              		.align	2
+ 631              		.p2align 4,,15
+ 632              		.global	chEvtBroadcastFlags
+ 633              		.thumb
+ 634              		.thumb_func
+ 636              	chEvtBroadcastFlags:
+ 637              	.LFB15:
+ 257:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 258:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 259:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Signals all the Event Listeners registered on the specified Event
+ 260:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          Source.
+ 261:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details This function variants ORs the specified event flags to all the
+ 262:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          threads registered on the @p EventSource in addition to the event
+ 263:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          flags specified by the threads themselves in the
+ 264:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          @p EventListener objects.
+ 265:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 266:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] esp       pointer to the @p EventSource structure
+ 267:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] flags     the flags set to be added to the listener flags mask
+ 268:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 269:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 270:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 271:/usr/src/chibiostest/os/kernel/src/chevents.c **** void chEvtBroadcastFlags(EventSource *esp, flagsmask_t flags) {
+ 638              		.loc 1 271 0
+ 639              		.cfi_startproc
+ 640              		@ args = 0, pretend = 0, frame = 8
+ 641              		@ frame_needed = 0, uses_anonymous_args = 0
+ 642 0000 00B5     		push	{lr}
+ 643              		.cfi_def_cfa_offset 4
+ 644              		.cfi_offset 14, -4
+ 645 0002 83B0     		sub	sp, sp, #12
+ 646              		.cfi_def_cfa_offset 16
+ 647 0004 0190     		str	r0, [sp, #4]
+ 648 0006 0091     		str	r1, [sp]
+ 649              	.LBB14:
+ 272:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 273:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 650              		.loc 1 273 0
+ 651 0008 2023     		movs	r3, #32
+ 652              	@ 273 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 653 000a 83F31188 		msr     BASEPRI, r3
+ 654              	@ 0 "" 2
+ 655              		.thumb
+ 656              	.LBE14:
+ 657 000e FFF7FEFF 		bl	dbg_check_lock
+ 274:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chEvtBroadcastFlagsI(esp, flags);
+ 658              		.loc 1 274 0
+ 659 0012 0198     		ldr	r0, [sp, #4]
+ 660 0014 0099     		ldr	r1, [sp]
+ 661 0016 FFF7FEFF 		bl	chEvtBroadcastFlagsI
+ 275:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSchRescheduleS();
+ 662              		.loc 1 275 0
+ 663 001a FFF7FEFF 		bl	chSchRescheduleS
+ 276:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 664              		.loc 1 276 0
+ 665 001e FFF7FEFF 		bl	dbg_check_unlock
+ 666              	.LBB15:
+ 667 0022 0023     		movs	r3, #0
+ 668              	@ 276 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 669 0024 83F31188 		msr     BASEPRI, r3
+ 670              	@ 0 "" 2
+ 671              		.thumb
+ 672              	.LBE15:
+ 277:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 673              		.loc 1 277 0
+ 674 0028 03B0     		add	sp, sp, #12
+ 675              		@ sp needed
+ 676 002a 5DF804FB 		ldr	pc, [sp], #4
+ 677              		.cfi_endproc
+ 678              	.LFE15:
+ 680 002e 00BF     		.section	.text.chEvtGetAndClearFlagsI,"ax",%progbits
+ 681              		.align	2
+ 682              		.p2align 4,,15
+ 683              		.global	chEvtGetAndClearFlagsI
+ 684              		.thumb
+ 685              		.thumb_func
+ 687              	chEvtGetAndClearFlagsI:
+ 688              	.LFB16:
+ 278:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 279:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 280:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Returns the flags associated to an @p EventListener.
+ 281:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details The flags are returned and the @p EventListener flags mask is
+ 282:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          cleared.
+ 283:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 284:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] elp       pointer to the @p EventListener structure
+ 285:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @return              The flags added to the listener by the associated
+ 286:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      event source.
+ 287:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 288:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @iclass
+ 289:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 290:/usr/src/chibiostest/os/kernel/src/chevents.c **** flagsmask_t chEvtGetAndClearFlagsI(EventListener *elp) {
+ 689              		.loc 1 290 0
+ 690              		.cfi_startproc
+ 691              		@ args = 0, pretend = 0, frame = 16
+ 692              		@ frame_needed = 0, uses_anonymous_args = 0
+ 693              		@ link register save eliminated.
+ 694 0000 84B0     		sub	sp, sp, #16
+ 695              		.cfi_def_cfa_offset 16
+ 696 0002 0190     		str	r0, [sp, #4]
+ 291:/usr/src/chibiostest/os/kernel/src/chevents.c ****   flagsmask_t flags;
+ 292:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 293:/usr/src/chibiostest/os/kernel/src/chevents.c ****   flags = elp->el_flags;
+ 697              		.loc 1 293 0
+ 698 0004 019B     		ldr	r3, [sp, #4]
+ 699 0006 DB68     		ldr	r3, [r3, #12]
+ 700 0008 0393     		str	r3, [sp, #12]
+ 294:/usr/src/chibiostest/os/kernel/src/chevents.c ****   elp->el_flags = 0;
+ 701              		.loc 1 294 0
+ 702 000a 019B     		ldr	r3, [sp, #4]
+ 703 000c 0022     		movs	r2, #0
+ 704 000e DA60     		str	r2, [r3, #12]
+ 295:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 296:/usr/src/chibiostest/os/kernel/src/chevents.c ****   return flags;
+ 705              		.loc 1 296 0
+ 706 0010 039B     		ldr	r3, [sp, #12]
+ 297:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 707              		.loc 1 297 0
+ 708 0012 1846     		mov	r0, r3
+ 709 0014 04B0     		add	sp, sp, #16
+ 710              		@ sp needed
+ 711 0016 7047     		bx	lr
+ 712              		.cfi_endproc
+ 713              	.LFE16:
+ 715 0018 AFF30080 		.section	.rodata
+ 715      AFF30080 
+ 716 0065 000000   		.align	2
+ 717              	.LC5:
+ 718 0068 22636845 		.ascii	"\"chEvtDispatch\"()\000"
+ 718      76744469 
+ 718      73706174 
+ 718      63682228 
+ 718      2900
+ 719 007a 0000     		.align	2
+ 720              	.LC6:
+ 721 007c 63684576 		.ascii	"chEvtDispatch(), #1\000"
+ 721      74446973 
+ 721      70617463 
+ 721      6828292C 
+ 721      20233100 
+ 722              		.section	.text.chEvtDispatch,"ax",%progbits
+ 723              		.align	2
+ 724              		.p2align 4,,15
+ 725              		.global	chEvtDispatch
+ 726              		.thumb
+ 727              		.thumb_func
+ 729              	chEvtDispatch:
+ 730              	.LFB17:
+ 298:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 299:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 300:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Invokes the event handlers associated to an event flags mask.
+ 301:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 302:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      mask of the event flags to be dispatched
+ 303:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] handlers  an array of @p evhandler_t. The array must have size
+ 304:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      equal to the number of bits in eventmask_t.
+ 305:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 306:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 307:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 308:/usr/src/chibiostest/os/kernel/src/chevents.c **** void chEvtDispatch(const evhandler_t *handlers, eventmask_t mask) {
+ 731              		.loc 1 308 0
+ 732              		.cfi_startproc
+ 733              		@ args = 0, pretend = 0, frame = 16
+ 734              		@ frame_needed = 0, uses_anonymous_args = 0
+ 735 0000 00B5     		push	{lr}
+ 736              		.cfi_def_cfa_offset 4
+ 737              		.cfi_offset 14, -4
+ 738 0002 85B0     		sub	sp, sp, #20
+ 739              		.cfi_def_cfa_offset 24
+ 740 0004 0190     		str	r0, [sp, #4]
+ 741 0006 0091     		str	r1, [sp]
+ 309:/usr/src/chibiostest/os/kernel/src/chevents.c ****   eventid_t eid;
+ 310:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 311:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chDbgCheck(handlers != NULL, "chEvtDispatch");
+ 742              		.loc 1 311 0
+ 743 0008 019B     		ldr	r3, [sp, #4]
+ 744 000a 002B     		cmp	r3, #0
+ 745 000c 02D1     		bne	.L46
+ 746              		.loc 1 311 0 is_stmt 0 discriminator 1
+ 747 000e 1848     		ldr	r0, .L51
+ 748 0010 FFF7FEFF 		bl	chDbgPanic
+ 749              	.L46:
+ 312:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 313:/usr/src/chibiostest/os/kernel/src/chevents.c ****   eid = 0;
+ 750              		.loc 1 313 0 is_stmt 1
+ 751 0014 0023     		movs	r3, #0
+ 752 0016 0393     		str	r3, [sp, #12]
+ 314:/usr/src/chibiostest/os/kernel/src/chevents.c ****   while (mask) {
+ 753              		.loc 1 314 0
+ 754 0018 24E0     		b	.L47
+ 755              	.L50:
+ 315:/usr/src/chibiostest/os/kernel/src/chevents.c ****     if (mask & EVENT_MASK(eid)) {
+ 756              		.loc 1 315 0
+ 757 001a 0122     		movs	r2, #1
+ 758 001c 039B     		ldr	r3, [sp, #12]
+ 759 001e 02FA03F3 		lsl	r3, r2, r3
+ 760 0022 1A46     		mov	r2, r3
+ 761 0024 009B     		ldr	r3, [sp]
+ 762 0026 1340     		ands	r3, r3, r2
+ 763 0028 002B     		cmp	r3, #0
+ 764 002a 18D0     		beq	.L48
+ 316:/usr/src/chibiostest/os/kernel/src/chevents.c ****       chDbgAssert(handlers[eid] != NULL,
+ 765              		.loc 1 316 0
+ 766 002c 039B     		ldr	r3, [sp, #12]
+ 767 002e 9B00     		lsls	r3, r3, #2
+ 768 0030 019A     		ldr	r2, [sp, #4]
+ 769 0032 1344     		add	r3, r3, r2
+ 770 0034 1B68     		ldr	r3, [r3]
+ 771 0036 002B     		cmp	r3, #0
+ 772 0038 02D1     		bne	.L49
+ 773              		.loc 1 316 0 is_stmt 0 discriminator 1
+ 774 003a 0E48     		ldr	r0, .L51+4
+ 775 003c FFF7FEFF 		bl	chDbgPanic
+ 776              	.L49:
+ 317:/usr/src/chibiostest/os/kernel/src/chevents.c ****                   "chEvtDispatch(), #1",
+ 318:/usr/src/chibiostest/os/kernel/src/chevents.c ****                   "null handler");
+ 319:/usr/src/chibiostest/os/kernel/src/chevents.c ****       mask &= ~EVENT_MASK(eid);
+ 777              		.loc 1 319 0 is_stmt 1
+ 778 0040 0122     		movs	r2, #1
+ 779 0042 039B     		ldr	r3, [sp, #12]
+ 780 0044 02FA03F3 		lsl	r3, r2, r3
+ 781 0048 DB43     		mvns	r3, r3
+ 782 004a 009A     		ldr	r2, [sp]
+ 783 004c 1340     		ands	r3, r3, r2
+ 784 004e 0093     		str	r3, [sp]
+ 320:/usr/src/chibiostest/os/kernel/src/chevents.c ****       handlers[eid](eid);
+ 785              		.loc 1 320 0
+ 786 0050 039B     		ldr	r3, [sp, #12]
+ 787 0052 9B00     		lsls	r3, r3, #2
+ 788 0054 019A     		ldr	r2, [sp, #4]
+ 789 0056 1344     		add	r3, r3, r2
+ 790 0058 1B68     		ldr	r3, [r3]
+ 791 005a 0398     		ldr	r0, [sp, #12]
+ 792 005c 9847     		blx	r3
+ 793              	.L48:
+ 321:/usr/src/chibiostest/os/kernel/src/chevents.c ****     }
+ 322:/usr/src/chibiostest/os/kernel/src/chevents.c ****     eid++;
+ 794              		.loc 1 322 0
+ 795 005e 039B     		ldr	r3, [sp, #12]
+ 796 0060 0133     		adds	r3, r3, #1
+ 797 0062 0393     		str	r3, [sp, #12]
+ 798              	.L47:
+ 314:/usr/src/chibiostest/os/kernel/src/chevents.c ****     if (mask & EVENT_MASK(eid)) {
+ 799              		.loc 1 314 0 discriminator 1
+ 800 0064 009B     		ldr	r3, [sp]
+ 801 0066 002B     		cmp	r3, #0
+ 802 0068 D7D1     		bne	.L50
+ 323:/usr/src/chibiostest/os/kernel/src/chevents.c ****   }
+ 324:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 803              		.loc 1 324 0
+ 804 006a 05B0     		add	sp, sp, #20
+ 805              		@ sp needed
+ 806 006c 5DF804FB 		ldr	pc, [sp], #4
+ 807              	.L52:
+ 808              		.align	2
+ 809              	.L51:
+ 810 0070 68000000 		.word	.LC5
+ 811 0074 7C000000 		.word	.LC6
+ 812              		.cfi_endproc
+ 813              	.LFE17:
+ 815 0078 AFF30080 		.section	.text.chEvtWaitOne,"ax",%progbits
+ 815      AFF30080 
+ 816              		.align	2
+ 817              		.p2align 4,,15
+ 818              		.global	chEvtWaitOne
+ 819              		.thumb
+ 820              		.thumb_func
+ 822              	chEvtWaitOne:
+ 823              	.LFB18:
+ 325:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 326:/usr/src/chibiostest/os/kernel/src/chevents.c **** #if CH_OPTIMIZE_SPEED || !CH_USE_EVENTS_TIMEOUT || defined(__DOXYGEN__)
+ 327:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 328:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Waits for exactly one of the specified events.
+ 329:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details The function waits for one event among those specified in
+ 330:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          @p mask to become pending then the event is cleared and returned.
+ 331:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @note    One and only one event is served in the function, the one with the
+ 332:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          lowest event id. The function is meant to be invoked into a loop in
+ 333:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          order to serve all the pending events.<br>
+ 334:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          This means that Event Listeners with a lower event identifier have
+ 335:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          an higher priority.
+ 336:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 337:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      mask of the event flags that the function should wait
+ 338:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      for, @p ALL_EVENTS enables all the events
+ 339:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @return              The mask of the lowest id served and cleared event.
+ 340:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 341:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 342:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 343:/usr/src/chibiostest/os/kernel/src/chevents.c **** eventmask_t chEvtWaitOne(eventmask_t mask) {
+ 824              		.loc 1 343 0
+ 825              		.cfi_startproc
+ 826              		@ args = 0, pretend = 0, frame = 16
+ 827              		@ frame_needed = 0, uses_anonymous_args = 0
+ 828 0000 00B5     		push	{lr}
+ 829              		.cfi_def_cfa_offset 4
+ 830              		.cfi_offset 14, -4
+ 831 0002 85B0     		sub	sp, sp, #20
+ 832              		.cfi_def_cfa_offset 24
+ 833 0004 0190     		str	r0, [sp, #4]
+ 344:/usr/src/chibiostest/os/kernel/src/chevents.c ****   Thread *ctp = currp;
+ 834              		.loc 1 344 0
+ 835 0006 184B     		ldr	r3, .L56
+ 836 0008 9B69     		ldr	r3, [r3, #24]
+ 837 000a 0293     		str	r3, [sp, #8]
+ 838              	.LBB16:
+ 345:/usr/src/chibiostest/os/kernel/src/chevents.c ****   eventmask_t m;
+ 346:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 347:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 839              		.loc 1 347 0
+ 840 000c 2023     		movs	r3, #32
+ 841              	@ 347 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 842 000e 83F31188 		msr     BASEPRI, r3
+ 843              	@ 0 "" 2
+ 844              		.thumb
+ 845              	.LBE16:
+ 846 0012 FFF7FEFF 		bl	dbg_check_lock
+ 348:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 349:/usr/src/chibiostest/os/kernel/src/chevents.c ****   if ((m = (ctp->p_epending & mask)) == 0) {
+ 847              		.loc 1 349 0
+ 848 0016 029B     		ldr	r3, [sp, #8]
+ 849 0018 DA6B     		ldr	r2, [r3, #60]
+ 850 001a 019B     		ldr	r3, [sp, #4]
+ 851 001c 1340     		ands	r3, r3, r2
+ 852 001e 0393     		str	r3, [sp, #12]
+ 853 0020 039B     		ldr	r3, [sp, #12]
+ 854 0022 002B     		cmp	r3, #0
+ 855 0024 0AD1     		bne	.L54
+ 350:/usr/src/chibiostest/os/kernel/src/chevents.c ****     ctp->p_u.ewmask = mask;
+ 856              		.loc 1 350 0
+ 857 0026 029B     		ldr	r3, [sp, #8]
+ 858 0028 019A     		ldr	r2, [sp, #4]
+ 859 002a 9A62     		str	r2, [r3, #40]
+ 351:/usr/src/chibiostest/os/kernel/src/chevents.c ****     chSchGoSleepS(THD_STATE_WTOREVT);
+ 860              		.loc 1 351 0
+ 861 002c 0820     		movs	r0, #8
+ 862 002e FFF7FEFF 		bl	chSchGoSleepS
+ 352:/usr/src/chibiostest/os/kernel/src/chevents.c ****     m = ctp->p_epending & mask;
+ 863              		.loc 1 352 0
+ 864 0032 029B     		ldr	r3, [sp, #8]
+ 865 0034 DA6B     		ldr	r2, [r3, #60]
+ 866 0036 019B     		ldr	r3, [sp, #4]
+ 867 0038 1340     		ands	r3, r3, r2
+ 868 003a 0393     		str	r3, [sp, #12]
+ 869              	.L54:
+ 353:/usr/src/chibiostest/os/kernel/src/chevents.c ****   }
+ 354:/usr/src/chibiostest/os/kernel/src/chevents.c ****   m &= -m;
+ 870              		.loc 1 354 0
+ 871 003c 039B     		ldr	r3, [sp, #12]
+ 872 003e 5B42     		negs	r3, r3
+ 873 0040 039A     		ldr	r2, [sp, #12]
+ 874 0042 1340     		ands	r3, r3, r2
+ 875 0044 0393     		str	r3, [sp, #12]
+ 355:/usr/src/chibiostest/os/kernel/src/chevents.c ****   ctp->p_epending &= ~m;
+ 876              		.loc 1 355 0
+ 877 0046 029B     		ldr	r3, [sp, #8]
+ 878 0048 DA6B     		ldr	r2, [r3, #60]
+ 879 004a 039B     		ldr	r3, [sp, #12]
+ 880 004c DB43     		mvns	r3, r3
+ 881 004e 1A40     		ands	r2, r2, r3
+ 882 0050 029B     		ldr	r3, [sp, #8]
+ 883 0052 DA63     		str	r2, [r3, #60]
+ 356:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 357:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 884              		.loc 1 357 0
+ 885 0054 FFF7FEFF 		bl	dbg_check_unlock
+ 886              	.LBB17:
+ 887 0058 0023     		movs	r3, #0
+ 888              	@ 357 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 889 005a 83F31188 		msr     BASEPRI, r3
+ 890              	@ 0 "" 2
+ 891              		.thumb
+ 892              	.LBE17:
+ 358:/usr/src/chibiostest/os/kernel/src/chevents.c ****   return m;
+ 893              		.loc 1 358 0
+ 894 005e 039B     		ldr	r3, [sp, #12]
+ 359:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 895              		.loc 1 359 0
+ 896 0060 1846     		mov	r0, r3
+ 897 0062 05B0     		add	sp, sp, #20
+ 898              		@ sp needed
+ 899 0064 5DF804FB 		ldr	pc, [sp], #4
+ 900              	.L57:
+ 901              		.align	2
+ 902              	.L56:
+ 903 0068 00000000 		.word	rlist
+ 904              		.cfi_endproc
+ 905              	.LFE18:
+ 907 006c AFF30080 		.section	.text.chEvtWaitAny,"ax",%progbits
+ 908              		.align	2
+ 909              		.p2align 4,,15
+ 910              		.global	chEvtWaitAny
+ 911              		.thumb
+ 912              		.thumb_func
+ 914              	chEvtWaitAny:
+ 915              	.LFB19:
+ 360:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 361:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 362:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Waits for any of the specified events.
+ 363:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details The function waits for any event among those specified in
+ 364:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          @p mask to become pending then the events are cleared and returned.
+ 365:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 366:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      mask of the event flags that the function should wait
+ 367:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      for, @p ALL_EVENTS enables all the events
+ 368:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @return              The mask of the served and cleared events.
+ 369:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 370:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 371:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 372:/usr/src/chibiostest/os/kernel/src/chevents.c **** eventmask_t chEvtWaitAny(eventmask_t mask) {
+ 916              		.loc 1 372 0
+ 917              		.cfi_startproc
+ 918              		@ args = 0, pretend = 0, frame = 16
+ 919              		@ frame_needed = 0, uses_anonymous_args = 0
+ 920 0000 00B5     		push	{lr}
+ 921              		.cfi_def_cfa_offset 4
+ 922              		.cfi_offset 14, -4
+ 923 0002 85B0     		sub	sp, sp, #20
+ 924              		.cfi_def_cfa_offset 24
+ 925 0004 0190     		str	r0, [sp, #4]
+ 373:/usr/src/chibiostest/os/kernel/src/chevents.c ****   Thread *ctp = currp;
+ 926              		.loc 1 373 0
+ 927 0006 164B     		ldr	r3, .L61
+ 928 0008 9B69     		ldr	r3, [r3, #24]
+ 929 000a 0293     		str	r3, [sp, #8]
+ 930              	.LBB18:
+ 374:/usr/src/chibiostest/os/kernel/src/chevents.c ****   eventmask_t m;
+ 375:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 376:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 931              		.loc 1 376 0
+ 932 000c 2023     		movs	r3, #32
+ 933              	@ 376 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 934 000e 83F31188 		msr     BASEPRI, r3
+ 935              	@ 0 "" 2
+ 936              		.thumb
+ 937              	.LBE18:
+ 938 0012 FFF7FEFF 		bl	dbg_check_lock
+ 377:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 378:/usr/src/chibiostest/os/kernel/src/chevents.c ****   if ((m = (ctp->p_epending & mask)) == 0) {
+ 939              		.loc 1 378 0
+ 940 0016 029B     		ldr	r3, [sp, #8]
+ 941 0018 DA6B     		ldr	r2, [r3, #60]
+ 942 001a 019B     		ldr	r3, [sp, #4]
+ 943 001c 1340     		ands	r3, r3, r2
+ 944 001e 0393     		str	r3, [sp, #12]
+ 945 0020 039B     		ldr	r3, [sp, #12]
+ 946 0022 002B     		cmp	r3, #0
+ 947 0024 0AD1     		bne	.L59
+ 379:/usr/src/chibiostest/os/kernel/src/chevents.c ****     ctp->p_u.ewmask = mask;
+ 948              		.loc 1 379 0
+ 949 0026 029B     		ldr	r3, [sp, #8]
+ 950 0028 019A     		ldr	r2, [sp, #4]
+ 951 002a 9A62     		str	r2, [r3, #40]
+ 380:/usr/src/chibiostest/os/kernel/src/chevents.c ****     chSchGoSleepS(THD_STATE_WTOREVT);
+ 952              		.loc 1 380 0
+ 953 002c 0820     		movs	r0, #8
+ 954 002e FFF7FEFF 		bl	chSchGoSleepS
+ 381:/usr/src/chibiostest/os/kernel/src/chevents.c ****     m = ctp->p_epending & mask;
+ 955              		.loc 1 381 0
+ 956 0032 029B     		ldr	r3, [sp, #8]
+ 957 0034 DA6B     		ldr	r2, [r3, #60]
+ 958 0036 019B     		ldr	r3, [sp, #4]
+ 959 0038 1340     		ands	r3, r3, r2
+ 960 003a 0393     		str	r3, [sp, #12]
+ 961              	.L59:
+ 382:/usr/src/chibiostest/os/kernel/src/chevents.c ****   }
+ 383:/usr/src/chibiostest/os/kernel/src/chevents.c ****   ctp->p_epending &= ~m;
+ 962              		.loc 1 383 0
+ 963 003c 029B     		ldr	r3, [sp, #8]
+ 964 003e DA6B     		ldr	r2, [r3, #60]
+ 965 0040 039B     		ldr	r3, [sp, #12]
+ 966 0042 DB43     		mvns	r3, r3
+ 967 0044 1A40     		ands	r2, r2, r3
+ 968 0046 029B     		ldr	r3, [sp, #8]
+ 969 0048 DA63     		str	r2, [r3, #60]
+ 384:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 385:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 970              		.loc 1 385 0
+ 971 004a FFF7FEFF 		bl	dbg_check_unlock
+ 972              	.LBB19:
+ 973 004e 0023     		movs	r3, #0
+ 974              	@ 385 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 975 0050 83F31188 		msr     BASEPRI, r3
+ 976              	@ 0 "" 2
+ 977              		.thumb
+ 978              	.LBE19:
+ 386:/usr/src/chibiostest/os/kernel/src/chevents.c ****   return m;
+ 979              		.loc 1 386 0
+ 980 0054 039B     		ldr	r3, [sp, #12]
+ 387:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 981              		.loc 1 387 0
+ 982 0056 1846     		mov	r0, r3
+ 983 0058 05B0     		add	sp, sp, #20
+ 984              		@ sp needed
+ 985 005a 5DF804FB 		ldr	pc, [sp], #4
+ 986              	.L62:
+ 987 005e 00BF     		.align	2
+ 988              	.L61:
+ 989 0060 00000000 		.word	rlist
+ 990              		.cfi_endproc
+ 991              	.LFE19:
+ 993 0064 AFF30080 		.section	.text.chEvtWaitAll,"ax",%progbits
+ 993      AFF30080 
+ 993      AFF30080 
+ 994              		.align	2
+ 995              		.p2align 4,,15
+ 996              		.global	chEvtWaitAll
+ 997              		.thumb
+ 998              		.thumb_func
+ 1000              	chEvtWaitAll:
+ 1001              	.LFB20:
+ 388:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 389:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 390:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Waits for all the specified events.
+ 391:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details The function waits for all the events specified in @p mask to
+ 392:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          become pending then the events are cleared and returned.
+ 393:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 394:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      mask of the event flags that the function should wait
+ 395:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      for, @p ALL_EVENTS requires all the events
+ 396:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @return              The mask of the served and cleared events.
+ 397:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 398:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 399:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 400:/usr/src/chibiostest/os/kernel/src/chevents.c **** eventmask_t chEvtWaitAll(eventmask_t mask) {
+ 1002              		.loc 1 400 0
+ 1003              		.cfi_startproc
+ 1004              		@ args = 0, pretend = 0, frame = 16
+ 1005              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1006 0000 00B5     		push	{lr}
+ 1007              		.cfi_def_cfa_offset 4
+ 1008              		.cfi_offset 14, -4
+ 1009 0002 85B0     		sub	sp, sp, #20
+ 1010              		.cfi_def_cfa_offset 24
+ 1011 0004 0190     		str	r0, [sp, #4]
+ 401:/usr/src/chibiostest/os/kernel/src/chevents.c ****   Thread *ctp = currp;
+ 1012              		.loc 1 401 0
+ 1013 0006 134B     		ldr	r3, .L66
+ 1014 0008 9B69     		ldr	r3, [r3, #24]
+ 1015 000a 0393     		str	r3, [sp, #12]
+ 1016              	.LBB20:
+ 402:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 403:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 1017              		.loc 1 403 0
+ 1018 000c 2023     		movs	r3, #32
+ 1019              	@ 403 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1020 000e 83F31188 		msr     BASEPRI, r3
+ 1021              	@ 0 "" 2
+ 1022              		.thumb
+ 1023              	.LBE20:
+ 1024 0012 FFF7FEFF 		bl	dbg_check_lock
+ 404:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 405:/usr/src/chibiostest/os/kernel/src/chevents.c ****   if ((ctp->p_epending & mask) != mask) {
+ 1025              		.loc 1 405 0
+ 1026 0016 039B     		ldr	r3, [sp, #12]
+ 1027 0018 DA6B     		ldr	r2, [r3, #60]
+ 1028 001a 019B     		ldr	r3, [sp, #4]
+ 1029 001c 1A40     		ands	r2, r2, r3
+ 1030 001e 019B     		ldr	r3, [sp, #4]
+ 1031 0020 9A42     		cmp	r2, r3
+ 1032 0022 05D0     		beq	.L64
+ 406:/usr/src/chibiostest/os/kernel/src/chevents.c ****     ctp->p_u.ewmask = mask;
+ 1033              		.loc 1 406 0
+ 1034 0024 039B     		ldr	r3, [sp, #12]
+ 1035 0026 019A     		ldr	r2, [sp, #4]
+ 1036 0028 9A62     		str	r2, [r3, #40]
+ 407:/usr/src/chibiostest/os/kernel/src/chevents.c ****     chSchGoSleepS(THD_STATE_WTANDEVT);
+ 1037              		.loc 1 407 0
+ 1038 002a 0920     		movs	r0, #9
+ 1039 002c FFF7FEFF 		bl	chSchGoSleepS
+ 1040              	.L64:
+ 408:/usr/src/chibiostest/os/kernel/src/chevents.c ****   }
+ 409:/usr/src/chibiostest/os/kernel/src/chevents.c ****   ctp->p_epending &= ~mask;
+ 1041              		.loc 1 409 0
+ 1042 0030 039B     		ldr	r3, [sp, #12]
+ 1043 0032 DA6B     		ldr	r2, [r3, #60]
+ 1044 0034 019B     		ldr	r3, [sp, #4]
+ 1045 0036 DB43     		mvns	r3, r3
+ 1046 0038 1A40     		ands	r2, r2, r3
+ 1047 003a 039B     		ldr	r3, [sp, #12]
+ 1048 003c DA63     		str	r2, [r3, #60]
+ 410:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 411:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 1049              		.loc 1 411 0
+ 1050 003e FFF7FEFF 		bl	dbg_check_unlock
+ 1051              	.LBB21:
+ 1052 0042 0023     		movs	r3, #0
+ 1053              	@ 411 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1054 0044 83F31188 		msr     BASEPRI, r3
+ 1055              	@ 0 "" 2
+ 1056              		.thumb
+ 1057              	.LBE21:
+ 412:/usr/src/chibiostest/os/kernel/src/chevents.c ****   return mask;
+ 1058              		.loc 1 412 0
+ 1059 0048 019B     		ldr	r3, [sp, #4]
+ 413:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 1060              		.loc 1 413 0
+ 1061 004a 1846     		mov	r0, r3
+ 1062 004c 05B0     		add	sp, sp, #20
+ 1063              		@ sp needed
+ 1064 004e 5DF804FB 		ldr	pc, [sp], #4
+ 1065              	.L67:
+ 1066 0052 00BF     		.align	2
+ 1067              	.L66:
+ 1068 0054 00000000 		.word	rlist
+ 1069              		.cfi_endproc
+ 1070              	.LFE20:
+ 1072 0058 AFF30080 		.section	.text.chEvtWaitOneTimeout,"ax",%progbits
+ 1072      AFF30080 
+ 1073              		.align	2
+ 1074              		.p2align 4,,15
+ 1075              		.global	chEvtWaitOneTimeout
+ 1076              		.thumb
+ 1077              		.thumb_func
+ 1079              	chEvtWaitOneTimeout:
+ 1080              	.LFB21:
+ 414:/usr/src/chibiostest/os/kernel/src/chevents.c **** #endif /* CH_OPTIMIZE_SPEED || !CH_USE_EVENTS_TIMEOUT */
+ 415:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 416:/usr/src/chibiostest/os/kernel/src/chevents.c **** #if CH_USE_EVENTS_TIMEOUT || defined(__DOXYGEN__)
+ 417:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 418:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Waits for exactly one of the specified events.
+ 419:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details The function waits for one event among those specified in
+ 420:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          @p mask to become pending then the event is cleared and returned.
+ 421:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @note    One and only one event is served in the function, the one with the
+ 422:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          lowest event id. The function is meant to be invoked into a loop in
+ 423:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          order to serve all the pending events.<br>
+ 424:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          This means that Event Listeners with a lower event identifier have
+ 425:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          an higher priority.
+ 426:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 427:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      mask of the event flags that the function should wait
+ 428:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      for, @p ALL_EVENTS enables all the events
+ 429:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] time      the number of ticks before the operation timeouts,
+ 430:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      the following special values are allowed:
+ 431:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      - @a TIME_IMMEDIATE immediate timeout.
+ 432:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      - @a TIME_INFINITE no timeout.
+ 433:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      .
+ 434:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @return              The mask of the lowest id served and cleared event.
+ 435:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @retval 0            if the operation has timed out.
+ 436:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 437:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 438:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 439:/usr/src/chibiostest/os/kernel/src/chevents.c **** eventmask_t chEvtWaitOneTimeout(eventmask_t mask, systime_t time) {
+ 1081              		.loc 1 439 0
+ 1082              		.cfi_startproc
+ 1083              		@ args = 0, pretend = 0, frame = 16
+ 1084              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1085 0000 00B5     		push	{lr}
+ 1086              		.cfi_def_cfa_offset 4
+ 1087              		.cfi_offset 14, -4
+ 1088 0002 85B0     		sub	sp, sp, #20
+ 1089              		.cfi_def_cfa_offset 24
+ 1090 0004 0190     		str	r0, [sp, #4]
+ 1091 0006 0091     		str	r1, [sp]
+ 440:/usr/src/chibiostest/os/kernel/src/chevents.c ****   Thread *ctp = currp;
+ 1092              		.loc 1 440 0
+ 1093 0008 224B     		ldr	r3, .L73
+ 1094 000a 9B69     		ldr	r3, [r3, #24]
+ 1095 000c 0293     		str	r3, [sp, #8]
+ 1096              	.LBB22:
+ 441:/usr/src/chibiostest/os/kernel/src/chevents.c ****   eventmask_t m;
+ 442:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 443:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 1097              		.loc 1 443 0
+ 1098 000e 2023     		movs	r3, #32
+ 1099              	@ 443 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1100 0010 83F31188 		msr     BASEPRI, r3
+ 1101              	@ 0 "" 2
+ 1102              		.thumb
+ 1103              	.LBE22:
+ 1104 0014 FFF7FEFF 		bl	dbg_check_lock
+ 444:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 445:/usr/src/chibiostest/os/kernel/src/chevents.c ****   if ((m = (ctp->p_epending & mask)) == 0) {
+ 1105              		.loc 1 445 0
+ 1106 0018 029B     		ldr	r3, [sp, #8]
+ 1107 001a DA6B     		ldr	r2, [r3, #60]
+ 1108 001c 019B     		ldr	r3, [sp, #4]
+ 1109 001e 1340     		ands	r3, r3, r2
+ 1110 0020 0393     		str	r3, [sp, #12]
+ 1111 0022 039B     		ldr	r3, [sp, #12]
+ 1112 0024 002B     		cmp	r3, #0
+ 1113 0026 1FD1     		bne	.L69
+ 446:/usr/src/chibiostest/os/kernel/src/chevents.c ****     if (TIME_IMMEDIATE == time) {
+ 1114              		.loc 1 446 0
+ 1115 0028 009B     		ldr	r3, [sp]
+ 1116 002a 002B     		cmp	r3, #0
+ 1117 002c 06D1     		bne	.L70
+ 447:/usr/src/chibiostest/os/kernel/src/chevents.c ****       chSysUnlock();
+ 1118              		.loc 1 447 0
+ 1119 002e FFF7FEFF 		bl	dbg_check_unlock
+ 1120              	.LBB23:
+ 1121 0032 0023     		movs	r3, #0
+ 1122              	@ 447 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1123 0034 83F31188 		msr     BASEPRI, r3
+ 1124              	@ 0 "" 2
+ 1125              		.thumb
+ 1126              	.LBE23:
+ 448:/usr/src/chibiostest/os/kernel/src/chevents.c ****       return (eventmask_t)0;
+ 1127              		.loc 1 448 0
+ 1128 0038 0023     		movs	r3, #0
+ 1129 003a 27E0     		b	.L71
+ 1130              	.L70:
+ 449:/usr/src/chibiostest/os/kernel/src/chevents.c ****     }
+ 450:/usr/src/chibiostest/os/kernel/src/chevents.c ****     ctp->p_u.ewmask = mask;
+ 1131              		.loc 1 450 0
+ 1132 003c 029B     		ldr	r3, [sp, #8]
+ 1133 003e 019A     		ldr	r2, [sp, #4]
+ 1134 0040 9A62     		str	r2, [r3, #40]
+ 451:/usr/src/chibiostest/os/kernel/src/chevents.c ****     if (chSchGoSleepTimeoutS(THD_STATE_WTOREVT, time) < RDY_OK) {
+ 1135              		.loc 1 451 0
+ 1136 0042 0820     		movs	r0, #8
+ 1137 0044 0099     		ldr	r1, [sp]
+ 1138 0046 FFF7FEFF 		bl	chSchGoSleepTimeoutS
+ 1139 004a 0346     		mov	r3, r0
+ 1140 004c 002B     		cmp	r3, #0
+ 1141 004e 06DA     		bge	.L72
+ 452:/usr/src/chibiostest/os/kernel/src/chevents.c ****       chSysUnlock();
+ 1142              		.loc 1 452 0
+ 1143 0050 FFF7FEFF 		bl	dbg_check_unlock
+ 1144              	.LBB24:
+ 1145 0054 0023     		movs	r3, #0
+ 1146              	@ 452 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1147 0056 83F31188 		msr     BASEPRI, r3
+ 1148              	@ 0 "" 2
+ 1149              		.thumb
+ 1150              	.LBE24:
+ 453:/usr/src/chibiostest/os/kernel/src/chevents.c ****       return (eventmask_t)0;
+ 1151              		.loc 1 453 0
+ 1152 005a 0023     		movs	r3, #0
+ 1153 005c 16E0     		b	.L71
+ 1154              	.L72:
+ 454:/usr/src/chibiostest/os/kernel/src/chevents.c ****     }
+ 455:/usr/src/chibiostest/os/kernel/src/chevents.c ****     m = ctp->p_epending & mask;
+ 1155              		.loc 1 455 0
+ 1156 005e 029B     		ldr	r3, [sp, #8]
+ 1157 0060 DA6B     		ldr	r2, [r3, #60]
+ 1158 0062 019B     		ldr	r3, [sp, #4]
+ 1159 0064 1340     		ands	r3, r3, r2
+ 1160 0066 0393     		str	r3, [sp, #12]
+ 1161              	.L69:
+ 456:/usr/src/chibiostest/os/kernel/src/chevents.c ****   }
+ 457:/usr/src/chibiostest/os/kernel/src/chevents.c ****   m &= -m;
+ 1162              		.loc 1 457 0
+ 1163 0068 039B     		ldr	r3, [sp, #12]
+ 1164 006a 5B42     		negs	r3, r3
+ 1165 006c 039A     		ldr	r2, [sp, #12]
+ 1166 006e 1340     		ands	r3, r3, r2
+ 1167 0070 0393     		str	r3, [sp, #12]
+ 458:/usr/src/chibiostest/os/kernel/src/chevents.c ****   ctp->p_epending &= ~m;
+ 1168              		.loc 1 458 0
+ 1169 0072 029B     		ldr	r3, [sp, #8]
+ 1170 0074 DA6B     		ldr	r2, [r3, #60]
+ 1171 0076 039B     		ldr	r3, [sp, #12]
+ 1172 0078 DB43     		mvns	r3, r3
+ 1173 007a 1A40     		ands	r2, r2, r3
+ 1174 007c 029B     		ldr	r3, [sp, #8]
+ 1175 007e DA63     		str	r2, [r3, #60]
+ 459:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 460:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 1176              		.loc 1 460 0
+ 1177 0080 FFF7FEFF 		bl	dbg_check_unlock
+ 1178              	.LBB25:
+ 1179 0084 0023     		movs	r3, #0
+ 1180              	@ 460 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1181 0086 83F31188 		msr     BASEPRI, r3
+ 1182              	@ 0 "" 2
+ 1183              		.thumb
+ 1184              	.LBE25:
+ 461:/usr/src/chibiostest/os/kernel/src/chevents.c ****   return m;
+ 1185              		.loc 1 461 0
+ 1186 008a 039B     		ldr	r3, [sp, #12]
+ 1187              	.L71:
+ 462:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 1188              		.loc 1 462 0
+ 1189 008c 1846     		mov	r0, r3
+ 1190 008e 05B0     		add	sp, sp, #20
+ 1191              		@ sp needed
+ 1192 0090 5DF804FB 		ldr	pc, [sp], #4
+ 1193              	.L74:
+ 1194              		.align	2
+ 1195              	.L73:
+ 1196 0094 00000000 		.word	rlist
+ 1197              		.cfi_endproc
+ 1198              	.LFE21:
+ 1200 0098 AFF30080 		.section	.text.chEvtWaitAnyTimeout,"ax",%progbits
+ 1200      AFF30080 
+ 1201              		.align	2
+ 1202              		.p2align 4,,15
+ 1203              		.global	chEvtWaitAnyTimeout
+ 1204              		.thumb
+ 1205              		.thumb_func
+ 1207              	chEvtWaitAnyTimeout:
+ 1208              	.LFB22:
+ 463:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 464:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 465:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Waits for any of the specified events.
+ 466:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details The function waits for any event among those specified in
+ 467:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          @p mask to become pending then the events are cleared and
+ 468:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          returned.
+ 469:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 470:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      mask of the event flags that the function should wait
+ 471:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      for, @p ALL_EVENTS enables all the events
+ 472:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] time      the number of ticks before the operation timeouts,
+ 473:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      the following special values are allowed:
+ 474:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      - @a TIME_IMMEDIATE immediate timeout.
+ 475:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      - @a TIME_INFINITE no timeout.
+ 476:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      .
+ 477:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @return              The mask of the served and cleared events.
+ 478:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @retval 0            if the operation has timed out.
+ 479:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 480:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 481:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 482:/usr/src/chibiostest/os/kernel/src/chevents.c **** eventmask_t chEvtWaitAnyTimeout(eventmask_t mask, systime_t time) {
+ 1209              		.loc 1 482 0
+ 1210              		.cfi_startproc
+ 1211              		@ args = 0, pretend = 0, frame = 16
+ 1212              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1213 0000 00B5     		push	{lr}
+ 1214              		.cfi_def_cfa_offset 4
+ 1215              		.cfi_offset 14, -4
+ 1216 0002 85B0     		sub	sp, sp, #20
+ 1217              		.cfi_def_cfa_offset 24
+ 1218 0004 0190     		str	r0, [sp, #4]
+ 1219 0006 0091     		str	r1, [sp]
+ 483:/usr/src/chibiostest/os/kernel/src/chevents.c ****   Thread *ctp = currp;
+ 1220              		.loc 1 483 0
+ 1221 0008 204B     		ldr	r3, .L80
+ 1222 000a 9B69     		ldr	r3, [r3, #24]
+ 1223 000c 0293     		str	r3, [sp, #8]
+ 1224              	.LBB26:
+ 484:/usr/src/chibiostest/os/kernel/src/chevents.c ****   eventmask_t m;
+ 485:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 486:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 1225              		.loc 1 486 0
+ 1226 000e 2023     		movs	r3, #32
+ 1227              	@ 486 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1228 0010 83F31188 		msr     BASEPRI, r3
+ 1229              	@ 0 "" 2
+ 1230              		.thumb
+ 1231              	.LBE26:
+ 1232 0014 FFF7FEFF 		bl	dbg_check_lock
+ 487:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 488:/usr/src/chibiostest/os/kernel/src/chevents.c ****   if ((m = (ctp->p_epending & mask)) == 0) {
+ 1233              		.loc 1 488 0
+ 1234 0018 029B     		ldr	r3, [sp, #8]
+ 1235 001a DA6B     		ldr	r2, [r3, #60]
+ 1236 001c 019B     		ldr	r3, [sp, #4]
+ 1237 001e 1340     		ands	r3, r3, r2
+ 1238 0020 0393     		str	r3, [sp, #12]
+ 1239 0022 039B     		ldr	r3, [sp, #12]
+ 1240 0024 002B     		cmp	r3, #0
+ 1241 0026 1FD1     		bne	.L76
+ 489:/usr/src/chibiostest/os/kernel/src/chevents.c ****     if (TIME_IMMEDIATE == time) {
+ 1242              		.loc 1 489 0
+ 1243 0028 009B     		ldr	r3, [sp]
+ 1244 002a 002B     		cmp	r3, #0
+ 1245 002c 06D1     		bne	.L77
+ 490:/usr/src/chibiostest/os/kernel/src/chevents.c ****       chSysUnlock();
+ 1246              		.loc 1 490 0
+ 1247 002e FFF7FEFF 		bl	dbg_check_unlock
+ 1248              	.LBB27:
+ 1249 0032 0023     		movs	r3, #0
+ 1250              	@ 490 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1251 0034 83F31188 		msr     BASEPRI, r3
+ 1252              	@ 0 "" 2
+ 1253              		.thumb
+ 1254              	.LBE27:
+ 491:/usr/src/chibiostest/os/kernel/src/chevents.c ****       return (eventmask_t)0;
+ 1255              		.loc 1 491 0
+ 1256 0038 0023     		movs	r3, #0
+ 1257 003a 22E0     		b	.L78
+ 1258              	.L77:
+ 492:/usr/src/chibiostest/os/kernel/src/chevents.c ****     }
+ 493:/usr/src/chibiostest/os/kernel/src/chevents.c ****     ctp->p_u.ewmask = mask;
+ 1259              		.loc 1 493 0
+ 1260 003c 029B     		ldr	r3, [sp, #8]
+ 1261 003e 019A     		ldr	r2, [sp, #4]
+ 1262 0040 9A62     		str	r2, [r3, #40]
+ 494:/usr/src/chibiostest/os/kernel/src/chevents.c ****     if (chSchGoSleepTimeoutS(THD_STATE_WTOREVT, time) < RDY_OK) {
+ 1263              		.loc 1 494 0
+ 1264 0042 0820     		movs	r0, #8
+ 1265 0044 0099     		ldr	r1, [sp]
+ 1266 0046 FFF7FEFF 		bl	chSchGoSleepTimeoutS
+ 1267 004a 0346     		mov	r3, r0
+ 1268 004c 002B     		cmp	r3, #0
+ 1269 004e 06DA     		bge	.L79
+ 495:/usr/src/chibiostest/os/kernel/src/chevents.c ****       chSysUnlock();
+ 1270              		.loc 1 495 0
+ 1271 0050 FFF7FEFF 		bl	dbg_check_unlock
+ 1272              	.LBB28:
+ 1273 0054 0023     		movs	r3, #0
+ 1274              	@ 495 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1275 0056 83F31188 		msr     BASEPRI, r3
+ 1276              	@ 0 "" 2
+ 1277              		.thumb
+ 1278              	.LBE28:
+ 496:/usr/src/chibiostest/os/kernel/src/chevents.c ****       return (eventmask_t)0;
+ 1279              		.loc 1 496 0
+ 1280 005a 0023     		movs	r3, #0
+ 1281 005c 11E0     		b	.L78
+ 1282              	.L79:
+ 497:/usr/src/chibiostest/os/kernel/src/chevents.c ****     }
+ 498:/usr/src/chibiostest/os/kernel/src/chevents.c ****     m = ctp->p_epending & mask;
+ 1283              		.loc 1 498 0
+ 1284 005e 029B     		ldr	r3, [sp, #8]
+ 1285 0060 DA6B     		ldr	r2, [r3, #60]
+ 1286 0062 019B     		ldr	r3, [sp, #4]
+ 1287 0064 1340     		ands	r3, r3, r2
+ 1288 0066 0393     		str	r3, [sp, #12]
+ 1289              	.L76:
+ 499:/usr/src/chibiostest/os/kernel/src/chevents.c ****   }
+ 500:/usr/src/chibiostest/os/kernel/src/chevents.c ****   ctp->p_epending &= ~m;
+ 1290              		.loc 1 500 0
+ 1291 0068 029B     		ldr	r3, [sp, #8]
+ 1292 006a DA6B     		ldr	r2, [r3, #60]
+ 1293 006c 039B     		ldr	r3, [sp, #12]
+ 1294 006e DB43     		mvns	r3, r3
+ 1295 0070 1A40     		ands	r2, r2, r3
+ 1296 0072 029B     		ldr	r3, [sp, #8]
+ 1297 0074 DA63     		str	r2, [r3, #60]
+ 501:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 502:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 1298              		.loc 1 502 0
+ 1299 0076 FFF7FEFF 		bl	dbg_check_unlock
+ 1300              	.LBB29:
+ 1301 007a 0023     		movs	r3, #0
+ 1302              	@ 502 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1303 007c 83F31188 		msr     BASEPRI, r3
+ 1304              	@ 0 "" 2
+ 1305              		.thumb
+ 1306              	.LBE29:
+ 503:/usr/src/chibiostest/os/kernel/src/chevents.c ****   return m;
+ 1307              		.loc 1 503 0
+ 1308 0080 039B     		ldr	r3, [sp, #12]
+ 1309              	.L78:
+ 504:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 1310              		.loc 1 504 0
+ 1311 0082 1846     		mov	r0, r3
+ 1312 0084 05B0     		add	sp, sp, #20
+ 1313              		@ sp needed
+ 1314 0086 5DF804FB 		ldr	pc, [sp], #4
+ 1315              	.L81:
+ 1316 008a 00BF     		.align	2
+ 1317              	.L80:
+ 1318 008c 00000000 		.word	rlist
+ 1319              		.cfi_endproc
+ 1320              	.LFE22:
+ 1322              		.section	.text.chEvtWaitAllTimeout,"ax",%progbits
+ 1323              		.align	2
+ 1324              		.p2align 4,,15
+ 1325              		.global	chEvtWaitAllTimeout
+ 1326              		.thumb
+ 1327              		.thumb_func
+ 1329              	chEvtWaitAllTimeout:
+ 1330              	.LFB23:
+ 505:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 506:/usr/src/chibiostest/os/kernel/src/chevents.c **** /**
+ 507:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @brief   Waits for all the specified events.
+ 508:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @details The function waits for all the events specified in @p mask to
+ 509:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *          become pending then the events are cleared and returned.
+ 510:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 511:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] mask      mask of the event flags that the function should wait
+ 512:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      for, @p ALL_EVENTS requires all the events
+ 513:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @param[in] time      the number of ticks before the operation timeouts,
+ 514:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      the following special values are allowed:
+ 515:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      - @a TIME_IMMEDIATE immediate timeout.
+ 516:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      - @a TIME_INFINITE no timeout.
+ 517:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *                      .
+ 518:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @return              The mask of the served and cleared events.
+ 519:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @retval 0            if the operation has timed out.
+ 520:/usr/src/chibiostest/os/kernel/src/chevents.c ****  *
+ 521:/usr/src/chibiostest/os/kernel/src/chevents.c ****  * @api
+ 522:/usr/src/chibiostest/os/kernel/src/chevents.c ****  */
+ 523:/usr/src/chibiostest/os/kernel/src/chevents.c **** eventmask_t chEvtWaitAllTimeout(eventmask_t mask, systime_t time) {
+ 1331              		.loc 1 523 0
+ 1332              		.cfi_startproc
+ 1333              		@ args = 0, pretend = 0, frame = 16
+ 1334              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1335 0000 00B5     		push	{lr}
+ 1336              		.cfi_def_cfa_offset 4
+ 1337              		.cfi_offset 14, -4
+ 1338 0002 85B0     		sub	sp, sp, #20
+ 1339              		.cfi_def_cfa_offset 24
+ 1340 0004 0190     		str	r0, [sp, #4]
+ 1341 0006 0091     		str	r1, [sp]
+ 524:/usr/src/chibiostest/os/kernel/src/chevents.c ****   Thread *ctp = currp;
+ 1342              		.loc 1 524 0
+ 1343 0008 1D4B     		ldr	r3, .L86
+ 1344 000a 9B69     		ldr	r3, [r3, #24]
+ 1345 000c 0393     		str	r3, [sp, #12]
+ 1346              	.LBB30:
+ 525:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 526:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysLock();
+ 1347              		.loc 1 526 0
+ 1348 000e 2023     		movs	r3, #32
+ 1349              	@ 526 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1350 0010 83F31188 		msr     BASEPRI, r3
+ 1351              	@ 0 "" 2
+ 1352              		.thumb
+ 1353              	.LBE30:
+ 1354 0014 FFF7FEFF 		bl	dbg_check_lock
+ 527:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 528:/usr/src/chibiostest/os/kernel/src/chevents.c ****   if ((ctp->p_epending & mask) != mask) {
+ 1355              		.loc 1 528 0
+ 1356 0018 039B     		ldr	r3, [sp, #12]
+ 1357 001a DA6B     		ldr	r2, [r3, #60]
+ 1358 001c 019B     		ldr	r3, [sp, #4]
+ 1359 001e 1A40     		ands	r2, r2, r3
+ 1360 0020 019B     		ldr	r3, [sp, #4]
+ 1361 0022 9A42     		cmp	r2, r3
+ 1362 0024 1AD0     		beq	.L83
+ 529:/usr/src/chibiostest/os/kernel/src/chevents.c ****     if (TIME_IMMEDIATE == time) {
+ 1363              		.loc 1 529 0
+ 1364 0026 009B     		ldr	r3, [sp]
+ 1365 0028 002B     		cmp	r3, #0
+ 1366 002a 06D1     		bne	.L84
+ 530:/usr/src/chibiostest/os/kernel/src/chevents.c ****       chSysUnlock();
+ 1367              		.loc 1 530 0
+ 1368 002c FFF7FEFF 		bl	dbg_check_unlock
+ 1369              	.LBB31:
+ 1370 0030 0023     		movs	r3, #0
+ 1371              	@ 530 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1372 0032 83F31188 		msr     BASEPRI, r3
+ 1373              	@ 0 "" 2
+ 1374              		.thumb
+ 1375              	.LBE31:
+ 531:/usr/src/chibiostest/os/kernel/src/chevents.c ****       return (eventmask_t)0;
+ 1376              		.loc 1 531 0
+ 1377 0036 0023     		movs	r3, #0
+ 1378 0038 1DE0     		b	.L85
+ 1379              	.L84:
+ 532:/usr/src/chibiostest/os/kernel/src/chevents.c ****     }
+ 533:/usr/src/chibiostest/os/kernel/src/chevents.c ****     ctp->p_u.ewmask = mask;
+ 1380              		.loc 1 533 0
+ 1381 003a 039B     		ldr	r3, [sp, #12]
+ 1382 003c 019A     		ldr	r2, [sp, #4]
+ 1383 003e 9A62     		str	r2, [r3, #40]
+ 534:/usr/src/chibiostest/os/kernel/src/chevents.c ****     if (chSchGoSleepTimeoutS(THD_STATE_WTANDEVT, time) < RDY_OK) {
+ 1384              		.loc 1 534 0
+ 1385 0040 0920     		movs	r0, #9
+ 1386 0042 0099     		ldr	r1, [sp]
+ 1387 0044 FFF7FEFF 		bl	chSchGoSleepTimeoutS
+ 1388 0048 0346     		mov	r3, r0
+ 1389 004a 002B     		cmp	r3, #0
+ 1390 004c 06DA     		bge	.L83
+ 535:/usr/src/chibiostest/os/kernel/src/chevents.c ****       chSysUnlock();
+ 1391              		.loc 1 535 0
+ 1392 004e FFF7FEFF 		bl	dbg_check_unlock
+ 1393              	.LBB32:
+ 1394 0052 0023     		movs	r3, #0
+ 1395              	@ 535 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1396 0054 83F31188 		msr     BASEPRI, r3
+ 1397              	@ 0 "" 2
+ 1398              		.thumb
+ 1399              	.LBE32:
+ 536:/usr/src/chibiostest/os/kernel/src/chevents.c ****       return (eventmask_t)0;
+ 1400              		.loc 1 536 0
+ 1401 0058 0023     		movs	r3, #0
+ 1402 005a 0CE0     		b	.L85
+ 1403              	.L83:
+ 537:/usr/src/chibiostest/os/kernel/src/chevents.c ****     }
+ 538:/usr/src/chibiostest/os/kernel/src/chevents.c ****   }
+ 539:/usr/src/chibiostest/os/kernel/src/chevents.c ****   ctp->p_epending &= ~mask;
+ 1404              		.loc 1 539 0
+ 1405 005c 039B     		ldr	r3, [sp, #12]
+ 1406 005e DA6B     		ldr	r2, [r3, #60]
+ 1407 0060 019B     		ldr	r3, [sp, #4]
+ 1408 0062 DB43     		mvns	r3, r3
+ 1409 0064 1A40     		ands	r2, r2, r3
+ 1410 0066 039B     		ldr	r3, [sp, #12]
+ 1411 0068 DA63     		str	r2, [r3, #60]
+ 540:/usr/src/chibiostest/os/kernel/src/chevents.c **** 
+ 541:/usr/src/chibiostest/os/kernel/src/chevents.c ****   chSysUnlock();
+ 1412              		.loc 1 541 0
+ 1413 006a FFF7FEFF 		bl	dbg_check_unlock
+ 1414              	.LBB33:
+ 1415 006e 0023     		movs	r3, #0
+ 1416              	@ 541 "/usr/src/chibiostest/os/kernel/src/chevents.c" 1
+ 1417 0070 83F31188 		msr     BASEPRI, r3
+ 1418              	@ 0 "" 2
+ 1419              		.thumb
+ 1420              	.LBE33:
+ 542:/usr/src/chibiostest/os/kernel/src/chevents.c ****   return mask;
+ 1421              		.loc 1 542 0
+ 1422 0074 019B     		ldr	r3, [sp, #4]
+ 1423              	.L85:
+ 543:/usr/src/chibiostest/os/kernel/src/chevents.c **** }
+ 1424              		.loc 1 543 0
+ 1425 0076 1846     		mov	r0, r3
+ 1426 0078 05B0     		add	sp, sp, #20
+ 1427              		@ sp needed
+ 1428 007a 5DF804FB 		ldr	pc, [sp], #4
+ 1429              	.L87:
+ 1430 007e 00BF     		.align	2
+ 1431              	.L86:
+ 1432 0080 00000000 		.word	rlist
+ 1433              		.cfi_endproc
+ 1434              	.LFE23:
+ 1436 0084 AFF30080 		.text
+ 1436      AFF30080 
+ 1436      AFF30080 
+ 1437              	.Letext0:
+ 1438              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 1439              		.file 3 "/usr/include/newlib/stdint.h"
+ 1440              		.file 4 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 1441              		.file 5 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 1442              		.file 6 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 1443              		.file 7 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 1444              		.file 8 "/usr/src/chibiostest/os/kernel/include/chschd.h"
+ 1445              		.file 9 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+ 1446              		.file 10 "/usr/src/chibiostest/os/kernel/include/chevents.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chevents.c
+     /tmp/ccwYP3td.s:20     .rodata:0000000000000000 $d
+     /tmp/ccwYP3td.s:24     .text.chEvtRegisterMask:0000000000000000 $t
+     /tmp/ccwYP3td.s:30     .text.chEvtRegisterMask:0000000000000000 chEvtRegisterMask
+     /tmp/ccwYP3td.s:105    .text.chEvtRegisterMask:0000000000000058 $d
+     /tmp/ccwYP3td.s:115    .text.chEvtUnregister:0000000000000000 $t
+     /tmp/ccwYP3td.s:121    .text.chEvtUnregister:0000000000000000 chEvtUnregister
+     /tmp/ccwYP3td.s:204    .text.chEvtUnregister:0000000000000060 $d
+     /tmp/ccwYP3td.s:209    .text.chEvtGetAndClearEvents:0000000000000000 $t
+     /tmp/ccwYP3td.s:215    .text.chEvtGetAndClearEvents:0000000000000000 chEvtGetAndClearEvents
+     /tmp/ccwYP3td.s:272    .text.chEvtGetAndClearEvents:0000000000000044 $d
+     /tmp/ccwYP3td.s:277    .text.chEvtAddEvents:0000000000000000 $t
+     /tmp/ccwYP3td.s:283    .text.chEvtAddEvents:0000000000000000 chEvtAddEvents
+     /tmp/ccwYP3td.s:334    .text.chEvtAddEvents:0000000000000038 $d
+     /tmp/ccwYP3td.s:343    .text.chEvtBroadcastFlagsI:0000000000000000 $t
+     /tmp/ccwYP3td.s:349    .text.chEvtBroadcastFlagsI:0000000000000000 chEvtBroadcastFlagsI
+     /tmp/ccwYP3td.s:548    .text.chEvtSignalI:0000000000000000 chEvtSignalI
+     /tmp/ccwYP3td.s:411    .text.chEvtBroadcastFlagsI:0000000000000050 $d
+     /tmp/ccwYP3td.s:416    .text.chEvtGetAndClearFlags:0000000000000000 $t
+     /tmp/ccwYP3td.s:422    .text.chEvtGetAndClearFlags:0000000000000000 chEvtGetAndClearFlags
+     /tmp/ccwYP3td.s:475    .text.chEvtSignal:0000000000000000 $t
+     /tmp/ccwYP3td.s:481    .text.chEvtSignal:0000000000000000 chEvtSignal
+     /tmp/ccwYP3td.s:533    .text.chEvtSignal:000000000000003c $d
+     /tmp/ccwYP3td.s:542    .text.chEvtSignalI:0000000000000000 $t
+     /tmp/ccwYP3td.s:625    .text.chEvtSignalI:000000000000006c $d
+     /tmp/ccwYP3td.s:630    .text.chEvtBroadcastFlags:0000000000000000 $t
+     /tmp/ccwYP3td.s:636    .text.chEvtBroadcastFlags:0000000000000000 chEvtBroadcastFlags
+     /tmp/ccwYP3td.s:681    .text.chEvtGetAndClearFlagsI:0000000000000000 $t
+     /tmp/ccwYP3td.s:687    .text.chEvtGetAndClearFlagsI:0000000000000000 chEvtGetAndClearFlagsI
+     /tmp/ccwYP3td.s:723    .text.chEvtDispatch:0000000000000000 $t
+     /tmp/ccwYP3td.s:729    .text.chEvtDispatch:0000000000000000 chEvtDispatch
+     /tmp/ccwYP3td.s:810    .text.chEvtDispatch:0000000000000070 $d
+     /tmp/ccwYP3td.s:816    .text.chEvtWaitOne:0000000000000000 $t
+     /tmp/ccwYP3td.s:822    .text.chEvtWaitOne:0000000000000000 chEvtWaitOne
+     /tmp/ccwYP3td.s:903    .text.chEvtWaitOne:0000000000000068 $d
+     /tmp/ccwYP3td.s:908    .text.chEvtWaitAny:0000000000000000 $t
+     /tmp/ccwYP3td.s:914    .text.chEvtWaitAny:0000000000000000 chEvtWaitAny
+     /tmp/ccwYP3td.s:989    .text.chEvtWaitAny:0000000000000060 $d
+     /tmp/ccwYP3td.s:994    .text.chEvtWaitAll:0000000000000000 $t
+     /tmp/ccwYP3td.s:1000   .text.chEvtWaitAll:0000000000000000 chEvtWaitAll
+     /tmp/ccwYP3td.s:1068   .text.chEvtWaitAll:0000000000000054 $d
+     /tmp/ccwYP3td.s:1073   .text.chEvtWaitOneTimeout:0000000000000000 $t
+     /tmp/ccwYP3td.s:1079   .text.chEvtWaitOneTimeout:0000000000000000 chEvtWaitOneTimeout
+     /tmp/ccwYP3td.s:1196   .text.chEvtWaitOneTimeout:0000000000000094 $d
+     /tmp/ccwYP3td.s:1201   .text.chEvtWaitAnyTimeout:0000000000000000 $t
+     /tmp/ccwYP3td.s:1207   .text.chEvtWaitAnyTimeout:0000000000000000 chEvtWaitAnyTimeout
+     /tmp/ccwYP3td.s:1318   .text.chEvtWaitAnyTimeout:000000000000008c $d
+     /tmp/ccwYP3td.s:1323   .text.chEvtWaitAllTimeout:0000000000000000 $t
+     /tmp/ccwYP3td.s:1329   .text.chEvtWaitAllTimeout:0000000000000000 chEvtWaitAllTimeout
+     /tmp/ccwYP3td.s:1432   .text.chEvtWaitAllTimeout:0000000000000080 $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccwYP3td.s:208    .text.chEvtUnregister:0000000000000064 $t
+     /tmp/ccwYP3td.s:276    .text.chEvtGetAndClearEvents:0000000000000048 $t
+     /tmp/ccwYP3td.s:338    .text.chEvtAddEvents:000000000000003c $t
+     /tmp/ccwYP3td.s:415    .text.chEvtBroadcastFlagsI:0000000000000054 $t
+     /tmp/ccwYP3td.s:815    .text.chEvtDispatch:0000000000000078 $t
+     /tmp/ccwYP3td.s:907    .text.chEvtWaitOne:000000000000006c $t
+     /tmp/ccwYP3td.s:993    .text.chEvtWaitAny:0000000000000064 $t
+     /tmp/ccwYP3td.s:1072   .text.chEvtWaitAll:0000000000000058 $t
+     /tmp/ccwYP3td.s:1200   .text.chEvtWaitOneTimeout:0000000000000098 $t
+     /tmp/ccwYP3td.s:1436   .text.chEvtWaitAllTimeout:0000000000000084 $t
+
+UNDEFINED SYMBOLS
+chDbgPanic
+dbg_check_lock
+dbg_check_unlock
+rlist
+chDbgCheckClassI
+chSchRescheduleS
+chSchReadyI
+chSchGoSleepS
+chSchGoSleepTimeoutS

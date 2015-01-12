@@ -1,0 +1,568 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chmsg.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.queue_insert,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.thumb
+  23              		.thumb_func
+  25              	queue_insert:
+  26              	.LFB1:
+  27              		.file 1 "/usr/src/chibiostest/os/kernel/include/chinline.h"
+   1:/usr/src/chibiostest/os/kernel/include/chinline.h **** /*
+   2:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/include/chinline.h ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   5:/usr/src/chibiostest/os/kernel/include/chinline.h ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   7:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/include/chinline.h ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/include/chinline.h ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/include/chinline.h ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  12:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/include/chinline.h ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/include/chinline.h ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/include/chinline.h ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  17:/usr/src/chibiostest/os/kernel/include/chinline.h ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/include/chinline.h ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/include/chinline.h **** */
+  20:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  21:/usr/src/chibiostest/os/kernel/include/chinline.h **** /**
+  22:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @file    chinline.h
+  23:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @brief   Kernel inlined functions.
+  24:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @details In this file there are a set of inlined functions if the
+  25:/usr/src/chibiostest/os/kernel/include/chinline.h ****  *          @p CH_OPTIMIZE_SPEED is enabled.
+  26:/usr/src/chibiostest/os/kernel/include/chinline.h ****  */
+  27:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  28:/usr/src/chibiostest/os/kernel/include/chinline.h **** #ifndef _CHINLINE_H_
+  29:/usr/src/chibiostest/os/kernel/include/chinline.h **** #define _CHINLINE_H_
+  30:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  31:/usr/src/chibiostest/os/kernel/include/chinline.h **** /* If the performance code path has been chosen then all the following
+  32:/usr/src/chibiostest/os/kernel/include/chinline.h ****    functions are inlined into the various kernel modules.*/
+  33:/usr/src/chibiostest/os/kernel/include/chinline.h **** #if CH_OPTIMIZE_SPEED
+  34:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void prio_insert(Thread *tp, ThreadsQueue *tqp) {
+  35:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  36:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *cp = (Thread *)tqp;
+  37:/usr/src/chibiostest/os/kernel/include/chinline.h ****   do {
+  38:/usr/src/chibiostest/os/kernel/include/chinline.h ****     cp = cp->p_next;
+  39:/usr/src/chibiostest/os/kernel/include/chinline.h ****   } while ((cp != (Thread *)tqp) && (cp->p_prio >= tp->p_prio));
+  40:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = cp;
+  41:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = cp->p_prev;
+  42:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = cp->p_prev = tp;
+  43:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  44:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  45:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void queue_insert(Thread *tp, ThreadsQueue *tqp) {
+  28              		.loc 1 45 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33 0000 82B0     		sub	sp, sp, #8
+  34              		.cfi_def_cfa_offset 8
+  35 0002 0190     		str	r0, [sp, #4]
+  36 0004 0091     		str	r1, [sp]
+  46:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  47:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = (Thread *)tqp;
+  37              		.loc 1 47 0
+  38 0006 019B     		ldr	r3, [sp, #4]
+  39 0008 009A     		ldr	r2, [sp]
+  40 000a 1A60     		str	r2, [r3]
+  48:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = tqp->p_prev;
+  41              		.loc 1 48 0
+  42 000c 009B     		ldr	r3, [sp]
+  43 000e 5A68     		ldr	r2, [r3, #4]
+  44 0010 019B     		ldr	r3, [sp, #4]
+  45 0012 5A60     		str	r2, [r3, #4]
+  49:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = tqp->p_prev = tp;
+  46              		.loc 1 49 0
+  47 0014 019B     		ldr	r3, [sp, #4]
+  48 0016 5B68     		ldr	r3, [r3, #4]
+  49 0018 009A     		ldr	r2, [sp]
+  50 001a 0199     		ldr	r1, [sp, #4]
+  51 001c 5160     		str	r1, [r2, #4]
+  52 001e 009A     		ldr	r2, [sp]
+  53 0020 5268     		ldr	r2, [r2, #4]
+  54 0022 1A60     		str	r2, [r3]
+  50:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  55              		.loc 1 50 0
+  56 0024 02B0     		add	sp, sp, #8
+  57              		@ sp needed
+  58 0026 7047     		bx	lr
+  59              		.cfi_endproc
+  60              	.LFE1:
+  62 0028 AFF30080 		.section	.text.fifo_remove,"ax",%progbits
+  62      AFF30080 
+  63              		.align	2
+  64              		.p2align 4,,15
+  65              		.thumb
+  66              		.thumb_func
+  68              	fifo_remove:
+  69              	.LFB2:
+  51:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  52:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *fifo_remove(ThreadsQueue *tqp) {
+  70              		.loc 1 52 0
+  71              		.cfi_startproc
+  72              		@ args = 0, pretend = 0, frame = 16
+  73              		@ frame_needed = 0, uses_anonymous_args = 0
+  74              		@ link register save eliminated.
+  75 0000 84B0     		sub	sp, sp, #16
+  76              		.cfi_def_cfa_offset 16
+  77 0002 0190     		str	r0, [sp, #4]
+  53:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *tp = tqp->p_next;
+  78              		.loc 1 53 0
+  79 0004 019B     		ldr	r3, [sp, #4]
+  80 0006 1B68     		ldr	r3, [r3]
+  81 0008 0393     		str	r3, [sp, #12]
+  54:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  55:/usr/src/chibiostest/os/kernel/include/chinline.h ****   (tqp->p_next = tp->p_next)->p_prev = (Thread *)tqp;
+  82              		.loc 1 55 0
+  83 000a 039B     		ldr	r3, [sp, #12]
+  84 000c 1A68     		ldr	r2, [r3]
+  85 000e 019B     		ldr	r3, [sp, #4]
+  86 0010 1A60     		str	r2, [r3]
+  87 0012 019B     		ldr	r3, [sp, #4]
+  88 0014 1B68     		ldr	r3, [r3]
+  89 0016 019A     		ldr	r2, [sp, #4]
+  90 0018 5A60     		str	r2, [r3, #4]
+  56:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+  91              		.loc 1 56 0
+  92 001a 039B     		ldr	r3, [sp, #12]
+  57:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  93              		.loc 1 57 0
+  94 001c 1846     		mov	r0, r3
+  95 001e 04B0     		add	sp, sp, #16
+  96              		@ sp needed
+  97 0020 7047     		bx	lr
+  98              		.cfi_endproc
+  99              	.LFE2:
+ 101 0022 00BFAFF3 		.section	.rodata
+ 101      0080AFF3 
+ 101      0080AFF3 
+ 101      0080
+ 102              		.align	2
+ 103              	.LC0:
+ 104 0000 2263684D 		.ascii	"\"chMsgSend\"()\000"
+ 104      73675365 
+ 104      6E642228 
+ 104      2900
+ 105              		.section	.text.chMsgSend,"ax",%progbits
+ 106              		.align	2
+ 107              		.p2align 4,,15
+ 108              		.global	chMsgSend
+ 109              		.thumb
+ 110              		.thumb_func
+ 112              	chMsgSend:
+ 113              	.LFB7:
+ 114              		.file 2 "/usr/src/chibiostest/os/kernel/src/chmsg.c"
+   1:/usr/src/chibiostest/os/kernel/src/chmsg.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chmsg.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chmsg.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+  21:/usr/src/chibiostest/os/kernel/src/chmsg.c **** /**
+  22:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @file    chmsg.c
+  23:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @brief   Messages code.
+  24:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *
+  25:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @addtogroup messages
+  26:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @details Synchronous inter-thread messages APIs and services.
+  27:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          <h2>Operation Mode</h2>
+  28:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          Synchronous messages are an easy to use and fast IPC mechanism,
+  29:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          threads can both act as message servers and/or message clients,
+  30:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          the mechanism allows data to be carried in both directions. Note
+  31:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          that messages are not copied between the client and server threads
+  32:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          but just a pointer passed so the exchange is very time
+  33:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          efficient.<br>
+  34:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          Messages are scalar data types of type @p msg_t that are guaranteed
+  35:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          to be size compatible with data pointers. Note that on some
+  36:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          architectures function pointers can be larger that @p msg_t.<br>
+  37:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          Messages are usually processed in FIFO order but it is possible to
+  38:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          process them in priority order by enabling the
+  39:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          @p CH_USE_MESSAGES_PRIORITY option in @p chconf.h.<br>
+  40:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @pre     In order to use the message APIs the @p CH_USE_MESSAGES option
+  41:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          must be enabled in @p chconf.h.
+  42:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @post    Enabling messages requires 6-12 (depending on the architecture)
+  43:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          extra bytes in the @p Thread structure.
+  44:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @{
+  45:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  */
+  46:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+  47:/usr/src/chibiostest/os/kernel/src/chmsg.c **** #include "ch.h"
+  48:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+  49:/usr/src/chibiostest/os/kernel/src/chmsg.c **** #if CH_USE_MESSAGES || defined(__DOXYGEN__)
+  50:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+  51:/usr/src/chibiostest/os/kernel/src/chmsg.c **** #if CH_USE_MESSAGES_PRIORITY
+  52:/usr/src/chibiostest/os/kernel/src/chmsg.c **** #define msg_insert(tp, qp) prio_insert(tp, qp)
+  53:/usr/src/chibiostest/os/kernel/src/chmsg.c **** #else
+  54:/usr/src/chibiostest/os/kernel/src/chmsg.c **** #define msg_insert(tp, qp) queue_insert(tp, qp)
+  55:/usr/src/chibiostest/os/kernel/src/chmsg.c **** #endif
+  56:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+  57:/usr/src/chibiostest/os/kernel/src/chmsg.c **** /**
+  58:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @brief   Sends a message to the specified thread.
+  59:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @details The sender is stopped until the receiver executes a
+  60:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          @p chMsgRelease()after receiving the message.
+  61:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *
+  62:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @param[in] tp        the pointer to the thread
+  63:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @param[in] msg       the message
+  64:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @return              The answer message from @p chMsgRelease().
+  65:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *
+  66:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @api
+  67:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  */
+  68:/usr/src/chibiostest/os/kernel/src/chmsg.c **** msg_t chMsgSend(Thread *tp, msg_t msg) {
+ 115              		.loc 2 68 0
+ 116              		.cfi_startproc
+ 117              		@ args = 0, pretend = 0, frame = 16
+ 118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119 0000 00B5     		push	{lr}
+ 120              		.cfi_def_cfa_offset 4
+ 121              		.cfi_offset 14, -4
+ 122 0002 85B0     		sub	sp, sp, #20
+ 123              		.cfi_def_cfa_offset 24
+ 124 0004 0190     		str	r0, [sp, #4]
+ 125 0006 0091     		str	r1, [sp]
+  69:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   Thread *ctp = currp;
+ 126              		.loc 2 69 0
+ 127 0008 194B     		ldr	r3, .L8
+ 128 000a 9B69     		ldr	r3, [r3, #24]
+ 129 000c 0393     		str	r3, [sp, #12]
+  70:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+  71:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   chDbgCheck(tp != NULL, "chMsgSend");
+ 130              		.loc 2 71 0
+ 131 000e 019B     		ldr	r3, [sp, #4]
+ 132 0010 002B     		cmp	r3, #0
+ 133 0012 02D1     		bne	.L5
+ 134              		.loc 2 71 0 is_stmt 0 discriminator 1
+ 135 0014 1748     		ldr	r0, .L8+4
+ 136 0016 FFF7FEFF 		bl	chDbgPanic
+ 137              	.L5:
+ 138              	.LBB2:
+  72:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+  73:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   chSysLock();
+ 139              		.loc 2 73 0 is_stmt 1
+ 140 001a 2023     		movs	r3, #32
+ 141              	@ 73 "/usr/src/chibiostest/os/kernel/src/chmsg.c" 1
+ 142 001c 83F31188 		msr     BASEPRI, r3
+ 143              	@ 0 "" 2
+ 144              		.thumb
+ 145              	.LBE2:
+ 146 0020 FFF7FEFF 		bl	dbg_check_lock
+  74:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   ctp->p_msg = msg;
+ 147              		.loc 2 74 0
+ 148 0024 039B     		ldr	r3, [sp, #12]
+ 149 0026 009A     		ldr	r2, [sp]
+ 150 0028 9A63     		str	r2, [r3, #56]
+  75:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   ctp->p_u.wtobjp = &tp->p_msgqueue;
+ 151              		.loc 2 75 0
+ 152 002a 019B     		ldr	r3, [sp, #4]
+ 153 002c 03F13002 		add	r2, r3, #48
+ 154 0030 039B     		ldr	r3, [sp, #12]
+ 155 0032 9A62     		str	r2, [r3, #40]
+  76:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   msg_insert(ctp, &tp->p_msgqueue);
+ 156              		.loc 2 76 0
+ 157 0034 019B     		ldr	r3, [sp, #4]
+ 158 0036 3033     		adds	r3, r3, #48
+ 159 0038 0398     		ldr	r0, [sp, #12]
+ 160 003a 1946     		mov	r1, r3
+ 161 003c FFF7FEFF 		bl	queue_insert
+  77:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   if (tp->p_state == THD_STATE_WTMSG)
+ 162              		.loc 2 77 0
+ 163 0040 019B     		ldr	r3, [sp, #4]
+ 164 0042 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 165 0046 0C2B     		cmp	r3, #12
+ 166 0048 02D1     		bne	.L6
+  78:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     chSchReadyI(tp);
+ 167              		.loc 2 78 0
+ 168 004a 0198     		ldr	r0, [sp, #4]
+ 169 004c FFF7FEFF 		bl	chSchReadyI
+ 170              	.L6:
+  79:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   chSchGoSleepS(THD_STATE_SNDMSGQ);
+ 171              		.loc 2 79 0
+ 172 0050 0A20     		movs	r0, #10
+ 173 0052 FFF7FEFF 		bl	chSchGoSleepS
+  80:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   msg = ctp->p_u.rdymsg;
+ 174              		.loc 2 80 0
+ 175 0056 039B     		ldr	r3, [sp, #12]
+ 176 0058 9B6A     		ldr	r3, [r3, #40]
+ 177 005a 0093     		str	r3, [sp]
+  81:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   chSysUnlock();
+ 178              		.loc 2 81 0
+ 179 005c FFF7FEFF 		bl	dbg_check_unlock
+ 180              	.LBB3:
+ 181 0060 0023     		movs	r3, #0
+ 182              	@ 81 "/usr/src/chibiostest/os/kernel/src/chmsg.c" 1
+ 183 0062 83F31188 		msr     BASEPRI, r3
+ 184              	@ 0 "" 2
+ 185              		.thumb
+ 186              	.LBE3:
+  82:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   return msg;
+ 187              		.loc 2 82 0
+ 188 0066 009B     		ldr	r3, [sp]
+  83:/usr/src/chibiostest/os/kernel/src/chmsg.c **** }
+ 189              		.loc 2 83 0
+ 190 0068 1846     		mov	r0, r3
+ 191 006a 05B0     		add	sp, sp, #20
+ 192              		@ sp needed
+ 193 006c 5DF804FB 		ldr	pc, [sp], #4
+ 194              	.L9:
+ 195              		.align	2
+ 196              	.L8:
+ 197 0070 00000000 		.word	rlist
+ 198 0074 00000000 		.word	.LC0
+ 199              		.cfi_endproc
+ 200              	.LFE7:
+ 202 0078 AFF30080 		.section	.text.chMsgWait,"ax",%progbits
+ 202      AFF30080 
+ 203              		.align	2
+ 204              		.p2align 4,,15
+ 205              		.global	chMsgWait
+ 206              		.thumb
+ 207              		.thumb_func
+ 209              	chMsgWait:
+ 210              	.LFB8:
+  84:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+  85:/usr/src/chibiostest/os/kernel/src/chmsg.c **** /**
+  86:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @brief   Suspends the thread and waits for an incoming message.
+  87:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @post    After receiving a message the function @p chMsgGet() must be
+  88:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          called in order to retrieve the message and then @p chMsgRelease()
+  89:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          must be invoked in order to acknowledge the reception and send
+  90:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          the answer.
+  91:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @note    If the message is a pointer then you can assume that the data
+  92:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          pointed by the message is stable until you invoke @p chMsgRelease()
+  93:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          because the sending thread is suspended until then.
+  94:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *
+  95:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @return              A reference to the thread carrying the message.
+  96:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *
+  97:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @api
+  98:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  */
+  99:/usr/src/chibiostest/os/kernel/src/chmsg.c **** Thread *chMsgWait(void) {
+ 211              		.loc 2 99 0
+ 212              		.cfi_startproc
+ 213              		@ args = 0, pretend = 0, frame = 8
+ 214              		@ frame_needed = 0, uses_anonymous_args = 0
+ 215 0000 00B5     		push	{lr}
+ 216              		.cfi_def_cfa_offset 4
+ 217              		.cfi_offset 14, -4
+ 218 0002 83B0     		sub	sp, sp, #12
+ 219              		.cfi_def_cfa_offset 16
+ 220              	.LBB4:
+ 100:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   Thread *tp;
+ 101:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+ 102:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   chSysLock();
+ 221              		.loc 2 102 0
+ 222 0004 2023     		movs	r3, #32
+ 223              	@ 102 "/usr/src/chibiostest/os/kernel/src/chmsg.c" 1
+ 224 0006 83F31188 		msr     BASEPRI, r3
+ 225              	@ 0 "" 2
+ 226              		.thumb
+ 227              	.LBE4:
+ 228 000a FFF7FEFF 		bl	dbg_check_lock
+ 103:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   if (!chMsgIsPendingI(currp))
+ 229              		.loc 2 103 0
+ 230 000e 104B     		ldr	r3, .L13
+ 231 0010 9B69     		ldr	r3, [r3, #24]
+ 232 0012 1A6B     		ldr	r2, [r3, #48]
+ 233 0014 0E4B     		ldr	r3, .L13
+ 234 0016 9B69     		ldr	r3, [r3, #24]
+ 235 0018 3033     		adds	r3, r3, #48
+ 236 001a 9A42     		cmp	r2, r3
+ 237 001c 02D1     		bne	.L11
+ 104:/usr/src/chibiostest/os/kernel/src/chmsg.c ****     chSchGoSleepS(THD_STATE_WTMSG);
+ 238              		.loc 2 104 0
+ 239 001e 0C20     		movs	r0, #12
+ 240 0020 FFF7FEFF 		bl	chSchGoSleepS
+ 241              	.L11:
+ 105:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   tp = fifo_remove(&currp->p_msgqueue);
+ 242              		.loc 2 105 0
+ 243 0024 0A4B     		ldr	r3, .L13
+ 244 0026 9B69     		ldr	r3, [r3, #24]
+ 245 0028 3033     		adds	r3, r3, #48
+ 246 002a 1846     		mov	r0, r3
+ 247 002c FFF7FEFF 		bl	fifo_remove
+ 248 0030 0190     		str	r0, [sp, #4]
+ 106:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   tp->p_state = THD_STATE_SNDMSG;
+ 249              		.loc 2 106 0
+ 250 0032 019B     		ldr	r3, [sp, #4]
+ 251 0034 0B22     		movs	r2, #11
+ 252 0036 83F82020 		strb	r2, [r3, #32]
+ 107:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   chSysUnlock();
+ 253              		.loc 2 107 0
+ 254 003a FFF7FEFF 		bl	dbg_check_unlock
+ 255              	.LBB5:
+ 256 003e 0023     		movs	r3, #0
+ 257              	@ 107 "/usr/src/chibiostest/os/kernel/src/chmsg.c" 1
+ 258 0040 83F31188 		msr     BASEPRI, r3
+ 259              	@ 0 "" 2
+ 260              		.thumb
+ 261              	.LBE5:
+ 108:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   return tp;
+ 262              		.loc 2 108 0
+ 263 0044 019B     		ldr	r3, [sp, #4]
+ 109:/usr/src/chibiostest/os/kernel/src/chmsg.c **** }
+ 264              		.loc 2 109 0
+ 265 0046 1846     		mov	r0, r3
+ 266 0048 03B0     		add	sp, sp, #12
+ 267              		@ sp needed
+ 268 004a 5DF804FB 		ldr	pc, [sp], #4
+ 269              	.L14:
+ 270 004e 00BF     		.align	2
+ 271              	.L13:
+ 272 0050 00000000 		.word	rlist
+ 273              		.cfi_endproc
+ 274              	.LFE8:
+ 276 0054 AFF30080 		.section	.rodata
+ 276      AFF30080 
+ 276      AFF30080 
+ 277 000e 0000     		.align	2
+ 278              	.LC1:
+ 279 0010 63684D73 		.ascii	"chMsgRelease(), #1\000"
+ 279      6752656C 
+ 279      65617365 
+ 279      28292C20 
+ 279      233100
+ 280 0023 00       		.section	.text.chMsgRelease,"ax",%progbits
+ 281              		.align	2
+ 282              		.p2align 4,,15
+ 283              		.global	chMsgRelease
+ 284              		.thumb
+ 285              		.thumb_func
+ 287              	chMsgRelease:
+ 288              	.LFB9:
+ 110:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+ 111:/usr/src/chibiostest/os/kernel/src/chmsg.c **** /**
+ 112:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @brief   Releases a sender thread specifying a response message.
+ 113:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @pre     Invoke this function only after a message has been received
+ 114:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *          using @p chMsgWait().
+ 115:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *
+ 116:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @param[in] tp        pointer to the thread
+ 117:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @param[in] msg       message to be returned to the sender
+ 118:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  *
+ 119:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  * @api
+ 120:/usr/src/chibiostest/os/kernel/src/chmsg.c ****  */
+ 121:/usr/src/chibiostest/os/kernel/src/chmsg.c **** void chMsgRelease(Thread *tp, msg_t msg) {
+ 289              		.loc 2 121 0
+ 290              		.cfi_startproc
+ 291              		@ args = 0, pretend = 0, frame = 8
+ 292              		@ frame_needed = 0, uses_anonymous_args = 0
+ 293 0000 00B5     		push	{lr}
+ 294              		.cfi_def_cfa_offset 4
+ 295              		.cfi_offset 14, -4
+ 296 0002 83B0     		sub	sp, sp, #12
+ 297              		.cfi_def_cfa_offset 16
+ 298 0004 0190     		str	r0, [sp, #4]
+ 299 0006 0091     		str	r1, [sp]
+ 300              	.LBB6:
+ 122:/usr/src/chibiostest/os/kernel/src/chmsg.c **** 
+ 123:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   chSysLock();
+ 301              		.loc 2 123 0
+ 302 0008 2023     		movs	r3, #32
+ 303              	@ 123 "/usr/src/chibiostest/os/kernel/src/chmsg.c" 1
+ 304 000a 83F31188 		msr     BASEPRI, r3
+ 305              	@ 0 "" 2
+ 306              		.thumb
+ 307              	.LBE6:
+ 308 000e FFF7FEFF 		bl	dbg_check_lock
+ 124:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   chDbgAssert(tp->p_state == THD_STATE_SNDMSG,
+ 309              		.loc 2 124 0
+ 310 0012 019B     		ldr	r3, [sp, #4]
+ 311 0014 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 312 0018 0B2B     		cmp	r3, #11
+ 313 001a 02D0     		beq	.L16
+ 314              		.loc 2 124 0 is_stmt 0 discriminator 1
+ 315 001c 0748     		ldr	r0, .L17
+ 316 001e FFF7FEFF 		bl	chDbgPanic
+ 317              	.L16:
+ 125:/usr/src/chibiostest/os/kernel/src/chmsg.c ****               "chMsgRelease(), #1", "invalid state");
+ 126:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   chMsgReleaseS(tp, msg);
+ 318              		.loc 2 126 0 is_stmt 1
+ 319 0022 0198     		ldr	r0, [sp, #4]
+ 320 0024 0099     		ldr	r1, [sp]
+ 321 0026 FFF7FEFF 		bl	chSchWakeupS
+ 127:/usr/src/chibiostest/os/kernel/src/chmsg.c ****   chSysUnlock();
+ 322              		.loc 2 127 0
+ 323 002a FFF7FEFF 		bl	dbg_check_unlock
+ 324              	.LBB7:
+ 325 002e 0023     		movs	r3, #0
+ 326              	@ 127 "/usr/src/chibiostest/os/kernel/src/chmsg.c" 1
+ 327 0030 83F31188 		msr     BASEPRI, r3
+ 328              	@ 0 "" 2
+ 329              		.thumb
+ 330              	.LBE7:
+ 128:/usr/src/chibiostest/os/kernel/src/chmsg.c **** }
+ 331              		.loc 2 128 0
+ 332 0034 03B0     		add	sp, sp, #12
+ 333              		@ sp needed
+ 334 0036 5DF804FB 		ldr	pc, [sp], #4
+ 335              	.L18:
+ 336 003a 00BF     		.align	2
+ 337              	.L17:
+ 338 003c 10000000 		.word	.LC1
+ 339              		.cfi_endproc
+ 340              	.LFE9:
+ 342              		.text
+ 343              	.Letext0:
+ 344              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 345              		.file 4 "/usr/include/newlib/stdint.h"
+ 346              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 347              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 348              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 349              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 350              		.file 9 "/usr/src/chibiostest/os/kernel/include/chschd.h"
+ 351              		.file 10 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chmsg.c
+     /tmp/ccmmsCFl.s:20     .text.queue_insert:0000000000000000 $t
+     /tmp/ccmmsCFl.s:25     .text.queue_insert:0000000000000000 queue_insert
+     /tmp/ccmmsCFl.s:63     .text.fifo_remove:0000000000000000 $t
+     /tmp/ccmmsCFl.s:68     .text.fifo_remove:0000000000000000 fifo_remove
+     /tmp/ccmmsCFl.s:102    .rodata:0000000000000000 $d
+     /tmp/ccmmsCFl.s:106    .text.chMsgSend:0000000000000000 $t
+     /tmp/ccmmsCFl.s:112    .text.chMsgSend:0000000000000000 chMsgSend
+     /tmp/ccmmsCFl.s:197    .text.chMsgSend:0000000000000070 $d
+     /tmp/ccmmsCFl.s:203    .text.chMsgWait:0000000000000000 $t
+     /tmp/ccmmsCFl.s:209    .text.chMsgWait:0000000000000000 chMsgWait
+     /tmp/ccmmsCFl.s:272    .text.chMsgWait:0000000000000050 $d
+     /tmp/ccmmsCFl.s:281    .text.chMsgRelease:0000000000000000 $t
+     /tmp/ccmmsCFl.s:287    .text.chMsgRelease:0000000000000000 chMsgRelease
+     /tmp/ccmmsCFl.s:338    .text.chMsgRelease:000000000000003c $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccmmsCFl.s:202    .text.chMsgSend:0000000000000078 $t
+     /tmp/ccmmsCFl.s:276    .text.chMsgWait:0000000000000054 $t
+
+UNDEFINED SYMBOLS
+chDbgPanic
+dbg_check_lock
+chSchReadyI
+chSchGoSleepS
+dbg_check_unlock
+rlist
+chSchWakeupS

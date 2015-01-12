@@ -1,0 +1,1800 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chsem.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.queue_insert,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.thumb
+  23              		.thumb_func
+  25              	queue_insert:
+  26              	.LFB1:
+  27              		.file 1 "/usr/src/chibiostest/os/kernel/include/chinline.h"
+   1:/usr/src/chibiostest/os/kernel/include/chinline.h **** /*
+   2:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/include/chinline.h ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   5:/usr/src/chibiostest/os/kernel/include/chinline.h ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   7:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/include/chinline.h ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/include/chinline.h ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/include/chinline.h ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  12:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/include/chinline.h ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/include/chinline.h ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/include/chinline.h ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  17:/usr/src/chibiostest/os/kernel/include/chinline.h ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/include/chinline.h ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/include/chinline.h **** */
+  20:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  21:/usr/src/chibiostest/os/kernel/include/chinline.h **** /**
+  22:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @file    chinline.h
+  23:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @brief   Kernel inlined functions.
+  24:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @details In this file there are a set of inlined functions if the
+  25:/usr/src/chibiostest/os/kernel/include/chinline.h ****  *          @p CH_OPTIMIZE_SPEED is enabled.
+  26:/usr/src/chibiostest/os/kernel/include/chinline.h ****  */
+  27:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  28:/usr/src/chibiostest/os/kernel/include/chinline.h **** #ifndef _CHINLINE_H_
+  29:/usr/src/chibiostest/os/kernel/include/chinline.h **** #define _CHINLINE_H_
+  30:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  31:/usr/src/chibiostest/os/kernel/include/chinline.h **** /* If the performance code path has been chosen then all the following
+  32:/usr/src/chibiostest/os/kernel/include/chinline.h ****    functions are inlined into the various kernel modules.*/
+  33:/usr/src/chibiostest/os/kernel/include/chinline.h **** #if CH_OPTIMIZE_SPEED
+  34:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void prio_insert(Thread *tp, ThreadsQueue *tqp) {
+  35:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  36:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *cp = (Thread *)tqp;
+  37:/usr/src/chibiostest/os/kernel/include/chinline.h ****   do {
+  38:/usr/src/chibiostest/os/kernel/include/chinline.h ****     cp = cp->p_next;
+  39:/usr/src/chibiostest/os/kernel/include/chinline.h ****   } while ((cp != (Thread *)tqp) && (cp->p_prio >= tp->p_prio));
+  40:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = cp;
+  41:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = cp->p_prev;
+  42:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = cp->p_prev = tp;
+  43:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  44:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  45:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void queue_insert(Thread *tp, ThreadsQueue *tqp) {
+  28              		.loc 1 45 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33 0000 82B0     		sub	sp, sp, #8
+  34              		.cfi_def_cfa_offset 8
+  35 0002 0190     		str	r0, [sp, #4]
+  36 0004 0091     		str	r1, [sp]
+  46:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  47:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = (Thread *)tqp;
+  37              		.loc 1 47 0
+  38 0006 019B     		ldr	r3, [sp, #4]
+  39 0008 009A     		ldr	r2, [sp]
+  40 000a 1A60     		str	r2, [r3]
+  48:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = tqp->p_prev;
+  41              		.loc 1 48 0
+  42 000c 009B     		ldr	r3, [sp]
+  43 000e 5A68     		ldr	r2, [r3, #4]
+  44 0010 019B     		ldr	r3, [sp, #4]
+  45 0012 5A60     		str	r2, [r3, #4]
+  49:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = tqp->p_prev = tp;
+  46              		.loc 1 49 0
+  47 0014 019B     		ldr	r3, [sp, #4]
+  48 0016 5B68     		ldr	r3, [r3, #4]
+  49 0018 009A     		ldr	r2, [sp]
+  50 001a 0199     		ldr	r1, [sp, #4]
+  51 001c 5160     		str	r1, [r2, #4]
+  52 001e 009A     		ldr	r2, [sp]
+  53 0020 5268     		ldr	r2, [r2, #4]
+  54 0022 1A60     		str	r2, [r3]
+  50:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  55              		.loc 1 50 0
+  56 0024 02B0     		add	sp, sp, #8
+  57              		@ sp needed
+  58 0026 7047     		bx	lr
+  59              		.cfi_endproc
+  60              	.LFE1:
+  62 0028 AFF30080 		.section	.text.fifo_remove,"ax",%progbits
+  62      AFF30080 
+  63              		.align	2
+  64              		.p2align 4,,15
+  65              		.thumb
+  66              		.thumb_func
+  68              	fifo_remove:
+  69              	.LFB2:
+  51:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  52:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *fifo_remove(ThreadsQueue *tqp) {
+  70              		.loc 1 52 0
+  71              		.cfi_startproc
+  72              		@ args = 0, pretend = 0, frame = 16
+  73              		@ frame_needed = 0, uses_anonymous_args = 0
+  74              		@ link register save eliminated.
+  75 0000 84B0     		sub	sp, sp, #16
+  76              		.cfi_def_cfa_offset 16
+  77 0002 0190     		str	r0, [sp, #4]
+  53:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *tp = tqp->p_next;
+  78              		.loc 1 53 0
+  79 0004 019B     		ldr	r3, [sp, #4]
+  80 0006 1B68     		ldr	r3, [r3]
+  81 0008 0393     		str	r3, [sp, #12]
+  54:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  55:/usr/src/chibiostest/os/kernel/include/chinline.h ****   (tqp->p_next = tp->p_next)->p_prev = (Thread *)tqp;
+  82              		.loc 1 55 0
+  83 000a 039B     		ldr	r3, [sp, #12]
+  84 000c 1A68     		ldr	r2, [r3]
+  85 000e 019B     		ldr	r3, [sp, #4]
+  86 0010 1A60     		str	r2, [r3]
+  87 0012 019B     		ldr	r3, [sp, #4]
+  88 0014 1B68     		ldr	r3, [r3]
+  89 0016 019A     		ldr	r2, [sp, #4]
+  90 0018 5A60     		str	r2, [r3, #4]
+  56:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+  91              		.loc 1 56 0
+  92 001a 039B     		ldr	r3, [sp, #12]
+  57:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  93              		.loc 1 57 0
+  94 001c 1846     		mov	r0, r3
+  95 001e 04B0     		add	sp, sp, #16
+  96              		@ sp needed
+  97 0020 7047     		bx	lr
+  98              		.cfi_endproc
+  99              	.LFE2:
+ 101 0022 00BFAFF3 		.section	.text.lifo_remove,"ax",%progbits
+ 101      0080AFF3 
+ 101      0080AFF3 
+ 101      0080
+ 102              		.align	2
+ 103              		.p2align 4,,15
+ 104              		.thumb
+ 105              		.thumb_func
+ 107              	lifo_remove:
+ 108              	.LFB3:
+  58:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  59:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *lifo_remove(ThreadsQueue *tqp) {
+ 109              		.loc 1 59 0
+ 110              		.cfi_startproc
+ 111              		@ args = 0, pretend = 0, frame = 16
+ 112              		@ frame_needed = 0, uses_anonymous_args = 0
+ 113              		@ link register save eliminated.
+ 114 0000 84B0     		sub	sp, sp, #16
+ 115              		.cfi_def_cfa_offset 16
+ 116 0002 0190     		str	r0, [sp, #4]
+  60:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *tp = tqp->p_prev;
+ 117              		.loc 1 60 0
+ 118 0004 019B     		ldr	r3, [sp, #4]
+ 119 0006 5B68     		ldr	r3, [r3, #4]
+ 120 0008 0393     		str	r3, [sp, #12]
+  61:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  62:/usr/src/chibiostest/os/kernel/include/chinline.h ****   (tqp->p_prev = tp->p_prev)->p_next = (Thread *)tqp;
+ 121              		.loc 1 62 0
+ 122 000a 039B     		ldr	r3, [sp, #12]
+ 123 000c 5A68     		ldr	r2, [r3, #4]
+ 124 000e 019B     		ldr	r3, [sp, #4]
+ 125 0010 5A60     		str	r2, [r3, #4]
+ 126 0012 019B     		ldr	r3, [sp, #4]
+ 127 0014 5B68     		ldr	r3, [r3, #4]
+ 128 0016 019A     		ldr	r2, [sp, #4]
+ 129 0018 1A60     		str	r2, [r3]
+  63:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+ 130              		.loc 1 63 0
+ 131 001a 039B     		ldr	r3, [sp, #12]
+  64:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+ 132              		.loc 1 64 0
+ 133 001c 1846     		mov	r0, r3
+ 134 001e 04B0     		add	sp, sp, #16
+ 135              		@ sp needed
+ 136 0020 7047     		bx	lr
+ 137              		.cfi_endproc
+ 138              	.LFE3:
+ 140 0022 00BFAFF3 		.section	.rodata
+ 140      0080AFF3 
+ 140      0080AFF3 
+ 140      0080
+ 141              		.align	2
+ 142              	.LC0:
+ 143 0000 22636853 		.ascii	"\"chSemInit\"()\000"
+ 143      656D496E 
+ 143      69742228 
+ 143      2900
+ 144              		.section	.text.chSemInit,"ax",%progbits
+ 145              		.align	2
+ 146              		.p2align 4,,15
+ 147              		.global	chSemInit
+ 148              		.thumb
+ 149              		.thumb_func
+ 151              	chSemInit:
+ 152              	.LFB7:
+ 153              		.file 2 "/usr/src/chibiostest/os/kernel/src/chsem.c"
+   1:/usr/src/chibiostest/os/kernel/src/chsem.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chsem.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chsem.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chsem.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chsem.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chsem.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chsem.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chsem.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chsem.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chsem.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chsem.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chsem.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chsem.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chsem.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chsem.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+  21:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+  22:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @file    chsem.c
+  23:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Semaphores code.
+  24:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+  25:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @addtogroup semaphores
+  26:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @details Semaphores related APIs and services.
+  27:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+  28:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          <h2>Operation mode</h2>
+  29:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          Semaphores are a flexible synchronization primitive, ChibiOS/RT
+  30:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          implements semaphores in their "counting semaphores" variant as
+  31:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          defined by Edsger Dijkstra plus several enhancements like:
+  32:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          - Wait operation with timeout.
+  33:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          - Reset operation.
+  34:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          - Atomic wait+signal operation.
+  35:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          - Return message from the wait operation (OK, RESET, TIMEOUT).
+  36:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          .
+  37:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          The binary semaphores variant can be easily implemented using
+  38:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          counting semaphores.<br>
+  39:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          Operations defined for semaphores:
+  40:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          - <b>Signal</b>: The semaphore counter is increased and if the
+  41:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *            result is non-positive then a waiting thread is removed from
+  42:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *            the semaphore queue and made ready for execution.
+  43:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          - <b>Wait</b>: The semaphore counter is decreased and if the result
+  44:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *            becomes negative the thread is queued in the semaphore and
+  45:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *            suspended.
+  46:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          - <b>Reset</b>: The semaphore counter is reset to a non-negative
+  47:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *            value and all the threads in the queue are released.
+  48:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          .
+  49:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          Semaphores can be used as guards for mutual exclusion zones
+  50:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          (note that mutexes are recommended for this kind of use) but
+  51:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          also have other uses, queues guards and counters for example.<br>
+  52:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          Semaphores usually use a FIFO queuing strategy but it is possible
+  53:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          to make them order threads by priority by enabling
+  54:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          @p CH_USE_SEMAPHORES_PRIORITY in @p chconf.h.
+  55:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @pre     In order to use the semaphore APIs the @p CH_USE_SEMAPHORES
+  56:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          option must be enabled in @p chconf.h.
+  57:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @{
+  58:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+  59:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+  60:/usr/src/chibiostest/os/kernel/src/chsem.c **** #include "ch.h"
+  61:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+  62:/usr/src/chibiostest/os/kernel/src/chsem.c **** #if CH_USE_SEMAPHORES || defined(__DOXYGEN__)
+  63:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+  64:/usr/src/chibiostest/os/kernel/src/chsem.c **** #if CH_USE_SEMAPHORES_PRIORITY
+  65:/usr/src/chibiostest/os/kernel/src/chsem.c **** #define sem_insert(tp, qp) prio_insert(tp, qp)
+  66:/usr/src/chibiostest/os/kernel/src/chsem.c **** #else
+  67:/usr/src/chibiostest/os/kernel/src/chsem.c **** #define sem_insert(tp, qp) queue_insert(tp, qp)
+  68:/usr/src/chibiostest/os/kernel/src/chsem.c **** #endif
+  69:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+  70:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+  71:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Initializes a semaphore with the specified counter value.
+  72:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+  73:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[out] sp       pointer to a @p Semaphore structure
+  74:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] n         initial value of the semaphore counter. Must be
+  75:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      non-negative.
+  76:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+  77:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @init
+  78:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+  79:/usr/src/chibiostest/os/kernel/src/chsem.c **** void chSemInit(Semaphore *sp, cnt_t n) {
+ 154              		.loc 2 79 0
+ 155              		.cfi_startproc
+ 156              		@ args = 0, pretend = 0, frame = 8
+ 157              		@ frame_needed = 0, uses_anonymous_args = 0
+ 158 0000 00B5     		push	{lr}
+ 159              		.cfi_def_cfa_offset 4
+ 160              		.cfi_offset 14, -4
+ 161 0002 83B0     		sub	sp, sp, #12
+ 162              		.cfi_def_cfa_offset 16
+ 163 0004 0190     		str	r0, [sp, #4]
+ 164 0006 0091     		str	r1, [sp]
+  80:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+  81:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheck((sp != NULL) && (n >= 0), "chSemInit");
+ 165              		.loc 2 81 0
+ 166 0008 019B     		ldr	r3, [sp, #4]
+ 167 000a 002B     		cmp	r3, #0
+ 168 000c 02D0     		beq	.L7
+ 169              		.loc 2 81 0 is_stmt 0 discriminator 2
+ 170 000e 009B     		ldr	r3, [sp]
+ 171 0010 002B     		cmp	r3, #0
+ 172 0012 02DA     		bge	.L8
+ 173              	.L7:
+ 174              		.loc 2 81 0 discriminator 1
+ 175 0014 0748     		ldr	r0, .L9
+ 176 0016 FFF7FEFF 		bl	chDbgPanic
+ 177              	.L8:
+  82:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+  83:/usr/src/chibiostest/os/kernel/src/chsem.c ****   queue_init(&sp->s_queue);
+ 178              		.loc 2 83 0 is_stmt 1
+ 179 001a 019A     		ldr	r2, [sp, #4]
+ 180 001c 019B     		ldr	r3, [sp, #4]
+ 181 001e 5A60     		str	r2, [r3, #4]
+ 182 0020 019B     		ldr	r3, [sp, #4]
+ 183 0022 5A68     		ldr	r2, [r3, #4]
+ 184 0024 019B     		ldr	r3, [sp, #4]
+ 185 0026 1A60     		str	r2, [r3]
+  84:/usr/src/chibiostest/os/kernel/src/chsem.c ****   sp->s_cnt = n;
+ 186              		.loc 2 84 0
+ 187 0028 019B     		ldr	r3, [sp, #4]
+ 188 002a 009A     		ldr	r2, [sp]
+ 189 002c 9A60     		str	r2, [r3, #8]
+  85:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 190              		.loc 2 85 0
+ 191 002e 03B0     		add	sp, sp, #12
+ 192              		@ sp needed
+ 193 0030 5DF804FB 		ldr	pc, [sp], #4
+ 194              	.L10:
+ 195              		.align	2
+ 196              	.L9:
+ 197 0034 00000000 		.word	.LC0
+ 198              		.cfi_endproc
+ 199              	.LFE7:
+ 201 0038 AFF30080 		.section	.text.chSemReset,"ax",%progbits
+ 201      AFF30080 
+ 202              		.align	2
+ 203              		.p2align 4,,15
+ 204              		.global	chSemReset
+ 205              		.thumb
+ 206              		.thumb_func
+ 208              	chSemReset:
+ 209              	.LFB8:
+  86:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+  87:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+  88:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Performs a reset operation on the semaphore.
+  89:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @post    After invoking this function all the threads waiting on the
+  90:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          semaphore, if any, are released and the semaphore counter is set
+  91:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          to the specified, non negative, value.
+  92:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @note    The released threads can recognize they were waked up by a reset
+  93:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          rather than a signal because the @p chSemWait() will return
+  94:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          @p RDY_RESET instead of @p RDY_OK.
+  95:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+  96:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] sp        pointer to a @p Semaphore structure
+  97:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] n         the new value of the semaphore counter. The value must
+  98:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      be non-negative.
+  99:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 100:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @api
+ 101:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+ 102:/usr/src/chibiostest/os/kernel/src/chsem.c **** void chSemReset(Semaphore *sp, cnt_t n) {
+ 210              		.loc 2 102 0
+ 211              		.cfi_startproc
+ 212              		@ args = 0, pretend = 0, frame = 8
+ 213              		@ frame_needed = 0, uses_anonymous_args = 0
+ 214 0000 00B5     		push	{lr}
+ 215              		.cfi_def_cfa_offset 4
+ 216              		.cfi_offset 14, -4
+ 217 0002 83B0     		sub	sp, sp, #12
+ 218              		.cfi_def_cfa_offset 16
+ 219 0004 0190     		str	r0, [sp, #4]
+ 220 0006 0091     		str	r1, [sp]
+ 221              	.LBB2:
+ 103:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 104:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSysLock();
+ 222              		.loc 2 104 0
+ 223 0008 2023     		movs	r3, #32
+ 224              	@ 104 "/usr/src/chibiostest/os/kernel/src/chsem.c" 1
+ 225 000a 83F31188 		msr     BASEPRI, r3
+ 226              	@ 0 "" 2
+ 227              		.thumb
+ 228              	.LBE2:
+ 229 000e FFF7FEFF 		bl	dbg_check_lock
+ 105:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSemResetI(sp, n);
+ 230              		.loc 2 105 0
+ 231 0012 0198     		ldr	r0, [sp, #4]
+ 232 0014 0099     		ldr	r1, [sp]
+ 233 0016 FFF7FEFF 		bl	chSemResetI
+ 106:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSchRescheduleS();
+ 234              		.loc 2 106 0
+ 235 001a FFF7FEFF 		bl	chSchRescheduleS
+ 107:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSysUnlock();
+ 236              		.loc 2 107 0
+ 237 001e FFF7FEFF 		bl	dbg_check_unlock
+ 238              	.LBB3:
+ 239 0022 0023     		movs	r3, #0
+ 240              	@ 107 "/usr/src/chibiostest/os/kernel/src/chsem.c" 1
+ 241 0024 83F31188 		msr     BASEPRI, r3
+ 242              	@ 0 "" 2
+ 243              		.thumb
+ 244              	.LBE3:
+ 108:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 245              		.loc 2 108 0
+ 246 0028 03B0     		add	sp, sp, #12
+ 247              		@ sp needed
+ 248 002a 5DF804FB 		ldr	pc, [sp], #4
+ 249              		.cfi_endproc
+ 250              	.LFE8:
+ 252 002e 00BF     		.section	.rodata
+ 253 000e 0000     		.align	2
+ 254              	.LC1:
+ 255 0010 22636853 		.ascii	"\"chSemResetI\"()\000"
+ 255      656D5265 
+ 255      73657449 
+ 255      22282900 
+ 256              		.align	2
+ 257              	.LC2:
+ 258 0020 63685365 		.ascii	"chSemResetI(), #1\000"
+ 258      6D526573 
+ 258      65744928 
+ 258      292C2023 
+ 258      3100
+ 259              		.section	.text.chSemResetI,"ax",%progbits
+ 260              		.align	2
+ 261              		.p2align 4,,15
+ 262              		.global	chSemResetI
+ 263              		.thumb
+ 264              		.thumb_func
+ 266              	chSemResetI:
+ 267              	.LFB9:
+ 109:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 110:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+ 111:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Performs a reset operation on the semaphore.
+ 112:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @post    After invoking this function all the threads waiting on the
+ 113:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          semaphore, if any, are released and the semaphore counter is set
+ 114:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          to the specified, non negative, value.
+ 115:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @post    This function does not reschedule so a call to a rescheduling
+ 116:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          function must be performed before unlocking the kernel. Note that
+ 117:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          interrupt handlers always reschedule on exit so an explicit
+ 118:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          reschedule must not be performed in ISRs.
+ 119:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @note    The released threads can recognize they were waked up by a reset
+ 120:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          rather than a signal because the @p chSemWait() will return
+ 121:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          @p RDY_RESET instead of @p RDY_OK.
+ 122:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 123:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] sp        pointer to a @p Semaphore structure
+ 124:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] n         the new value of the semaphore counter. The value must
+ 125:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      be non-negative.
+ 126:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 127:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @iclass
+ 128:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+ 129:/usr/src/chibiostest/os/kernel/src/chsem.c **** void chSemResetI(Semaphore *sp, cnt_t n) {
+ 268              		.loc 2 129 0
+ 269              		.cfi_startproc
+ 270              		@ args = 0, pretend = 0, frame = 16
+ 271              		@ frame_needed = 0, uses_anonymous_args = 0
+ 272 0000 00B5     		push	{lr}
+ 273              		.cfi_def_cfa_offset 4
+ 274              		.cfi_offset 14, -4
+ 275 0002 85B0     		sub	sp, sp, #20
+ 276              		.cfi_def_cfa_offset 24
+ 277 0004 0190     		str	r0, [sp, #4]
+ 278 0006 0091     		str	r1, [sp]
+ 130:/usr/src/chibiostest/os/kernel/src/chsem.c ****   cnt_t cnt;
+ 131:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 132:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheckClassI();
+ 279              		.loc 2 132 0
+ 280 0008 FFF7FEFF 		bl	chDbgCheckClassI
+ 133:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheck((sp != NULL) && (n >= 0), "chSemResetI");
+ 281              		.loc 2 133 0
+ 282 000c 019B     		ldr	r3, [sp, #4]
+ 283 000e 002B     		cmp	r3, #0
+ 284 0010 02D0     		beq	.L13
+ 285              		.loc 2 133 0 is_stmt 0 discriminator 2
+ 286 0012 009B     		ldr	r3, [sp]
+ 287 0014 002B     		cmp	r3, #0
+ 288 0016 02DA     		bge	.L14
+ 289              	.L13:
+ 290              		.loc 2 133 0 discriminator 1
+ 291 0018 1948     		ldr	r0, .L20
+ 292 001a FFF7FEFF 		bl	chDbgPanic
+ 293              	.L14:
+ 134:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgAssert(((sp->s_cnt >= 0) && isempty(&sp->s_queue)) ||
+ 294              		.loc 2 134 0 is_stmt 1
+ 295 001e 019B     		ldr	r3, [sp, #4]
+ 296 0020 9B68     		ldr	r3, [r3, #8]
+ 297 0022 002B     		cmp	r3, #0
+ 298 0024 04DB     		blt	.L15
+ 299              		.loc 2 134 0 is_stmt 0 discriminator 2
+ 300 0026 019B     		ldr	r3, [sp, #4]
+ 301 0028 1A68     		ldr	r2, [r3]
+ 302 002a 019B     		ldr	r3, [sp, #4]
+ 303 002c 9A42     		cmp	r2, r3
+ 304 002e 0BD0     		beq	.L16
+ 305              	.L15:
+ 306              		.loc 2 134 0 discriminator 1
+ 307 0030 019B     		ldr	r3, [sp, #4]
+ 308 0032 9B68     		ldr	r3, [r3, #8]
+ 309 0034 002B     		cmp	r3, #0
+ 310 0036 04DA     		bge	.L17
+ 311              		.loc 2 134 0 discriminator 2
+ 312 0038 019B     		ldr	r3, [sp, #4]
+ 313 003a 1A68     		ldr	r2, [r3]
+ 314 003c 019B     		ldr	r3, [sp, #4]
+ 315 003e 9A42     		cmp	r2, r3
+ 316 0040 02D1     		bne	.L16
+ 317              	.L17:
+ 318              		.loc 2 134 0 discriminator 1
+ 319 0042 1048     		ldr	r0, .L20+4
+ 320 0044 FFF7FEFF 		bl	chDbgPanic
+ 321              	.L16:
+ 135:/usr/src/chibiostest/os/kernel/src/chsem.c ****               ((sp->s_cnt < 0) && notempty(&sp->s_queue)),
+ 136:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "chSemResetI(), #1",
+ 137:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "inconsistent semaphore");
+ 138:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 139:/usr/src/chibiostest/os/kernel/src/chsem.c ****   cnt = sp->s_cnt;
+ 322              		.loc 2 139 0 is_stmt 1
+ 323 0048 019B     		ldr	r3, [sp, #4]
+ 324 004a 9B68     		ldr	r3, [r3, #8]
+ 325 004c 0393     		str	r3, [sp, #12]
+ 140:/usr/src/chibiostest/os/kernel/src/chsem.c ****   sp->s_cnt = n;
+ 326              		.loc 2 140 0
+ 327 004e 019B     		ldr	r3, [sp, #4]
+ 328 0050 009A     		ldr	r2, [sp]
+ 329 0052 9A60     		str	r2, [r3, #8]
+ 141:/usr/src/chibiostest/os/kernel/src/chsem.c ****   while (++cnt <= 0)
+ 330              		.loc 2 141 0
+ 331 0054 0BE0     		b	.L18
+ 332              	.L19:
+ 142:/usr/src/chibiostest/os/kernel/src/chsem.c ****     chSchReadyI(lifo_remove(&sp->s_queue))->p_u.rdymsg = RDY_RESET;
+ 333              		.loc 2 142 0
+ 334 0056 019B     		ldr	r3, [sp, #4]
+ 335 0058 1846     		mov	r0, r3
+ 336 005a FFF7FEFF 		bl	lifo_remove
+ 337 005e 0346     		mov	r3, r0
+ 338 0060 1846     		mov	r0, r3
+ 339 0062 FFF7FEFF 		bl	chSchReadyI
+ 340 0066 0346     		mov	r3, r0
+ 341 0068 6FF00102 		mvn	r2, #1
+ 342 006c 9A62     		str	r2, [r3, #40]
+ 343              	.L18:
+ 141:/usr/src/chibiostest/os/kernel/src/chsem.c ****   while (++cnt <= 0)
+ 344              		.loc 2 141 0 discriminator 1
+ 345 006e 039B     		ldr	r3, [sp, #12]
+ 346 0070 0133     		adds	r3, r3, #1
+ 347 0072 0393     		str	r3, [sp, #12]
+ 348 0074 039B     		ldr	r3, [sp, #12]
+ 349 0076 002B     		cmp	r3, #0
+ 350 0078 EDDD     		ble	.L19
+ 143:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 351              		.loc 2 143 0
+ 352 007a 05B0     		add	sp, sp, #20
+ 353              		@ sp needed
+ 354 007c 5DF804FB 		ldr	pc, [sp], #4
+ 355              	.L21:
+ 356              		.align	2
+ 357              	.L20:
+ 358 0080 10000000 		.word	.LC1
+ 359 0084 20000000 		.word	.LC2
+ 360              		.cfi_endproc
+ 361              	.LFE9:
+ 363 0088 AFF30080 		.section	.text.chSemWait,"ax",%progbits
+ 363      AFF30080 
+ 364              		.align	2
+ 365              		.p2align 4,,15
+ 366              		.global	chSemWait
+ 367              		.thumb
+ 368              		.thumb_func
+ 370              	chSemWait:
+ 371              	.LFB10:
+ 144:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 145:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+ 146:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Performs a wait operation on a semaphore.
+ 147:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 148:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] sp        pointer to a @p Semaphore structure
+ 149:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @return              A message specifying how the invoking thread has been
+ 150:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      released from the semaphore.
+ 151:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_OK       if the thread has not stopped on the semaphore or the
+ 152:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      semaphore has been signaled.
+ 153:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_RESET    if the semaphore has been reset using @p chSemReset().
+ 154:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 155:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @api
+ 156:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+ 157:/usr/src/chibiostest/os/kernel/src/chsem.c **** msg_t chSemWait(Semaphore *sp) {
+ 372              		.loc 2 157 0
+ 373              		.cfi_startproc
+ 374              		@ args = 0, pretend = 0, frame = 16
+ 375              		@ frame_needed = 0, uses_anonymous_args = 0
+ 376 0000 00B5     		push	{lr}
+ 377              		.cfi_def_cfa_offset 4
+ 378              		.cfi_offset 14, -4
+ 379 0002 85B0     		sub	sp, sp, #20
+ 380              		.cfi_def_cfa_offset 24
+ 381 0004 0190     		str	r0, [sp, #4]
+ 382              	.LBB4:
+ 158:/usr/src/chibiostest/os/kernel/src/chsem.c ****   msg_t msg;
+ 159:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 160:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSysLock();
+ 383              		.loc 2 160 0
+ 384 0006 2023     		movs	r3, #32
+ 385              	@ 160 "/usr/src/chibiostest/os/kernel/src/chsem.c" 1
+ 386 0008 83F31188 		msr     BASEPRI, r3
+ 387              	@ 0 "" 2
+ 388              		.thumb
+ 389              	.LBE4:
+ 390 000c FFF7FEFF 		bl	dbg_check_lock
+ 161:/usr/src/chibiostest/os/kernel/src/chsem.c ****   msg = chSemWaitS(sp);
+ 391              		.loc 2 161 0
+ 392 0010 0198     		ldr	r0, [sp, #4]
+ 393 0012 FFF7FEFF 		bl	chSemWaitS
+ 394 0016 0390     		str	r0, [sp, #12]
+ 162:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSysUnlock();
+ 395              		.loc 2 162 0
+ 396 0018 FFF7FEFF 		bl	dbg_check_unlock
+ 397              	.LBB5:
+ 398 001c 0023     		movs	r3, #0
+ 399              	@ 162 "/usr/src/chibiostest/os/kernel/src/chsem.c" 1
+ 400 001e 83F31188 		msr     BASEPRI, r3
+ 401              	@ 0 "" 2
+ 402              		.thumb
+ 403              	.LBE5:
+ 163:/usr/src/chibiostest/os/kernel/src/chsem.c ****   return msg;
+ 404              		.loc 2 163 0
+ 405 0022 039B     		ldr	r3, [sp, #12]
+ 164:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 406              		.loc 2 164 0
+ 407 0024 1846     		mov	r0, r3
+ 408 0026 05B0     		add	sp, sp, #20
+ 409              		@ sp needed
+ 410 0028 5DF804FB 		ldr	pc, [sp], #4
+ 411              		.cfi_endproc
+ 412              	.LFE10:
+ 414 002c AFF30080 		.section	.rodata
+ 415 0032 0000     		.align	2
+ 416              	.LC3:
+ 417 0034 22636853 		.ascii	"\"chSemWaitS\"()\000"
+ 417      656D5761 
+ 417      69745322 
+ 417      282900
+ 418 0043 00       		.align	2
+ 419              	.LC4:
+ 420 0044 63685365 		.ascii	"chSemWaitS(), #1\000"
+ 420      6D576169 
+ 420      74532829 
+ 420      2C202331 
+ 420      00
+ 421              		.section	.text.chSemWaitS,"ax",%progbits
+ 422              		.align	2
+ 423              		.p2align 4,,15
+ 424              		.global	chSemWaitS
+ 425              		.thumb
+ 426              		.thumb_func
+ 428              	chSemWaitS:
+ 429              	.LFB11:
+ 165:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 166:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+ 167:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Performs a wait operation on a semaphore.
+ 168:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 169:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] sp        pointer to a @p Semaphore structure
+ 170:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @return              A message specifying how the invoking thread has been
+ 171:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      released from the semaphore.
+ 172:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_OK       if the thread has not stopped on the semaphore or the
+ 173:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      semaphore has been signaled.
+ 174:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_RESET    if the semaphore has been reset using @p chSemReset().
+ 175:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 176:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @sclass
+ 177:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+ 178:/usr/src/chibiostest/os/kernel/src/chsem.c **** msg_t chSemWaitS(Semaphore *sp) {
+ 430              		.loc 2 178 0
+ 431              		.cfi_startproc
+ 432              		@ args = 0, pretend = 0, frame = 8
+ 433              		@ frame_needed = 0, uses_anonymous_args = 0
+ 434 0000 00B5     		push	{lr}
+ 435              		.cfi_def_cfa_offset 4
+ 436              		.cfi_offset 14, -4
+ 437 0002 83B0     		sub	sp, sp, #12
+ 438              		.cfi_def_cfa_offset 16
+ 439 0004 0190     		str	r0, [sp, #4]
+ 179:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 180:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheckClassS();
+ 440              		.loc 2 180 0
+ 441 0006 FFF7FEFF 		bl	chDbgCheckClassS
+ 181:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheck(sp != NULL, "chSemWaitS");
+ 442              		.loc 2 181 0
+ 443 000a 019B     		ldr	r3, [sp, #4]
+ 444 000c 002B     		cmp	r3, #0
+ 445 000e 02D1     		bne	.L25
+ 446              		.loc 2 181 0 is_stmt 0 discriminator 1
+ 447 0010 1B48     		ldr	r0, .L31
+ 448 0012 FFF7FEFF 		bl	chDbgPanic
+ 449              	.L25:
+ 182:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgAssert(((sp->s_cnt >= 0) && isempty(&sp->s_queue)) ||
+ 450              		.loc 2 182 0 is_stmt 1
+ 451 0016 019B     		ldr	r3, [sp, #4]
+ 452 0018 9B68     		ldr	r3, [r3, #8]
+ 453 001a 002B     		cmp	r3, #0
+ 454 001c 04DB     		blt	.L26
+ 455              		.loc 2 182 0 is_stmt 0 discriminator 2
+ 456 001e 019B     		ldr	r3, [sp, #4]
+ 457 0020 1A68     		ldr	r2, [r3]
+ 458 0022 019B     		ldr	r3, [sp, #4]
+ 459 0024 9A42     		cmp	r2, r3
+ 460 0026 0BD0     		beq	.L27
+ 461              	.L26:
+ 462              		.loc 2 182 0 discriminator 1
+ 463 0028 019B     		ldr	r3, [sp, #4]
+ 464 002a 9B68     		ldr	r3, [r3, #8]
+ 465 002c 002B     		cmp	r3, #0
+ 466 002e 04DA     		bge	.L28
+ 467              		.loc 2 182 0 discriminator 2
+ 468 0030 019B     		ldr	r3, [sp, #4]
+ 469 0032 1A68     		ldr	r2, [r3]
+ 470 0034 019B     		ldr	r3, [sp, #4]
+ 471 0036 9A42     		cmp	r2, r3
+ 472 0038 02D1     		bne	.L27
+ 473              	.L28:
+ 474              		.loc 2 182 0 discriminator 1
+ 475 003a 1248     		ldr	r0, .L31+4
+ 476 003c FFF7FEFF 		bl	chDbgPanic
+ 477              	.L27:
+ 183:/usr/src/chibiostest/os/kernel/src/chsem.c ****               ((sp->s_cnt < 0) && notempty(&sp->s_queue)),
+ 184:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "chSemWaitS(), #1",
+ 185:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "inconsistent semaphore");
+ 186:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 187:/usr/src/chibiostest/os/kernel/src/chsem.c ****   if (--sp->s_cnt < 0) {
+ 478              		.loc 2 187 0 is_stmt 1
+ 479 0040 019B     		ldr	r3, [sp, #4]
+ 480 0042 9B68     		ldr	r3, [r3, #8]
+ 481 0044 5A1E     		subs	r2, r3, #1
+ 482 0046 019B     		ldr	r3, [sp, #4]
+ 483 0048 9A60     		str	r2, [r3, #8]
+ 484 004a 019B     		ldr	r3, [sp, #4]
+ 485 004c 9B68     		ldr	r3, [r3, #8]
+ 486 004e 002B     		cmp	r3, #0
+ 487 0050 11DA     		bge	.L29
+ 188:/usr/src/chibiostest/os/kernel/src/chsem.c ****     currp->p_u.wtobjp = sp;
+ 488              		.loc 2 188 0
+ 489 0052 0D4B     		ldr	r3, .L31+8
+ 490 0054 9B69     		ldr	r3, [r3, #24]
+ 491 0056 019A     		ldr	r2, [sp, #4]
+ 492 0058 9A62     		str	r2, [r3, #40]
+ 189:/usr/src/chibiostest/os/kernel/src/chsem.c ****     sem_insert(currp, &sp->s_queue);
+ 493              		.loc 2 189 0
+ 494 005a 0B4B     		ldr	r3, .L31+8
+ 495 005c 9A69     		ldr	r2, [r3, #24]
+ 496 005e 019B     		ldr	r3, [sp, #4]
+ 497 0060 1046     		mov	r0, r2
+ 498 0062 1946     		mov	r1, r3
+ 499 0064 FFF7FEFF 		bl	queue_insert
+ 190:/usr/src/chibiostest/os/kernel/src/chsem.c ****     chSchGoSleepS(THD_STATE_WTSEM);
+ 500              		.loc 2 190 0
+ 501 0068 0320     		movs	r0, #3
+ 502 006a FFF7FEFF 		bl	chSchGoSleepS
+ 191:/usr/src/chibiostest/os/kernel/src/chsem.c ****     return currp->p_u.rdymsg;
+ 503              		.loc 2 191 0
+ 504 006e 064B     		ldr	r3, .L31+8
+ 505 0070 9B69     		ldr	r3, [r3, #24]
+ 506 0072 9B6A     		ldr	r3, [r3, #40]
+ 507 0074 00E0     		b	.L30
+ 508              	.L29:
+ 192:/usr/src/chibiostest/os/kernel/src/chsem.c ****   }
+ 193:/usr/src/chibiostest/os/kernel/src/chsem.c ****   return RDY_OK;
+ 509              		.loc 2 193 0
+ 510 0076 0023     		movs	r3, #0
+ 511              	.L30:
+ 194:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 512              		.loc 2 194 0
+ 513 0078 1846     		mov	r0, r3
+ 514 007a 03B0     		add	sp, sp, #12
+ 515              		@ sp needed
+ 516 007c 5DF804FB 		ldr	pc, [sp], #4
+ 517              	.L32:
+ 518              		.align	2
+ 519              	.L31:
+ 520 0080 34000000 		.word	.LC3
+ 521 0084 44000000 		.word	.LC4
+ 522 0088 00000000 		.word	rlist
+ 523              		.cfi_endproc
+ 524              	.LFE11:
+ 526 008c AFF30080 		.section	.text.chSemWaitTimeout,"ax",%progbits
+ 527              		.align	2
+ 528              		.p2align 4,,15
+ 529              		.global	chSemWaitTimeout
+ 530              		.thumb
+ 531              		.thumb_func
+ 533              	chSemWaitTimeout:
+ 534              	.LFB12:
+ 195:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 196:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+ 197:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Performs a wait operation on a semaphore with timeout specification.
+ 198:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 199:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] sp        pointer to a @p Semaphore structure
+ 200:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] time      the number of ticks before the operation timeouts,
+ 201:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      the following special values are allowed:
+ 202:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      - @a TIME_IMMEDIATE immediate timeout.
+ 203:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      - @a TIME_INFINITE no timeout.
+ 204:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      .
+ 205:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @return              A message specifying how the invoking thread has been
+ 206:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      released from the semaphore.
+ 207:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_OK       if the thread has not stopped on the semaphore or the
+ 208:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      semaphore has been signaled.
+ 209:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_RESET    if the semaphore has been reset using @p chSemReset().
+ 210:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_TIMEOUT  if the semaphore has not been signaled or reset within
+ 211:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      the specified timeout.
+ 212:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 213:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @api
+ 214:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+ 215:/usr/src/chibiostest/os/kernel/src/chsem.c **** msg_t chSemWaitTimeout(Semaphore *sp, systime_t time) {
+ 535              		.loc 2 215 0
+ 536              		.cfi_startproc
+ 537              		@ args = 0, pretend = 0, frame = 16
+ 538              		@ frame_needed = 0, uses_anonymous_args = 0
+ 539 0000 00B5     		push	{lr}
+ 540              		.cfi_def_cfa_offset 4
+ 541              		.cfi_offset 14, -4
+ 542 0002 85B0     		sub	sp, sp, #20
+ 543              		.cfi_def_cfa_offset 24
+ 544 0004 0190     		str	r0, [sp, #4]
+ 545 0006 0091     		str	r1, [sp]
+ 546              	.LBB6:
+ 216:/usr/src/chibiostest/os/kernel/src/chsem.c ****   msg_t msg;
+ 217:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 218:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSysLock();
+ 547              		.loc 2 218 0
+ 548 0008 2023     		movs	r3, #32
+ 549              	@ 218 "/usr/src/chibiostest/os/kernel/src/chsem.c" 1
+ 550 000a 83F31188 		msr     BASEPRI, r3
+ 551              	@ 0 "" 2
+ 552              		.thumb
+ 553              	.LBE6:
+ 554 000e FFF7FEFF 		bl	dbg_check_lock
+ 219:/usr/src/chibiostest/os/kernel/src/chsem.c ****   msg = chSemWaitTimeoutS(sp, time);
+ 555              		.loc 2 219 0
+ 556 0012 0198     		ldr	r0, [sp, #4]
+ 557 0014 0099     		ldr	r1, [sp]
+ 558 0016 FFF7FEFF 		bl	chSemWaitTimeoutS
+ 559 001a 0390     		str	r0, [sp, #12]
+ 220:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSysUnlock();
+ 560              		.loc 2 220 0
+ 561 001c FFF7FEFF 		bl	dbg_check_unlock
+ 562              	.LBB7:
+ 563 0020 0023     		movs	r3, #0
+ 564              	@ 220 "/usr/src/chibiostest/os/kernel/src/chsem.c" 1
+ 565 0022 83F31188 		msr     BASEPRI, r3
+ 566              	@ 0 "" 2
+ 567              		.thumb
+ 568              	.LBE7:
+ 221:/usr/src/chibiostest/os/kernel/src/chsem.c ****   return msg;
+ 569              		.loc 2 221 0
+ 570 0026 039B     		ldr	r3, [sp, #12]
+ 222:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 571              		.loc 2 222 0
+ 572 0028 1846     		mov	r0, r3
+ 573 002a 05B0     		add	sp, sp, #20
+ 574              		@ sp needed
+ 575 002c 5DF804FB 		ldr	pc, [sp], #4
+ 576              		.cfi_endproc
+ 577              	.LFE12:
+ 579              		.section	.rodata
+ 580 0055 000000   		.align	2
+ 581              	.LC5:
+ 582 0058 22636853 		.ascii	"\"chSemWaitTimeoutS\"()\000"
+ 582      656D5761 
+ 582      69745469 
+ 582      6D656F75 
+ 582      74532228 
+ 583 006e 0000     		.align	2
+ 584              	.LC6:
+ 585 0070 63685365 		.ascii	"chSemWaitTimeoutS(), #1\000"
+ 585      6D576169 
+ 585      7454696D 
+ 585      656F7574 
+ 585      5328292C 
+ 586              		.section	.text.chSemWaitTimeoutS,"ax",%progbits
+ 587              		.align	2
+ 588              		.p2align 4,,15
+ 589              		.global	chSemWaitTimeoutS
+ 590              		.thumb
+ 591              		.thumb_func
+ 593              	chSemWaitTimeoutS:
+ 594              	.LFB13:
+ 223:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 224:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+ 225:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Performs a wait operation on a semaphore with timeout specification.
+ 226:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 227:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] sp        pointer to a @p Semaphore structure
+ 228:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] time      the number of ticks before the operation timeouts,
+ 229:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      the following special values are allowed:
+ 230:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      - @a TIME_IMMEDIATE immediate timeout.
+ 231:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      - @a TIME_INFINITE no timeout.
+ 232:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      .
+ 233:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @return              A message specifying how the invoking thread has been
+ 234:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      released from the semaphore.
+ 235:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_OK       if the thread has not stopped on the semaphore or the
+ 236:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      semaphore has been signaled.
+ 237:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_RESET    if the semaphore has been reset using @p chSemReset().
+ 238:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_TIMEOUT  if the semaphore has not been signaled or reset within
+ 239:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      the specified timeout.
+ 240:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 241:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @sclass
+ 242:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+ 243:/usr/src/chibiostest/os/kernel/src/chsem.c **** msg_t chSemWaitTimeoutS(Semaphore *sp, systime_t time) {
+ 595              		.loc 2 243 0
+ 596              		.cfi_startproc
+ 597              		@ args = 0, pretend = 0, frame = 8
+ 598              		@ frame_needed = 0, uses_anonymous_args = 0
+ 599 0000 00B5     		push	{lr}
+ 600              		.cfi_def_cfa_offset 4
+ 601              		.cfi_offset 14, -4
+ 602 0002 83B0     		sub	sp, sp, #12
+ 603              		.cfi_def_cfa_offset 16
+ 604 0004 0190     		str	r0, [sp, #4]
+ 605 0006 0091     		str	r1, [sp]
+ 244:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 245:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheckClassS();
+ 606              		.loc 2 245 0
+ 607 0008 FFF7FEFF 		bl	chDbgCheckClassS
+ 246:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheck(sp != NULL, "chSemWaitTimeoutS");
+ 608              		.loc 2 246 0
+ 609 000c 019B     		ldr	r3, [sp, #4]
+ 610 000e 002B     		cmp	r3, #0
+ 611 0010 02D1     		bne	.L36
+ 612              		.loc 2 246 0 is_stmt 0 discriminator 1
+ 613 0012 2148     		ldr	r0, .L43
+ 614 0014 FFF7FEFF 		bl	chDbgPanic
+ 615              	.L36:
+ 247:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgAssert(((sp->s_cnt >= 0) && isempty(&sp->s_queue)) ||
+ 616              		.loc 2 247 0 is_stmt 1
+ 617 0018 019B     		ldr	r3, [sp, #4]
+ 618 001a 9B68     		ldr	r3, [r3, #8]
+ 619 001c 002B     		cmp	r3, #0
+ 620 001e 04DB     		blt	.L37
+ 621              		.loc 2 247 0 is_stmt 0 discriminator 2
+ 622 0020 019B     		ldr	r3, [sp, #4]
+ 623 0022 1A68     		ldr	r2, [r3]
+ 624 0024 019B     		ldr	r3, [sp, #4]
+ 625 0026 9A42     		cmp	r2, r3
+ 626 0028 0BD0     		beq	.L38
+ 627              	.L37:
+ 628              		.loc 2 247 0 discriminator 1
+ 629 002a 019B     		ldr	r3, [sp, #4]
+ 630 002c 9B68     		ldr	r3, [r3, #8]
+ 631 002e 002B     		cmp	r3, #0
+ 632 0030 04DA     		bge	.L39
+ 633              		.loc 2 247 0 discriminator 2
+ 634 0032 019B     		ldr	r3, [sp, #4]
+ 635 0034 1A68     		ldr	r2, [r3]
+ 636 0036 019B     		ldr	r3, [sp, #4]
+ 637 0038 9A42     		cmp	r2, r3
+ 638 003a 02D1     		bne	.L38
+ 639              	.L39:
+ 640              		.loc 2 247 0 discriminator 1
+ 641 003c 1748     		ldr	r0, .L43+4
+ 642 003e FFF7FEFF 		bl	chDbgPanic
+ 643              	.L38:
+ 248:/usr/src/chibiostest/os/kernel/src/chsem.c ****               ((sp->s_cnt < 0) && notempty(&sp->s_queue)),
+ 249:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "chSemWaitTimeoutS(), #1",
+ 250:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "inconsistent semaphore");
+ 251:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 252:/usr/src/chibiostest/os/kernel/src/chsem.c ****   if (--sp->s_cnt < 0) {
+ 644              		.loc 2 252 0 is_stmt 1
+ 645 0042 019B     		ldr	r3, [sp, #4]
+ 646 0044 9B68     		ldr	r3, [r3, #8]
+ 647 0046 5A1E     		subs	r2, r3, #1
+ 648 0048 019B     		ldr	r3, [sp, #4]
+ 649 004a 9A60     		str	r2, [r3, #8]
+ 650 004c 019B     		ldr	r3, [sp, #4]
+ 651 004e 9B68     		ldr	r3, [r3, #8]
+ 652 0050 002B     		cmp	r3, #0
+ 653 0052 1BDA     		bge	.L40
+ 253:/usr/src/chibiostest/os/kernel/src/chsem.c ****     if (TIME_IMMEDIATE == time) {
+ 654              		.loc 2 253 0
+ 655 0054 009B     		ldr	r3, [sp]
+ 656 0056 002B     		cmp	r3, #0
+ 657 0058 07D1     		bne	.L41
+ 254:/usr/src/chibiostest/os/kernel/src/chsem.c ****       sp->s_cnt++;
+ 658              		.loc 2 254 0
+ 659 005a 019B     		ldr	r3, [sp, #4]
+ 660 005c 9B68     		ldr	r3, [r3, #8]
+ 661 005e 5A1C     		adds	r2, r3, #1
+ 662 0060 019B     		ldr	r3, [sp, #4]
+ 663 0062 9A60     		str	r2, [r3, #8]
+ 255:/usr/src/chibiostest/os/kernel/src/chsem.c ****       return RDY_TIMEOUT;
+ 664              		.loc 2 255 0
+ 665 0064 4FF0FF33 		mov	r3, #-1
+ 666 0068 11E0     		b	.L42
+ 667              	.L41:
+ 256:/usr/src/chibiostest/os/kernel/src/chsem.c ****     }
+ 257:/usr/src/chibiostest/os/kernel/src/chsem.c ****     currp->p_u.wtobjp = sp;
+ 668              		.loc 2 257 0
+ 669 006a 0D4B     		ldr	r3, .L43+8
+ 670 006c 9B69     		ldr	r3, [r3, #24]
+ 671 006e 019A     		ldr	r2, [sp, #4]
+ 672 0070 9A62     		str	r2, [r3, #40]
+ 258:/usr/src/chibiostest/os/kernel/src/chsem.c ****     sem_insert(currp, &sp->s_queue);
+ 673              		.loc 2 258 0
+ 674 0072 0B4B     		ldr	r3, .L43+8
+ 675 0074 9A69     		ldr	r2, [r3, #24]
+ 676 0076 019B     		ldr	r3, [sp, #4]
+ 677 0078 1046     		mov	r0, r2
+ 678 007a 1946     		mov	r1, r3
+ 679 007c FFF7FEFF 		bl	queue_insert
+ 259:/usr/src/chibiostest/os/kernel/src/chsem.c ****     return chSchGoSleepTimeoutS(THD_STATE_WTSEM, time);
+ 680              		.loc 2 259 0
+ 681 0080 0320     		movs	r0, #3
+ 682 0082 0099     		ldr	r1, [sp]
+ 683 0084 FFF7FEFF 		bl	chSchGoSleepTimeoutS
+ 684 0088 0346     		mov	r3, r0
+ 685 008a 00E0     		b	.L42
+ 686              	.L40:
+ 260:/usr/src/chibiostest/os/kernel/src/chsem.c ****   }
+ 261:/usr/src/chibiostest/os/kernel/src/chsem.c ****   return RDY_OK;
+ 687              		.loc 2 261 0
+ 688 008c 0023     		movs	r3, #0
+ 689              	.L42:
+ 262:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 690              		.loc 2 262 0
+ 691 008e 1846     		mov	r0, r3
+ 692 0090 03B0     		add	sp, sp, #12
+ 693              		@ sp needed
+ 694 0092 5DF804FB 		ldr	pc, [sp], #4
+ 695              	.L44:
+ 696 0096 00BF     		.align	2
+ 697              	.L43:
+ 698 0098 58000000 		.word	.LC5
+ 699 009c 70000000 		.word	.LC6
+ 700 00a0 00000000 		.word	rlist
+ 701              		.cfi_endproc
+ 702              	.LFE13:
+ 704 00a4 AFF30080 		.section	.rodata
+ 704      AFF30080 
+ 704      AFF30080 
+ 705              		.align	2
+ 706              	.LC7:
+ 707 0088 22636853 		.ascii	"\"chSemSignal\"()\000"
+ 707      656D5369 
+ 707      676E616C 
+ 707      22282900 
+ 708              		.align	2
+ 709              	.LC8:
+ 710 0098 63685365 		.ascii	"chSemSignal(), #1\000"
+ 710      6D536967 
+ 710      6E616C28 
+ 710      292C2023 
+ 710      3100
+ 711              		.section	.text.chSemSignal,"ax",%progbits
+ 712              		.align	2
+ 713              		.p2align 4,,15
+ 714              		.global	chSemSignal
+ 715              		.thumb
+ 716              		.thumb_func
+ 718              	chSemSignal:
+ 719              	.LFB14:
+ 263:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 264:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+ 265:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Performs a signal operation on a semaphore.
+ 266:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 267:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] sp        pointer to a @p Semaphore structure
+ 268:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 269:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @api
+ 270:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+ 271:/usr/src/chibiostest/os/kernel/src/chsem.c **** void chSemSignal(Semaphore *sp) {
+ 720              		.loc 2 271 0
+ 721              		.cfi_startproc
+ 722              		@ args = 0, pretend = 0, frame = 8
+ 723              		@ frame_needed = 0, uses_anonymous_args = 0
+ 724 0000 00B5     		push	{lr}
+ 725              		.cfi_def_cfa_offset 4
+ 726              		.cfi_offset 14, -4
+ 727 0002 83B0     		sub	sp, sp, #12
+ 728              		.cfi_def_cfa_offset 16
+ 729 0004 0190     		str	r0, [sp, #4]
+ 272:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 273:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheck(sp != NULL, "chSemSignal");
+ 730              		.loc 2 273 0
+ 731 0006 019B     		ldr	r3, [sp, #4]
+ 732 0008 002B     		cmp	r3, #0
+ 733 000a 02D1     		bne	.L46
+ 734              		.loc 2 273 0 is_stmt 0 discriminator 1
+ 735 000c 1B48     		ldr	r0, .L51
+ 736 000e FFF7FEFF 		bl	chDbgPanic
+ 737              	.L46:
+ 274:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgAssert(((sp->s_cnt >= 0) && isempty(&sp->s_queue)) ||
+ 738              		.loc 2 274 0 is_stmt 1
+ 739 0012 019B     		ldr	r3, [sp, #4]
+ 740 0014 9B68     		ldr	r3, [r3, #8]
+ 741 0016 002B     		cmp	r3, #0
+ 742 0018 04DB     		blt	.L47
+ 743              		.loc 2 274 0 is_stmt 0 discriminator 2
+ 744 001a 019B     		ldr	r3, [sp, #4]
+ 745 001c 1A68     		ldr	r2, [r3]
+ 746 001e 019B     		ldr	r3, [sp, #4]
+ 747 0020 9A42     		cmp	r2, r3
+ 748 0022 0BD0     		beq	.L48
+ 749              	.L47:
+ 750              		.loc 2 274 0 discriminator 1
+ 751 0024 019B     		ldr	r3, [sp, #4]
+ 752 0026 9B68     		ldr	r3, [r3, #8]
+ 753 0028 002B     		cmp	r3, #0
+ 754 002a 04DA     		bge	.L49
+ 755              		.loc 2 274 0 discriminator 2
+ 756 002c 019B     		ldr	r3, [sp, #4]
+ 757 002e 1A68     		ldr	r2, [r3]
+ 758 0030 019B     		ldr	r3, [sp, #4]
+ 759 0032 9A42     		cmp	r2, r3
+ 760 0034 02D1     		bne	.L48
+ 761              	.L49:
+ 762              		.loc 2 274 0 discriminator 1
+ 763 0036 1248     		ldr	r0, .L51+4
+ 764 0038 FFF7FEFF 		bl	chDbgPanic
+ 765              	.L48:
+ 766              	.LBB8:
+ 275:/usr/src/chibiostest/os/kernel/src/chsem.c ****               ((sp->s_cnt < 0) && notempty(&sp->s_queue)),
+ 276:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "chSemSignal(), #1",
+ 277:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "inconsistent semaphore");
+ 278:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 279:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSysLock();
+ 767              		.loc 2 279 0 is_stmt 1
+ 768 003c 2023     		movs	r3, #32
+ 769              	@ 279 "/usr/src/chibiostest/os/kernel/src/chsem.c" 1
+ 770 003e 83F31188 		msr     BASEPRI, r3
+ 771              	@ 0 "" 2
+ 772              		.thumb
+ 773              	.LBE8:
+ 774 0042 FFF7FEFF 		bl	dbg_check_lock
+ 280:/usr/src/chibiostest/os/kernel/src/chsem.c ****   if (++sp->s_cnt <= 0)
+ 775              		.loc 2 280 0
+ 776 0046 019B     		ldr	r3, [sp, #4]
+ 777 0048 9B68     		ldr	r3, [r3, #8]
+ 778 004a 5A1C     		adds	r2, r3, #1
+ 779 004c 019B     		ldr	r3, [sp, #4]
+ 780 004e 9A60     		str	r2, [r3, #8]
+ 781 0050 019B     		ldr	r3, [sp, #4]
+ 782 0052 9B68     		ldr	r3, [r3, #8]
+ 783 0054 002B     		cmp	r3, #0
+ 784 0056 08DC     		bgt	.L50
+ 281:/usr/src/chibiostest/os/kernel/src/chsem.c ****     chSchWakeupS(fifo_remove(&sp->s_queue), RDY_OK);
+ 785              		.loc 2 281 0
+ 786 0058 019B     		ldr	r3, [sp, #4]
+ 787 005a 1846     		mov	r0, r3
+ 788 005c FFF7FEFF 		bl	fifo_remove
+ 789 0060 0346     		mov	r3, r0
+ 790 0062 1846     		mov	r0, r3
+ 791 0064 0021     		movs	r1, #0
+ 792 0066 FFF7FEFF 		bl	chSchWakeupS
+ 793              	.L50:
+ 282:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSysUnlock();
+ 794              		.loc 2 282 0
+ 795 006a FFF7FEFF 		bl	dbg_check_unlock
+ 796              	.LBB9:
+ 797 006e 0023     		movs	r3, #0
+ 798              	@ 282 "/usr/src/chibiostest/os/kernel/src/chsem.c" 1
+ 799 0070 83F31188 		msr     BASEPRI, r3
+ 800              	@ 0 "" 2
+ 801              		.thumb
+ 802              	.LBE9:
+ 283:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 803              		.loc 2 283 0
+ 804 0074 03B0     		add	sp, sp, #12
+ 805              		@ sp needed
+ 806 0076 5DF804FB 		ldr	pc, [sp], #4
+ 807              	.L52:
+ 808 007a 00BF     		.align	2
+ 809              	.L51:
+ 810 007c 88000000 		.word	.LC7
+ 811 0080 98000000 		.word	.LC8
+ 812              		.cfi_endproc
+ 813              	.LFE14:
+ 815 0084 AFF30080 		.section	.rodata
+ 815      AFF30080 
+ 815      AFF30080 
+ 816 00aa 0000     		.align	2
+ 817              	.LC9:
+ 818 00ac 22636853 		.ascii	"\"chSemSignalI\"()\000"
+ 818      656D5369 
+ 818      676E616C 
+ 818      49222829 
+ 818      00
+ 819 00bd 000000   		.align	2
+ 820              	.LC10:
+ 821 00c0 63685365 		.ascii	"chSemSignalI(), #1\000"
+ 821      6D536967 
+ 821      6E616C49 
+ 821      28292C20 
+ 821      233100
+ 822              		.section	.text.chSemSignalI,"ax",%progbits
+ 823              		.align	2
+ 824              		.p2align 4,,15
+ 825              		.global	chSemSignalI
+ 826              		.thumb
+ 827              		.thumb_func
+ 829              	chSemSignalI:
+ 830              	.LFB15:
+ 284:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 285:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+ 286:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Performs a signal operation on a semaphore.
+ 287:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @post    This function does not reschedule so a call to a rescheduling
+ 288:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          function must be performed before unlocking the kernel. Note that
+ 289:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          interrupt handlers always reschedule on exit so an explicit
+ 290:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          reschedule must not be performed in ISRs.
+ 291:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 292:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] sp    pointer to a @p Semaphore structure
+ 293:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 294:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @iclass
+ 295:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+ 296:/usr/src/chibiostest/os/kernel/src/chsem.c **** void chSemSignalI(Semaphore *sp) {
+ 831              		.loc 2 296 0
+ 832              		.cfi_startproc
+ 833              		@ args = 0, pretend = 0, frame = 16
+ 834              		@ frame_needed = 0, uses_anonymous_args = 0
+ 835 0000 00B5     		push	{lr}
+ 836              		.cfi_def_cfa_offset 4
+ 837              		.cfi_offset 14, -4
+ 838 0002 85B0     		sub	sp, sp, #20
+ 839              		.cfi_def_cfa_offset 24
+ 840 0004 0190     		str	r0, [sp, #4]
+ 297:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 298:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheckClassI();
+ 841              		.loc 2 298 0
+ 842 0006 FFF7FEFF 		bl	chDbgCheckClassI
+ 299:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheck(sp != NULL, "chSemSignalI");
+ 843              		.loc 2 299 0
+ 844 000a 019B     		ldr	r3, [sp, #4]
+ 845 000c 002B     		cmp	r3, #0
+ 846 000e 02D1     		bne	.L54
+ 847              		.loc 2 299 0 is_stmt 0 discriminator 1
+ 848 0010 1748     		ldr	r0, .L59
+ 849 0012 FFF7FEFF 		bl	chDbgPanic
+ 850              	.L54:
+ 300:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgAssert(((sp->s_cnt >= 0) && isempty(&sp->s_queue)) ||
+ 851              		.loc 2 300 0 is_stmt 1
+ 852 0016 019B     		ldr	r3, [sp, #4]
+ 853 0018 9B68     		ldr	r3, [r3, #8]
+ 854 001a 002B     		cmp	r3, #0
+ 855 001c 04DB     		blt	.L55
+ 856              		.loc 2 300 0 is_stmt 0 discriminator 2
+ 857 001e 019B     		ldr	r3, [sp, #4]
+ 858 0020 1A68     		ldr	r2, [r3]
+ 859 0022 019B     		ldr	r3, [sp, #4]
+ 860 0024 9A42     		cmp	r2, r3
+ 861 0026 0BD0     		beq	.L56
+ 862              	.L55:
+ 863              		.loc 2 300 0 discriminator 1
+ 864 0028 019B     		ldr	r3, [sp, #4]
+ 865 002a 9B68     		ldr	r3, [r3, #8]
+ 866 002c 002B     		cmp	r3, #0
+ 867 002e 04DA     		bge	.L57
+ 868              		.loc 2 300 0 discriminator 2
+ 869 0030 019B     		ldr	r3, [sp, #4]
+ 870 0032 1A68     		ldr	r2, [r3]
+ 871 0034 019B     		ldr	r3, [sp, #4]
+ 872 0036 9A42     		cmp	r2, r3
+ 873 0038 02D1     		bne	.L56
+ 874              	.L57:
+ 875              		.loc 2 300 0 discriminator 1
+ 876 003a 0E48     		ldr	r0, .L59+4
+ 877 003c FFF7FEFF 		bl	chDbgPanic
+ 878              	.L56:
+ 301:/usr/src/chibiostest/os/kernel/src/chsem.c ****               ((sp->s_cnt < 0) && notempty(&sp->s_queue)),
+ 302:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "chSemSignalI(), #1",
+ 303:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "inconsistent semaphore");
+ 304:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 305:/usr/src/chibiostest/os/kernel/src/chsem.c ****   if (++sp->s_cnt <= 0) {
+ 879              		.loc 2 305 0 is_stmt 1
+ 880 0040 019B     		ldr	r3, [sp, #4]
+ 881 0042 9B68     		ldr	r3, [r3, #8]
+ 882 0044 5A1C     		adds	r2, r3, #1
+ 883 0046 019B     		ldr	r3, [sp, #4]
+ 884 0048 9A60     		str	r2, [r3, #8]
+ 885 004a 019B     		ldr	r3, [sp, #4]
+ 886 004c 9B68     		ldr	r3, [r3, #8]
+ 887 004e 002B     		cmp	r3, #0
+ 888 0050 0ADC     		bgt	.L53
+ 889              	.LBB10:
+ 306:/usr/src/chibiostest/os/kernel/src/chsem.c ****     /* Note, it is done this way in order to allow a tail call on
+ 307:/usr/src/chibiostest/os/kernel/src/chsem.c ****              chSchReadyI().*/
+ 308:/usr/src/chibiostest/os/kernel/src/chsem.c ****     Thread *tp = fifo_remove(&sp->s_queue);
+ 890              		.loc 2 308 0
+ 891 0052 019B     		ldr	r3, [sp, #4]
+ 892 0054 1846     		mov	r0, r3
+ 893 0056 FFF7FEFF 		bl	fifo_remove
+ 894 005a 0390     		str	r0, [sp, #12]
+ 309:/usr/src/chibiostest/os/kernel/src/chsem.c ****     tp->p_u.rdymsg = RDY_OK;
+ 895              		.loc 2 309 0
+ 896 005c 039B     		ldr	r3, [sp, #12]
+ 897 005e 0022     		movs	r2, #0
+ 898 0060 9A62     		str	r2, [r3, #40]
+ 310:/usr/src/chibiostest/os/kernel/src/chsem.c ****     chSchReadyI(tp);
+ 899              		.loc 2 310 0
+ 900 0062 0398     		ldr	r0, [sp, #12]
+ 901 0064 FFF7FEFF 		bl	chSchReadyI
+ 902              	.L53:
+ 903              	.LBE10:
+ 311:/usr/src/chibiostest/os/kernel/src/chsem.c ****   }
+ 312:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 904              		.loc 2 312 0
+ 905 0068 05B0     		add	sp, sp, #20
+ 906              		@ sp needed
+ 907 006a 5DF804FB 		ldr	pc, [sp], #4
+ 908              	.L60:
+ 909 006e 00BF     		.align	2
+ 910              	.L59:
+ 911 0070 AC000000 		.word	.LC9
+ 912 0074 C0000000 		.word	.LC10
+ 913              		.cfi_endproc
+ 914              	.LFE15:
+ 916 0078 AFF30080 		.section	.rodata
+ 916      AFF30080 
+ 917 00d3 00       		.align	2
+ 918              	.LC11:
+ 919 00d4 22636853 		.ascii	"\"chSemAddCounterI\"()\000"
+ 919      656D4164 
+ 919      64436F75 
+ 919      6E746572 
+ 919      49222829 
+ 920 00e9 000000   		.align	2
+ 921              	.LC12:
+ 922 00ec 63685365 		.ascii	"chSemAddCounterI(), #1\000"
+ 922      6D416464 
+ 922      436F756E 
+ 922      74657249 
+ 922      28292C20 
+ 923              		.section	.text.chSemAddCounterI,"ax",%progbits
+ 924              		.align	2
+ 925              		.p2align 4,,15
+ 926              		.global	chSemAddCounterI
+ 927              		.thumb
+ 928              		.thumb_func
+ 930              	chSemAddCounterI:
+ 931              	.LFB16:
+ 313:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 314:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+ 315:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Adds the specified value to the semaphore counter.
+ 316:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @post    This function does not reschedule so a call to a rescheduling
+ 317:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          function must be performed before unlocking the kernel. Note that
+ 318:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          interrupt handlers always reschedule on exit so an explicit
+ 319:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          reschedule must not be performed in ISRs.
+ 320:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 321:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] sp        pointer to a @p Semaphore structure
+ 322:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] n         value to be added to the semaphore counter. The value
+ 323:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      must be positive.
+ 324:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 325:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @iclass
+ 326:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+ 327:/usr/src/chibiostest/os/kernel/src/chsem.c **** void chSemAddCounterI(Semaphore *sp, cnt_t n) {
+ 932              		.loc 2 327 0
+ 933              		.cfi_startproc
+ 934              		@ args = 0, pretend = 0, frame = 8
+ 935              		@ frame_needed = 0, uses_anonymous_args = 0
+ 936 0000 00B5     		push	{lr}
+ 937              		.cfi_def_cfa_offset 4
+ 938              		.cfi_offset 14, -4
+ 939 0002 83B0     		sub	sp, sp, #12
+ 940              		.cfi_def_cfa_offset 16
+ 941 0004 0190     		str	r0, [sp, #4]
+ 942 0006 0091     		str	r1, [sp]
+ 328:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 329:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheckClassI();
+ 943              		.loc 2 329 0
+ 944 0008 FFF7FEFF 		bl	chDbgCheckClassI
+ 330:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheck((sp != NULL) && (n > 0), "chSemAddCounterI");
+ 945              		.loc 2 330 0
+ 946 000c 019B     		ldr	r3, [sp, #4]
+ 947 000e 002B     		cmp	r3, #0
+ 948 0010 02D0     		beq	.L62
+ 949              		.loc 2 330 0 is_stmt 0 discriminator 2
+ 950 0012 009B     		ldr	r3, [sp]
+ 951 0014 002B     		cmp	r3, #0
+ 952 0016 02DC     		bgt	.L63
+ 953              	.L62:
+ 954              		.loc 2 330 0 discriminator 1
+ 955 0018 1B48     		ldr	r0, .L70
+ 956 001a FFF7FEFF 		bl	chDbgPanic
+ 957              	.L63:
+ 331:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgAssert(((sp->s_cnt >= 0) && isempty(&sp->s_queue)) ||
+ 958              		.loc 2 331 0 is_stmt 1
+ 959 001e 019B     		ldr	r3, [sp, #4]
+ 960 0020 9B68     		ldr	r3, [r3, #8]
+ 961 0022 002B     		cmp	r3, #0
+ 962 0024 04DB     		blt	.L64
+ 963              		.loc 2 331 0 is_stmt 0 discriminator 2
+ 964 0026 019B     		ldr	r3, [sp, #4]
+ 965 0028 1A68     		ldr	r2, [r3]
+ 966 002a 019B     		ldr	r3, [sp, #4]
+ 967 002c 9A42     		cmp	r2, r3
+ 968 002e 0CD0     		beq	.L65
+ 969              	.L64:
+ 970              		.loc 2 331 0 discriminator 1
+ 971 0030 019B     		ldr	r3, [sp, #4]
+ 972 0032 9B68     		ldr	r3, [r3, #8]
+ 973 0034 002B     		cmp	r3, #0
+ 974 0036 04DA     		bge	.L66
+ 975              		.loc 2 331 0 discriminator 2
+ 976 0038 019B     		ldr	r3, [sp, #4]
+ 977 003a 1A68     		ldr	r2, [r3]
+ 978 003c 019B     		ldr	r3, [sp, #4]
+ 979 003e 9A42     		cmp	r2, r3
+ 980 0040 03D1     		bne	.L65
+ 981              	.L66:
+ 982              		.loc 2 331 0 discriminator 1
+ 983 0042 1248     		ldr	r0, .L70+4
+ 984 0044 FFF7FEFF 		bl	chDbgPanic
+ 332:/usr/src/chibiostest/os/kernel/src/chsem.c ****               ((sp->s_cnt < 0) && notempty(&sp->s_queue)),
+ 333:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "chSemAddCounterI(), #1",
+ 334:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "inconsistent semaphore");
+ 335:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 336:/usr/src/chibiostest/os/kernel/src/chsem.c ****   while (n > 0) {
+ 985              		.loc 2 336 0 is_stmt 1 discriminator 1
+ 986 0048 17E0     		b	.L67
+ 987              	.L65:
+ 988              		.loc 2 336 0 is_stmt 0
+ 989 004a 16E0     		b	.L67
+ 990              	.L69:
+ 337:/usr/src/chibiostest/os/kernel/src/chsem.c ****     if (++sp->s_cnt <= 0)
+ 991              		.loc 2 337 0 is_stmt 1
+ 992 004c 019B     		ldr	r3, [sp, #4]
+ 993 004e 9B68     		ldr	r3, [r3, #8]
+ 994 0050 5A1C     		adds	r2, r3, #1
+ 995 0052 019B     		ldr	r3, [sp, #4]
+ 996 0054 9A60     		str	r2, [r3, #8]
+ 997 0056 019B     		ldr	r3, [sp, #4]
+ 998 0058 9B68     		ldr	r3, [r3, #8]
+ 999 005a 002B     		cmp	r3, #0
+ 1000 005c 0ADC     		bgt	.L68
+ 338:/usr/src/chibiostest/os/kernel/src/chsem.c ****       chSchReadyI(fifo_remove(&sp->s_queue))->p_u.rdymsg = RDY_OK;
+ 1001              		.loc 2 338 0
+ 1002 005e 019B     		ldr	r3, [sp, #4]
+ 1003 0060 1846     		mov	r0, r3
+ 1004 0062 FFF7FEFF 		bl	fifo_remove
+ 1005 0066 0346     		mov	r3, r0
+ 1006 0068 1846     		mov	r0, r3
+ 1007 006a FFF7FEFF 		bl	chSchReadyI
+ 1008 006e 0346     		mov	r3, r0
+ 1009 0070 0022     		movs	r2, #0
+ 1010 0072 9A62     		str	r2, [r3, #40]
+ 1011              	.L68:
+ 339:/usr/src/chibiostest/os/kernel/src/chsem.c ****     n--;
+ 1012              		.loc 2 339 0
+ 1013 0074 009B     		ldr	r3, [sp]
+ 1014 0076 013B     		subs	r3, r3, #1
+ 1015 0078 0093     		str	r3, [sp]
+ 1016              	.L67:
+ 336:/usr/src/chibiostest/os/kernel/src/chsem.c ****     if (++sp->s_cnt <= 0)
+ 1017              		.loc 2 336 0 discriminator 1
+ 1018 007a 009B     		ldr	r3, [sp]
+ 1019 007c 002B     		cmp	r3, #0
+ 1020 007e E5DC     		bgt	.L69
+ 340:/usr/src/chibiostest/os/kernel/src/chsem.c ****   }
+ 341:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 1021              		.loc 2 341 0
+ 1022 0080 03B0     		add	sp, sp, #12
+ 1023              		@ sp needed
+ 1024 0082 5DF804FB 		ldr	pc, [sp], #4
+ 1025              	.L71:
+ 1026 0086 00BF     		.align	2
+ 1027              	.L70:
+ 1028 0088 D4000000 		.word	.LC11
+ 1029 008c EC000000 		.word	.LC12
+ 1030              		.cfi_endproc
+ 1031              	.LFE16:
+ 1033              		.section	.rodata
+ 1034 0103 00       		.align	2
+ 1035              	.LC13:
+ 1036 0104 22636853 		.ascii	"\"chSemSignalWait\"()\000"
+ 1036      656D5369 
+ 1036      676E616C 
+ 1036      57616974 
+ 1036      22282900 
+ 1037              		.align	2
+ 1038              	.LC14:
+ 1039 0118 63685365 		.ascii	"chSemSignalWait(), #1\000"
+ 1039      6D536967 
+ 1039      6E616C57 
+ 1039      61697428 
+ 1039      292C2023 
+ 1040 012e 0000     		.align	2
+ 1041              	.LC15:
+ 1042 0130 63685365 		.ascii	"chSemSignalWait(), #2\000"
+ 1042      6D536967 
+ 1042      6E616C57 
+ 1042      61697428 
+ 1042      292C2023 
+ 1043 0146 0000     		.section	.text.chSemSignalWait,"ax",%progbits
+ 1044              		.align	2
+ 1045              		.p2align 4,,15
+ 1046              		.global	chSemSignalWait
+ 1047              		.thumb
+ 1048              		.thumb_func
+ 1050              	chSemSignalWait:
+ 1051              	.LFB17:
+ 342:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 343:/usr/src/chibiostest/os/kernel/src/chsem.c **** #if CH_USE_SEMSW
+ 344:/usr/src/chibiostest/os/kernel/src/chsem.c **** /**
+ 345:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @brief   Performs atomic signal and wait operations on two semaphores.
+ 346:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @pre     The configuration option @p CH_USE_SEMSW must be enabled in order
+ 347:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *          to use this function.
+ 348:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 349:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] sps       pointer to a @p Semaphore structure to be signaled
+ 350:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @param[in] spw       pointer to a @p Semaphore structure to be wait on
+ 351:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @return              A message specifying how the invoking thread has been
+ 352:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      released from the semaphore.
+ 353:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_OK       if the thread has not stopped on the semaphore or the
+ 354:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *                      semaphore has been signaled.
+ 355:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @retval RDY_RESET    if the semaphore has been reset using @p chSemReset().
+ 356:/usr/src/chibiostest/os/kernel/src/chsem.c ****  *
+ 357:/usr/src/chibiostest/os/kernel/src/chsem.c ****  * @api
+ 358:/usr/src/chibiostest/os/kernel/src/chsem.c ****  */
+ 359:/usr/src/chibiostest/os/kernel/src/chsem.c **** msg_t chSemSignalWait(Semaphore *sps, Semaphore *spw) {
+ 1052              		.loc 2 359 0
+ 1053              		.cfi_startproc
+ 1054              		@ args = 0, pretend = 0, frame = 16
+ 1055              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1056 0000 00B5     		push	{lr}
+ 1057              		.cfi_def_cfa_offset 4
+ 1058              		.cfi_offset 14, -4
+ 1059 0002 85B0     		sub	sp, sp, #20
+ 1060              		.cfi_def_cfa_offset 24
+ 1061 0004 0190     		str	r0, [sp, #4]
+ 1062 0006 0091     		str	r1, [sp]
+ 360:/usr/src/chibiostest/os/kernel/src/chsem.c ****   msg_t msg;
+ 361:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 362:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgCheck((sps != NULL) && (spw != NULL), "chSemSignalWait");
+ 1063              		.loc 2 362 0
+ 1064 0008 019B     		ldr	r3, [sp, #4]
+ 1065 000a 002B     		cmp	r3, #0
+ 1066 000c 02D0     		beq	.L73
+ 1067              		.loc 2 362 0 is_stmt 0 discriminator 2
+ 1068 000e 009B     		ldr	r3, [sp]
+ 1069 0010 002B     		cmp	r3, #0
+ 1070 0012 02D1     		bne	.L74
+ 1071              	.L73:
+ 1072              		.loc 2 362 0 discriminator 1
+ 1073 0014 3748     		ldr	r0, .L85
+ 1074 0016 FFF7FEFF 		bl	chDbgPanic
+ 1075              	.L74:
+ 363:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgAssert(((sps->s_cnt >= 0) && isempty(&sps->s_queue)) ||
+ 1076              		.loc 2 363 0 is_stmt 1
+ 1077 001a 019B     		ldr	r3, [sp, #4]
+ 1078 001c 9B68     		ldr	r3, [r3, #8]
+ 1079 001e 002B     		cmp	r3, #0
+ 1080 0020 04DB     		blt	.L75
+ 1081              		.loc 2 363 0 is_stmt 0 discriminator 2
+ 1082 0022 019B     		ldr	r3, [sp, #4]
+ 1083 0024 1A68     		ldr	r2, [r3]
+ 1084 0026 019B     		ldr	r3, [sp, #4]
+ 1085 0028 9A42     		cmp	r2, r3
+ 1086 002a 0BD0     		beq	.L76
+ 1087              	.L75:
+ 1088              		.loc 2 363 0 discriminator 1
+ 1089 002c 019B     		ldr	r3, [sp, #4]
+ 1090 002e 9B68     		ldr	r3, [r3, #8]
+ 1091 0030 002B     		cmp	r3, #0
+ 1092 0032 04DA     		bge	.L77
+ 1093              		.loc 2 363 0 discriminator 2
+ 1094 0034 019B     		ldr	r3, [sp, #4]
+ 1095 0036 1A68     		ldr	r2, [r3]
+ 1096 0038 019B     		ldr	r3, [sp, #4]
+ 1097 003a 9A42     		cmp	r2, r3
+ 1098 003c 02D1     		bne	.L76
+ 1099              	.L77:
+ 1100              		.loc 2 363 0 discriminator 1
+ 1101 003e 2E48     		ldr	r0, .L85+4
+ 1102 0040 FFF7FEFF 		bl	chDbgPanic
+ 1103              	.L76:
+ 364:/usr/src/chibiostest/os/kernel/src/chsem.c ****               ((sps->s_cnt < 0) && notempty(&sps->s_queue)),
+ 365:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "chSemSignalWait(), #1",
+ 366:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "inconsistent semaphore");
+ 367:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chDbgAssert(((spw->s_cnt >= 0) && isempty(&spw->s_queue)) ||
+ 1104              		.loc 2 367 0 is_stmt 1
+ 1105 0044 009B     		ldr	r3, [sp]
+ 1106 0046 9B68     		ldr	r3, [r3, #8]
+ 1107 0048 002B     		cmp	r3, #0
+ 1108 004a 04DB     		blt	.L78
+ 1109              		.loc 2 367 0 is_stmt 0 discriminator 2
+ 1110 004c 009B     		ldr	r3, [sp]
+ 1111 004e 1A68     		ldr	r2, [r3]
+ 1112 0050 009B     		ldr	r3, [sp]
+ 1113 0052 9A42     		cmp	r2, r3
+ 1114 0054 0BD0     		beq	.L79
+ 1115              	.L78:
+ 1116              		.loc 2 367 0 discriminator 1
+ 1117 0056 009B     		ldr	r3, [sp]
+ 1118 0058 9B68     		ldr	r3, [r3, #8]
+ 1119 005a 002B     		cmp	r3, #0
+ 1120 005c 04DA     		bge	.L80
+ 1121              		.loc 2 367 0 discriminator 2
+ 1122 005e 009B     		ldr	r3, [sp]
+ 1123 0060 1A68     		ldr	r2, [r3]
+ 1124 0062 009B     		ldr	r3, [sp]
+ 1125 0064 9A42     		cmp	r2, r3
+ 1126 0066 02D1     		bne	.L79
+ 1127              	.L80:
+ 1128              		.loc 2 367 0 discriminator 1
+ 1129 0068 2448     		ldr	r0, .L85+8
+ 1130 006a FFF7FEFF 		bl	chDbgPanic
+ 1131              	.L79:
+ 1132              	.LBB11:
+ 368:/usr/src/chibiostest/os/kernel/src/chsem.c ****               ((spw->s_cnt < 0) && notempty(&spw->s_queue)),
+ 369:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "chSemSignalWait(), #2",
+ 370:/usr/src/chibiostest/os/kernel/src/chsem.c ****               "inconsistent semaphore");
+ 371:/usr/src/chibiostest/os/kernel/src/chsem.c **** 
+ 372:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSysLock();
+ 1133              		.loc 2 372 0 is_stmt 1
+ 1134 006e 2023     		movs	r3, #32
+ 1135              	@ 372 "/usr/src/chibiostest/os/kernel/src/chsem.c" 1
+ 1136 0070 83F31188 		msr     BASEPRI, r3
+ 1137              	@ 0 "" 2
+ 1138              		.thumb
+ 1139              	.LBE11:
+ 1140 0074 FFF7FEFF 		bl	dbg_check_lock
+ 373:/usr/src/chibiostest/os/kernel/src/chsem.c ****   if (++sps->s_cnt <= 0)
+ 1141              		.loc 2 373 0
+ 1142 0078 019B     		ldr	r3, [sp, #4]
+ 1143 007a 9B68     		ldr	r3, [r3, #8]
+ 1144 007c 5A1C     		adds	r2, r3, #1
+ 1145 007e 019B     		ldr	r3, [sp, #4]
+ 1146 0080 9A60     		str	r2, [r3, #8]
+ 1147 0082 019B     		ldr	r3, [sp, #4]
+ 1148 0084 9B68     		ldr	r3, [r3, #8]
+ 1149 0086 002B     		cmp	r3, #0
+ 1150 0088 0ADC     		bgt	.L81
+ 374:/usr/src/chibiostest/os/kernel/src/chsem.c ****     chSchReadyI(fifo_remove(&sps->s_queue))->p_u.rdymsg = RDY_OK;
+ 1151              		.loc 2 374 0
+ 1152 008a 019B     		ldr	r3, [sp, #4]
+ 1153 008c 1846     		mov	r0, r3
+ 1154 008e FFF7FEFF 		bl	fifo_remove
+ 1155 0092 0346     		mov	r3, r0
+ 1156 0094 1846     		mov	r0, r3
+ 1157 0096 FFF7FEFF 		bl	chSchReadyI
+ 1158 009a 0346     		mov	r3, r0
+ 1159 009c 0022     		movs	r2, #0
+ 1160 009e 9A62     		str	r2, [r3, #40]
+ 1161              	.L81:
+ 375:/usr/src/chibiostest/os/kernel/src/chsem.c ****   if (--spw->s_cnt < 0) {
+ 1162              		.loc 2 375 0
+ 1163 00a0 009B     		ldr	r3, [sp]
+ 1164 00a2 9B68     		ldr	r3, [r3, #8]
+ 1165 00a4 5A1E     		subs	r2, r3, #1
+ 1166 00a6 009B     		ldr	r3, [sp]
+ 1167 00a8 9A60     		str	r2, [r3, #8]
+ 1168 00aa 009B     		ldr	r3, [sp]
+ 1169 00ac 9B68     		ldr	r3, [r3, #8]
+ 1170 00ae 002B     		cmp	r3, #0
+ 1171 00b0 11DA     		bge	.L82
+ 1172              	.LBB12:
+ 376:/usr/src/chibiostest/os/kernel/src/chsem.c ****     Thread *ctp = currp;
+ 1173              		.loc 2 376 0
+ 1174 00b2 134B     		ldr	r3, .L85+12
+ 1175 00b4 9B69     		ldr	r3, [r3, #24]
+ 1176 00b6 0293     		str	r3, [sp, #8]
+ 377:/usr/src/chibiostest/os/kernel/src/chsem.c ****     sem_insert(ctp, &spw->s_queue);
+ 1177              		.loc 2 377 0
+ 1178 00b8 009B     		ldr	r3, [sp]
+ 1179 00ba 0298     		ldr	r0, [sp, #8]
+ 1180 00bc 1946     		mov	r1, r3
+ 1181 00be FFF7FEFF 		bl	queue_insert
+ 378:/usr/src/chibiostest/os/kernel/src/chsem.c ****     ctp->p_u.wtobjp = spw;
+ 1182              		.loc 2 378 0
+ 1183 00c2 029B     		ldr	r3, [sp, #8]
+ 1184 00c4 009A     		ldr	r2, [sp]
+ 1185 00c6 9A62     		str	r2, [r3, #40]
+ 379:/usr/src/chibiostest/os/kernel/src/chsem.c ****     chSchGoSleepS(THD_STATE_WTSEM);
+ 1186              		.loc 2 379 0
+ 1187 00c8 0320     		movs	r0, #3
+ 1188 00ca FFF7FEFF 		bl	chSchGoSleepS
+ 380:/usr/src/chibiostest/os/kernel/src/chsem.c ****     msg = ctp->p_u.rdymsg;
+ 1189              		.loc 2 380 0
+ 1190 00ce 029B     		ldr	r3, [sp, #8]
+ 1191 00d0 9B6A     		ldr	r3, [r3, #40]
+ 1192 00d2 0393     		str	r3, [sp, #12]
+ 1193              	.LBE12:
+ 1194 00d4 03E0     		b	.L83
+ 1195              	.L82:
+ 381:/usr/src/chibiostest/os/kernel/src/chsem.c ****   }
+ 382:/usr/src/chibiostest/os/kernel/src/chsem.c ****   else {
+ 383:/usr/src/chibiostest/os/kernel/src/chsem.c ****     chSchRescheduleS();
+ 1196              		.loc 2 383 0
+ 1197 00d6 FFF7FEFF 		bl	chSchRescheduleS
+ 384:/usr/src/chibiostest/os/kernel/src/chsem.c ****     msg = RDY_OK;
+ 1198              		.loc 2 384 0
+ 1199 00da 0023     		movs	r3, #0
+ 1200 00dc 0393     		str	r3, [sp, #12]
+ 1201              	.L83:
+ 385:/usr/src/chibiostest/os/kernel/src/chsem.c ****   }
+ 386:/usr/src/chibiostest/os/kernel/src/chsem.c ****   chSysUnlock();
+ 1202              		.loc 2 386 0
+ 1203 00de FFF7FEFF 		bl	dbg_check_unlock
+ 1204              	.LBB13:
+ 1205 00e2 0023     		movs	r3, #0
+ 1206              	@ 386 "/usr/src/chibiostest/os/kernel/src/chsem.c" 1
+ 1207 00e4 83F31188 		msr     BASEPRI, r3
+ 1208              	@ 0 "" 2
+ 1209              		.thumb
+ 1210              	.LBE13:
+ 387:/usr/src/chibiostest/os/kernel/src/chsem.c ****   return msg;
+ 1211              		.loc 2 387 0
+ 1212 00e8 039B     		ldr	r3, [sp, #12]
+ 388:/usr/src/chibiostest/os/kernel/src/chsem.c **** }
+ 1213              		.loc 2 388 0
+ 1214 00ea 1846     		mov	r0, r3
+ 1215 00ec 05B0     		add	sp, sp, #20
+ 1216              		@ sp needed
+ 1217 00ee 5DF804FB 		ldr	pc, [sp], #4
+ 1218              	.L86:
+ 1219 00f2 00BF     		.align	2
+ 1220              	.L85:
+ 1221 00f4 04010000 		.word	.LC13
+ 1222 00f8 18010000 		.word	.LC14
+ 1223 00fc 30010000 		.word	.LC15
+ 1224 0100 00000000 		.word	rlist
+ 1225              		.cfi_endproc
+ 1226              	.LFE17:
+ 1228 0104 AFF30080 		.text
+ 1228      AFF30080 
+ 1228      AFF30080 
+ 1229              	.Letext0:
+ 1230              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 1231              		.file 4 "/usr/include/newlib/stdint.h"
+ 1232              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 1233              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 1234              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 1235              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 1236              		.file 9 "/usr/src/chibiostest/os/kernel/include/chschd.h"
+ 1237              		.file 10 "/usr/src/chibiostest/os/kernel/include/chsem.h"
+ 1238              		.file 11 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chsem.c
+     /tmp/cciqRnmZ.s:20     .text.queue_insert:0000000000000000 $t
+     /tmp/cciqRnmZ.s:25     .text.queue_insert:0000000000000000 queue_insert
+     /tmp/cciqRnmZ.s:63     .text.fifo_remove:0000000000000000 $t
+     /tmp/cciqRnmZ.s:68     .text.fifo_remove:0000000000000000 fifo_remove
+     /tmp/cciqRnmZ.s:102    .text.lifo_remove:0000000000000000 $t
+     /tmp/cciqRnmZ.s:107    .text.lifo_remove:0000000000000000 lifo_remove
+     /tmp/cciqRnmZ.s:141    .rodata:0000000000000000 $d
+     /tmp/cciqRnmZ.s:145    .text.chSemInit:0000000000000000 $t
+     /tmp/cciqRnmZ.s:151    .text.chSemInit:0000000000000000 chSemInit
+     /tmp/cciqRnmZ.s:197    .text.chSemInit:0000000000000034 $d
+     /tmp/cciqRnmZ.s:202    .text.chSemReset:0000000000000000 $t
+     /tmp/cciqRnmZ.s:208    .text.chSemReset:0000000000000000 chSemReset
+     /tmp/cciqRnmZ.s:266    .text.chSemResetI:0000000000000000 chSemResetI
+     /tmp/cciqRnmZ.s:260    .text.chSemResetI:0000000000000000 $t
+     /tmp/cciqRnmZ.s:358    .text.chSemResetI:0000000000000080 $d
+     /tmp/cciqRnmZ.s:364    .text.chSemWait:0000000000000000 $t
+     /tmp/cciqRnmZ.s:370    .text.chSemWait:0000000000000000 chSemWait
+     /tmp/cciqRnmZ.s:428    .text.chSemWaitS:0000000000000000 chSemWaitS
+     /tmp/cciqRnmZ.s:422    .text.chSemWaitS:0000000000000000 $t
+     /tmp/cciqRnmZ.s:520    .text.chSemWaitS:0000000000000080 $d
+     /tmp/cciqRnmZ.s:527    .text.chSemWaitTimeout:0000000000000000 $t
+     /tmp/cciqRnmZ.s:533    .text.chSemWaitTimeout:0000000000000000 chSemWaitTimeout
+     /tmp/cciqRnmZ.s:593    .text.chSemWaitTimeoutS:0000000000000000 chSemWaitTimeoutS
+     /tmp/cciqRnmZ.s:587    .text.chSemWaitTimeoutS:0000000000000000 $t
+     /tmp/cciqRnmZ.s:698    .text.chSemWaitTimeoutS:0000000000000098 $d
+     /tmp/cciqRnmZ.s:712    .text.chSemSignal:0000000000000000 $t
+     /tmp/cciqRnmZ.s:718    .text.chSemSignal:0000000000000000 chSemSignal
+     /tmp/cciqRnmZ.s:810    .text.chSemSignal:000000000000007c $d
+     /tmp/cciqRnmZ.s:823    .text.chSemSignalI:0000000000000000 $t
+     /tmp/cciqRnmZ.s:829    .text.chSemSignalI:0000000000000000 chSemSignalI
+     /tmp/cciqRnmZ.s:911    .text.chSemSignalI:0000000000000070 $d
+     /tmp/cciqRnmZ.s:924    .text.chSemAddCounterI:0000000000000000 $t
+     /tmp/cciqRnmZ.s:930    .text.chSemAddCounterI:0000000000000000 chSemAddCounterI
+     /tmp/cciqRnmZ.s:1028   .text.chSemAddCounterI:0000000000000088 $d
+     /tmp/cciqRnmZ.s:1044   .text.chSemSignalWait:0000000000000000 $t
+     /tmp/cciqRnmZ.s:1050   .text.chSemSignalWait:0000000000000000 chSemSignalWait
+     /tmp/cciqRnmZ.s:1221   .text.chSemSignalWait:00000000000000f4 $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/cciqRnmZ.s:201    .text.chSemInit:0000000000000038 $t
+     /tmp/cciqRnmZ.s:363    .text.chSemResetI:0000000000000088 $t
+     /tmp/cciqRnmZ.s:526    .text.chSemWaitS:000000000000008c $t
+     /tmp/cciqRnmZ.s:704    .text.chSemWaitTimeoutS:00000000000000a4 $t
+     /tmp/cciqRnmZ.s:815    .text.chSemSignal:0000000000000084 $t
+     /tmp/cciqRnmZ.s:916    .text.chSemSignalI:0000000000000078 $t
+     /tmp/cciqRnmZ.s:1228   .text.chSemSignalWait:0000000000000104 $t
+
+UNDEFINED SYMBOLS
+chDbgPanic
+dbg_check_lock
+chSchRescheduleS
+dbg_check_unlock
+chDbgCheckClassI
+chSchReadyI
+chDbgCheckClassS
+chSchGoSleepS
+rlist
+chSchGoSleepTimeoutS
+chSchWakeupS

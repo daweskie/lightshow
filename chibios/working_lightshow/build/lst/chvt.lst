@@ -1,0 +1,526 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chvt.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.global	vtlist
+  20              		.section	.bss.vtlist,"aw",%nobits
+  21              		.align	2
+  24              	vtlist:
+  25 0000 00000000 		.space	16
+  25      00000000 
+  25      00000000 
+  25      00000000 
+  26              		.section	.text._vt_init,"ax",%progbits
+  27              		.align	2
+  28              		.p2align 4,,15
+  29              		.global	_vt_init
+  30              		.thumb
+  31              		.thumb_func
+  33              	_vt_init:
+  34              	.LFB7:
+  35              		.file 1 "/usr/src/chibiostest/os/kernel/src/chvt.c"
+   1:/usr/src/chibiostest/os/kernel/src/chvt.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chvt.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chvt.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chvt.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chvt.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chvt.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chvt.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chvt.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chvt.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chvt.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chvt.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chvt.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chvt.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chvt.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chvt.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  21:/usr/src/chibiostest/os/kernel/src/chvt.c **** /**
+  22:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @file    chvt.c
+  23:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @brief   Time and Virtual Timers related code.
+  24:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *
+  25:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @addtogroup time
+  26:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @details Time and Virtual Timers related APIs and services.
+  27:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @{
+  28:/usr/src/chibiostest/os/kernel/src/chvt.c ****  */
+  29:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  30:/usr/src/chibiostest/os/kernel/src/chvt.c **** #include "ch.h"
+  31:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  32:/usr/src/chibiostest/os/kernel/src/chvt.c **** /**
+  33:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @brief   Virtual timers delta list header.
+  34:/usr/src/chibiostest/os/kernel/src/chvt.c ****  */
+  35:/usr/src/chibiostest/os/kernel/src/chvt.c **** VTList vtlist;
+  36:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  37:/usr/src/chibiostest/os/kernel/src/chvt.c **** /**
+  38:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @brief   Virtual Timers initialization.
+  39:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @note    Internal use only.
+  40:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *
+  41:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @notapi
+  42:/usr/src/chibiostest/os/kernel/src/chvt.c ****  */
+  43:/usr/src/chibiostest/os/kernel/src/chvt.c **** void _vt_init(void) {
+  36              		.loc 1 43 0
+  37              		.cfi_startproc
+  38              		@ args = 0, pretend = 0, frame = 0
+  39              		@ frame_needed = 0, uses_anonymous_args = 0
+  40              		@ link register save eliminated.
+  44:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  45:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtlist.vt_next = vtlist.vt_prev = (void *)&vtlist;
+  41              		.loc 1 45 0
+  42 0000 074B     		ldr	r3, .L2
+  43 0002 074A     		ldr	r2, .L2
+  44 0004 5A60     		str	r2, [r3, #4]
+  45 0006 064B     		ldr	r3, .L2
+  46 0008 5A68     		ldr	r2, [r3, #4]
+  47 000a 054B     		ldr	r3, .L2
+  48 000c 1A60     		str	r2, [r3]
+  46:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtlist.vt_time = (systime_t)-1;
+  49              		.loc 1 46 0
+  50 000e 044B     		ldr	r3, .L2
+  51 0010 4FF0FF32 		mov	r2, #-1
+  52 0014 9A60     		str	r2, [r3, #8]
+  47:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtlist.vt_systime = 0;
+  53              		.loc 1 47 0
+  54 0016 024B     		ldr	r3, .L2
+  55 0018 0022     		movs	r2, #0
+  56 001a DA60     		str	r2, [r3, #12]
+  48:/usr/src/chibiostest/os/kernel/src/chvt.c **** }
+  57              		.loc 1 48 0
+  58 001c 7047     		bx	lr
+  59              	.L3:
+  60 001e 00BF     		.align	2
+  61              	.L2:
+  62 0020 00000000 		.word	vtlist
+  63              		.cfi_endproc
+  64              	.LFE7:
+  66 0024 AFF30080 		.section	.rodata
+  66      AFF30080 
+  66      AFF30080 
+  67              		.align	2
+  68              	.LC0:
+  69 0000 22636856 		.ascii	"\"chVTSetI\"()\000"
+  69      54536574 
+  69      49222829 
+  69      00
+  70              		.section	.text.chVTSetI,"ax",%progbits
+  71              		.align	2
+  72              		.p2align 4,,15
+  73              		.global	chVTSetI
+  74              		.thumb
+  75              		.thumb_func
+  77              	chVTSetI:
+  78              	.LFB8:
+  49:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  50:/usr/src/chibiostest/os/kernel/src/chvt.c **** /**
+  51:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @brief   Enables a virtual timer.
+  52:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @note    The associated function is invoked from interrupt context.
+  53:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *
+  54:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @param[out] vtp      the @p VirtualTimer structure pointer
+  55:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @param[in] time      the number of ticks before the operation timeouts, the
+  56:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *                      special values are handled as follow:
+  57:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *                      - @a TIME_INFINITE is allowed but interpreted as a
+  58:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *                        normal time specification.
+  59:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *                      - @a TIME_IMMEDIATE this value is not allowed.
+  60:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *                      .
+  61:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @param[in] vtfunc    the timer callback function. After invoking the
+  62:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *                      callback the timer is disabled and the structure can
+  63:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *                      be disposed or reused.
+  64:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @param[in] par       a parameter that will be passed to the callback
+  65:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *                      function
+  66:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *
+  67:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @iclass
+  68:/usr/src/chibiostest/os/kernel/src/chvt.c ****  */
+  69:/usr/src/chibiostest/os/kernel/src/chvt.c **** void chVTSetI(VirtualTimer *vtp, systime_t time, vtfunc_t vtfunc, void *par) {
+  79              		.loc 1 69 0
+  80              		.cfi_startproc
+  81              		@ args = 0, pretend = 0, frame = 24
+  82              		@ frame_needed = 0, uses_anonymous_args = 0
+  83 0000 00B5     		push	{lr}
+  84              		.cfi_def_cfa_offset 4
+  85              		.cfi_offset 14, -4
+  86 0002 87B0     		sub	sp, sp, #28
+  87              		.cfi_def_cfa_offset 32
+  88 0004 0390     		str	r0, [sp, #12]
+  89 0006 0291     		str	r1, [sp, #8]
+  90 0008 0192     		str	r2, [sp, #4]
+  91 000a 0093     		str	r3, [sp]
+  70:/usr/src/chibiostest/os/kernel/src/chvt.c ****   VirtualTimer *p;
+  71:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  72:/usr/src/chibiostest/os/kernel/src/chvt.c ****   chDbgCheckClassI();
+  92              		.loc 1 72 0
+  93 000c FFF7FEFF 		bl	chDbgCheckClassI
+  73:/usr/src/chibiostest/os/kernel/src/chvt.c ****   chDbgCheck((vtp != NULL) && (vtfunc != NULL) && (time != TIME_IMMEDIATE),
+  94              		.loc 1 73 0
+  95 0010 039B     		ldr	r3, [sp, #12]
+  96 0012 002B     		cmp	r3, #0
+  97 0014 05D0     		beq	.L5
+  98              		.loc 1 73 0 is_stmt 0 discriminator 2
+  99 0016 019B     		ldr	r3, [sp, #4]
+ 100 0018 002B     		cmp	r3, #0
+ 101 001a 02D0     		beq	.L5
+ 102              		.loc 1 73 0 discriminator 1
+ 103 001c 029B     		ldr	r3, [sp, #8]
+ 104 001e 002B     		cmp	r3, #0
+ 105 0020 02D1     		bne	.L6
+ 106              	.L5:
+ 107 0022 1D48     		ldr	r0, .L10
+ 108 0024 FFF7FEFF 		bl	chDbgPanic
+ 109              	.L6:
+  74:/usr/src/chibiostest/os/kernel/src/chvt.c ****              "chVTSetI");
+  75:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  76:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtp->vt_par = par;
+ 110              		.loc 1 76 0 is_stmt 1
+ 111 0028 039B     		ldr	r3, [sp, #12]
+ 112 002a 009A     		ldr	r2, [sp]
+ 113 002c 1A61     		str	r2, [r3, #16]
+  77:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtp->vt_func = vtfunc;
+ 114              		.loc 1 77 0
+ 115 002e 039B     		ldr	r3, [sp, #12]
+ 116 0030 019A     		ldr	r2, [sp, #4]
+ 117 0032 DA60     		str	r2, [r3, #12]
+  78:/usr/src/chibiostest/os/kernel/src/chvt.c ****   p = vtlist.vt_next;
+ 118              		.loc 1 78 0
+ 119 0034 194B     		ldr	r3, .L10+4
+ 120 0036 1B68     		ldr	r3, [r3]
+ 121 0038 0593     		str	r3, [sp, #20]
+  79:/usr/src/chibiostest/os/kernel/src/chvt.c ****   while (p->vt_time < time) {
+ 122              		.loc 1 79 0
+ 123 003a 07E0     		b	.L7
+ 124              	.L8:
+  80:/usr/src/chibiostest/os/kernel/src/chvt.c ****     time -= p->vt_time;
+ 125              		.loc 1 80 0
+ 126 003c 059B     		ldr	r3, [sp, #20]
+ 127 003e 9B68     		ldr	r3, [r3, #8]
+ 128 0040 029A     		ldr	r2, [sp, #8]
+ 129 0042 D31A     		subs	r3, r2, r3
+ 130 0044 0293     		str	r3, [sp, #8]
+  81:/usr/src/chibiostest/os/kernel/src/chvt.c ****     p = p->vt_next;
+ 131              		.loc 1 81 0
+ 132 0046 059B     		ldr	r3, [sp, #20]
+ 133 0048 1B68     		ldr	r3, [r3]
+ 134 004a 0593     		str	r3, [sp, #20]
+ 135              	.L7:
+  79:/usr/src/chibiostest/os/kernel/src/chvt.c ****   while (p->vt_time < time) {
+ 136              		.loc 1 79 0 discriminator 1
+ 137 004c 059B     		ldr	r3, [sp, #20]
+ 138 004e 9A68     		ldr	r2, [r3, #8]
+ 139 0050 029B     		ldr	r3, [sp, #8]
+ 140 0052 9A42     		cmp	r2, r3
+ 141 0054 F2D3     		bcc	.L8
+  82:/usr/src/chibiostest/os/kernel/src/chvt.c ****   }
+  83:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  84:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtp->vt_prev = (vtp->vt_next = p)->vt_prev;
+ 142              		.loc 1 84 0
+ 143 0056 039B     		ldr	r3, [sp, #12]
+ 144 0058 059A     		ldr	r2, [sp, #20]
+ 145 005a 1A60     		str	r2, [r3]
+ 146 005c 039B     		ldr	r3, [sp, #12]
+ 147 005e 1B68     		ldr	r3, [r3]
+ 148 0060 5A68     		ldr	r2, [r3, #4]
+ 149 0062 039B     		ldr	r3, [sp, #12]
+ 150 0064 5A60     		str	r2, [r3, #4]
+  85:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtp->vt_prev->vt_next = p->vt_prev = vtp;
+ 151              		.loc 1 85 0
+ 152 0066 039B     		ldr	r3, [sp, #12]
+ 153 0068 5B68     		ldr	r3, [r3, #4]
+ 154 006a 059A     		ldr	r2, [sp, #20]
+ 155 006c 0399     		ldr	r1, [sp, #12]
+ 156 006e 5160     		str	r1, [r2, #4]
+ 157 0070 059A     		ldr	r2, [sp, #20]
+ 158 0072 5268     		ldr	r2, [r2, #4]
+ 159 0074 1A60     		str	r2, [r3]
+  86:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtp->vt_time = time;
+ 160              		.loc 1 86 0
+ 161 0076 039B     		ldr	r3, [sp, #12]
+ 162 0078 029A     		ldr	r2, [sp, #8]
+ 163 007a 9A60     		str	r2, [r3, #8]
+  87:/usr/src/chibiostest/os/kernel/src/chvt.c ****   if (p != (void *)&vtlist)
+ 164              		.loc 1 87 0
+ 165 007c 059A     		ldr	r2, [sp, #20]
+ 166 007e 074B     		ldr	r3, .L10+4
+ 167 0080 9A42     		cmp	r2, r3
+ 168 0082 05D0     		beq	.L4
+  88:/usr/src/chibiostest/os/kernel/src/chvt.c ****     p->vt_time -= time;
+ 169              		.loc 1 88 0
+ 170 0084 059B     		ldr	r3, [sp, #20]
+ 171 0086 9A68     		ldr	r2, [r3, #8]
+ 172 0088 029B     		ldr	r3, [sp, #8]
+ 173 008a D21A     		subs	r2, r2, r3
+ 174 008c 059B     		ldr	r3, [sp, #20]
+ 175 008e 9A60     		str	r2, [r3, #8]
+ 176              	.L4:
+  89:/usr/src/chibiostest/os/kernel/src/chvt.c **** }
+ 177              		.loc 1 89 0
+ 178 0090 07B0     		add	sp, sp, #28
+ 179              		@ sp needed
+ 180 0092 5DF804FB 		ldr	pc, [sp], #4
+ 181              	.L11:
+ 182 0096 00BF     		.align	2
+ 183              	.L10:
+ 184 0098 00000000 		.word	.LC0
+ 185 009c 00000000 		.word	vtlist
+ 186              		.cfi_endproc
+ 187              	.LFE8:
+ 189              		.section	.rodata
+ 190 000d 000000   		.align	2
+ 191              	.LC1:
+ 192 0010 22636856 		.ascii	"\"chVTResetI\"()\000"
+ 192      54526573 
+ 192      65744922 
+ 192      282900
+ 193 001f 00       		.align	2
+ 194              	.LC2:
+ 195 0020 63685654 		.ascii	"chVTResetI(), #1\000"
+ 195      52657365 
+ 195      74492829 
+ 195      2C202331 
+ 195      00
+ 196 0031 000000   		.section	.text.chVTResetI,"ax",%progbits
+ 197              		.align	2
+ 198              		.p2align 4,,15
+ 199              		.global	chVTResetI
+ 200              		.thumb
+ 201              		.thumb_func
+ 203              	chVTResetI:
+ 204              	.LFB9:
+  90:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+  91:/usr/src/chibiostest/os/kernel/src/chvt.c **** /**
+  92:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @brief   Disables a Virtual Timer.
+  93:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @note    The timer MUST be active when this function is invoked.
+  94:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *
+  95:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @param[in] vtp       the @p VirtualTimer structure pointer
+  96:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *
+  97:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @iclass
+  98:/usr/src/chibiostest/os/kernel/src/chvt.c ****  */
+  99:/usr/src/chibiostest/os/kernel/src/chvt.c **** void chVTResetI(VirtualTimer *vtp) {
+ 205              		.loc 1 99 0
+ 206              		.cfi_startproc
+ 207              		@ args = 0, pretend = 0, frame = 8
+ 208              		@ frame_needed = 0, uses_anonymous_args = 0
+ 209 0000 00B5     		push	{lr}
+ 210              		.cfi_def_cfa_offset 4
+ 211              		.cfi_offset 14, -4
+ 212 0002 83B0     		sub	sp, sp, #12
+ 213              		.cfi_def_cfa_offset 16
+ 214 0004 0190     		str	r0, [sp, #4]
+ 100:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+ 101:/usr/src/chibiostest/os/kernel/src/chvt.c ****   chDbgCheckClassI();
+ 215              		.loc 1 101 0
+ 216 0006 FFF7FEFF 		bl	chDbgCheckClassI
+ 102:/usr/src/chibiostest/os/kernel/src/chvt.c ****   chDbgCheck(vtp != NULL, "chVTResetI");
+ 217              		.loc 1 102 0
+ 218 000a 019B     		ldr	r3, [sp, #4]
+ 219 000c 002B     		cmp	r3, #0
+ 220 000e 02D1     		bne	.L13
+ 221              		.loc 1 102 0 is_stmt 0 discriminator 1
+ 222 0010 1348     		ldr	r0, .L16
+ 223 0012 FFF7FEFF 		bl	chDbgPanic
+ 224              	.L13:
+ 103:/usr/src/chibiostest/os/kernel/src/chvt.c ****   chDbgAssert(vtp->vt_func != NULL,
+ 225              		.loc 1 103 0 is_stmt 1
+ 226 0016 019B     		ldr	r3, [sp, #4]
+ 227 0018 DB68     		ldr	r3, [r3, #12]
+ 228 001a 002B     		cmp	r3, #0
+ 229 001c 02D1     		bne	.L14
+ 230              		.loc 1 103 0 is_stmt 0 discriminator 1
+ 231 001e 1148     		ldr	r0, .L16+4
+ 232 0020 FFF7FEFF 		bl	chDbgPanic
+ 233              	.L14:
+ 104:/usr/src/chibiostest/os/kernel/src/chvt.c ****               "chVTResetI(), #1",
+ 105:/usr/src/chibiostest/os/kernel/src/chvt.c ****               "timer not set or already triggered");
+ 106:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+ 107:/usr/src/chibiostest/os/kernel/src/chvt.c ****   if (vtp->vt_next != (void *)&vtlist)
+ 234              		.loc 1 107 0 is_stmt 1
+ 235 0024 019B     		ldr	r3, [sp, #4]
+ 236 0026 1A68     		ldr	r2, [r3]
+ 237 0028 0F4B     		ldr	r3, .L16+8
+ 238 002a 9A42     		cmp	r2, r3
+ 239 002c 08D0     		beq	.L15
+ 108:/usr/src/chibiostest/os/kernel/src/chvt.c ****     vtp->vt_next->vt_time += vtp->vt_time;
+ 240              		.loc 1 108 0
+ 241 002e 019B     		ldr	r3, [sp, #4]
+ 242 0030 1B68     		ldr	r3, [r3]
+ 243 0032 019A     		ldr	r2, [sp, #4]
+ 244 0034 1268     		ldr	r2, [r2]
+ 245 0036 9168     		ldr	r1, [r2, #8]
+ 246 0038 019A     		ldr	r2, [sp, #4]
+ 247 003a 9268     		ldr	r2, [r2, #8]
+ 248 003c 0A44     		add	r2, r2, r1
+ 249 003e 9A60     		str	r2, [r3, #8]
+ 250              	.L15:
+ 109:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtp->vt_prev->vt_next = vtp->vt_next;
+ 251              		.loc 1 109 0
+ 252 0040 019B     		ldr	r3, [sp, #4]
+ 253 0042 5B68     		ldr	r3, [r3, #4]
+ 254 0044 019A     		ldr	r2, [sp, #4]
+ 255 0046 1268     		ldr	r2, [r2]
+ 256 0048 1A60     		str	r2, [r3]
+ 110:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtp->vt_next->vt_prev = vtp->vt_prev;
+ 257              		.loc 1 110 0
+ 258 004a 019B     		ldr	r3, [sp, #4]
+ 259 004c 1B68     		ldr	r3, [r3]
+ 260 004e 019A     		ldr	r2, [sp, #4]
+ 261 0050 5268     		ldr	r2, [r2, #4]
+ 262 0052 5A60     		str	r2, [r3, #4]
+ 111:/usr/src/chibiostest/os/kernel/src/chvt.c ****   vtp->vt_func = (vtfunc_t)NULL;
+ 263              		.loc 1 111 0
+ 264 0054 019B     		ldr	r3, [sp, #4]
+ 265 0056 0022     		movs	r2, #0
+ 266 0058 DA60     		str	r2, [r3, #12]
+ 112:/usr/src/chibiostest/os/kernel/src/chvt.c **** }
+ 267              		.loc 1 112 0
+ 268 005a 03B0     		add	sp, sp, #12
+ 269              		@ sp needed
+ 270 005c 5DF804FB 		ldr	pc, [sp], #4
+ 271              	.L17:
+ 272              		.align	2
+ 273              	.L16:
+ 274 0060 10000000 		.word	.LC1
+ 275 0064 20000000 		.word	.LC2
+ 276 0068 00000000 		.word	vtlist
+ 277              		.cfi_endproc
+ 278              	.LFE9:
+ 280 006c AFF30080 		.section	.text.chTimeIsWithin,"ax",%progbits
+ 281              		.align	2
+ 282              		.p2align 4,,15
+ 283              		.global	chTimeIsWithin
+ 284              		.thumb
+ 285              		.thumb_func
+ 287              	chTimeIsWithin:
+ 288              	.LFB10:
+ 113:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+ 114:/usr/src/chibiostest/os/kernel/src/chvt.c **** /**
+ 115:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @brief   Checks if the current system time is within the specified time
+ 116:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *          window.
+ 117:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @note    When start==end then the function returns always true because the
+ 118:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *          whole time range is specified.
+ 119:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *
+ 120:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @param[in] start     the start of the time window (inclusive)
+ 121:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @param[in] end       the end of the time window (non inclusive)
+ 122:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @retval TRUE         current time within the specified time window.
+ 123:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @retval FALSE        current time not within the specified time window.
+ 124:/usr/src/chibiostest/os/kernel/src/chvt.c ****  *
+ 125:/usr/src/chibiostest/os/kernel/src/chvt.c ****  * @api
+ 126:/usr/src/chibiostest/os/kernel/src/chvt.c ****  */
+ 127:/usr/src/chibiostest/os/kernel/src/chvt.c **** bool_t chTimeIsWithin(systime_t start, systime_t end) {
+ 289              		.loc 1 127 0
+ 290              		.cfi_startproc
+ 291              		@ args = 0, pretend = 0, frame = 16
+ 292              		@ frame_needed = 0, uses_anonymous_args = 0
+ 293              		@ link register save eliminated.
+ 294 0000 84B0     		sub	sp, sp, #16
+ 295              		.cfi_def_cfa_offset 16
+ 296 0002 0190     		str	r0, [sp, #4]
+ 297 0004 0091     		str	r1, [sp]
+ 128:/usr/src/chibiostest/os/kernel/src/chvt.c **** 
+ 129:/usr/src/chibiostest/os/kernel/src/chvt.c ****   systime_t time = chTimeNow();
+ 298              		.loc 1 129 0
+ 299 0006 104B     		ldr	r3, .L27
+ 300 0008 DB68     		ldr	r3, [r3, #12]
+ 301 000a 0393     		str	r3, [sp, #12]
+ 130:/usr/src/chibiostest/os/kernel/src/chvt.c ****   return end > start ? (time >= start) && (time < end) :
+ 302              		.loc 1 130 0
+ 303 000c 009A     		ldr	r2, [sp]
+ 304 000e 019B     		ldr	r3, [sp, #4]
+ 305 0010 9A42     		cmp	r2, r3
+ 306 0012 0BD9     		bls	.L19
+ 307              		.loc 1 130 0 is_stmt 0 discriminator 1
+ 308 0014 039A     		ldr	r2, [sp, #12]
+ 309 0016 019B     		ldr	r3, [sp, #4]
+ 310 0018 9A42     		cmp	r2, r3
+ 311 001a 05D3     		bcc	.L20
+ 312              		.loc 1 130 0 discriminator 3
+ 313 001c 039A     		ldr	r2, [sp, #12]
+ 314 001e 009B     		ldr	r3, [sp]
+ 315 0020 9A42     		cmp	r2, r3
+ 316 0022 01D2     		bcs	.L20
+ 317              		.loc 1 130 0 discriminator 1
+ 318 0024 0123     		movs	r3, #1
+ 319 0026 00E0     		b	.L21
+ 320              	.L20:
+ 321              		.loc 1 130 0 discriminator 4
+ 322 0028 0023     		movs	r3, #0
+ 323              	.L21:
+ 324 002a 0AE0     		b	.L22
+ 325              	.L19:
+ 326              		.loc 1 130 0 discriminator 2
+ 327 002c 039A     		ldr	r2, [sp, #12]
+ 328 002e 019B     		ldr	r3, [sp, #4]
+ 329 0030 9A42     		cmp	r2, r3
+ 330 0032 03D2     		bcs	.L23
+ 131:/usr/src/chibiostest/os/kernel/src/chvt.c ****                        (time >= start) || (time < end);
+ 331              		.loc 1 131 0 is_stmt 1
+ 332 0034 039A     		ldr	r2, [sp, #12]
+ 333 0036 009B     		ldr	r3, [sp]
+ 334 0038 9A42     		cmp	r2, r3
+ 335 003a 01D2     		bcs	.L24
+ 336              	.L23:
+ 130:/usr/src/chibiostest/os/kernel/src/chvt.c ****   return end > start ? (time >= start) && (time < end) :
+ 337              		.loc 1 130 0 discriminator 6
+ 338 003c 0123     		movs	r3, #1
+ 339 003e 00E0     		b	.L22
+ 340              	.L24:
+ 130:/usr/src/chibiostest/os/kernel/src/chvt.c ****   return end > start ? (time >= start) && (time < end) :
+ 341              		.loc 1 130 0 is_stmt 0
+ 342 0040 0023     		movs	r3, #0
+ 343              	.L22:
+ 132:/usr/src/chibiostest/os/kernel/src/chvt.c **** }
+ 344              		.loc 1 132 0 is_stmt 1 discriminator 8
+ 345 0042 1846     		mov	r0, r3
+ 346 0044 04B0     		add	sp, sp, #16
+ 347              		@ sp needed
+ 348 0046 7047     		bx	lr
+ 349              	.L28:
+ 350              		.align	2
+ 351              	.L27:
+ 352 0048 00000000 		.word	vtlist
+ 353              		.cfi_endproc
+ 354              	.LFE10:
+ 356 004c AFF30080 		.text
+ 357              	.Letext0:
+ 358              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 359              		.file 3 "/usr/include/newlib/stdint.h"
+ 360              		.file 4 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 361              		.file 5 "/usr/src/chibiostest/os/kernel/include/chvt.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chvt.c
+     /tmp/ccaau2fO.s:24     .bss.vtlist:0000000000000000 vtlist
+     /tmp/ccaau2fO.s:21     .bss.vtlist:0000000000000000 $d
+     /tmp/ccaau2fO.s:27     .text._vt_init:0000000000000000 $t
+     /tmp/ccaau2fO.s:33     .text._vt_init:0000000000000000 _vt_init
+     /tmp/ccaau2fO.s:62     .text._vt_init:0000000000000020 $d
+     /tmp/ccaau2fO.s:67     .rodata:0000000000000000 $d
+     /tmp/ccaau2fO.s:71     .text.chVTSetI:0000000000000000 $t
+     /tmp/ccaau2fO.s:77     .text.chVTSetI:0000000000000000 chVTSetI
+     /tmp/ccaau2fO.s:184    .text.chVTSetI:0000000000000098 $d
+     /tmp/ccaau2fO.s:197    .text.chVTResetI:0000000000000000 $t
+     /tmp/ccaau2fO.s:203    .text.chVTResetI:0000000000000000 chVTResetI
+     /tmp/ccaau2fO.s:274    .text.chVTResetI:0000000000000060 $d
+     /tmp/ccaau2fO.s:281    .text.chTimeIsWithin:0000000000000000 $t
+     /tmp/ccaau2fO.s:287    .text.chTimeIsWithin:0000000000000000 chTimeIsWithin
+     /tmp/ccaau2fO.s:352    .text.chTimeIsWithin:0000000000000048 $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccaau2fO.s:66     .text._vt_init:0000000000000024 $t
+     /tmp/ccaau2fO.s:280    .text.chVTResetI:000000000000006c $t
+     /tmp/ccaau2fO.s:356    .text.chTimeIsWithin:000000000000004c $t
+
+UNDEFINED SYMBOLS
+chDbgCheckClassI
+chDbgPanic

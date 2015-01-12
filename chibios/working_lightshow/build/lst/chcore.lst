@@ -1,0 +1,96 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chcore.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.port_halt,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.weak	port_halt
+  23              		.thumb
+  24              		.thumb_func
+  26              	port_halt:
+  27              	.LFB7:
+  28              		.file 1 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c"
+   1:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** /*
+   2:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** 
+   5:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** 
+   7:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** 
+  12:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** 
+  17:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** */
+  20:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** 
+  21:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** /**
+  22:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****  * @file    GCC/ARMCMx/chcore.c
+  23:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****  * @brief   ARM Cortex-Mx port code.
+  24:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****  *
+  25:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****  * @addtogroup ARMCMx_CORE
+  26:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****  * @{
+  27:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****  */
+  28:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** 
+  29:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** #include "ch.h"
+  30:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** 
+  31:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** /**
+  32:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****  * @brief   Halts the system.
+  33:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****  * @note    The function is declared as a weak symbol, it is possible
+  34:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****  *          to redefine it in your application code.
+  35:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****  */
+  36:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** #if !defined(__DOXYGEN__)
+  37:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** __attribute__((weak))
+  38:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** #endif
+  39:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** void port_halt(void) {
+  29              		.loc 1 39 0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  40:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c **** 
+  41:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****   port_disable();
+  34              		.loc 1 41 0
+  35              	@ 41 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c" 1
+  36 0000 72B6     		cpsid   i
+  37              	@ 0 "" 2
+  38              		.thumb
+  39              	.L2:
+  42:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****   while (TRUE) {
+  43:/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore.c ****   }
+  40              		.loc 1 43 0 discriminator 1
+  41 0002 FEE7     		b	.L2
+  42              		.cfi_endproc
+  43              	.LFE7:
+  45 0004 AFF30080 		.text
+  45      AFF30080 
+  45      AFF30080 
+  46              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chcore.c
+     /tmp/ccxmg12v.s:20     .text.port_halt:0000000000000000 $t
+     /tmp/ccxmg12v.s:26     .text.port_halt:0000000000000000 port_halt
+                     .debug_frame:0000000000000010 $d
+
+NO UNDEFINED SYMBOLS

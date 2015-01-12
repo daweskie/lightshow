@@ -1,0 +1,474 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chsys.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.global	_idle_thread_wa
+  20              		.section	.bss._idle_thread_wa,"aw",%nobits
+  21              		.align	3
+  24              	_idle_thread_wa:
+  25 0000 00000000 		.space	328
+  25      00000000 
+  25      00000000 
+  25      00000000 
+  25      00000000 
+  26              		.section	.rodata
+  27              		.align	2
+  28              	.LC0:
+  29 0000 69646C65 		.ascii	"idle\000"
+  29      00
+  30 0005 000000   		.section	.text._idle_thread,"ax",%progbits
+  31              		.align	2
+  32              		.p2align 4,,15
+  33              		.global	_idle_thread
+  34              		.thumb
+  35              		.thumb_func
+  37              	_idle_thread:
+  38              	.LFB7:
+  39              		.file 1 "/usr/src/chibiostest/os/kernel/src/chsys.c"
+   1:/usr/src/chibiostest/os/kernel/src/chsys.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chsys.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chsys.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chsys.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chsys.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chsys.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chsys.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chsys.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chsys.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chsys.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chsys.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chsys.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chsys.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chsys.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chsys.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+  21:/usr/src/chibiostest/os/kernel/src/chsys.c **** /**
+  22:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @file    chsys.c
+  23:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @brief   System related code.
+  24:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *
+  25:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @addtogroup system
+  26:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @details System related APIs and services:
+  27:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          - Initialization.
+  28:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          - Locks.
+  29:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          - Interrupt Handling.
+  30:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          - Power Management.
+  31:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          - Abnormal Termination.
+  32:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          .
+  33:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @{
+  34:/usr/src/chibiostest/os/kernel/src/chsys.c ****  */
+  35:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+  36:/usr/src/chibiostest/os/kernel/src/chsys.c **** #include "ch.h"
+  37:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+  38:/usr/src/chibiostest/os/kernel/src/chsys.c **** #if !CH_NO_IDLE_THREAD || defined(__DOXYGEN__)
+  39:/usr/src/chibiostest/os/kernel/src/chsys.c **** /**
+  40:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @brief   Idle thread working area.
+  41:/usr/src/chibiostest/os/kernel/src/chsys.c ****  */
+  42:/usr/src/chibiostest/os/kernel/src/chsys.c **** WORKING_AREA(_idle_thread_wa, PORT_IDLE_THREAD_STACK_SIZE);
+  43:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+  44:/usr/src/chibiostest/os/kernel/src/chsys.c **** /**
+  45:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @brief   This function implements the idle thread infinite loop.
+  46:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @details The function puts the processor in the lowest power mode capable
+  47:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          to serve interrupts.<br>
+  48:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          The priority is internally set to the minimum system value so
+  49:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          that this thread is executed only if there are no other ready
+  50:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          threads in the system.
+  51:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *
+  52:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @param[in] p the thread parameter, unused in this scenario
+  53:/usr/src/chibiostest/os/kernel/src/chsys.c ****  */
+  54:/usr/src/chibiostest/os/kernel/src/chsys.c **** void _idle_thread(void *p) {
+  40              		.loc 1 54 0
+  41              		.cfi_startproc
+  42              		@ args = 0, pretend = 0, frame = 8
+  43              		@ frame_needed = 0, uses_anonymous_args = 0
+  44              		@ link register save eliminated.
+  45 0000 82B0     		sub	sp, sp, #8
+  46              		.cfi_def_cfa_offset 8
+  47 0002 0190     		str	r0, [sp, #4]
+  55:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+  56:/usr/src/chibiostest/os/kernel/src/chsys.c ****   (void)p;
+  57:/usr/src/chibiostest/os/kernel/src/chsys.c ****   chRegSetThreadName("idle");
+  48              		.loc 1 57 0
+  49 0004 024B     		ldr	r3, .L3
+  50 0006 9B69     		ldr	r3, [r3, #24]
+  51 0008 024A     		ldr	r2, .L3+4
+  52 000a 9A61     		str	r2, [r3, #24]
+  53              	.L2:
+  58:/usr/src/chibiostest/os/kernel/src/chsys.c ****   while (TRUE) {
+  59:/usr/src/chibiostest/os/kernel/src/chsys.c ****     port_wait_for_interrupt();
+  60:/usr/src/chibiostest/os/kernel/src/chsys.c ****     IDLE_LOOP_HOOK();
+  61:/usr/src/chibiostest/os/kernel/src/chsys.c ****   }
+  54              		.loc 1 61 0 discriminator 1
+  55 000c FEE7     		b	.L2
+  56              	.L4:
+  57 000e 00BF     		.align	2
+  58              	.L3:
+  59 0010 00000000 		.word	rlist
+  60 0014 00000000 		.word	.LC0
+  61              		.cfi_endproc
+  62              	.LFE7:
+  64 0018 AFF30080 		.section	.text.chSysInit,"ax",%progbits
+  64      AFF30080 
+  65              		.align	2
+  66              		.p2align 4,,15
+  67              		.global	chSysInit
+  68              		.thumb
+  69              		.thumb_func
+  71              	chSysInit:
+  72              	.LFB8:
+  62:/usr/src/chibiostest/os/kernel/src/chsys.c **** }
+  63:/usr/src/chibiostest/os/kernel/src/chsys.c **** #endif /* CH_NO_IDLE_THREAD */
+  64:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+  65:/usr/src/chibiostest/os/kernel/src/chsys.c **** /**
+  66:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @brief   ChibiOS/RT initialization.
+  67:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @details After executing this function the current instructions stream
+  68:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          becomes the main thread.
+  69:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @pre     Interrupts must be still disabled when @p chSysInit() is invoked
+  70:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          and are internally enabled.
+  71:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @post    The main thread is created with priority @p NORMALPRIO.
+  72:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @note    This function has special, architecture-dependent, requirements,
+  73:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          see the notes into the various port reference manuals.
+  74:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *
+  75:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @special
+  76:/usr/src/chibiostest/os/kernel/src/chsys.c ****  */
+  77:/usr/src/chibiostest/os/kernel/src/chsys.c **** void chSysInit(void) {
+  73              		.loc 1 77 0
+  74              		.cfi_startproc
+  75              		@ args = 0, pretend = 0, frame = 0
+  76              		@ frame_needed = 0, uses_anonymous_args = 0
+  77 0000 00B5     		push	{lr}
+  78              		.cfi_def_cfa_offset 4
+  79              		.cfi_offset 14, -4
+  80 0002 83B0     		sub	sp, sp, #12
+  81              		.cfi_def_cfa_offset 16
+  78:/usr/src/chibiostest/os/kernel/src/chsys.c ****   static Thread mainthread;
+  79:/usr/src/chibiostest/os/kernel/src/chsys.c **** #if CH_DBG_ENABLE_STACK_CHECK
+  80:/usr/src/chibiostest/os/kernel/src/chsys.c ****   extern stkalign_t __main_thread_stack_base__;
+  81:/usr/src/chibiostest/os/kernel/src/chsys.c **** #endif
+  82:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+  83:/usr/src/chibiostest/os/kernel/src/chsys.c ****   port_init();
+  82              		.loc 1 83 0
+  83 0004 FFF7FEFF 		bl	_port_init
+  84:/usr/src/chibiostest/os/kernel/src/chsys.c ****   _scheduler_init();
+  84              		.loc 1 84 0
+  85 0008 FFF7FEFF 		bl	_scheduler_init
+  85:/usr/src/chibiostest/os/kernel/src/chsys.c ****   _vt_init();
+  86              		.loc 1 85 0
+  87 000c FFF7FEFF 		bl	_vt_init
+  86:/usr/src/chibiostest/os/kernel/src/chsys.c **** #if CH_USE_MEMCORE
+  87:/usr/src/chibiostest/os/kernel/src/chsys.c ****   _core_init();
+  88              		.loc 1 87 0
+  89 0010 FFF7FEFF 		bl	_core_init
+  88:/usr/src/chibiostest/os/kernel/src/chsys.c **** #endif
+  89:/usr/src/chibiostest/os/kernel/src/chsys.c **** #if CH_USE_HEAP
+  90:/usr/src/chibiostest/os/kernel/src/chsys.c ****   _heap_init();
+  90              		.loc 1 90 0
+  91 0014 FFF7FEFF 		bl	_heap_init
+  91:/usr/src/chibiostest/os/kernel/src/chsys.c **** #endif
+  92:/usr/src/chibiostest/os/kernel/src/chsys.c **** #if CH_DBG_ENABLE_TRACE
+  93:/usr/src/chibiostest/os/kernel/src/chsys.c ****   _trace_init();
+  92              		.loc 1 93 0
+  93 0018 FFF7FEFF 		bl	_trace_init
+  94:/usr/src/chibiostest/os/kernel/src/chsys.c **** #endif
+  95:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+  96:/usr/src/chibiostest/os/kernel/src/chsys.c ****   /* Now this instructions flow becomes the main thread.*/
+  97:/usr/src/chibiostest/os/kernel/src/chsys.c ****   setcurrp(_thread_init(&mainthread, NORMALPRIO));
+  94              		.loc 1 97 0
+  95 001c 1248     		ldr	r0, .L6
+  96 001e 4021     		movs	r1, #64
+  97 0020 FFF7FEFF 		bl	_thread_init
+  98 0024 0246     		mov	r2, r0
+  99 0026 114B     		ldr	r3, .L6+4
+ 100 0028 9A61     		str	r2, [r3, #24]
+  98:/usr/src/chibiostest/os/kernel/src/chsys.c ****   currp->p_state = THD_STATE_CURRENT;
+ 101              		.loc 1 98 0
+ 102 002a 104B     		ldr	r3, .L6+4
+ 103 002c 9B69     		ldr	r3, [r3, #24]
+ 104 002e 0122     		movs	r2, #1
+ 105 0030 83F82020 		strb	r2, [r3, #32]
+  99:/usr/src/chibiostest/os/kernel/src/chsys.c **** #if CH_DBG_ENABLE_STACK_CHECK
+ 100:/usr/src/chibiostest/os/kernel/src/chsys.c ****   /* This is a special case because the main thread Thread structure is not
+ 101:/usr/src/chibiostest/os/kernel/src/chsys.c ****      adjacent to its stack area.*/
+ 102:/usr/src/chibiostest/os/kernel/src/chsys.c ****   currp->p_stklimit = &__main_thread_stack_base__;
+ 106              		.loc 1 102 0
+ 107 0034 0D4B     		ldr	r3, .L6+4
+ 108 0036 9B69     		ldr	r3, [r3, #24]
+ 109 0038 0D4A     		ldr	r2, .L6+8
+ 110 003a DA61     		str	r2, [r3, #28]
+ 103:/usr/src/chibiostest/os/kernel/src/chsys.c **** #endif
+ 104:/usr/src/chibiostest/os/kernel/src/chsys.c ****   chSysEnable();
+ 111              		.loc 1 104 0
+ 112 003c FFF7FEFF 		bl	dbg_check_enable
+ 113              	.LBB2:
+ 114 0040 0023     		movs	r3, #0
+ 115              	@ 104 "/usr/src/chibiostest/os/kernel/src/chsys.c" 1
+ 116 0042 83F31188 		msr     BASEPRI, r3                    
+ 117 0046 62B6     		cpsie   i
+ 118              	@ 0 "" 2
+ 119              		.thumb
+ 120              	.LBE2:
+ 105:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+ 106:/usr/src/chibiostest/os/kernel/src/chsys.c ****   /* Note, &ch_debug points to the string "main" if the registry is
+ 107:/usr/src/chibiostest/os/kernel/src/chsys.c ****      active, else the parameter is ignored.*/
+ 108:/usr/src/chibiostest/os/kernel/src/chsys.c ****   chRegSetThreadName((const char *)&ch_debug);
+ 121              		.loc 1 108 0
+ 122 0048 084B     		ldr	r3, .L6+4
+ 123 004a 9B69     		ldr	r3, [r3, #24]
+ 124 004c 094A     		ldr	r2, .L6+12
+ 125 004e 9A61     		str	r2, [r3, #24]
+ 109:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+ 110:/usr/src/chibiostest/os/kernel/src/chsys.c **** #if !CH_NO_IDLE_THREAD
+ 111:/usr/src/chibiostest/os/kernel/src/chsys.c ****   /* This thread has the lowest priority in the system, its role is just to
+ 112:/usr/src/chibiostest/os/kernel/src/chsys.c ****      serve interrupts in its context while keeping the lowest energy saving
+ 113:/usr/src/chibiostest/os/kernel/src/chsys.c ****      mode compatible with the system status.*/
+ 114:/usr/src/chibiostest/os/kernel/src/chsys.c ****   chThdCreateStatic(_idle_thread_wa, sizeof(_idle_thread_wa), IDLEPRIO,
+ 126              		.loc 1 114 0
+ 127 0050 0023     		movs	r3, #0
+ 128 0052 0093     		str	r3, [sp]
+ 129 0054 0848     		ldr	r0, .L6+16
+ 130 0056 4FF4A471 		mov	r1, #328
+ 131 005a 0122     		movs	r2, #1
+ 132 005c 074B     		ldr	r3, .L6+20
+ 133 005e FFF7FEFF 		bl	chThdCreateStatic
+ 115:/usr/src/chibiostest/os/kernel/src/chsys.c ****                     (tfunc_t)_idle_thread, NULL);
+ 116:/usr/src/chibiostest/os/kernel/src/chsys.c **** #endif
+ 117:/usr/src/chibiostest/os/kernel/src/chsys.c **** }
+ 134              		.loc 1 117 0
+ 135 0062 03B0     		add	sp, sp, #12
+ 136              		@ sp needed
+ 137 0064 5DF804FB 		ldr	pc, [sp], #4
+ 138              	.L7:
+ 139              		.align	2
+ 140              	.L6:
+ 141 0068 00000000 		.word	mainthread.4881
+ 142 006c 00000000 		.word	rlist
+ 143 0070 00000000 		.word	__main_thread_stack_base__
+ 144 0074 00000000 		.word	ch_debug
+ 145 0078 00000000 		.word	_idle_thread_wa
+ 146 007c 00000000 		.word	_idle_thread
+ 147              		.cfi_endproc
+ 148              	.LFE8:
+ 150              		.section	.text.chSysTimerHandlerI,"ax",%progbits
+ 151              		.align	2
+ 152              		.p2align 4,,15
+ 153              		.global	chSysTimerHandlerI
+ 154              		.thumb
+ 155              		.thumb_func
+ 157              	chSysTimerHandlerI:
+ 158              	.LFB9:
+ 118:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+ 119:/usr/src/chibiostest/os/kernel/src/chsys.c **** /**
+ 120:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @brief   Handles time ticks for round robin preemption and timer increments.
+ 121:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @details Decrements the remaining time quantum of the running thread
+ 122:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          and preempts it when the quantum is used up. Increments system
+ 123:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          time and manages the timers.
+ 124:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @note    The frequency of the timer determines the system tick granularity
+ 125:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          and, together with the @p CH_TIME_QUANTUM macro, the round robin
+ 126:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *          interval.
+ 127:/usr/src/chibiostest/os/kernel/src/chsys.c ****  *
+ 128:/usr/src/chibiostest/os/kernel/src/chsys.c ****  * @iclass
+ 129:/usr/src/chibiostest/os/kernel/src/chsys.c ****  */
+ 130:/usr/src/chibiostest/os/kernel/src/chsys.c **** void chSysTimerHandlerI(void) {
+ 159              		.loc 1 130 0
+ 160              		.cfi_startproc
+ 161              		@ args = 0, pretend = 0, frame = 8
+ 162              		@ frame_needed = 0, uses_anonymous_args = 0
+ 163 0000 00B5     		push	{lr}
+ 164              		.cfi_def_cfa_offset 4
+ 165              		.cfi_offset 14, -4
+ 166 0002 83B0     		sub	sp, sp, #12
+ 167              		.cfi_def_cfa_offset 16
+ 131:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+ 132:/usr/src/chibiostest/os/kernel/src/chsys.c ****   chDbgCheckClassI();
+ 168              		.loc 1 132 0
+ 169 0004 FFF7FEFF 		bl	chDbgCheckClassI
+ 133:/usr/src/chibiostest/os/kernel/src/chsys.c **** 
+ 134:/usr/src/chibiostest/os/kernel/src/chsys.c **** #if CH_TIME_QUANTUM > 0
+ 135:/usr/src/chibiostest/os/kernel/src/chsys.c ****   /* Running thread has not used up quantum yet? */
+ 136:/usr/src/chibiostest/os/kernel/src/chsys.c ****   if (currp->p_preempt > 0)
+ 170              		.loc 1 136 0
+ 171 0008 244B     		ldr	r3, .L13
+ 172 000a 9B69     		ldr	r3, [r3, #24]
+ 173 000c 93F82330 		ldrb	r3, [r3, #35]	@ zero_extendqisi2
+ 174 0010 002B     		cmp	r3, #0
+ 175 0012 07D0     		beq	.L9
+ 137:/usr/src/chibiostest/os/kernel/src/chsys.c ****     /* Decrement remaining quantum.*/
+ 138:/usr/src/chibiostest/os/kernel/src/chsys.c ****     currp->p_preempt--;
+ 176              		.loc 1 138 0
+ 177 0014 214B     		ldr	r3, .L13
+ 178 0016 9B69     		ldr	r3, [r3, #24]
+ 179 0018 93F82320 		ldrb	r2, [r3, #35]	@ zero_extendqisi2
+ 180 001c 013A     		subs	r2, r2, #1
+ 181 001e D2B2     		uxtb	r2, r2
+ 182 0020 83F82320 		strb	r2, [r3, #35]
+ 183              	.L9:
+ 139:/usr/src/chibiostest/os/kernel/src/chsys.c **** #endif
+ 140:/usr/src/chibiostest/os/kernel/src/chsys.c **** #if CH_DBG_THREADS_PROFILING
+ 141:/usr/src/chibiostest/os/kernel/src/chsys.c ****   currp->p_time++;
+ 184              		.loc 1 141 0
+ 185 0024 1D4B     		ldr	r3, .L13
+ 186 0026 9B69     		ldr	r3, [r3, #24]
+ 187 0028 5A6A     		ldr	r2, [r3, #36]
+ 188 002a 0132     		adds	r2, r2, #1
+ 189 002c 5A62     		str	r2, [r3, #36]
+ 142:/usr/src/chibiostest/os/kernel/src/chsys.c **** #endif
+ 143:/usr/src/chibiostest/os/kernel/src/chsys.c ****   chVTDoTickI();
+ 190              		.loc 1 143 0
+ 191 002e 1C4B     		ldr	r3, .L13+4
+ 192 0030 DB68     		ldr	r3, [r3, #12]
+ 193 0032 5A1C     		adds	r2, r3, #1
+ 194 0034 1A4B     		ldr	r3, .L13+4
+ 195 0036 DA60     		str	r2, [r3, #12]
+ 196 0038 194B     		ldr	r3, .L13+4
+ 197 003a 1A68     		ldr	r2, [r3]
+ 198 003c 184B     		ldr	r3, .L13+4
+ 199 003e 9A42     		cmp	r2, r3
+ 200 0040 29D0     		beq	.L8
+ 201              	.LBB3:
+ 202              		.loc 1 143 0 is_stmt 0 discriminator 1
+ 203 0042 174B     		ldr	r3, .L13+4
+ 204 0044 1B68     		ldr	r3, [r3]
+ 205 0046 9A68     		ldr	r2, [r3, #8]
+ 206 0048 013A     		subs	r2, r2, #1
+ 207 004a 9A60     		str	r2, [r3, #8]
+ 208 004c 1CE0     		b	.L11
+ 209              	.L12:
+ 210              	.LBB4:
+ 211              		.loc 1 143 0 discriminator 2
+ 212 004e 019B     		ldr	r3, [sp, #4]
+ 213 0050 DB68     		ldr	r3, [r3, #12]
+ 214 0052 0093     		str	r3, [sp]
+ 215 0054 019B     		ldr	r3, [sp, #4]
+ 216 0056 0022     		movs	r2, #0
+ 217 0058 DA60     		str	r2, [r3, #12]
+ 218 005a 019B     		ldr	r3, [sp, #4]
+ 219 005c 1B68     		ldr	r3, [r3]
+ 220 005e 104A     		ldr	r2, .L13+4
+ 221 0060 5A60     		str	r2, [r3, #4]
+ 222 0062 019B     		ldr	r3, [sp, #4]
+ 223 0064 1A68     		ldr	r2, [r3]
+ 224 0066 0E4B     		ldr	r3, .L13+4
+ 225 0068 1A60     		str	r2, [r3]
+ 226 006a FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 227              	.LBB5:
+ 228 006e 0023     		movs	r3, #0
+ 229              	@ 143 "/usr/src/chibiostest/os/kernel/src/chsys.c" 1
+ 230 0070 83F31188 		msr     BASEPRI, r3
+ 231              	@ 0 "" 2
+ 232              		.thumb
+ 233              	.LBE5:
+ 234 0074 019B     		ldr	r3, [sp, #4]
+ 235 0076 1A69     		ldr	r2, [r3, #16]
+ 236 0078 009B     		ldr	r3, [sp]
+ 237 007a 1046     		mov	r0, r2
+ 238 007c 9847     		blx	r3
+ 239              	.LBB6:
+ 240 007e 2023     		movs	r3, #32
+ 241              	@ 143 "/usr/src/chibiostest/os/kernel/src/chsys.c" 1
+ 242 0080 83F31188 		msr     BASEPRI, r3
+ 243              	@ 0 "" 2
+ 244              		.thumb
+ 245              	.LBE6:
+ 246 0084 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 247              	.L11:
+ 248              	.LBE4:
+ 249              		.loc 1 143 0 discriminator 1
+ 250 0088 054B     		ldr	r3, .L13+4
+ 251 008a 1B68     		ldr	r3, [r3]
+ 252 008c 0193     		str	r3, [sp, #4]
+ 253 008e 019B     		ldr	r3, [sp, #4]
+ 254 0090 9B68     		ldr	r3, [r3, #8]
+ 255 0092 002B     		cmp	r3, #0
+ 256 0094 DBD0     		beq	.L12
+ 257              	.L8:
+ 258              	.LBE3:
+ 144:/usr/src/chibiostest/os/kernel/src/chsys.c **** #if defined(SYSTEM_TICK_EVENT_HOOK)
+ 145:/usr/src/chibiostest/os/kernel/src/chsys.c ****   SYSTEM_TICK_EVENT_HOOK();
+ 146:/usr/src/chibiostest/os/kernel/src/chsys.c **** #endif
+ 147:/usr/src/chibiostest/os/kernel/src/chsys.c **** }
+ 259              		.loc 1 147 0 is_stmt 1
+ 260 0096 03B0     		add	sp, sp, #12
+ 261              		@ sp needed
+ 262 0098 5DF804FB 		ldr	pc, [sp], #4
+ 263              	.L14:
+ 264              		.align	2
+ 265              	.L13:
+ 266 009c 00000000 		.word	rlist
+ 267 00a0 00000000 		.word	vtlist
+ 268              		.cfi_endproc
+ 269              	.LFE9:
+ 271 00a4 AFF30080 		.section	.bss.mainthread.4881,"aw",%nobits
+ 271      AFF30080 
+ 271      AFF30080 
+ 272              		.align	2
+ 275              	mainthread.4881:
+ 276 0000 00000000 		.space	76
+ 276      00000000 
+ 276      00000000 
+ 276      00000000 
+ 276      00000000 
+ 277              		.text
+ 278              	.Letext0:
+ 279              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 280              		.file 3 "/usr/include/newlib/stdint.h"
+ 281              		.file 4 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 282              		.file 5 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 283              		.file 6 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 284              		.file 7 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 285              		.file 8 "/usr/src/chibiostest/os/kernel/include/chvt.h"
+ 286              		.file 9 "/usr/src/chibiostest/os/kernel/include/chschd.h"
+ 287              		.file 10 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+ 288              		.file 11 "/usr/src/chibiostest/os/kernel/include/chregistry.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chsys.c
+     /tmp/ccvY3sWD.s:24     .bss._idle_thread_wa:0000000000000000 _idle_thread_wa
+     /tmp/ccvY3sWD.s:21     .bss._idle_thread_wa:0000000000000000 $d
+     /tmp/ccvY3sWD.s:27     .rodata:0000000000000000 $d
+     /tmp/ccvY3sWD.s:31     .text._idle_thread:0000000000000000 $t
+     /tmp/ccvY3sWD.s:37     .text._idle_thread:0000000000000000 _idle_thread
+     /tmp/ccvY3sWD.s:59     .text._idle_thread:0000000000000010 $d
+     /tmp/ccvY3sWD.s:65     .text.chSysInit:0000000000000000 $t
+     /tmp/ccvY3sWD.s:71     .text.chSysInit:0000000000000000 chSysInit
+     /tmp/ccvY3sWD.s:141    .text.chSysInit:0000000000000068 $d
+     /tmp/ccvY3sWD.s:275    .bss.mainthread.4881:0000000000000000 mainthread.4881
+     /tmp/ccvY3sWD.s:151    .text.chSysTimerHandlerI:0000000000000000 $t
+     /tmp/ccvY3sWD.s:157    .text.chSysTimerHandlerI:0000000000000000 chSysTimerHandlerI
+     /tmp/ccvY3sWD.s:266    .text.chSysTimerHandlerI:000000000000009c $d
+     /tmp/ccvY3sWD.s:272    .bss.mainthread.4881:0000000000000000 $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccvY3sWD.s:64     .text._idle_thread:0000000000000018 $t
+     /tmp/ccvY3sWD.s:271    .text.chSysTimerHandlerI:00000000000000a4 $t
+
+UNDEFINED SYMBOLS
+rlist
+_port_init
+_scheduler_init
+_vt_init
+_core_init
+_heap_init
+_trace_init
+_thread_init
+dbg_check_enable
+chThdCreateStatic
+__main_thread_stack_base__
+ch_debug
+chDbgCheckClassI
+dbg_check_unlock_from_isr
+dbg_check_lock_from_isr
+vtlist

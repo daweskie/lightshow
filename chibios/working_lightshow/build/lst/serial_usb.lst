@@ -1,0 +1,1738 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"serial_usb.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.data.linecoding,"aw",%progbits
+  20              		.align	2
+  23              	linecoding:
+  24 0000 00       		.byte	0
+  25 0001 96       		.byte	-106
+  26 0002 00       		.byte	0
+  27 0003 00       		.byte	0
+  28 0004 00       		.byte	0
+  29 0005 00       		.byte	0
+  30 0006 08       		.byte	8
+  31 0007 00       		.section	.text.write,"ax",%progbits
+  32              		.align	2
+  33              		.p2align 4,,15
+  34              		.thumb
+  35              		.thumb_func
+  37              	write:
+  38              	.LFB118:
+  39              		.file 1 "/usr/src/chibiostest/os/hal/src/serial_usb.c"
+   1:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*
+   2:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/hal/src/serial_usb.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+   5:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+   7:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  12:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  17:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/hal/src/serial_usb.c **** */
+  20:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  21:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+  22:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @file    serial_usb.c
+  23:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Serial over USB Driver code.
+  24:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+  25:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @addtogroup SERIAL_USB
+  26:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @{
+  27:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+  28:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  29:/usr/src/chibiostest/os/hal/src/serial_usb.c **** #include "ch.h"
+  30:/usr/src/chibiostest/os/hal/src/serial_usb.c **** #include "hal.h"
+  31:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  32:/usr/src/chibiostest/os/hal/src/serial_usb.c **** #include "usb_cdc.h"
+  33:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  34:/usr/src/chibiostest/os/hal/src/serial_usb.c **** #if HAL_USE_SERIAL_USB || defined(__DOXYGEN__)
+  35:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  36:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*===========================================================================*/
+  37:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /* Driver local definitions.                                                 */
+  38:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*===========================================================================*/
+  39:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  40:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*===========================================================================*/
+  41:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /* Driver exported variables.                                                */
+  42:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*===========================================================================*/
+  43:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  44:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*===========================================================================*/
+  45:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /* Driver local variables.                                                   */
+  46:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*===========================================================================*/
+  47:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  48:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*
+  49:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * Current Line Coding.
+  50:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+  51:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static cdc_linecoding_t linecoding = {
+  52:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   {0x00, 0x96, 0x00, 0x00},             /* 38400.                           */
+  53:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   LC_STOP_1, LC_PARITY_NONE, 8
+  54:/usr/src/chibiostest/os/hal/src/serial_usb.c **** };
+  55:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  56:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*===========================================================================*/
+  57:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /* Driver local functions.                                                   */
+  58:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*===========================================================================*/
+  59:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  60:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*
+  61:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * Interface implementation.
+  62:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+  63:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  64:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static size_t write(void *ip, const uint8_t *bp, size_t n) {
+  40              		.loc 1 64 0
+  41              		.cfi_startproc
+  42              		@ args = 0, pretend = 0, frame = 16
+  43              		@ frame_needed = 0, uses_anonymous_args = 0
+  44 0000 00B5     		push	{lr}
+  45              		.cfi_def_cfa_offset 4
+  46              		.cfi_offset 14, -4
+  47 0002 85B0     		sub	sp, sp, #20
+  48              		.cfi_def_cfa_offset 24
+  49 0004 0390     		str	r0, [sp, #12]
+  50 0006 0291     		str	r1, [sp, #8]
+  51 0008 0192     		str	r2, [sp, #4]
+  65:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  66:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   return chOQWriteTimeout(&((SerialUSBDriver *)ip)->oqueue, bp,
+  52              		.loc 1 66 0
+  53 000a 039B     		ldr	r3, [sp, #12]
+  54 000c 3033     		adds	r3, r3, #48
+  55 000e 1846     		mov	r0, r3
+  56 0010 0299     		ldr	r1, [sp, #8]
+  57 0012 019A     		ldr	r2, [sp, #4]
+  58 0014 4FF0FF33 		mov	r3, #-1
+  59 0018 FFF7FEFF 		bl	chOQWriteTimeout
+  60 001c 0346     		mov	r3, r0
+  67:/usr/src/chibiostest/os/hal/src/serial_usb.c ****                           n, TIME_INFINITE);
+  68:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+  61              		.loc 1 68 0
+  62 001e 1846     		mov	r0, r3
+  63 0020 05B0     		add	sp, sp, #20
+  64              		@ sp needed
+  65 0022 5DF804FB 		ldr	pc, [sp], #4
+  66              		.cfi_endproc
+  67              	.LFE118:
+  69 0026 00BFAFF3 		.section	.text.read,"ax",%progbits
+  69      0080AFF3 
+  69      0080
+  70              		.align	2
+  71              		.p2align 4,,15
+  72              		.thumb
+  73              		.thumb_func
+  75              	read:
+  76              	.LFB119:
+  69:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  70:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static size_t read(void *ip, uint8_t *bp, size_t n) {
+  77              		.loc 1 70 0
+  78              		.cfi_startproc
+  79              		@ args = 0, pretend = 0, frame = 16
+  80              		@ frame_needed = 0, uses_anonymous_args = 0
+  81 0000 00B5     		push	{lr}
+  82              		.cfi_def_cfa_offset 4
+  83              		.cfi_offset 14, -4
+  84 0002 85B0     		sub	sp, sp, #20
+  85              		.cfi_def_cfa_offset 24
+  86 0004 0390     		str	r0, [sp, #12]
+  87 0006 0291     		str	r1, [sp, #8]
+  88 0008 0192     		str	r2, [sp, #4]
+  71:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  72:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   return chIQReadTimeout(&((SerialUSBDriver *)ip)->iqueue, bp,
+  89              		.loc 1 72 0
+  90 000a 039B     		ldr	r3, [sp, #12]
+  91 000c 0C33     		adds	r3, r3, #12
+  92 000e 1846     		mov	r0, r3
+  93 0010 0299     		ldr	r1, [sp, #8]
+  94 0012 019A     		ldr	r2, [sp, #4]
+  95 0014 4FF0FF33 		mov	r3, #-1
+  96 0018 FFF7FEFF 		bl	chIQReadTimeout
+  97 001c 0346     		mov	r3, r0
+  73:/usr/src/chibiostest/os/hal/src/serial_usb.c ****                          n, TIME_INFINITE);
+  74:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+  98              		.loc 1 74 0
+  99 001e 1846     		mov	r0, r3
+ 100 0020 05B0     		add	sp, sp, #20
+ 101              		@ sp needed
+ 102 0022 5DF804FB 		ldr	pc, [sp], #4
+ 103              		.cfi_endproc
+ 104              	.LFE119:
+ 106              		.section	.text.put,"ax",%progbits
+ 107              		.align	2
+ 108              		.p2align 4,,15
+ 109              		.thumb
+ 110              		.thumb_func
+ 112              	put:
+ 113              	.LFB120:
+  75:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  76:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static msg_t put(void *ip, uint8_t b) {
+ 114              		.loc 1 76 0
+ 115              		.cfi_startproc
+ 116              		@ args = 0, pretend = 0, frame = 8
+ 117              		@ frame_needed = 0, uses_anonymous_args = 0
+ 118 0000 00B5     		push	{lr}
+ 119              		.cfi_def_cfa_offset 4
+ 120              		.cfi_offset 14, -4
+ 121 0002 83B0     		sub	sp, sp, #12
+ 122              		.cfi_def_cfa_offset 16
+ 123 0004 0190     		str	r0, [sp, #4]
+ 124 0006 0B46     		mov	r3, r1
+ 125 0008 8DF80330 		strb	r3, [sp, #3]
+  77:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  78:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   return chOQPutTimeout(&((SerialUSBDriver *)ip)->oqueue, b, TIME_INFINITE);
+ 126              		.loc 1 78 0
+ 127 000c 019B     		ldr	r3, [sp, #4]
+ 128 000e 03F13002 		add	r2, r3, #48
+ 129 0012 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 130 0016 1046     		mov	r0, r2
+ 131 0018 1946     		mov	r1, r3
+ 132 001a 4FF0FF32 		mov	r2, #-1
+ 133 001e FFF7FEFF 		bl	chOQPutTimeout
+ 134 0022 0346     		mov	r3, r0
+  79:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 135              		.loc 1 79 0
+ 136 0024 1846     		mov	r0, r3
+ 137 0026 03B0     		add	sp, sp, #12
+ 138              		@ sp needed
+ 139 0028 5DF804FB 		ldr	pc, [sp], #4
+ 140              		.cfi_endproc
+ 141              	.LFE120:
+ 143 002c AFF30080 		.section	.text.get,"ax",%progbits
+ 144              		.align	2
+ 145              		.p2align 4,,15
+ 146              		.thumb
+ 147              		.thumb_func
+ 149              	get:
+ 150              	.LFB121:
+  80:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  81:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static msg_t get(void *ip) {
+ 151              		.loc 1 81 0
+ 152              		.cfi_startproc
+ 153              		@ args = 0, pretend = 0, frame = 8
+ 154              		@ frame_needed = 0, uses_anonymous_args = 0
+ 155 0000 00B5     		push	{lr}
+ 156              		.cfi_def_cfa_offset 4
+ 157              		.cfi_offset 14, -4
+ 158 0002 83B0     		sub	sp, sp, #12
+ 159              		.cfi_def_cfa_offset 16
+ 160 0004 0190     		str	r0, [sp, #4]
+  82:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  83:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   return chIQGetTimeout(&((SerialUSBDriver *)ip)->iqueue, TIME_INFINITE);
+ 161              		.loc 1 83 0
+ 162 0006 019B     		ldr	r3, [sp, #4]
+ 163 0008 0C33     		adds	r3, r3, #12
+ 164 000a 1846     		mov	r0, r3
+ 165 000c 4FF0FF31 		mov	r1, #-1
+ 166 0010 FFF7FEFF 		bl	chIQGetTimeout
+ 167 0014 0346     		mov	r3, r0
+  84:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 168              		.loc 1 84 0
+ 169 0016 1846     		mov	r0, r3
+ 170 0018 03B0     		add	sp, sp, #12
+ 171              		@ sp needed
+ 172 001a 5DF804FB 		ldr	pc, [sp], #4
+ 173              		.cfi_endproc
+ 174              	.LFE121:
+ 176 001e 00BF     		.section	.text.putt,"ax",%progbits
+ 177              		.align	2
+ 178              		.p2align 4,,15
+ 179              		.thumb
+ 180              		.thumb_func
+ 182              	putt:
+ 183              	.LFB122:
+  85:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  86:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static msg_t putt(void *ip, uint8_t b, systime_t timeout) {
+ 184              		.loc 1 86 0
+ 185              		.cfi_startproc
+ 186              		@ args = 0, pretend = 0, frame = 16
+ 187              		@ frame_needed = 0, uses_anonymous_args = 0
+ 188 0000 00B5     		push	{lr}
+ 189              		.cfi_def_cfa_offset 4
+ 190              		.cfi_offset 14, -4
+ 191 0002 85B0     		sub	sp, sp, #20
+ 192              		.cfi_def_cfa_offset 24
+ 193 0004 0390     		str	r0, [sp, #12]
+ 194 0006 0B46     		mov	r3, r1
+ 195 0008 0192     		str	r2, [sp, #4]
+ 196 000a 8DF80B30 		strb	r3, [sp, #11]
+  87:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  88:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   return chOQPutTimeout(&((SerialUSBDriver *)ip)->oqueue, b, timeout);
+ 197              		.loc 1 88 0
+ 198 000e 039B     		ldr	r3, [sp, #12]
+ 199 0010 03F13002 		add	r2, r3, #48
+ 200 0014 9DF80B30 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 201 0018 1046     		mov	r0, r2
+ 202 001a 1946     		mov	r1, r3
+ 203 001c 019A     		ldr	r2, [sp, #4]
+ 204 001e FFF7FEFF 		bl	chOQPutTimeout
+ 205 0022 0346     		mov	r3, r0
+  89:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 206              		.loc 1 89 0
+ 207 0024 1846     		mov	r0, r3
+ 208 0026 05B0     		add	sp, sp, #20
+ 209              		@ sp needed
+ 210 0028 5DF804FB 		ldr	pc, [sp], #4
+ 211              		.cfi_endproc
+ 212              	.LFE122:
+ 214 002c AFF30080 		.section	.text.gett,"ax",%progbits
+ 215              		.align	2
+ 216              		.p2align 4,,15
+ 217              		.thumb
+ 218              		.thumb_func
+ 220              	gett:
+ 221              	.LFB123:
+  90:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  91:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static msg_t gett(void *ip, systime_t timeout) {
+ 222              		.loc 1 91 0
+ 223              		.cfi_startproc
+ 224              		@ args = 0, pretend = 0, frame = 8
+ 225              		@ frame_needed = 0, uses_anonymous_args = 0
+ 226 0000 00B5     		push	{lr}
+ 227              		.cfi_def_cfa_offset 4
+ 228              		.cfi_offset 14, -4
+ 229 0002 83B0     		sub	sp, sp, #12
+ 230              		.cfi_def_cfa_offset 16
+ 231 0004 0190     		str	r0, [sp, #4]
+ 232 0006 0091     		str	r1, [sp]
+  92:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  93:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   return chIQGetTimeout(&((SerialUSBDriver *)ip)->iqueue, timeout);
+ 233              		.loc 1 93 0
+ 234 0008 019B     		ldr	r3, [sp, #4]
+ 235 000a 0C33     		adds	r3, r3, #12
+ 236 000c 1846     		mov	r0, r3
+ 237 000e 0099     		ldr	r1, [sp]
+ 238 0010 FFF7FEFF 		bl	chIQGetTimeout
+ 239 0014 0346     		mov	r3, r0
+  94:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 240              		.loc 1 94 0
+ 241 0016 1846     		mov	r0, r3
+ 242 0018 03B0     		add	sp, sp, #12
+ 243              		@ sp needed
+ 244 001a 5DF804FB 		ldr	pc, [sp], #4
+ 245              		.cfi_endproc
+ 246              	.LFE123:
+ 248 001e 00BF     		.section	.text.writet,"ax",%progbits
+ 249              		.align	2
+ 250              		.p2align 4,,15
+ 251              		.thumb
+ 252              		.thumb_func
+ 254              	writet:
+ 255              	.LFB124:
+  95:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  96:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static size_t writet(void *ip, const uint8_t *bp, size_t n, systime_t time) {
+ 256              		.loc 1 96 0
+ 257              		.cfi_startproc
+ 258              		@ args = 0, pretend = 0, frame = 16
+ 259              		@ frame_needed = 0, uses_anonymous_args = 0
+ 260 0000 00B5     		push	{lr}
+ 261              		.cfi_def_cfa_offset 4
+ 262              		.cfi_offset 14, -4
+ 263 0002 85B0     		sub	sp, sp, #20
+ 264              		.cfi_def_cfa_offset 24
+ 265 0004 0390     		str	r0, [sp, #12]
+ 266 0006 0291     		str	r1, [sp, #8]
+ 267 0008 0192     		str	r2, [sp, #4]
+ 268 000a 0093     		str	r3, [sp]
+  97:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+  98:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   return chOQWriteTimeout(&((SerialUSBDriver *)ip)->oqueue, bp, n, time);
+ 269              		.loc 1 98 0
+ 270 000c 039B     		ldr	r3, [sp, #12]
+ 271 000e 3033     		adds	r3, r3, #48
+ 272 0010 1846     		mov	r0, r3
+ 273 0012 0299     		ldr	r1, [sp, #8]
+ 274 0014 019A     		ldr	r2, [sp, #4]
+ 275 0016 009B     		ldr	r3, [sp]
+ 276 0018 FFF7FEFF 		bl	chOQWriteTimeout
+ 277 001c 0346     		mov	r3, r0
+  99:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 278              		.loc 1 99 0
+ 279 001e 1846     		mov	r0, r3
+ 280 0020 05B0     		add	sp, sp, #20
+ 281              		@ sp needed
+ 282 0022 5DF804FB 		ldr	pc, [sp], #4
+ 283              		.cfi_endproc
+ 284              	.LFE124:
+ 286 0026 00BFAFF3 		.section	.text.readt,"ax",%progbits
+ 286      0080AFF3 
+ 286      0080
+ 287              		.align	2
+ 288              		.p2align 4,,15
+ 289              		.thumb
+ 290              		.thumb_func
+ 292              	readt:
+ 293              	.LFB125:
+ 100:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 101:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static size_t readt(void *ip, uint8_t *bp, size_t n, systime_t time) {
+ 294              		.loc 1 101 0
+ 295              		.cfi_startproc
+ 296              		@ args = 0, pretend = 0, frame = 16
+ 297              		@ frame_needed = 0, uses_anonymous_args = 0
+ 298 0000 00B5     		push	{lr}
+ 299              		.cfi_def_cfa_offset 4
+ 300              		.cfi_offset 14, -4
+ 301 0002 85B0     		sub	sp, sp, #20
+ 302              		.cfi_def_cfa_offset 24
+ 303 0004 0390     		str	r0, [sp, #12]
+ 304 0006 0291     		str	r1, [sp, #8]
+ 305 0008 0192     		str	r2, [sp, #4]
+ 306 000a 0093     		str	r3, [sp]
+ 102:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 103:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   return chIQReadTimeout(&((SerialUSBDriver *)ip)->iqueue, bp, n, time);
+ 307              		.loc 1 103 0
+ 308 000c 039B     		ldr	r3, [sp, #12]
+ 309 000e 0C33     		adds	r3, r3, #12
+ 310 0010 1846     		mov	r0, r3
+ 311 0012 0299     		ldr	r1, [sp, #8]
+ 312 0014 019A     		ldr	r2, [sp, #4]
+ 313 0016 009B     		ldr	r3, [sp]
+ 314 0018 FFF7FEFF 		bl	chIQReadTimeout
+ 315 001c 0346     		mov	r3, r0
+ 104:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 316              		.loc 1 104 0
+ 317 001e 1846     		mov	r0, r3
+ 318 0020 05B0     		add	sp, sp, #20
+ 319              		@ sp needed
+ 320 0022 5DF804FB 		ldr	pc, [sp], #4
+ 321              		.cfi_endproc
+ 322              	.LFE125:
+ 324 0026 00BFAFF3 		.section	.rodata.vmt,"a",%progbits
+ 324      0080AFF3 
+ 324      0080
+ 325              		.align	2
+ 328              	vmt:
+ 329 0000 00000000 		.word	write
+ 330 0004 00000000 		.word	read
+ 331 0008 00000000 		.word	put
+ 332 000c 00000000 		.word	get
+ 333 0010 00000000 		.word	putt
+ 334 0014 00000000 		.word	gett
+ 335 0018 00000000 		.word	writet
+ 336 001c 00000000 		.word	readt
+ 337              		.section	.text.inotify,"ax",%progbits
+ 338              		.align	2
+ 339              		.p2align 4,,15
+ 340              		.thumb
+ 341              		.thumb_func
+ 343              	inotify:
+ 344              	.LFB126:
+ 105:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 106:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static const struct SerialUSBDriverVMT vmt = {
+ 107:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   write, read, put, get,
+ 108:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   putt, gett, writet, readt
+ 109:/usr/src/chibiostest/os/hal/src/serial_usb.c **** };
+ 110:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 111:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 112:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Notification of data removed from the input queue.
+ 113:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 114:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static void inotify(GenericQueue *qp) {
+ 345              		.loc 1 114 0
+ 346              		.cfi_startproc
+ 347              		@ args = 0, pretend = 0, frame = 24
+ 348              		@ frame_needed = 0, uses_anonymous_args = 0
+ 349 0000 00B5     		push	{lr}
+ 350              		.cfi_def_cfa_offset 4
+ 351              		.cfi_offset 14, -4
+ 352 0002 87B0     		sub	sp, sp, #28
+ 353              		.cfi_def_cfa_offset 32
+ 354 0004 0190     		str	r0, [sp, #4]
+ 115:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   size_t n, maxsize;
+ 116:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   SerialUSBDriver *sdup = chQGetLink(qp);
+ 355              		.loc 1 116 0
+ 356 0006 019B     		ldr	r3, [sp, #4]
+ 357 0008 1B6A     		ldr	r3, [r3, #32]
+ 358 000a 0593     		str	r3, [sp, #20]
+ 117:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 118:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   /* If the USB driver is not in the appropriate state then transactions
+ 119:/usr/src/chibiostest/os/hal/src/serial_usb.c ****      must not be started.*/
+ 120:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   if (usbGetDriverStateI(sdup->config->usbp) != USB_ACTIVE)
+ 359              		.loc 1 120 0
+ 360 000c 059B     		ldr	r3, [sp, #20]
+ 361 000e D3F85432 		ldr	r3, [r3, #596]
+ 362 0012 1B68     		ldr	r3, [r3]
+ 363 0014 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 364 0016 042B     		cmp	r3, #4
+ 365 0018 00D0     		beq	.L18
+ 121:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     return;
+ 366              		.loc 1 121 0
+ 367 001a 44E0     		b	.L17
+ 368              	.L18:
+ 122:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 123:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   /* If there is in the queue enough space to hold at least one packet and
+ 124:/usr/src/chibiostest/os/hal/src/serial_usb.c ****      a transaction is not yet started then a new transaction is started for
+ 125:/usr/src/chibiostest/os/hal/src/serial_usb.c ****      the available space.*/
+ 126:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   maxsize = sdup->config->usbp->epc[USB_CDC_DATA_AVAILABLE_EP]->out_maxsize;
+ 369              		.loc 1 126 0
+ 370 001c 059B     		ldr	r3, [sp, #20]
+ 371 001e D3F85432 		ldr	r3, [r3, #596]
+ 372 0022 1B68     		ldr	r3, [r3]
+ 373 0024 5B69     		ldr	r3, [r3, #20]
+ 374 0026 5B8A     		ldrh	r3, [r3, #18]
+ 375 0028 0493     		str	r3, [sp, #16]
+ 127:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   if (!usbGetReceiveStatusI(sdup->config->usbp, USB_CDC_DATA_AVAILABLE_EP) &&
+ 376              		.loc 1 127 0
+ 377 002a 059B     		ldr	r3, [sp, #20]
+ 378 002c D3F85432 		ldr	r3, [r3, #596]
+ 379 0030 1B68     		ldr	r3, [r3]
+ 380 0032 DB89     		ldrh	r3, [r3, #14]
+ 381 0034 03F00203 		and	r3, r3, #2
+ 382 0038 002B     		cmp	r3, #0
+ 383 003a 34D1     		bne	.L17
+ 128:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       ((n = chIQGetEmptyI(&sdup->iqueue)) >= maxsize)) {
+ 384              		.loc 1 128 0 discriminator 1
+ 385 003c 059B     		ldr	r3, [sp, #20]
+ 386 003e DB69     		ldr	r3, [r3, #28]
+ 387 0040 1A46     		mov	r2, r3
+ 388 0042 059B     		ldr	r3, [sp, #20]
+ 389 0044 9B69     		ldr	r3, [r3, #24]
+ 390 0046 D31A     		subs	r3, r2, r3
+ 391 0048 1A46     		mov	r2, r3
+ 392 004a 059B     		ldr	r3, [sp, #20]
+ 393 004c 5B69     		ldr	r3, [r3, #20]
+ 394 004e D31A     		subs	r3, r2, r3
+ 395 0050 0393     		str	r3, [sp, #12]
+ 127:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   if (!usbGetReceiveStatusI(sdup->config->usbp, USB_CDC_DATA_AVAILABLE_EP) &&
+ 396              		.loc 1 127 0 discriminator 1
+ 397 0052 039A     		ldr	r2, [sp, #12]
+ 398 0054 049B     		ldr	r3, [sp, #16]
+ 399 0056 9A42     		cmp	r2, r3
+ 400 0058 25D3     		bcc	.L17
+ 129:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     chSysUnlock();
+ 401              		.loc 1 129 0
+ 402 005a FFF7FEFF 		bl	dbg_check_unlock
+ 403              	.LBB2:
+ 404 005e 0023     		movs	r3, #0
+ 405              	@ 129 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 406 0060 83F31188 		msr     BASEPRI, r3
+ 407              	@ 0 "" 2
+ 408              		.thumb
+ 409              	.LBE2:
+ 130:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 131:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     n = (n / maxsize) * maxsize;
+ 410              		.loc 1 131 0
+ 411 0064 039A     		ldr	r2, [sp, #12]
+ 412 0066 049B     		ldr	r3, [sp, #16]
+ 413 0068 B2FBF3F3 		udiv	r3, r2, r3
+ 414 006c 049A     		ldr	r2, [sp, #16]
+ 415 006e 02FB03F3 		mul	r3, r2, r3
+ 416 0072 0393     		str	r3, [sp, #12]
+ 132:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     usbPrepareQueuedReceive(sdup->config->usbp,
+ 417              		.loc 1 132 0
+ 418 0074 059B     		ldr	r3, [sp, #20]
+ 419 0076 D3F85432 		ldr	r3, [r3, #596]
+ 420 007a 1A68     		ldr	r2, [r3]
+ 421 007c 059B     		ldr	r3, [sp, #20]
+ 422 007e 0C33     		adds	r3, r3, #12
+ 423 0080 1046     		mov	r0, r2
+ 424 0082 0121     		movs	r1, #1
+ 425 0084 1A46     		mov	r2, r3
+ 426 0086 039B     		ldr	r3, [sp, #12]
+ 427 0088 FFF7FEFF 		bl	usbPrepareQueuedReceive
+ 428              	.LBB3:
+ 133:/usr/src/chibiostest/os/hal/src/serial_usb.c ****                             USB_CDC_DATA_AVAILABLE_EP,
+ 134:/usr/src/chibiostest/os/hal/src/serial_usb.c ****                             &sdup->iqueue, n);
+ 135:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 136:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     chSysLock();
+ 429              		.loc 1 136 0
+ 430 008c 2023     		movs	r3, #32
+ 431              	@ 136 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 432 008e 83F31188 		msr     BASEPRI, r3
+ 433              	@ 0 "" 2
+ 434              		.thumb
+ 435              	.LBE3:
+ 436 0092 FFF7FEFF 		bl	dbg_check_lock
+ 137:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     usbStartReceiveI(sdup->config->usbp, USB_CDC_DATA_AVAILABLE_EP);
+ 437              		.loc 1 137 0
+ 438 0096 059B     		ldr	r3, [sp, #20]
+ 439 0098 D3F85432 		ldr	r3, [r3, #596]
+ 440 009c 1B68     		ldr	r3, [r3]
+ 441 009e 1846     		mov	r0, r3
+ 442 00a0 0121     		movs	r1, #1
+ 443 00a2 FFF7FEFF 		bl	usbStartReceiveI
+ 444              	.L17:
+ 138:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   }
+ 139:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 445              		.loc 1 139 0
+ 446 00a6 07B0     		add	sp, sp, #28
+ 447              		@ sp needed
+ 448 00a8 5DF804FB 		ldr	pc, [sp], #4
+ 449              		.cfi_endproc
+ 450              	.LFE126:
+ 452 00ac AFF30080 		.section	.text.onotify,"ax",%progbits
+ 453              		.align	2
+ 454              		.p2align 4,,15
+ 455              		.thumb
+ 456              		.thumb_func
+ 458              	onotify:
+ 459              	.LFB127:
+ 140:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 141:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 142:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Notification of data inserted into the output queue.
+ 143:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 144:/usr/src/chibiostest/os/hal/src/serial_usb.c **** static void onotify(GenericQueue *qp) {
+ 460              		.loc 1 144 0
+ 461              		.cfi_startproc
+ 462              		@ args = 0, pretend = 0, frame = 16
+ 463              		@ frame_needed = 0, uses_anonymous_args = 0
+ 464 0000 00B5     		push	{lr}
+ 465              		.cfi_def_cfa_offset 4
+ 466              		.cfi_offset 14, -4
+ 467 0002 85B0     		sub	sp, sp, #20
+ 468              		.cfi_def_cfa_offset 24
+ 469 0004 0190     		str	r0, [sp, #4]
+ 145:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   size_t n;
+ 146:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   SerialUSBDriver *sdup = chQGetLink(qp);
+ 470              		.loc 1 146 0
+ 471 0006 019B     		ldr	r3, [sp, #4]
+ 472 0008 1B6A     		ldr	r3, [r3, #32]
+ 473 000a 0393     		str	r3, [sp, #12]
+ 147:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 148:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   /* If the USB driver is not in the appropriate state then transactions
+ 149:/usr/src/chibiostest/os/hal/src/serial_usb.c ****      must not be started.*/
+ 150:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   if (usbGetDriverStateI(sdup->config->usbp) != USB_ACTIVE)
+ 474              		.loc 1 150 0
+ 475 000c 039B     		ldr	r3, [sp, #12]
+ 476 000e D3F85432 		ldr	r3, [r3, #596]
+ 477 0012 1B68     		ldr	r3, [r3]
+ 478 0014 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 479 0016 042B     		cmp	r3, #4
+ 480 0018 00D0     		beq	.L21
+ 151:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     return;
+ 481              		.loc 1 151 0
+ 482 001a 34E0     		b	.L20
+ 483              	.L21:
+ 152:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 153:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   /* If there is not an ongoing transaction and the output queue contains
+ 154:/usr/src/chibiostest/os/hal/src/serial_usb.c ****      data then a new transaction is started.*/
+ 155:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   if (!usbGetTransmitStatusI(sdup->config->usbp, USB_CDC_DATA_REQUEST_EP) &&
+ 484              		.loc 1 155 0
+ 485 001c 039B     		ldr	r3, [sp, #12]
+ 486 001e D3F85432 		ldr	r3, [r3, #596]
+ 487 0022 1B68     		ldr	r3, [r3]
+ 488 0024 9B89     		ldrh	r3, [r3, #12]
+ 489 0026 03F00203 		and	r3, r3, #2
+ 490 002a 002B     		cmp	r3, #0
+ 491 002c 2BD1     		bne	.L20
+ 156:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       ((n = chOQGetFullI(&sdup->oqueue)) > 0)) {
+ 492              		.loc 1 156 0 discriminator 1
+ 493 002e 039B     		ldr	r3, [sp, #12]
+ 494 0030 1B6C     		ldr	r3, [r3, #64]
+ 495 0032 1A46     		mov	r2, r3
+ 496 0034 039B     		ldr	r3, [sp, #12]
+ 497 0036 DB6B     		ldr	r3, [r3, #60]
+ 498 0038 D31A     		subs	r3, r2, r3
+ 499 003a 1A46     		mov	r2, r3
+ 500 003c 039B     		ldr	r3, [sp, #12]
+ 501 003e 9B6B     		ldr	r3, [r3, #56]
+ 502 0040 D31A     		subs	r3, r2, r3
+ 503 0042 0293     		str	r3, [sp, #8]
+ 155:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       ((n = chOQGetFullI(&sdup->oqueue)) > 0)) {
+ 504              		.loc 1 155 0 discriminator 1
+ 505 0044 029B     		ldr	r3, [sp, #8]
+ 506 0046 002B     		cmp	r3, #0
+ 507 0048 1DD0     		beq	.L20
+ 157:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     chSysUnlock();
+ 508              		.loc 1 157 0
+ 509 004a FFF7FEFF 		bl	dbg_check_unlock
+ 510              	.LBB4:
+ 511 004e 0023     		movs	r3, #0
+ 512              	@ 157 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 513 0050 83F31188 		msr     BASEPRI, r3
+ 514              	@ 0 "" 2
+ 515              		.thumb
+ 516              	.LBE4:
+ 158:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 159:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     usbPrepareQueuedTransmit(sdup->config->usbp,
+ 517              		.loc 1 159 0
+ 518 0054 039B     		ldr	r3, [sp, #12]
+ 519 0056 D3F85432 		ldr	r3, [r3, #596]
+ 520 005a 1A68     		ldr	r2, [r3]
+ 521 005c 039B     		ldr	r3, [sp, #12]
+ 522 005e 3033     		adds	r3, r3, #48
+ 523 0060 1046     		mov	r0, r2
+ 524 0062 0121     		movs	r1, #1
+ 525 0064 1A46     		mov	r2, r3
+ 526 0066 029B     		ldr	r3, [sp, #8]
+ 527 0068 FFF7FEFF 		bl	usbPrepareQueuedTransmit
+ 528              	.LBB5:
+ 160:/usr/src/chibiostest/os/hal/src/serial_usb.c ****                              USB_CDC_DATA_REQUEST_EP,
+ 161:/usr/src/chibiostest/os/hal/src/serial_usb.c ****                              &sdup->oqueue, n);
+ 162:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 163:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     chSysLock();
+ 529              		.loc 1 163 0
+ 530 006c 2023     		movs	r3, #32
+ 531              	@ 163 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 532 006e 83F31188 		msr     BASEPRI, r3
+ 533              	@ 0 "" 2
+ 534              		.thumb
+ 535              	.LBE5:
+ 536 0072 FFF7FEFF 		bl	dbg_check_lock
+ 164:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     usbStartTransmitI(sdup->config->usbp, USB_CDC_DATA_REQUEST_EP);
+ 537              		.loc 1 164 0
+ 538 0076 039B     		ldr	r3, [sp, #12]
+ 539 0078 D3F85432 		ldr	r3, [r3, #596]
+ 540 007c 1B68     		ldr	r3, [r3]
+ 541 007e 1846     		mov	r0, r3
+ 542 0080 0121     		movs	r1, #1
+ 543 0082 FFF7FEFF 		bl	usbStartTransmitI
+ 544              	.L20:
+ 165:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   }
+ 166:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 545              		.loc 1 166 0
+ 546 0086 05B0     		add	sp, sp, #20
+ 547              		@ sp needed
+ 548 0088 5DF804FB 		ldr	pc, [sp], #4
+ 549              		.cfi_endproc
+ 550              	.LFE127:
+ 552 008c AFF30080 		.section	.text.sduInit,"ax",%progbits
+ 553              		.align	2
+ 554              		.p2align 4,,15
+ 555              		.global	sduInit
+ 556              		.thumb
+ 557              		.thumb_func
+ 559              	sduInit:
+ 560              	.LFB128:
+ 167:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 168:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*===========================================================================*/
+ 169:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /* Driver exported functions.                                                */
+ 170:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /*===========================================================================*/
+ 171:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 172:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 173:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Serial Driver initialization.
+ 174:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @note    This function is implicitly invoked by @p halInit(), there is
+ 175:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          no need to explicitly initialize the driver.
+ 176:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 177:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @init
+ 178:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 179:/usr/src/chibiostest/os/hal/src/serial_usb.c **** void sduInit(void) {
+ 561              		.loc 1 179 0
+ 562              		.cfi_startproc
+ 563              		@ args = 0, pretend = 0, frame = 0
+ 564              		@ frame_needed = 0, uses_anonymous_args = 0
+ 565              		@ link register save eliminated.
+ 180:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 566              		.loc 1 180 0
+ 567 0000 7047     		bx	lr
+ 568              		.cfi_endproc
+ 569              	.LFE128:
+ 571 0002 00BFAFF3 		.section	.text.sduObjectInit,"ax",%progbits
+ 571      0080AFF3 
+ 571      0080AFF3 
+ 571      0080
+ 572              		.align	2
+ 573              		.p2align 4,,15
+ 574              		.global	sduObjectInit
+ 575              		.thumb
+ 576              		.thumb_func
+ 578              	sduObjectInit:
+ 579              	.LFB129:
+ 181:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 182:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 183:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Initializes a generic full duplex driver object.
+ 184:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @details The HW dependent part of the initialization has to be performed
+ 185:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          outside, usually in the hardware initialization code.
+ 186:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 187:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[out] sdup     pointer to a @p SerialUSBDriver structure
+ 188:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 189:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @init
+ 190:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 191:/usr/src/chibiostest/os/hal/src/serial_usb.c **** void sduObjectInit(SerialUSBDriver *sdup) {
+ 580              		.loc 1 191 0
+ 581              		.cfi_startproc
+ 582              		@ args = 0, pretend = 0, frame = 8
+ 583              		@ frame_needed = 0, uses_anonymous_args = 0
+ 584 0000 00B5     		push	{lr}
+ 585              		.cfi_def_cfa_offset 4
+ 586              		.cfi_offset 14, -4
+ 587 0002 85B0     		sub	sp, sp, #20
+ 588              		.cfi_def_cfa_offset 24
+ 589 0004 0390     		str	r0, [sp, #12]
+ 192:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 193:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   sdup->vmt = &vmt;
+ 590              		.loc 1 193 0
+ 591 0006 039B     		ldr	r3, [sp, #12]
+ 592 0008 144A     		ldr	r2, .L25
+ 593 000a 1A60     		str	r2, [r3]
+ 194:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chEvtInit(&sdup->event);
+ 594              		.loc 1 194 0
+ 595 000c 039B     		ldr	r3, [sp, #12]
+ 596 000e 1A1D     		adds	r2, r3, #4
+ 597 0010 039B     		ldr	r3, [sp, #12]
+ 598 0012 5A60     		str	r2, [r3, #4]
+ 195:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   sdup->state = SDU_STOP;
+ 599              		.loc 1 195 0
+ 600 0014 039B     		ldr	r3, [sp, #12]
+ 601 0016 0122     		movs	r2, #1
+ 602 0018 1A72     		strb	r2, [r3, #8]
+ 196:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chIQInit(&sdup->iqueue, sdup->ib, SERIAL_USB_BUFFERS_SIZE, inotify, sdup);
+ 603              		.loc 1 196 0
+ 604 001a 039B     		ldr	r3, [sp, #12]
+ 605 001c 03F10C02 		add	r2, r3, #12
+ 606 0020 039B     		ldr	r3, [sp, #12]
+ 607 0022 5433     		adds	r3, r3, #84
+ 608 0024 0399     		ldr	r1, [sp, #12]
+ 609 0026 0091     		str	r1, [sp]
+ 610 0028 1046     		mov	r0, r2
+ 611 002a 1946     		mov	r1, r3
+ 612 002c 4FF48072 		mov	r2, #256
+ 613 0030 0B4B     		ldr	r3, .L25+4
+ 614 0032 FFF7FEFF 		bl	chIQInit
+ 197:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chOQInit(&sdup->oqueue, sdup->ob, SERIAL_USB_BUFFERS_SIZE, onotify, sdup);
+ 615              		.loc 1 197 0
+ 616 0036 039B     		ldr	r3, [sp, #12]
+ 617 0038 03F13002 		add	r2, r3, #48
+ 618 003c 039B     		ldr	r3, [sp, #12]
+ 619 003e 03F5AA73 		add	r3, r3, #340
+ 620 0042 0399     		ldr	r1, [sp, #12]
+ 621 0044 0091     		str	r1, [sp]
+ 622 0046 1046     		mov	r0, r2
+ 623 0048 1946     		mov	r1, r3
+ 624 004a 4FF48072 		mov	r2, #256
+ 625 004e 054B     		ldr	r3, .L25+8
+ 626 0050 FFF7FEFF 		bl	chOQInit
+ 198:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 627              		.loc 1 198 0
+ 628 0054 05B0     		add	sp, sp, #20
+ 629              		@ sp needed
+ 630 0056 5DF804FB 		ldr	pc, [sp], #4
+ 631              	.L26:
+ 632 005a 00BF     		.align	2
+ 633              	.L25:
+ 634 005c 00000000 		.word	vmt
+ 635 0060 00000000 		.word	inotify
+ 636 0064 00000000 		.word	onotify
+ 637              		.cfi_endproc
+ 638              	.LFE129:
+ 640 0068 AFF30080 		.section	.rodata
+ 640      AFF30080 
+ 641              		.align	2
+ 642              	.LC0:
+ 643 0000 22736475 		.ascii	"\"sduStart\"()\000"
+ 643      53746172 
+ 643      74222829 
+ 643      00
+ 644 000d 000000   		.align	2
+ 645              	.LC1:
+ 646 0010 73647553 		.ascii	"sduStart(), #1\000"
+ 646      74617274 
+ 646      28292C20 
+ 646      233100
+ 647              		.section	.text.sduStart,"ax",%progbits
+ 648              		.align	2
+ 649              		.p2align 4,,15
+ 650              		.global	sduStart
+ 651              		.thumb
+ 652              		.thumb_func
+ 654              	sduStart:
+ 655              	.LFB130:
+ 199:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 200:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 201:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Configures and starts the driver.
+ 202:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 203:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] sdup      pointer to a @p SerialUSBDriver object
+ 204:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] config    the serial over USB driver configuration
+ 205:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 206:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @api
+ 207:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 208:/usr/src/chibiostest/os/hal/src/serial_usb.c **** void sduStart(SerialUSBDriver *sdup, const SerialUSBConfig *config) {
+ 656              		.loc 1 208 0
+ 657              		.cfi_startproc
+ 658              		@ args = 0, pretend = 0, frame = 8
+ 659              		@ frame_needed = 0, uses_anonymous_args = 0
+ 660 0000 00B5     		push	{lr}
+ 661              		.cfi_def_cfa_offset 4
+ 662              		.cfi_offset 14, -4
+ 663 0002 83B0     		sub	sp, sp, #12
+ 664              		.cfi_def_cfa_offset 16
+ 665 0004 0190     		str	r0, [sp, #4]
+ 666 0006 0091     		str	r1, [sp]
+ 209:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 210:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chDbgCheck(sdup != NULL, "sduStart");
+ 667              		.loc 1 210 0
+ 668 0008 019B     		ldr	r3, [sp, #4]
+ 669 000a 002B     		cmp	r3, #0
+ 670 000c 02D1     		bne	.L28
+ 671              		.loc 1 210 0 is_stmt 0 discriminator 1
+ 672 000e 1348     		ldr	r0, .L30
+ 673 0010 FFF7FEFF 		bl	chDbgPanic
+ 674              	.L28:
+ 675              	.LBB6:
+ 211:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 212:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chSysLock();
+ 676              		.loc 1 212 0 is_stmt 1
+ 677 0014 2023     		movs	r3, #32
+ 678              	@ 212 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 679 0016 83F31188 		msr     BASEPRI, r3
+ 680              	@ 0 "" 2
+ 681              		.thumb
+ 682              	.LBE6:
+ 683 001a FFF7FEFF 		bl	dbg_check_lock
+ 213:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chDbgAssert((sdup->state == SDU_STOP) || (sdup->state == SDU_READY),
+ 684              		.loc 1 213 0
+ 685 001e 019B     		ldr	r3, [sp, #4]
+ 686 0020 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 687 0022 012B     		cmp	r3, #1
+ 688 0024 06D0     		beq	.L29
+ 689              		.loc 1 213 0 is_stmt 0 discriminator 1
+ 690 0026 019B     		ldr	r3, [sp, #4]
+ 691 0028 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 692 002a 022B     		cmp	r3, #2
+ 693 002c 02D0     		beq	.L29
+ 694 002e 0C48     		ldr	r0, .L30+4
+ 695 0030 FFF7FEFF 		bl	chDbgPanic
+ 696              	.L29:
+ 214:/usr/src/chibiostest/os/hal/src/serial_usb.c ****               "sduStart(), #1",
+ 215:/usr/src/chibiostest/os/hal/src/serial_usb.c ****               "invalid state");
+ 216:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   sdup->config = config;
+ 697              		.loc 1 216 0 is_stmt 1
+ 698 0034 019B     		ldr	r3, [sp, #4]
+ 699 0036 009A     		ldr	r2, [sp]
+ 700 0038 C3F85422 		str	r2, [r3, #596]
+ 217:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   config->usbp->param = sdup;
+ 701              		.loc 1 217 0
+ 702 003c 009B     		ldr	r3, [sp]
+ 703 003e 1B68     		ldr	r3, [r3]
+ 704 0040 019A     		ldr	r2, [sp, #4]
+ 705 0042 9A60     		str	r2, [r3, #8]
+ 218:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   sdup->state = SDU_READY;
+ 706              		.loc 1 218 0
+ 707 0044 019B     		ldr	r3, [sp, #4]
+ 708 0046 0222     		movs	r2, #2
+ 709 0048 1A72     		strb	r2, [r3, #8]
+ 219:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chSysUnlock();
+ 710              		.loc 1 219 0
+ 711 004a FFF7FEFF 		bl	dbg_check_unlock
+ 712              	.LBB7:
+ 713 004e 0023     		movs	r3, #0
+ 714              	@ 219 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 715 0050 83F31188 		msr     BASEPRI, r3
+ 716              	@ 0 "" 2
+ 717              		.thumb
+ 718              	.LBE7:
+ 220:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 719              		.loc 1 220 0
+ 720 0054 03B0     		add	sp, sp, #12
+ 721              		@ sp needed
+ 722 0056 5DF804FB 		ldr	pc, [sp], #4
+ 723              	.L31:
+ 724 005a 00BF     		.align	2
+ 725              	.L30:
+ 726 005c 00000000 		.word	.LC0
+ 727 0060 10000000 		.word	.LC1
+ 728              		.cfi_endproc
+ 729              	.LFE130:
+ 731 0064 AFF30080 		.section	.rodata
+ 731      AFF30080 
+ 731      AFF30080 
+ 732 001f 00       		.align	2
+ 733              	.LC2:
+ 734 0020 22736453 		.ascii	"\"sdStop\"()\000"
+ 734      746F7022 
+ 734      282900
+ 735 002b 00       		.align	2
+ 736              	.LC3:
+ 737 002c 73647553 		.ascii	"sduStop(), #1\000"
+ 737      746F7028 
+ 737      292C2023 
+ 737      3100
+ 738 003a 0000     		.section	.text.sduStop,"ax",%progbits
+ 739              		.align	2
+ 740              		.p2align 4,,15
+ 741              		.global	sduStop
+ 742              		.thumb
+ 743              		.thumb_func
+ 745              	sduStop:
+ 746              	.LFB131:
+ 221:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 222:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 223:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Stops the driver.
+ 224:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @details Any thread waiting on the driver's queues will be awakened with
+ 225:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          the message @p Q_RESET.
+ 226:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 227:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] sdup      pointer to a @p SerialUSBDriver object
+ 228:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 229:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @api
+ 230:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 231:/usr/src/chibiostest/os/hal/src/serial_usb.c **** void sduStop(SerialUSBDriver *sdup) {
+ 747              		.loc 1 231 0
+ 748              		.cfi_startproc
+ 749              		@ args = 0, pretend = 0, frame = 8
+ 750              		@ frame_needed = 0, uses_anonymous_args = 0
+ 751 0000 00B5     		push	{lr}
+ 752              		.cfi_def_cfa_offset 4
+ 753              		.cfi_offset 14, -4
+ 754 0002 83B0     		sub	sp, sp, #12
+ 755              		.cfi_def_cfa_offset 16
+ 756 0004 0190     		str	r0, [sp, #4]
+ 232:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 233:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chDbgCheck(sdup != NULL, "sdStop");
+ 757              		.loc 1 233 0
+ 758 0006 019B     		ldr	r3, [sp, #4]
+ 759 0008 002B     		cmp	r3, #0
+ 760 000a 02D1     		bne	.L33
+ 761              		.loc 1 233 0 is_stmt 0 discriminator 1
+ 762 000c 0E48     		ldr	r0, .L35
+ 763 000e FFF7FEFF 		bl	chDbgPanic
+ 764              	.L33:
+ 765              	.LBB8:
+ 234:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 235:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chSysLock();
+ 766              		.loc 1 235 0 is_stmt 1
+ 767 0012 2023     		movs	r3, #32
+ 768              	@ 235 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 769 0014 83F31188 		msr     BASEPRI, r3
+ 770              	@ 0 "" 2
+ 771              		.thumb
+ 772              	.LBE8:
+ 773 0018 FFF7FEFF 		bl	dbg_check_lock
+ 236:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chDbgAssert((sdup->state == SDU_STOP) || (sdup->state == SDU_READY),
+ 774              		.loc 1 236 0
+ 775 001c 019B     		ldr	r3, [sp, #4]
+ 776 001e 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 777 0020 012B     		cmp	r3, #1
+ 778 0022 06D0     		beq	.L34
+ 779              		.loc 1 236 0 is_stmt 0 discriminator 1
+ 780 0024 019B     		ldr	r3, [sp, #4]
+ 781 0026 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 782 0028 022B     		cmp	r3, #2
+ 783 002a 02D0     		beq	.L34
+ 784 002c 0748     		ldr	r0, .L35+4
+ 785 002e FFF7FEFF 		bl	chDbgPanic
+ 786              	.L34:
+ 237:/usr/src/chibiostest/os/hal/src/serial_usb.c ****               "sduStop(), #1",
+ 238:/usr/src/chibiostest/os/hal/src/serial_usb.c ****               "invalid state");
+ 239:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   sdup->state = SDU_STOP;
+ 787              		.loc 1 239 0 is_stmt 1
+ 788 0032 019B     		ldr	r3, [sp, #4]
+ 789 0034 0122     		movs	r2, #1
+ 790 0036 1A72     		strb	r2, [r3, #8]
+ 240:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chSysUnlock();
+ 791              		.loc 1 240 0
+ 792 0038 FFF7FEFF 		bl	dbg_check_unlock
+ 793              	.LBB9:
+ 794 003c 0023     		movs	r3, #0
+ 795              	@ 240 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 796 003e 83F31188 		msr     BASEPRI, r3
+ 797              	@ 0 "" 2
+ 798              		.thumb
+ 799              	.LBE9:
+ 241:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 800              		.loc 1 241 0
+ 801 0042 03B0     		add	sp, sp, #12
+ 802              		@ sp needed
+ 803 0044 5DF804FB 		ldr	pc, [sp], #4
+ 804              	.L36:
+ 805              		.align	2
+ 806              	.L35:
+ 807 0048 20000000 		.word	.LC2
+ 808 004c 2C000000 		.word	.LC3
+ 809              		.cfi_endproc
+ 810              	.LFE131:
+ 812              		.section	.text.sduConfigureHookI,"ax",%progbits
+ 813              		.align	2
+ 814              		.p2align 4,,15
+ 815              		.global	sduConfigureHookI
+ 816              		.thumb
+ 817              		.thumb_func
+ 819              	sduConfigureHookI:
+ 820              	.LFB132:
+ 242:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 243:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 244:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   USB device configured handler.
+ 245:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 246:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 247:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 248:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @iclass
+ 249:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 250:/usr/src/chibiostest/os/hal/src/serial_usb.c **** void sduConfigureHookI(USBDriver *usbp) {
+ 821              		.loc 1 250 0
+ 822              		.cfi_startproc
+ 823              		@ args = 0, pretend = 0, frame = 16
+ 824              		@ frame_needed = 0, uses_anonymous_args = 0
+ 825 0000 00B5     		push	{lr}
+ 826              		.cfi_def_cfa_offset 4
+ 827              		.cfi_offset 14, -4
+ 828 0002 85B0     		sub	sp, sp, #20
+ 829              		.cfi_def_cfa_offset 24
+ 830 0004 0190     		str	r0, [sp, #4]
+ 251:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   SerialUSBDriver *sdup = usbp->param;
+ 831              		.loc 1 251 0
+ 832 0006 019B     		ldr	r3, [sp, #4]
+ 833 0008 9B68     		ldr	r3, [r3, #8]
+ 834 000a 0393     		str	r3, [sp, #12]
+ 252:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 253:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chIQResetI(&sdup->iqueue);
+ 835              		.loc 1 253 0
+ 836 000c 039B     		ldr	r3, [sp, #12]
+ 837 000e 0C33     		adds	r3, r3, #12
+ 838 0010 1846     		mov	r0, r3
+ 839 0012 FFF7FEFF 		bl	chIQResetI
+ 254:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chOQResetI(&sdup->oqueue);
+ 840              		.loc 1 254 0
+ 841 0016 039B     		ldr	r3, [sp, #12]
+ 842 0018 3033     		adds	r3, r3, #48
+ 843 001a 1846     		mov	r0, r3
+ 844 001c FFF7FEFF 		bl	chOQResetI
+ 255:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chnAddFlagsI(sdup, CHN_CONNECTED);
+ 845              		.loc 1 255 0
+ 846 0020 039B     		ldr	r3, [sp, #12]
+ 847 0022 0433     		adds	r3, r3, #4
+ 848 0024 1846     		mov	r0, r3
+ 849 0026 0121     		movs	r1, #1
+ 850 0028 FFF7FEFF 		bl	chEvtBroadcastFlagsI
+ 256:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 257:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   /* Starts the first OUT transaction immediately.*/
+ 258:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   usbPrepareQueuedReceive(usbp, USB_CDC_DATA_AVAILABLE_EP, &sdup->iqueue,
+ 851              		.loc 1 258 0
+ 852 002c 039B     		ldr	r3, [sp, #12]
+ 853 002e 03F10C02 		add	r2, r3, #12
+ 259:/usr/src/chibiostest/os/hal/src/serial_usb.c ****                           usbp->epc[USB_CDC_DATA_AVAILABLE_EP]->out_maxsize);
+ 854              		.loc 1 259 0
+ 855 0032 019B     		ldr	r3, [sp, #4]
+ 856 0034 5B69     		ldr	r3, [r3, #20]
+ 857 0036 5B8A     		ldrh	r3, [r3, #18]
+ 258:/usr/src/chibiostest/os/hal/src/serial_usb.c ****                           usbp->epc[USB_CDC_DATA_AVAILABLE_EP]->out_maxsize);
+ 858              		.loc 1 258 0
+ 859 0038 0198     		ldr	r0, [sp, #4]
+ 860 003a 0121     		movs	r1, #1
+ 861 003c FFF7FEFF 		bl	usbPrepareQueuedReceive
+ 260:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   usbStartReceiveI(usbp, USB_CDC_DATA_AVAILABLE_EP);
+ 862              		.loc 1 260 0
+ 863 0040 0198     		ldr	r0, [sp, #4]
+ 864 0042 0121     		movs	r1, #1
+ 865 0044 FFF7FEFF 		bl	usbStartReceiveI
+ 261:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 866              		.loc 1 261 0
+ 867 0048 05B0     		add	sp, sp, #20
+ 868              		@ sp needed
+ 869 004a 5DF804FB 		ldr	pc, [sp], #4
+ 870              		.cfi_endproc
+ 871              	.LFE132:
+ 873 004e 00BF     		.section	.text.sduRequestsHook,"ax",%progbits
+ 874              		.align	2
+ 875              		.p2align 4,,15
+ 876              		.global	sduRequestsHook
+ 877              		.thumb
+ 878              		.thumb_func
+ 880              	sduRequestsHook:
+ 881              	.LFB133:
+ 262:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 263:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 264:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Default requests hook.
+ 265:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @details Applications wanting to use the Serial over USB driver can use
+ 266:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          this function as requests hook in the USB configuration.
+ 267:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          The following requests are emulated:
+ 268:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          - CDC_GET_LINE_CODING.
+ 269:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          - CDC_SET_LINE_CODING.
+ 270:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          - CDC_SET_CONTROL_LINE_STATE.
+ 271:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          .
+ 272:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 273:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 274:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @return              The hook status.
+ 275:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @retval TRUE         Message handled internally.
+ 276:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @retval FALSE        Message not handled.
+ 277:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 278:/usr/src/chibiostest/os/hal/src/serial_usb.c **** bool_t sduRequestsHook(USBDriver *usbp) {
+ 882              		.loc 1 278 0
+ 883              		.cfi_startproc
+ 884              		@ args = 0, pretend = 0, frame = 8
+ 885              		@ frame_needed = 0, uses_anonymous_args = 0
+ 886              		@ link register save eliminated.
+ 887 0000 82B0     		sub	sp, sp, #8
+ 888              		.cfi_def_cfa_offset 8
+ 889 0002 0190     		str	r0, [sp, #4]
+ 279:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 280:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   if ((usbp->setup[0] & USB_RTYPE_TYPE_MASK) == USB_RTYPE_TYPE_CLASS) {
+ 890              		.loc 1 280 0
+ 891 0004 019B     		ldr	r3, [sp, #4]
+ 892 0006 93F83030 		ldrb	r3, [r3, #48]	@ zero_extendqisi2
+ 893 000a 03F06003 		and	r3, r3, #96
+ 894 000e 202B     		cmp	r3, #32
+ 895 0010 2CD1     		bne	.L39
+ 281:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     switch (usbp->setup[1]) {
+ 896              		.loc 1 281 0
+ 897 0012 019B     		ldr	r3, [sp, #4]
+ 898 0014 93F83130 		ldrb	r3, [r3, #49]	@ zero_extendqisi2
+ 899 0018 212B     		cmp	r3, #33
+ 900 001a 04D0     		beq	.L41
+ 901 001c 222B     		cmp	r3, #34
+ 902 001e 18D0     		beq	.L42
+ 903 0020 202B     		cmp	r3, #32
+ 904 0022 0BD0     		beq	.L43
+ 905 0024 20E0     		b	.L45
+ 906              	.L41:
+ 282:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     case CDC_GET_LINE_CODING:
+ 283:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       usbSetupTransfer(usbp, (uint8_t *)&linecoding, sizeof(linecoding), NULL);
+ 907              		.loc 1 283 0
+ 908 0026 019B     		ldr	r3, [sp, #4]
+ 909 0028 124A     		ldr	r2, .L46
+ 910 002a 5A62     		str	r2, [r3, #36]
+ 911 002c 019B     		ldr	r3, [sp, #4]
+ 912 002e 0722     		movs	r2, #7
+ 913 0030 9A62     		str	r2, [r3, #40]
+ 914 0032 019B     		ldr	r3, [sp, #4]
+ 915 0034 0022     		movs	r2, #0
+ 916 0036 DA62     		str	r2, [r3, #44]
+ 284:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       return TRUE;
+ 917              		.loc 1 284 0
+ 918 0038 0123     		movs	r3, #1
+ 919 003a 18E0     		b	.L44
+ 920              	.L43:
+ 285:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     case CDC_SET_LINE_CODING:
+ 286:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       usbSetupTransfer(usbp, (uint8_t *)&linecoding, sizeof(linecoding), NULL);
+ 921              		.loc 1 286 0
+ 922 003c 019B     		ldr	r3, [sp, #4]
+ 923 003e 0D4A     		ldr	r2, .L46
+ 924 0040 5A62     		str	r2, [r3, #36]
+ 925 0042 019B     		ldr	r3, [sp, #4]
+ 926 0044 0722     		movs	r2, #7
+ 927 0046 9A62     		str	r2, [r3, #40]
+ 928 0048 019B     		ldr	r3, [sp, #4]
+ 929 004a 0022     		movs	r2, #0
+ 930 004c DA62     		str	r2, [r3, #44]
+ 287:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       return TRUE;
+ 931              		.loc 1 287 0
+ 932 004e 0123     		movs	r3, #1
+ 933 0050 0DE0     		b	.L44
+ 934              	.L42:
+ 288:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     case CDC_SET_CONTROL_LINE_STATE:
+ 289:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       /* Nothing to do, there are no control lines.*/
+ 290:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       usbSetupTransfer(usbp, NULL, 0, NULL);
+ 935              		.loc 1 290 0
+ 936 0052 019B     		ldr	r3, [sp, #4]
+ 937 0054 0022     		movs	r2, #0
+ 938 0056 5A62     		str	r2, [r3, #36]
+ 939 0058 019B     		ldr	r3, [sp, #4]
+ 940 005a 0022     		movs	r2, #0
+ 941 005c 9A62     		str	r2, [r3, #40]
+ 942 005e 019B     		ldr	r3, [sp, #4]
+ 943 0060 0022     		movs	r2, #0
+ 944 0062 DA62     		str	r2, [r3, #44]
+ 291:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       return TRUE;
+ 945              		.loc 1 291 0
+ 946 0064 0123     		movs	r3, #1
+ 947 0066 02E0     		b	.L44
+ 948              	.L45:
+ 292:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     default:
+ 293:/usr/src/chibiostest/os/hal/src/serial_usb.c ****       return FALSE;
+ 949              		.loc 1 293 0
+ 950 0068 0023     		movs	r3, #0
+ 951 006a 00E0     		b	.L44
+ 952              	.L39:
+ 294:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     }
+ 295:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   }
+ 296:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   return FALSE;
+ 953              		.loc 1 296 0
+ 954 006c 0023     		movs	r3, #0
+ 955              	.L44:
+ 297:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 956              		.loc 1 297 0
+ 957 006e 1846     		mov	r0, r3
+ 958 0070 02B0     		add	sp, sp, #8
+ 959              		@ sp needed
+ 960 0072 7047     		bx	lr
+ 961              	.L47:
+ 962              		.align	2
+ 963              	.L46:
+ 964 0074 00000000 		.word	linecoding
+ 965              		.cfi_endproc
+ 966              	.LFE133:
+ 968 0078 AFF30080 		.section	.text.sduDataTransmitted,"ax",%progbits
+ 968      AFF30080 
+ 969              		.align	2
+ 970              		.p2align 4,,15
+ 971              		.global	sduDataTransmitted
+ 972              		.thumb
+ 973              		.thumb_func
+ 975              	sduDataTransmitted:
+ 976              	.LFB134:
+ 298:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 299:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 300:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Default data transmitted callback.
+ 301:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @details The application must use this function as callback for the IN
+ 302:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          data endpoint.
+ 303:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 304:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 305:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] ep        endpoint number
+ 306:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 307:/usr/src/chibiostest/os/hal/src/serial_usb.c **** void sduDataTransmitted(USBDriver *usbp, usbep_t ep) {
+ 977              		.loc 1 307 0
+ 978              		.cfi_startproc
+ 979              		@ args = 0, pretend = 0, frame = 16
+ 980              		@ frame_needed = 0, uses_anonymous_args = 0
+ 981 0000 00B5     		push	{lr}
+ 982              		.cfi_def_cfa_offset 4
+ 983              		.cfi_offset 14, -4
+ 984 0002 85B0     		sub	sp, sp, #20
+ 985              		.cfi_def_cfa_offset 24
+ 986 0004 0190     		str	r0, [sp, #4]
+ 987 0006 0B46     		mov	r3, r1
+ 988 0008 8DF80330 		strb	r3, [sp, #3]
+ 308:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   size_t n;
+ 309:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   SerialUSBDriver *sdup = usbp->param;
+ 989              		.loc 1 309 0
+ 990 000c 019B     		ldr	r3, [sp, #4]
+ 991 000e 9B68     		ldr	r3, [r3, #8]
+ 992 0010 0393     		str	r3, [sp, #12]
+ 993              	.LBB10:
+ 310:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 311:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   (void)ep;
+ 312:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 313:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chSysLockFromIsr();
+ 994              		.loc 1 313 0
+ 995 0012 2023     		movs	r3, #32
+ 996              	@ 313 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 997 0014 83F31188 		msr     BASEPRI, r3
+ 998              	@ 0 "" 2
+ 999              		.thumb
+ 1000              	.LBE10:
+ 1001 0018 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 314:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chnAddFlagsI(sdup, CHN_OUTPUT_EMPTY);
+ 1002              		.loc 1 314 0
+ 1003 001c 039B     		ldr	r3, [sp, #12]
+ 1004 001e 0433     		adds	r3, r3, #4
+ 1005 0020 1846     		mov	r0, r3
+ 1006 0022 0821     		movs	r1, #8
+ 1007 0024 FFF7FEFF 		bl	chEvtBroadcastFlagsI
+ 315:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 316:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   if ((n = chOQGetFullI(&sdup->oqueue)) > 0) {
+ 1008              		.loc 1 316 0
+ 1009 0028 039B     		ldr	r3, [sp, #12]
+ 1010 002a 1B6C     		ldr	r3, [r3, #64]
+ 1011 002c 1A46     		mov	r2, r3
+ 1012 002e 039B     		ldr	r3, [sp, #12]
+ 1013 0030 DB6B     		ldr	r3, [r3, #60]
+ 1014 0032 D31A     		subs	r3, r2, r3
+ 1015 0034 1A46     		mov	r2, r3
+ 1016 0036 039B     		ldr	r3, [sp, #12]
+ 1017 0038 9B6B     		ldr	r3, [r3, #56]
+ 1018 003a D31A     		subs	r3, r2, r3
+ 1019 003c 0293     		str	r3, [sp, #8]
+ 1020 003e 029B     		ldr	r3, [sp, #8]
+ 1021 0040 002B     		cmp	r3, #0
+ 1022 0042 1AD0     		beq	.L49
+ 317:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     /* The endpoint cannot be busy, we are in the context of the callback,
+ 318:/usr/src/chibiostest/os/hal/src/serial_usb.c ****        so it is safe to transmit without a check.*/
+ 319:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     chSysUnlockFromIsr();
+ 1023              		.loc 1 319 0
+ 1024 0044 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 1025              	.LBB11:
+ 1026 0048 0023     		movs	r3, #0
+ 1027              	@ 319 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 1028 004a 83F31188 		msr     BASEPRI, r3
+ 1029              	@ 0 "" 2
+ 1030              		.thumb
+ 1031              	.LBE11:
+ 320:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 321:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     usbPrepareQueuedTransmit(usbp, ep, &sdup->oqueue, n);
+ 1032              		.loc 1 321 0
+ 1033 004e 039B     		ldr	r3, [sp, #12]
+ 1034 0050 3033     		adds	r3, r3, #48
+ 1035 0052 9DF80320 		ldrb	r2, [sp, #3]	@ zero_extendqisi2
+ 1036 0056 0198     		ldr	r0, [sp, #4]
+ 1037 0058 1146     		mov	r1, r2
+ 1038 005a 1A46     		mov	r2, r3
+ 1039 005c 029B     		ldr	r3, [sp, #8]
+ 1040 005e FFF7FEFF 		bl	usbPrepareQueuedTransmit
+ 1041              	.LBB12:
+ 322:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 323:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     chSysLockFromIsr();
+ 1042              		.loc 1 323 0
+ 1043 0062 2023     		movs	r3, #32
+ 1044              	@ 323 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 1045 0064 83F31188 		msr     BASEPRI, r3
+ 1046              	@ 0 "" 2
+ 1047              		.thumb
+ 1048              	.LBE12:
+ 1049 0068 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 324:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     usbStartTransmitI(usbp, ep);
+ 1050              		.loc 1 324 0
+ 1051 006c 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1052 0070 0198     		ldr	r0, [sp, #4]
+ 1053 0072 1946     		mov	r1, r3
+ 1054 0074 FFF7FEFF 		bl	usbStartTransmitI
+ 1055 0078 2CE0     		b	.L50
+ 1056              	.L49:
+ 325:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   }
+ 326:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   else if (!(usbp->epc[ep]->in_state->txsize &
+ 1057              		.loc 1 326 0
+ 1058 007a 9DF80320 		ldrb	r2, [sp, #3]	@ zero_extendqisi2
+ 1059 007e 019B     		ldr	r3, [sp, #4]
+ 1060 0080 0432     		adds	r2, r2, #4
+ 1061 0082 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 1062 0086 5B69     		ldr	r3, [r3, #20]
+ 1063 0088 5A68     		ldr	r2, [r3, #4]
+ 327:/usr/src/chibiostest/os/hal/src/serial_usb.c ****             (usbp->epc[ep]->in_maxsize - 1))) {
+ 1064              		.loc 1 327 0
+ 1065 008a 9DF80310 		ldrb	r1, [sp, #3]	@ zero_extendqisi2
+ 1066 008e 019B     		ldr	r3, [sp, #4]
+ 1067 0090 0431     		adds	r1, r1, #4
+ 1068 0092 53F82130 		ldr	r3, [r3, r1, lsl #2]
+ 1069 0096 1B8A     		ldrh	r3, [r3, #16]
+ 1070 0098 013B     		subs	r3, r3, #1
+ 326:/usr/src/chibiostest/os/hal/src/serial_usb.c ****             (usbp->epc[ep]->in_maxsize - 1))) {
+ 1071              		.loc 1 326 0
+ 1072 009a 1340     		ands	r3, r3, r2
+ 1073 009c 002B     		cmp	r3, #0
+ 1074 009e 19D1     		bne	.L50
+ 328:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     /* Transmit zero sized packet in case the last one has maximum allowed
+ 329:/usr/src/chibiostest/os/hal/src/serial_usb.c ****        size. Otherwise the recipient may expect more data coming soon and
+ 330:/usr/src/chibiostest/os/hal/src/serial_usb.c ****        not return buffered data to app. See section 5.8.3 Bulk Transfer
+ 331:/usr/src/chibiostest/os/hal/src/serial_usb.c ****        Packet Size Constraints of the USB Specification document.*/
+ 332:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     chSysUnlockFromIsr();
+ 1075              		.loc 1 332 0
+ 1076 00a0 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 1077              	.LBB13:
+ 1078 00a4 0023     		movs	r3, #0
+ 1079              	@ 332 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 1080 00a6 83F31188 		msr     BASEPRI, r3
+ 1081              	@ 0 "" 2
+ 1082              		.thumb
+ 1083              	.LBE13:
+ 333:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 334:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     usbPrepareQueuedTransmit(usbp, ep, &sdup->oqueue, 0);
+ 1084              		.loc 1 334 0
+ 1085 00aa 039B     		ldr	r3, [sp, #12]
+ 1086 00ac 3033     		adds	r3, r3, #48
+ 1087 00ae 9DF80320 		ldrb	r2, [sp, #3]	@ zero_extendqisi2
+ 1088 00b2 0198     		ldr	r0, [sp, #4]
+ 1089 00b4 1146     		mov	r1, r2
+ 1090 00b6 1A46     		mov	r2, r3
+ 1091 00b8 0023     		movs	r3, #0
+ 1092 00ba FFF7FEFF 		bl	usbPrepareQueuedTransmit
+ 1093              	.LBB14:
+ 335:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 336:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     chSysLockFromIsr();
+ 1094              		.loc 1 336 0
+ 1095 00be 2023     		movs	r3, #32
+ 1096              	@ 336 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 1097 00c0 83F31188 		msr     BASEPRI, r3
+ 1098              	@ 0 "" 2
+ 1099              		.thumb
+ 1100              	.LBE14:
+ 1101 00c4 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 337:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     usbStartTransmitI(usbp, ep);
+ 1102              		.loc 1 337 0
+ 1103 00c8 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1104 00cc 0198     		ldr	r0, [sp, #4]
+ 1105 00ce 1946     		mov	r1, r3
+ 1106 00d0 FFF7FEFF 		bl	usbStartTransmitI
+ 1107              	.L50:
+ 338:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   }
+ 339:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 340:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chSysUnlockFromIsr();
+ 1108              		.loc 1 340 0
+ 1109 00d4 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 1110              	.LBB15:
+ 1111 00d8 0023     		movs	r3, #0
+ 1112              	@ 340 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 1113 00da 83F31188 		msr     BASEPRI, r3
+ 1114              	@ 0 "" 2
+ 1115              		.thumb
+ 1116              	.LBE15:
+ 341:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 1117              		.loc 1 341 0
+ 1118 00de 05B0     		add	sp, sp, #20
+ 1119              		@ sp needed
+ 1120 00e0 5DF804FB 		ldr	pc, [sp], #4
+ 1121              		.cfi_endproc
+ 1122              	.LFE134:
+ 1124 00e4 AFF30080 		.section	.text.sduDataReceived,"ax",%progbits
+ 1124      AFF30080 
+ 1124      AFF30080 
+ 1125              		.align	2
+ 1126              		.p2align 4,,15
+ 1127              		.global	sduDataReceived
+ 1128              		.thumb
+ 1129              		.thumb_func
+ 1131              	sduDataReceived:
+ 1132              	.LFB135:
+ 342:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 343:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 344:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Default data received callback.
+ 345:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @details The application must use this function as callback for the OUT
+ 346:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          data endpoint.
+ 347:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 348:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 349:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] ep        endpoint number
+ 350:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 351:/usr/src/chibiostest/os/hal/src/serial_usb.c **** void sduDataReceived(USBDriver *usbp, usbep_t ep) {
+ 1133              		.loc 1 351 0
+ 1134              		.cfi_startproc
+ 1135              		@ args = 0, pretend = 0, frame = 24
+ 1136              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1137 0000 00B5     		push	{lr}
+ 1138              		.cfi_def_cfa_offset 4
+ 1139              		.cfi_offset 14, -4
+ 1140 0002 87B0     		sub	sp, sp, #28
+ 1141              		.cfi_def_cfa_offset 32
+ 1142 0004 0190     		str	r0, [sp, #4]
+ 1143 0006 0B46     		mov	r3, r1
+ 1144 0008 8DF80330 		strb	r3, [sp, #3]
+ 352:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   size_t n, maxsize;
+ 353:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   SerialUSBDriver *sdup = usbp->param;
+ 1145              		.loc 1 353 0
+ 1146 000c 019B     		ldr	r3, [sp, #4]
+ 1147 000e 9B68     		ldr	r3, [r3, #8]
+ 1148 0010 0593     		str	r3, [sp, #20]
+ 1149              	.LBB16:
+ 354:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 355:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   (void)ep;
+ 356:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 357:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chSysLockFromIsr();
+ 1150              		.loc 1 357 0
+ 1151 0012 2023     		movs	r3, #32
+ 1152              	@ 357 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 1153 0014 83F31188 		msr     BASEPRI, r3
+ 1154              	@ 0 "" 2
+ 1155              		.thumb
+ 1156              	.LBE16:
+ 1157 0018 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 358:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chnAddFlagsI(sdup, CHN_INPUT_AVAILABLE);
+ 1158              		.loc 1 358 0
+ 1159 001c 059B     		ldr	r3, [sp, #20]
+ 1160 001e 0433     		adds	r3, r3, #4
+ 1161 0020 1846     		mov	r0, r3
+ 1162 0022 0421     		movs	r1, #4
+ 1163 0024 FFF7FEFF 		bl	chEvtBroadcastFlagsI
+ 359:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 360:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   /* Writes to the input queue can only happen when there is enough space
+ 361:/usr/src/chibiostest/os/hal/src/serial_usb.c ****      to hold at least one packet.*/
+ 362:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   maxsize = usbp->epc[USB_CDC_DATA_AVAILABLE_EP]->out_maxsize;
+ 1164              		.loc 1 362 0
+ 1165 0028 019B     		ldr	r3, [sp, #4]
+ 1166 002a 5B69     		ldr	r3, [r3, #20]
+ 1167 002c 5B8A     		ldrh	r3, [r3, #18]
+ 1168 002e 0493     		str	r3, [sp, #16]
+ 363:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   if ((n = chIQGetEmptyI(&sdup->iqueue)) >= maxsize) {
+ 1169              		.loc 1 363 0
+ 1170 0030 059B     		ldr	r3, [sp, #20]
+ 1171 0032 DB69     		ldr	r3, [r3, #28]
+ 1172 0034 1A46     		mov	r2, r3
+ 1173 0036 059B     		ldr	r3, [sp, #20]
+ 1174 0038 9B69     		ldr	r3, [r3, #24]
+ 1175 003a D31A     		subs	r3, r2, r3
+ 1176 003c 1A46     		mov	r2, r3
+ 1177 003e 059B     		ldr	r3, [sp, #20]
+ 1178 0040 5B69     		ldr	r3, [r3, #20]
+ 1179 0042 D31A     		subs	r3, r2, r3
+ 1180 0044 0393     		str	r3, [sp, #12]
+ 1181 0046 039A     		ldr	r2, [sp, #12]
+ 1182 0048 049B     		ldr	r3, [sp, #16]
+ 1183 004a 9A42     		cmp	r2, r3
+ 1184 004c 21D3     		bcc	.L52
+ 364:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     /* The endpoint cannot be busy, we are in the context of the callback,
+ 365:/usr/src/chibiostest/os/hal/src/serial_usb.c ****        so a packet is in the buffer for sure.*/
+ 366:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     chSysUnlockFromIsr();
+ 1185              		.loc 1 366 0
+ 1186 004e FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 1187              	.LBB17:
+ 1188 0052 0023     		movs	r3, #0
+ 1189              	@ 366 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 1190 0054 83F31188 		msr     BASEPRI, r3
+ 1191              	@ 0 "" 2
+ 1192              		.thumb
+ 1193              	.LBE17:
+ 367:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 368:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     n = (n / maxsize) * maxsize;
+ 1194              		.loc 1 368 0
+ 1195 0058 039A     		ldr	r2, [sp, #12]
+ 1196 005a 049B     		ldr	r3, [sp, #16]
+ 1197 005c B2FBF3F3 		udiv	r3, r2, r3
+ 1198 0060 049A     		ldr	r2, [sp, #16]
+ 1199 0062 02FB03F3 		mul	r3, r2, r3
+ 1200 0066 0393     		str	r3, [sp, #12]
+ 369:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     usbPrepareQueuedReceive(usbp, ep, &sdup->iqueue, n);
+ 1201              		.loc 1 369 0
+ 1202 0068 059B     		ldr	r3, [sp, #20]
+ 1203 006a 0C33     		adds	r3, r3, #12
+ 1204 006c 9DF80320 		ldrb	r2, [sp, #3]	@ zero_extendqisi2
+ 1205 0070 0198     		ldr	r0, [sp, #4]
+ 1206 0072 1146     		mov	r1, r2
+ 1207 0074 1A46     		mov	r2, r3
+ 1208 0076 039B     		ldr	r3, [sp, #12]
+ 1209 0078 FFF7FEFF 		bl	usbPrepareQueuedReceive
+ 1210              	.LBB18:
+ 370:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 371:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     chSysLockFromIsr();
+ 1211              		.loc 1 371 0
+ 1212 007c 2023     		movs	r3, #32
+ 1213              	@ 371 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 1214 007e 83F31188 		msr     BASEPRI, r3
+ 1215              	@ 0 "" 2
+ 1216              		.thumb
+ 1217              	.LBE18:
+ 1218 0082 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 372:/usr/src/chibiostest/os/hal/src/serial_usb.c ****     usbStartReceiveI(usbp, ep);
+ 1219              		.loc 1 372 0
+ 1220 0086 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1221 008a 0198     		ldr	r0, [sp, #4]
+ 1222 008c 1946     		mov	r1, r3
+ 1223 008e FFF7FEFF 		bl	usbStartReceiveI
+ 1224              	.L52:
+ 373:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   }
+ 374:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 375:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   chSysUnlockFromIsr();
+ 1225              		.loc 1 375 0
+ 1226 0092 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 1227              	.LBB19:
+ 1228 0096 0023     		movs	r3, #0
+ 1229              	@ 375 "/usr/src/chibiostest/os/hal/src/serial_usb.c" 1
+ 1230 0098 83F31188 		msr     BASEPRI, r3
+ 1231              	@ 0 "" 2
+ 1232              		.thumb
+ 1233              	.LBE19:
+ 376:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 1234              		.loc 1 376 0
+ 1235 009c 07B0     		add	sp, sp, #28
+ 1236              		@ sp needed
+ 1237 009e 5DF804FB 		ldr	pc, [sp], #4
+ 1238              		.cfi_endproc
+ 1239              	.LFE135:
+ 1241 00a2 00BFAFF3 		.section	.text.sduInterruptTransmitted,"ax",%progbits
+ 1241      0080AFF3 
+ 1241      0080AFF3 
+ 1241      0080
+ 1242              		.align	2
+ 1243              		.p2align 4,,15
+ 1244              		.global	sduInterruptTransmitted
+ 1245              		.thumb
+ 1246              		.thumb_func
+ 1248              	sduInterruptTransmitted:
+ 1249              	.LFB136:
+ 377:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 378:/usr/src/chibiostest/os/hal/src/serial_usb.c **** /**
+ 379:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @brief   Default data received callback.
+ 380:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @details The application must use this function as callback for the IN
+ 381:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *          interrupt endpoint.
+ 382:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  *
+ 383:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 384:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  * @param[in] ep        endpoint number
+ 385:/usr/src/chibiostest/os/hal/src/serial_usb.c ****  */
+ 386:/usr/src/chibiostest/os/hal/src/serial_usb.c **** void sduInterruptTransmitted(USBDriver *usbp, usbep_t ep) {
+ 1250              		.loc 1 386 0
+ 1251              		.cfi_startproc
+ 1252              		@ args = 0, pretend = 0, frame = 8
+ 1253              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1254              		@ link register save eliminated.
+ 1255 0000 82B0     		sub	sp, sp, #8
+ 1256              		.cfi_def_cfa_offset 8
+ 1257 0002 0190     		str	r0, [sp, #4]
+ 1258 0004 0B46     		mov	r3, r1
+ 1259 0006 8DF80330 		strb	r3, [sp, #3]
+ 387:/usr/src/chibiostest/os/hal/src/serial_usb.c **** 
+ 388:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   (void)usbp;
+ 389:/usr/src/chibiostest/os/hal/src/serial_usb.c ****   (void)ep;
+ 390:/usr/src/chibiostest/os/hal/src/serial_usb.c **** }
+ 1260              		.loc 1 390 0
+ 1261 000a 02B0     		add	sp, sp, #8
+ 1262              		@ sp needed
+ 1263 000c 7047     		bx	lr
+ 1264              		.cfi_endproc
+ 1265              	.LFE136:
+ 1267 000e 00BF     		.text
+ 1268              	.Letext0:
+ 1269              		.file 2 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
+ 1270              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 1271              		.file 4 "/usr/include/newlib/stdint.h"
+ 1272              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 1273              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 1274              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 1275              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 1276              		.file 9 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+ 1277              		.file 10 "/usr/src/chibiostest/os/kernel/include/chevents.h"
+ 1278              		.file 11 "/usr/src/chibiostest/os/kernel/include/chqueues.h"
+ 1279              		.file 12 "/usr/src/chibiostest/os/hal/include/usb.h"
+ 1280              		.file 13 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/usb_lld.h"
+ 1281              		.file 14 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/stm32_otg.h"
+ 1282              		.file 15 "/usr/src/chibiostest/os/hal/include/serial_usb.h"
+ 1283              		.file 16 "/usr/src/chibiostest/os/hal/include/usb_cdc.h"
+ 1284              		.file 17 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 serial_usb.c
+     /tmp/ccapkneS.s:20     .data.linecoding:0000000000000000 $d
+     /tmp/ccapkneS.s:23     .data.linecoding:0000000000000000 linecoding
+     /tmp/ccapkneS.s:32     .text.write:0000000000000000 $t
+     /tmp/ccapkneS.s:37     .text.write:0000000000000000 write
+     /tmp/ccapkneS.s:70     .text.read:0000000000000000 $t
+     /tmp/ccapkneS.s:75     .text.read:0000000000000000 read
+     /tmp/ccapkneS.s:107    .text.put:0000000000000000 $t
+     /tmp/ccapkneS.s:112    .text.put:0000000000000000 put
+     /tmp/ccapkneS.s:144    .text.get:0000000000000000 $t
+     /tmp/ccapkneS.s:149    .text.get:0000000000000000 get
+     /tmp/ccapkneS.s:177    .text.putt:0000000000000000 $t
+     /tmp/ccapkneS.s:182    .text.putt:0000000000000000 putt
+     /tmp/ccapkneS.s:215    .text.gett:0000000000000000 $t
+     /tmp/ccapkneS.s:220    .text.gett:0000000000000000 gett
+     /tmp/ccapkneS.s:249    .text.writet:0000000000000000 $t
+     /tmp/ccapkneS.s:254    .text.writet:0000000000000000 writet
+     /tmp/ccapkneS.s:287    .text.readt:0000000000000000 $t
+     /tmp/ccapkneS.s:292    .text.readt:0000000000000000 readt
+     /tmp/ccapkneS.s:325    .rodata.vmt:0000000000000000 $d
+     /tmp/ccapkneS.s:328    .rodata.vmt:0000000000000000 vmt
+     /tmp/ccapkneS.s:338    .text.inotify:0000000000000000 $t
+     /tmp/ccapkneS.s:343    .text.inotify:0000000000000000 inotify
+     /tmp/ccapkneS.s:453    .text.onotify:0000000000000000 $t
+     /tmp/ccapkneS.s:458    .text.onotify:0000000000000000 onotify
+     /tmp/ccapkneS.s:553    .text.sduInit:0000000000000000 $t
+     /tmp/ccapkneS.s:559    .text.sduInit:0000000000000000 sduInit
+     /tmp/ccapkneS.s:572    .text.sduObjectInit:0000000000000000 $t
+     /tmp/ccapkneS.s:578    .text.sduObjectInit:0000000000000000 sduObjectInit
+     /tmp/ccapkneS.s:634    .text.sduObjectInit:000000000000005c $d
+     /tmp/ccapkneS.s:641    .rodata:0000000000000000 $d
+     /tmp/ccapkneS.s:648    .text.sduStart:0000000000000000 $t
+     /tmp/ccapkneS.s:654    .text.sduStart:0000000000000000 sduStart
+     /tmp/ccapkneS.s:726    .text.sduStart:000000000000005c $d
+     /tmp/ccapkneS.s:739    .text.sduStop:0000000000000000 $t
+     /tmp/ccapkneS.s:745    .text.sduStop:0000000000000000 sduStop
+     /tmp/ccapkneS.s:807    .text.sduStop:0000000000000048 $d
+     /tmp/ccapkneS.s:813    .text.sduConfigureHookI:0000000000000000 $t
+     /tmp/ccapkneS.s:819    .text.sduConfigureHookI:0000000000000000 sduConfigureHookI
+     /tmp/ccapkneS.s:874    .text.sduRequestsHook:0000000000000000 $t
+     /tmp/ccapkneS.s:880    .text.sduRequestsHook:0000000000000000 sduRequestsHook
+     /tmp/ccapkneS.s:964    .text.sduRequestsHook:0000000000000074 $d
+     /tmp/ccapkneS.s:969    .text.sduDataTransmitted:0000000000000000 $t
+     /tmp/ccapkneS.s:975    .text.sduDataTransmitted:0000000000000000 sduDataTransmitted
+     /tmp/ccapkneS.s:1125   .text.sduDataReceived:0000000000000000 $t
+     /tmp/ccapkneS.s:1131   .text.sduDataReceived:0000000000000000 sduDataReceived
+     /tmp/ccapkneS.s:1242   .text.sduInterruptTransmitted:0000000000000000 $t
+     /tmp/ccapkneS.s:1248   .text.sduInterruptTransmitted:0000000000000000 sduInterruptTransmitted
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccapkneS.s:640    .text.sduObjectInit:0000000000000068 $t
+     /tmp/ccapkneS.s:731    .text.sduStart:0000000000000064 $t
+     /tmp/ccapkneS.s:968    .text.sduRequestsHook:0000000000000078 $t
+
+UNDEFINED SYMBOLS
+chOQWriteTimeout
+chIQReadTimeout
+chOQPutTimeout
+chIQGetTimeout
+dbg_check_unlock
+usbPrepareQueuedReceive
+dbg_check_lock
+usbStartReceiveI
+usbPrepareQueuedTransmit
+usbStartTransmitI
+chIQInit
+chOQInit
+chDbgPanic
+chIQResetI
+chOQResetI
+chEvtBroadcastFlagsI
+dbg_check_lock_from_isr
+dbg_check_unlock_from_isr

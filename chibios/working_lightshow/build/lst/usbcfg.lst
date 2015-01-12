@@ -1,0 +1,820 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"usbcfg.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.rodata.vcom_device_descriptor_data,"a",%progbits
+  20              		.align	2
+  23              	vcom_device_descriptor_data:
+  24 0000 12       		.byte	18
+  25 0001 01       		.byte	1
+  26 0002 10       		.byte	16
+  27 0003 01       		.byte	1
+  28 0004 02       		.byte	2
+  29 0005 00       		.byte	0
+  30 0006 00       		.byte	0
+  31 0007 40       		.byte	64
+  32 0008 83       		.byte	-125
+  33 0009 04       		.byte	4
+  34 000a 40       		.byte	64
+  35 000b 57       		.byte	87
+  36 000c 00       		.byte	0
+  37 000d 02       		.byte	2
+  38 000e 01       		.byte	1
+  39 000f 02       		.byte	2
+  40 0010 03       		.byte	3
+  41 0011 01       		.byte	1
+  42 0012 0000     		.section	.rodata.vcom_device_descriptor,"a",%progbits
+  43              		.align	2
+  46              	vcom_device_descriptor:
+  47 0000 12000000 		.word	18
+  48 0004 00000000 		.word	vcom_device_descriptor_data
+  49              		.section	.rodata.vcom_configuration_descriptor_data,"a",%progbits
+  50              		.align	2
+  53              	vcom_configuration_descriptor_data:
+  54 0000 09       		.byte	9
+  55 0001 02       		.byte	2
+  56 0002 43       		.byte	67
+  57 0003 00       		.byte	0
+  58 0004 02       		.byte	2
+  59 0005 01       		.byte	1
+  60 0006 00       		.byte	0
+  61 0007 C0       		.byte	-64
+  62 0008 32       		.byte	50
+  63 0009 09       		.byte	9
+  64 000a 04       		.byte	4
+  65 000b 00       		.byte	0
+  66 000c 00       		.byte	0
+  67 000d 01       		.byte	1
+  68 000e 02       		.byte	2
+  69 000f 02       		.byte	2
+  70 0010 01       		.byte	1
+  71 0011 00       		.byte	0
+  72 0012 05       		.byte	5
+  73 0013 24       		.byte	36
+  74 0014 00       		.byte	0
+  75 0015 10       		.byte	16
+  76 0016 01       		.byte	1
+  77 0017 05       		.byte	5
+  78 0018 24       		.byte	36
+  79 0019 01       		.byte	1
+  80 001a 00       		.byte	0
+  81 001b 01       		.byte	1
+  82 001c 04       		.byte	4
+  83 001d 24       		.byte	36
+  84 001e 02       		.byte	2
+  85 001f 02       		.byte	2
+  86 0020 05       		.byte	5
+  87 0021 24       		.byte	36
+  88 0022 06       		.byte	6
+  89 0023 00       		.byte	0
+  90 0024 01       		.byte	1
+  91 0025 07       		.byte	7
+  92 0026 05       		.byte	5
+  93 0027 82       		.byte	-126
+  94 0028 03       		.byte	3
+  95 0029 08       		.byte	8
+  96 002a 00       		.byte	0
+  97 002b FF       		.byte	-1
+  98 002c 09       		.byte	9
+  99 002d 04       		.byte	4
+ 100 002e 01       		.byte	1
+ 101 002f 00       		.byte	0
+ 102 0030 02       		.byte	2
+ 103 0031 0A       		.byte	10
+ 104 0032 00       		.byte	0
+ 105 0033 00       		.byte	0
+ 106 0034 00       		.byte	0
+ 107 0035 07       		.byte	7
+ 108 0036 05       		.byte	5
+ 109 0037 01       		.byte	1
+ 110 0038 02       		.byte	2
+ 111 0039 40       		.byte	64
+ 112 003a 00       		.byte	0
+ 113 003b 00       		.byte	0
+ 114 003c 07       		.byte	7
+ 115 003d 05       		.byte	5
+ 116 003e 81       		.byte	-127
+ 117 003f 02       		.byte	2
+ 118 0040 40       		.byte	64
+ 119 0041 00       		.byte	0
+ 120 0042 00       		.byte	0
+ 121 0043 00       		.section	.rodata.vcom_configuration_descriptor,"a",%progbits
+ 122              		.align	2
+ 125              	vcom_configuration_descriptor:
+ 126 0000 43000000 		.word	67
+ 127 0004 00000000 		.word	vcom_configuration_descriptor_data
+ 128              		.section	.rodata.vcom_string0,"a",%progbits
+ 129              		.align	2
+ 132              	vcom_string0:
+ 133 0000 04       		.byte	4
+ 134 0001 03       		.byte	3
+ 135 0002 09       		.byte	9
+ 136 0003 04       		.byte	4
+ 137              		.section	.rodata.vcom_string1,"a",%progbits
+ 138              		.align	2
+ 141              	vcom_string1:
+ 142 0000 26       		.byte	38
+ 143 0001 03       		.byte	3
+ 144 0002 53       		.byte	83
+ 145 0003 00       		.byte	0
+ 146 0004 54       		.byte	84
+ 147 0005 00       		.byte	0
+ 148 0006 4D       		.byte	77
+ 149 0007 00       		.byte	0
+ 150 0008 69       		.byte	105
+ 151 0009 00       		.byte	0
+ 152 000a 63       		.byte	99
+ 153 000b 00       		.byte	0
+ 154 000c 72       		.byte	114
+ 155 000d 00       		.byte	0
+ 156 000e 6F       		.byte	111
+ 157 000f 00       		.byte	0
+ 158 0010 65       		.byte	101
+ 159 0011 00       		.byte	0
+ 160 0012 6C       		.byte	108
+ 161 0013 00       		.byte	0
+ 162 0014 65       		.byte	101
+ 163 0015 00       		.byte	0
+ 164 0016 63       		.byte	99
+ 165 0017 00       		.byte	0
+ 166 0018 74       		.byte	116
+ 167 0019 00       		.byte	0
+ 168 001a 72       		.byte	114
+ 169 001b 00       		.byte	0
+ 170 001c 6F       		.byte	111
+ 171 001d 00       		.byte	0
+ 172 001e 6E       		.byte	110
+ 173 001f 00       		.byte	0
+ 174 0020 69       		.byte	105
+ 175 0021 00       		.byte	0
+ 176 0022 63       		.byte	99
+ 177 0023 00       		.byte	0
+ 178 0024 73       		.byte	115
+ 179 0025 00       		.byte	0
+ 180 0026 0000     		.section	.rodata.vcom_string2,"a",%progbits
+ 181              		.align	2
+ 184              	vcom_string2:
+ 185 0000 38       		.byte	56
+ 186 0001 03       		.byte	3
+ 187 0002 43       		.byte	67
+ 188 0003 00       		.byte	0
+ 189 0004 68       		.byte	104
+ 190 0005 00       		.byte	0
+ 191 0006 69       		.byte	105
+ 192 0007 00       		.byte	0
+ 193 0008 62       		.byte	98
+ 194 0009 00       		.byte	0
+ 195 000a 69       		.byte	105
+ 196 000b 00       		.byte	0
+ 197 000c 4F       		.byte	79
+ 198 000d 00       		.byte	0
+ 199 000e 53       		.byte	83
+ 200 000f 00       		.byte	0
+ 201 0010 2F       		.byte	47
+ 202 0011 00       		.byte	0
+ 203 0012 52       		.byte	82
+ 204 0013 00       		.byte	0
+ 205 0014 54       		.byte	84
+ 206 0015 00       		.byte	0
+ 207 0016 20       		.byte	32
+ 208 0017 00       		.byte	0
+ 209 0018 56       		.byte	86
+ 210 0019 00       		.byte	0
+ 211 001a 69       		.byte	105
+ 212 001b 00       		.byte	0
+ 213 001c 72       		.byte	114
+ 214 001d 00       		.byte	0
+ 215 001e 74       		.byte	116
+ 216 001f 00       		.byte	0
+ 217 0020 75       		.byte	117
+ 218 0021 00       		.byte	0
+ 219 0022 61       		.byte	97
+ 220 0023 00       		.byte	0
+ 221 0024 6C       		.byte	108
+ 222 0025 00       		.byte	0
+ 223 0026 20       		.byte	32
+ 224 0027 00       		.byte	0
+ 225 0028 43       		.byte	67
+ 226 0029 00       		.byte	0
+ 227 002a 4F       		.byte	79
+ 228 002b 00       		.byte	0
+ 229 002c 4D       		.byte	77
+ 230 002d 00       		.byte	0
+ 231 002e 20       		.byte	32
+ 232 002f 00       		.byte	0
+ 233 0030 50       		.byte	80
+ 234 0031 00       		.byte	0
+ 235 0032 6F       		.byte	111
+ 236 0033 00       		.byte	0
+ 237 0034 72       		.byte	114
+ 238 0035 00       		.byte	0
+ 239 0036 74       		.byte	116
+ 240 0037 00       		.byte	0
+ 241              		.section	.rodata.vcom_string3,"a",%progbits
+ 242              		.align	2
+ 245              	vcom_string3:
+ 246 0000 08       		.byte	8
+ 247 0001 03       		.byte	3
+ 248 0002 32       		.byte	50
+ 249 0003 00       		.byte	0
+ 250 0004 35       		.byte	53
+ 251 0005 00       		.byte	0
+ 252 0006 31       		.byte	49
+ 253 0007 00       		.byte	0
+ 254              		.section	.rodata.vcom_strings,"a",%progbits
+ 255              		.align	2
+ 258              	vcom_strings:
+ 259 0000 04000000 		.word	4
+ 260 0004 00000000 		.word	vcom_string0
+ 261 0008 26000000 		.word	38
+ 262 000c 00000000 		.word	vcom_string1
+ 263 0010 38000000 		.word	56
+ 264 0014 00000000 		.word	vcom_string2
+ 265 0018 08000000 		.word	8
+ 266 001c 00000000 		.word	vcom_string3
+ 267              		.section	.text.get_descriptor,"ax",%progbits
+ 268              		.align	2
+ 269              		.p2align 4,,15
+ 270              		.thumb
+ 271              		.thumb_func
+ 273              	get_descriptor:
+ 274              	.LFB118:
+ 275              		.file 1 "usbcfg.c"
+   1:usbcfg.c      **** /*
+   2:usbcfg.c      ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:usbcfg.c      ****                  2011,2012 Giovanni Di Sirio.
+   4:usbcfg.c      **** 
+   5:usbcfg.c      ****     This file is part of ChibiOS/RT.
+   6:usbcfg.c      **** 
+   7:usbcfg.c      ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:usbcfg.c      ****     it under the terms of the GNU General Public License as published by
+   9:usbcfg.c      ****     the Free Software Foundation; either version 3 of the License, or
+  10:usbcfg.c      ****     (at your option) any later version.
+  11:usbcfg.c      **** 
+  12:usbcfg.c      ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:usbcfg.c      ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:usbcfg.c      ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:usbcfg.c      ****     GNU General Public License for more details.
+  16:usbcfg.c      **** 
+  17:usbcfg.c      ****     You should have received a copy of the GNU General Public License
+  18:usbcfg.c      ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:usbcfg.c      **** */
+  20:usbcfg.c      **** 
+  21:usbcfg.c      **** #include "ch.h"
+  22:usbcfg.c      **** #include "hal.h"
+  23:usbcfg.c      **** #include "usb_cdc.h"
+  24:usbcfg.c      **** 
+  25:usbcfg.c      **** /*
+  26:usbcfg.c      ****  * USB Device Descriptor.
+  27:usbcfg.c      ****  */
+  28:usbcfg.c      **** static const uint8_t vcom_device_descriptor_data[18] = {
+  29:usbcfg.c      ****   USB_DESC_DEVICE       (0x0110,        /* bcdUSB (1.1).                    */
+  30:usbcfg.c      ****                          0x02,          /* bDeviceClass (CDC).              */
+  31:usbcfg.c      ****                          0x00,          /* bDeviceSubClass.                 */
+  32:usbcfg.c      ****                          0x00,          /* bDeviceProtocol.                 */
+  33:usbcfg.c      ****                          0x40,          /* bMaxPacketSize.                  */
+  34:usbcfg.c      ****                          0x0483,        /* idVendor (ST).                   */
+  35:usbcfg.c      ****                          0x5740,        /* idProduct.                       */
+  36:usbcfg.c      ****                          0x0200,        /* bcdDevice.                       */
+  37:usbcfg.c      ****                          1,             /* iManufacturer.                   */
+  38:usbcfg.c      ****                          2,             /* iProduct.                        */
+  39:usbcfg.c      ****                          3,             /* iSerialNumber.                   */
+  40:usbcfg.c      ****                          1)             /* bNumConfigurations.              */
+  41:usbcfg.c      **** };
+  42:usbcfg.c      **** 
+  43:usbcfg.c      **** /*
+  44:usbcfg.c      ****  * Device Descriptor wrapper.
+  45:usbcfg.c      ****  */
+  46:usbcfg.c      **** static const USBDescriptor vcom_device_descriptor = {
+  47:usbcfg.c      ****   sizeof vcom_device_descriptor_data,
+  48:usbcfg.c      ****   vcom_device_descriptor_data
+  49:usbcfg.c      **** };
+  50:usbcfg.c      **** 
+  51:usbcfg.c      **** /* Configuration Descriptor tree for a CDC.*/
+  52:usbcfg.c      **** static const uint8_t vcom_configuration_descriptor_data[67] = {
+  53:usbcfg.c      ****   /* Configuration Descriptor.*/
+  54:usbcfg.c      ****   USB_DESC_CONFIGURATION(67,            /* wTotalLength.                    */
+  55:usbcfg.c      ****                          0x02,          /* bNumInterfaces.                  */
+  56:usbcfg.c      ****                          0x01,          /* bConfigurationValue.             */
+  57:usbcfg.c      ****                          0,             /* iConfiguration.                  */
+  58:usbcfg.c      ****                          0xC0,          /* bmAttributes (self powered).     */
+  59:usbcfg.c      ****                          50),           /* bMaxPower (100mA).               */
+  60:usbcfg.c      ****   /* Interface Descriptor.*/
+  61:usbcfg.c      ****   USB_DESC_INTERFACE    (0x00,          /* bInterfaceNumber.                */
+  62:usbcfg.c      ****                          0x00,          /* bAlternateSetting.               */
+  63:usbcfg.c      ****                          0x01,          /* bNumEndpoints.                   */
+  64:usbcfg.c      ****                          0x02,          /* bInterfaceClass (Communications
+  65:usbcfg.c      ****                                            Interface Class, CDC section
+  66:usbcfg.c      ****                                            4.2).                            */
+  67:usbcfg.c      ****                          0x02,          /* bInterfaceSubClass (Abstract
+  68:usbcfg.c      ****                                          Control Model, CDC section 4.3).   */
+  69:usbcfg.c      ****                          0x01,          /* bInterfaceProtocol (AT commands,
+  70:usbcfg.c      ****                                            CDC section 4.4).                */
+  71:usbcfg.c      ****                          0),            /* iInterface.                      */
+  72:usbcfg.c      ****   /* Header Functional Descriptor (CDC section 5.2.3).*/
+  73:usbcfg.c      ****   USB_DESC_BYTE         (5),            /* bLength.                         */
+  74:usbcfg.c      ****   USB_DESC_BYTE         (0x24),         /* bDescriptorType (CS_INTERFACE).  */
+  75:usbcfg.c      ****   USB_DESC_BYTE         (0x00),         /* bDescriptorSubtype (Header
+  76:usbcfg.c      ****                                            Functional Descriptor.           */
+  77:usbcfg.c      ****   USB_DESC_BCD          (0x0110),       /* bcdCDC.                          */
+  78:usbcfg.c      ****   /* Call Management Functional Descriptor. */
+  79:usbcfg.c      ****   USB_DESC_BYTE         (5),            /* bFunctionLength.                 */
+  80:usbcfg.c      ****   USB_DESC_BYTE         (0x24),         /* bDescriptorType (CS_INTERFACE).  */
+  81:usbcfg.c      ****   USB_DESC_BYTE         (0x01),         /* bDescriptorSubtype (Call Management
+  82:usbcfg.c      ****                                            Functional Descriptor).          */
+  83:usbcfg.c      ****   USB_DESC_BYTE         (0x00),         /* bmCapabilities (D0+D1).          */
+  84:usbcfg.c      ****   USB_DESC_BYTE         (0x01),         /* bDataInterface.                  */
+  85:usbcfg.c      ****   /* ACM Functional Descriptor.*/
+  86:usbcfg.c      ****   USB_DESC_BYTE         (4),            /* bFunctionLength.                 */
+  87:usbcfg.c      ****   USB_DESC_BYTE         (0x24),         /* bDescriptorType (CS_INTERFACE).  */
+  88:usbcfg.c      ****   USB_DESC_BYTE         (0x02),         /* bDescriptorSubtype (Abstract
+  89:usbcfg.c      ****                                            Control Management Descriptor).  */
+  90:usbcfg.c      ****   USB_DESC_BYTE         (0x02),         /* bmCapabilities.                  */
+  91:usbcfg.c      ****   /* Union Functional Descriptor.*/
+  92:usbcfg.c      ****   USB_DESC_BYTE         (5),            /* bFunctionLength.                 */
+  93:usbcfg.c      ****   USB_DESC_BYTE         (0x24),         /* bDescriptorType (CS_INTERFACE).  */
+  94:usbcfg.c      ****   USB_DESC_BYTE         (0x06),         /* bDescriptorSubtype (Union
+  95:usbcfg.c      ****                                            Functional Descriptor).          */
+  96:usbcfg.c      ****   USB_DESC_BYTE         (0x00),         /* bMasterInterface (Communication
+  97:usbcfg.c      ****                                            Class Interface).                */
+  98:usbcfg.c      ****   USB_DESC_BYTE         (0x01),         /* bSlaveInterface0 (Data Class
+  99:usbcfg.c      ****                                            Interface).                      */
+ 100:usbcfg.c      ****   /* Endpoint 2 Descriptor.*/
+ 101:usbcfg.c      ****   USB_DESC_ENDPOINT     (USB_CDC_INTERRUPT_REQUEST_EP|0x80,
+ 102:usbcfg.c      ****                          0x03,          /* bmAttributes (Interrupt).        */
+ 103:usbcfg.c      ****                          0x0008,        /* wMaxPacketSize.                  */
+ 104:usbcfg.c      ****                          0xFF),         /* bInterval.                       */
+ 105:usbcfg.c      ****   /* Interface Descriptor.*/
+ 106:usbcfg.c      ****   USB_DESC_INTERFACE    (0x01,          /* bInterfaceNumber.                */
+ 107:usbcfg.c      ****                          0x00,          /* bAlternateSetting.               */
+ 108:usbcfg.c      ****                          0x02,          /* bNumEndpoints.                   */
+ 109:usbcfg.c      ****                          0x0A,          /* bInterfaceClass (Data Class
+ 110:usbcfg.c      ****                                            Interface, CDC section 4.5).     */
+ 111:usbcfg.c      ****                          0x00,          /* bInterfaceSubClass (CDC section
+ 112:usbcfg.c      ****                                            4.6).                            */
+ 113:usbcfg.c      ****                          0x00,          /* bInterfaceProtocol (CDC section
+ 114:usbcfg.c      ****                                            4.7).                            */
+ 115:usbcfg.c      ****                          0x00),         /* iInterface.                      */
+ 116:usbcfg.c      ****   /* Endpoint 3 Descriptor.*/
+ 117:usbcfg.c      ****   USB_DESC_ENDPOINT     (USB_CDC_DATA_AVAILABLE_EP,     /* bEndpointAddress.*/
+ 118:usbcfg.c      ****                          0x02,          /* bmAttributes (Bulk).             */
+ 119:usbcfg.c      ****                          0x0040,        /* wMaxPacketSize.                  */
+ 120:usbcfg.c      ****                          0x00),         /* bInterval.                       */
+ 121:usbcfg.c      ****   /* Endpoint 1 Descriptor.*/
+ 122:usbcfg.c      ****   USB_DESC_ENDPOINT     (USB_CDC_DATA_REQUEST_EP|0x80,  /* bEndpointAddress.*/
+ 123:usbcfg.c      ****                          0x02,          /* bmAttributes (Bulk).             */
+ 124:usbcfg.c      ****                          0x0040,        /* wMaxPacketSize.                  */
+ 125:usbcfg.c      ****                          0x00)          /* bInterval.                       */
+ 126:usbcfg.c      **** };
+ 127:usbcfg.c      **** 
+ 128:usbcfg.c      **** /*
+ 129:usbcfg.c      ****  * Configuration Descriptor wrapper.
+ 130:usbcfg.c      ****  */
+ 131:usbcfg.c      **** static const USBDescriptor vcom_configuration_descriptor = {
+ 132:usbcfg.c      ****   sizeof vcom_configuration_descriptor_data,
+ 133:usbcfg.c      ****   vcom_configuration_descriptor_data
+ 134:usbcfg.c      **** };
+ 135:usbcfg.c      **** 
+ 136:usbcfg.c      **** /*
+ 137:usbcfg.c      ****  * U.S. English language identifier.
+ 138:usbcfg.c      ****  */
+ 139:usbcfg.c      **** static const uint8_t vcom_string0[] = {
+ 140:usbcfg.c      ****   USB_DESC_BYTE(4),                     /* bLength.                         */
+ 141:usbcfg.c      ****   USB_DESC_BYTE(USB_DESCRIPTOR_STRING), /* bDescriptorType.                 */
+ 142:usbcfg.c      ****   USB_DESC_WORD(0x0409)                 /* wLANGID (U.S. English).          */
+ 143:usbcfg.c      **** };
+ 144:usbcfg.c      **** 
+ 145:usbcfg.c      **** /*
+ 146:usbcfg.c      ****  * Vendor string.
+ 147:usbcfg.c      ****  */
+ 148:usbcfg.c      **** static const uint8_t vcom_string1[] = { /* 'STMicroelectronics'             */
+ 149:usbcfg.c      ****   USB_DESC_BYTE(38),                    /* bLength.                         */
+ 150:usbcfg.c      ****   USB_DESC_BYTE(USB_DESCRIPTOR_STRING), /* bDescriptorType.                 */
+ 151:usbcfg.c      ****   'S', 0, 'T', 0, 'M', 0, 'i', 0, 'c', 0, 'r', 0, 'o', 0, 'e', 0,
+ 152:usbcfg.c      ****   'l', 0, 'e', 0, 'c', 0, 't', 0, 'r', 0, 'o', 0, 'n', 0, 'i', 0,
+ 153:usbcfg.c      ****   'c', 0, 's', 0
+ 154:usbcfg.c      **** };
+ 155:usbcfg.c      **** 
+ 156:usbcfg.c      **** /*
+ 157:usbcfg.c      ****  * Device Description string.
+ 158:usbcfg.c      ****  */
+ 159:usbcfg.c      **** static const uint8_t vcom_string2[] = { /*   'ChibiOS/RT Virtual COM Port'  */
+ 160:usbcfg.c      ****   USB_DESC_BYTE(56),                    /* bLength.                         */
+ 161:usbcfg.c      ****   USB_DESC_BYTE(USB_DESCRIPTOR_STRING), /* bDescriptorType.                 */
+ 162:usbcfg.c      ****   'C', 0, 'h', 0, 'i', 0, 'b', 0, 'i', 0, 'O', 0, 'S', 0, '/', 0,
+ 163:usbcfg.c      ****   'R', 0, 'T', 0, ' ', 0, 'V', 0, 'i', 0, 'r', 0, 't', 0, 'u', 0,
+ 164:usbcfg.c      ****   'a', 0, 'l', 0, ' ', 0, 'C', 0, 'O', 0, 'M', 0, ' ', 0, 'P', 0,
+ 165:usbcfg.c      ****   'o', 0, 'r', 0, 't', 0
+ 166:usbcfg.c      **** 
+ 167:usbcfg.c      **** };
+ 168:usbcfg.c      **** 
+ 169:usbcfg.c      **** /*
+ 170:usbcfg.c      ****  * Serial Number string.
+ 171:usbcfg.c      ****  */
+ 172:usbcfg.c      **** static const uint8_t vcom_string3[] = {
+ 173:usbcfg.c      ****   USB_DESC_BYTE(8),                     /* bLength.                         */
+ 174:usbcfg.c      ****   USB_DESC_BYTE(USB_DESCRIPTOR_STRING), /* bDescriptorType.                 */
+ 175:usbcfg.c      ****   '0' + CH_KERNEL_MAJOR, 0,
+ 176:usbcfg.c      ****   '0' + CH_KERNEL_MINOR, 0,
+ 177:usbcfg.c      ****   '0' + CH_KERNEL_PATCH, 0
+ 178:usbcfg.c      **** };
+ 179:usbcfg.c      **** 
+ 180:usbcfg.c      **** /*
+ 181:usbcfg.c      ****  * Strings wrappers array.
+ 182:usbcfg.c      ****  */
+ 183:usbcfg.c      **** static const USBDescriptor vcom_strings[] = {
+ 184:usbcfg.c      ****   {sizeof vcom_string0, vcom_string0},
+ 185:usbcfg.c      ****   {sizeof vcom_string1, vcom_string1},
+ 186:usbcfg.c      ****   {sizeof vcom_string2, vcom_string2},
+ 187:usbcfg.c      ****   {sizeof vcom_string3, vcom_string3}
+ 188:usbcfg.c      **** };
+ 189:usbcfg.c      **** 
+ 190:usbcfg.c      **** /*
+ 191:usbcfg.c      ****  * Handles the GET_DESCRIPTOR callback. All required descriptors must be
+ 192:usbcfg.c      ****  * handled here.
+ 193:usbcfg.c      ****  */
+ 194:usbcfg.c      **** static const USBDescriptor *get_descriptor(USBDriver *usbp,
+ 195:usbcfg.c      ****                                            uint8_t dtype,
+ 196:usbcfg.c      ****                                            uint8_t dindex,
+ 197:usbcfg.c      ****                                            uint16_t lang) {
+ 276              		.loc 1 197 0
+ 277              		.cfi_startproc
+ 278              		@ args = 0, pretend = 0, frame = 8
+ 279              		@ frame_needed = 0, uses_anonymous_args = 0
+ 280              		@ link register save eliminated.
+ 281 0000 82B0     		sub	sp, sp, #8
+ 282              		.cfi_def_cfa_offset 8
+ 283 0002 0190     		str	r0, [sp, #4]
+ 284 0004 8DF80310 		strb	r1, [sp, #3]
+ 285 0008 8DF80220 		strb	r2, [sp, #2]
+ 286 000c ADF80030 		strh	r3, [sp]	@ movhi
+ 198:usbcfg.c      **** 
+ 199:usbcfg.c      ****   (void)usbp;
+ 200:usbcfg.c      ****   (void)lang;
+ 201:usbcfg.c      ****   switch (dtype) {
+ 287              		.loc 1 201 0
+ 288 0010 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 289 0014 022B     		cmp	r3, #2
+ 290 0016 05D0     		beq	.L3
+ 291 0018 032B     		cmp	r3, #3
+ 292 001a 05D0     		beq	.L4
+ 293 001c 012B     		cmp	r3, #1
+ 294 001e 0DD1     		bne	.L2
+ 202:usbcfg.c      ****   case USB_DESCRIPTOR_DEVICE:
+ 203:usbcfg.c      ****     return &vcom_device_descriptor;
+ 295              		.loc 1 203 0
+ 296 0020 084B     		ldr	r3, .L7
+ 297 0022 0CE0     		b	.L6
+ 298              	.L3:
+ 204:usbcfg.c      ****   case USB_DESCRIPTOR_CONFIGURATION:
+ 205:usbcfg.c      ****     return &vcom_configuration_descriptor;
+ 299              		.loc 1 205 0
+ 300 0024 084B     		ldr	r3, .L7+4
+ 301 0026 0AE0     		b	.L6
+ 302              	.L4:
+ 206:usbcfg.c      ****   case USB_DESCRIPTOR_STRING:
+ 207:usbcfg.c      ****     if (dindex < 4)
+ 303              		.loc 1 207 0
+ 304 0028 9DF80230 		ldrb	r3, [sp, #2]	@ zero_extendqisi2
+ 305 002c 032B     		cmp	r3, #3
+ 306 002e 05D8     		bhi	.L2
+ 208:usbcfg.c      ****       return &vcom_strings[dindex];
+ 307              		.loc 1 208 0
+ 308 0030 9DF80230 		ldrb	r3, [sp, #2]	@ zero_extendqisi2
+ 309 0034 DA00     		lsls	r2, r3, #3
+ 310 0036 054B     		ldr	r3, .L7+8
+ 311 0038 1344     		add	r3, r3, r2
+ 312 003a 00E0     		b	.L6
+ 313              	.L2:
+ 209:usbcfg.c      ****   }
+ 210:usbcfg.c      ****   return NULL;
+ 314              		.loc 1 210 0
+ 315 003c 0023     		movs	r3, #0
+ 316              	.L6:
+ 211:usbcfg.c      **** }
+ 317              		.loc 1 211 0
+ 318 003e 1846     		mov	r0, r3
+ 319 0040 02B0     		add	sp, sp, #8
+ 320              		@ sp needed
+ 321 0042 7047     		bx	lr
+ 322              	.L8:
+ 323              		.align	2
+ 324              	.L7:
+ 325 0044 00000000 		.word	vcom_device_descriptor
+ 326 0048 00000000 		.word	vcom_configuration_descriptor
+ 327 004c 00000000 		.word	vcom_strings
+ 328              		.cfi_endproc
+ 329              	.LFE118:
+ 331              		.section	.bss.ep1instate,"aw",%nobits
+ 332              		.align	2
+ 335              	ep1instate:
+ 336 0000 00000000 		.space	16
+ 336      00000000 
+ 336      00000000 
+ 336      00000000 
+ 337              		.section	.bss.ep1outstate,"aw",%nobits
+ 338              		.align	2
+ 341              	ep1outstate:
+ 342 0000 00000000 		.space	16
+ 342      00000000 
+ 342      00000000 
+ 342      00000000 
+ 343              		.section	.rodata.ep1config,"a",%progbits
+ 344              		.align	2
+ 347              	ep1config:
+ 348 0000 02000000 		.word	2
+ 349 0004 00000000 		.word	0
+ 350 0008 00000000 		.word	sduDataTransmitted
+ 351 000c 00000000 		.word	sduDataReceived
+ 352 0010 4000     		.short	64
+ 353 0012 4000     		.short	64
+ 354 0014 00000000 		.word	ep1instate
+ 355 0018 00000000 		.word	ep1outstate
+ 356 001c 0200     		.short	2
+ 357 001e 0000     		.space	2
+ 358 0020 00000000 		.word	0
+ 359              		.section	.bss.ep2instate,"aw",%nobits
+ 360              		.align	2
+ 363              	ep2instate:
+ 364 0000 00000000 		.space	16
+ 364      00000000 
+ 364      00000000 
+ 364      00000000 
+ 365              		.section	.rodata.ep2config,"a",%progbits
+ 366              		.align	2
+ 369              	ep2config:
+ 370 0000 03000000 		.word	3
+ 371 0004 00000000 		.word	0
+ 372 0008 00000000 		.word	sduInterruptTransmitted
+ 373 000c 00000000 		.word	0
+ 374 0010 1000     		.short	16
+ 375 0012 0000     		.short	0
+ 376 0014 00000000 		.word	ep2instate
+ 377 0018 00000000 		.word	0
+ 378 001c 0100     		.short	1
+ 379 001e 0000     		.space	2
+ 380 0020 00000000 		.word	0
+ 381              		.section	.text.usb_event,"ax",%progbits
+ 382              		.align	2
+ 383              		.p2align 4,,15
+ 384              		.thumb
+ 385              		.thumb_func
+ 387              	usb_event:
+ 388              	.LFB119:
+ 212:usbcfg.c      **** 
+ 213:usbcfg.c      **** /**
+ 214:usbcfg.c      ****  * @brief   IN EP1 state.
+ 215:usbcfg.c      ****  */
+ 216:usbcfg.c      **** static USBInEndpointState ep1instate;
+ 217:usbcfg.c      **** 
+ 218:usbcfg.c      **** /**
+ 219:usbcfg.c      ****  * @brief   OUT EP1 state.
+ 220:usbcfg.c      ****  */
+ 221:usbcfg.c      **** static USBOutEndpointState ep1outstate;
+ 222:usbcfg.c      **** 
+ 223:usbcfg.c      **** /**
+ 224:usbcfg.c      ****  * @brief   EP1 initialization structure (both IN and OUT).
+ 225:usbcfg.c      ****  */
+ 226:usbcfg.c      **** static const USBEndpointConfig ep1config = {
+ 227:usbcfg.c      ****   USB_EP_MODE_TYPE_BULK,
+ 228:usbcfg.c      ****   NULL,
+ 229:usbcfg.c      ****   sduDataTransmitted,
+ 230:usbcfg.c      ****   sduDataReceived,
+ 231:usbcfg.c      ****   0x0040,
+ 232:usbcfg.c      ****   0x0040,
+ 233:usbcfg.c      ****   &ep1instate,
+ 234:usbcfg.c      ****   &ep1outstate,
+ 235:usbcfg.c      ****   2,
+ 236:usbcfg.c      ****   NULL
+ 237:usbcfg.c      **** };
+ 238:usbcfg.c      **** 
+ 239:usbcfg.c      **** /**
+ 240:usbcfg.c      ****  * @brief   IN EP2 state.
+ 241:usbcfg.c      ****  */
+ 242:usbcfg.c      **** static USBInEndpointState ep2instate;
+ 243:usbcfg.c      **** 
+ 244:usbcfg.c      **** /**
+ 245:usbcfg.c      ****  * @brief   EP2 initialization structure (IN only).
+ 246:usbcfg.c      ****  */
+ 247:usbcfg.c      **** static const USBEndpointConfig ep2config = {
+ 248:usbcfg.c      ****   USB_EP_MODE_TYPE_INTR,
+ 249:usbcfg.c      ****   NULL,
+ 250:usbcfg.c      ****   sduInterruptTransmitted,
+ 251:usbcfg.c      ****   NULL,
+ 252:usbcfg.c      ****   0x0010,
+ 253:usbcfg.c      ****   0x0000,
+ 254:usbcfg.c      ****   &ep2instate,
+ 255:usbcfg.c      ****   NULL,
+ 256:usbcfg.c      ****   1,
+ 257:usbcfg.c      ****   NULL
+ 258:usbcfg.c      **** };
+ 259:usbcfg.c      **** 
+ 260:usbcfg.c      **** /*
+ 261:usbcfg.c      ****  * Handles the USB driver global events.
+ 262:usbcfg.c      ****  */
+ 263:usbcfg.c      **** static void usb_event(USBDriver *usbp, usbevent_t event) {
+ 389              		.loc 1 263 0
+ 390              		.cfi_startproc
+ 391              		@ args = 0, pretend = 0, frame = 8
+ 392              		@ frame_needed = 0, uses_anonymous_args = 0
+ 393 0000 00B5     		push	{lr}
+ 394              		.cfi_def_cfa_offset 4
+ 395              		.cfi_offset 14, -4
+ 396 0002 83B0     		sub	sp, sp, #12
+ 397              		.cfi_def_cfa_offset 16
+ 398 0004 0190     		str	r0, [sp, #4]
+ 399 0006 0B46     		mov	r3, r1
+ 400 0008 8DF80330 		strb	r3, [sp, #3]
+ 264:usbcfg.c      **** 
+ 265:usbcfg.c      ****   switch (event) {
+ 401              		.loc 1 265 0
+ 402 000c 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 403 0010 052B     		cmp	r3, #5
+ 404 0012 27D8     		bhi	.L19
+ 405 0014 01A2     		adr	r2, .L12
+ 406 0016 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 407 001a 00BF     		.p2align 2
+ 408              	.L12:
+ 409 001c 65000000 		.word	.L19+1
+ 410 0020 65000000 		.word	.L19+1
+ 411 0024 35000000 		.word	.L14+1
+ 412 0028 65000000 		.word	.L19+1
+ 413 002c 65000000 		.word	.L19+1
+ 414 0030 65000000 		.word	.L19+1
+ 415              		.p2align 1
+ 416              	.L14:
+ 417              	.LBB2:
+ 266:usbcfg.c      ****   case USB_EVENT_RESET:
+ 267:usbcfg.c      ****     return;
+ 268:usbcfg.c      ****   case USB_EVENT_ADDRESS:
+ 269:usbcfg.c      ****     return;
+ 270:usbcfg.c      ****   case USB_EVENT_CONFIGURED:
+ 271:usbcfg.c      ****     chSysLockFromIsr();
+ 418              		.loc 1 271 0
+ 419 0034 2023     		movs	r3, #32
+ 420              	@ 271 "usbcfg.c" 1
+ 421 0036 83F31188 		msr     BASEPRI, r3
+ 422              	@ 0 "" 2
+ 423              		.thumb
+ 424              	.LBE2:
+ 425 003a FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 272:usbcfg.c      **** 
+ 273:usbcfg.c      ****     /* Enables the endpoints specified into the configuration.
+ 274:usbcfg.c      ****        Note, this callback is invoked from an ISR so I-Class functions
+ 275:usbcfg.c      ****        must be used.*/
+ 276:usbcfg.c      ****     usbInitEndpointI(usbp, USB_CDC_DATA_REQUEST_EP, &ep1config);
+ 426              		.loc 1 276 0
+ 427 003e 0198     		ldr	r0, [sp, #4]
+ 428 0040 0121     		movs	r1, #1
+ 429 0042 0A4A     		ldr	r2, .L20
+ 430 0044 FFF7FEFF 		bl	usbInitEndpointI
+ 277:usbcfg.c      ****     usbInitEndpointI(usbp, USB_CDC_INTERRUPT_REQUEST_EP, &ep2config);
+ 431              		.loc 1 277 0
+ 432 0048 0198     		ldr	r0, [sp, #4]
+ 433 004a 0221     		movs	r1, #2
+ 434 004c 084A     		ldr	r2, .L20+4
+ 435 004e FFF7FEFF 		bl	usbInitEndpointI
+ 278:usbcfg.c      **** 
+ 279:usbcfg.c      ****     /* Resetting the state of the CDC subsystem.*/
+ 280:usbcfg.c      ****     sduConfigureHookI(usbp);
+ 436              		.loc 1 280 0
+ 437 0052 0198     		ldr	r0, [sp, #4]
+ 438 0054 FFF7FEFF 		bl	sduConfigureHookI
+ 281:usbcfg.c      **** 
+ 282:usbcfg.c      ****     chSysUnlockFromIsr();
+ 439              		.loc 1 282 0
+ 440 0058 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 441              	.LBB3:
+ 442 005c 0023     		movs	r3, #0
+ 443              	@ 282 "usbcfg.c" 1
+ 444 005e 83F31188 		msr     BASEPRI, r3
+ 445              	@ 0 "" 2
+ 446              		.thumb
+ 447              	.LBE3:
+ 283:usbcfg.c      ****     return;
+ 448              		.loc 1 283 0
+ 449 0062 00E0     		b	.L9
+ 450              	.L19:
+ 284:usbcfg.c      ****   case USB_EVENT_SUSPEND:
+ 285:usbcfg.c      ****     return;
+ 286:usbcfg.c      ****   case USB_EVENT_WAKEUP:
+ 287:usbcfg.c      ****     return;
+ 288:usbcfg.c      ****   case USB_EVENT_STALLED:
+ 289:usbcfg.c      ****     return;
+ 290:usbcfg.c      ****   }
+ 291:usbcfg.c      ****   return;
+ 451              		.loc 1 291 0
+ 452 0064 00BF     		nop
+ 453              	.L9:
+ 292:usbcfg.c      **** }
+ 454              		.loc 1 292 0
+ 455 0066 03B0     		add	sp, sp, #12
+ 456              		@ sp needed
+ 457 0068 5DF804FB 		ldr	pc, [sp], #4
+ 458              	.L21:
+ 459              		.align	2
+ 460              	.L20:
+ 461 006c 00000000 		.word	ep1config
+ 462 0070 00000000 		.word	ep2config
+ 463              		.cfi_endproc
+ 464              	.LFE119:
+ 466              		.global	usbcfg
+ 467 0074 AFF30080 		.section	.rodata.usbcfg,"a",%progbits
+ 467      AFF30080 
+ 467      AFF30080 
+ 468              		.align	2
+ 471              	usbcfg:
+ 472 0000 00000000 		.word	usb_event
+ 473 0004 00000000 		.word	get_descriptor
+ 474 0008 00000000 		.word	sduRequestsHook
+ 475 000c 00000000 		.word	0
+ 476              		.global	serusbcfg
+ 477              		.section	.rodata.serusbcfg,"a",%progbits
+ 478              		.align	2
+ 481              	serusbcfg:
+ 482 0000 00000000 		.word	USBD1
+ 483              		.text
+ 484              	.Letext0:
+ 485              		.file 2 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
+ 486              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 487              		.file 4 "/usr/include/newlib/stdint.h"
+ 488              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 489              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 490              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 491              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 492              		.file 9 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+ 493              		.file 10 "/usr/src/chibiostest/os/kernel/include/chqueues.h"
+ 494              		.file 11 "/usr/src/chibiostest/os/hal/include/usb.h"
+ 495              		.file 12 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/usb_lld.h"
+ 496              		.file 13 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/stm32_otg.h"
+ 497              		.file 14 "/usr/src/chibiostest/os/hal/include/serial_usb.h"
+ 498              		.file 15 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 usbcfg.c
+     /tmp/ccryAsYa.s:20     .rodata.vcom_device_descriptor_data:0000000000000000 $d
+     /tmp/ccryAsYa.s:23     .rodata.vcom_device_descriptor_data:0000000000000000 vcom_device_descriptor_data
+     /tmp/ccryAsYa.s:43     .rodata.vcom_device_descriptor:0000000000000000 $d
+     /tmp/ccryAsYa.s:46     .rodata.vcom_device_descriptor:0000000000000000 vcom_device_descriptor
+     /tmp/ccryAsYa.s:50     .rodata.vcom_configuration_descriptor_data:0000000000000000 $d
+     /tmp/ccryAsYa.s:53     .rodata.vcom_configuration_descriptor_data:0000000000000000 vcom_configuration_descriptor_data
+     /tmp/ccryAsYa.s:122    .rodata.vcom_configuration_descriptor:0000000000000000 $d
+     /tmp/ccryAsYa.s:125    .rodata.vcom_configuration_descriptor:0000000000000000 vcom_configuration_descriptor
+     /tmp/ccryAsYa.s:129    .rodata.vcom_string0:0000000000000000 $d
+     /tmp/ccryAsYa.s:132    .rodata.vcom_string0:0000000000000000 vcom_string0
+     /tmp/ccryAsYa.s:138    .rodata.vcom_string1:0000000000000000 $d
+     /tmp/ccryAsYa.s:141    .rodata.vcom_string1:0000000000000000 vcom_string1
+     /tmp/ccryAsYa.s:181    .rodata.vcom_string2:0000000000000000 $d
+     /tmp/ccryAsYa.s:184    .rodata.vcom_string2:0000000000000000 vcom_string2
+     /tmp/ccryAsYa.s:242    .rodata.vcom_string3:0000000000000000 $d
+     /tmp/ccryAsYa.s:245    .rodata.vcom_string3:0000000000000000 vcom_string3
+     /tmp/ccryAsYa.s:255    .rodata.vcom_strings:0000000000000000 $d
+     /tmp/ccryAsYa.s:258    .rodata.vcom_strings:0000000000000000 vcom_strings
+     /tmp/ccryAsYa.s:268    .text.get_descriptor:0000000000000000 $t
+     /tmp/ccryAsYa.s:273    .text.get_descriptor:0000000000000000 get_descriptor
+     /tmp/ccryAsYa.s:325    .text.get_descriptor:0000000000000044 $d
+     /tmp/ccryAsYa.s:332    .bss.ep1instate:0000000000000000 $d
+     /tmp/ccryAsYa.s:335    .bss.ep1instate:0000000000000000 ep1instate
+     /tmp/ccryAsYa.s:338    .bss.ep1outstate:0000000000000000 $d
+     /tmp/ccryAsYa.s:341    .bss.ep1outstate:0000000000000000 ep1outstate
+     /tmp/ccryAsYa.s:344    .rodata.ep1config:0000000000000000 $d
+     /tmp/ccryAsYa.s:347    .rodata.ep1config:0000000000000000 ep1config
+     /tmp/ccryAsYa.s:360    .bss.ep2instate:0000000000000000 $d
+     /tmp/ccryAsYa.s:363    .bss.ep2instate:0000000000000000 ep2instate
+     /tmp/ccryAsYa.s:366    .rodata.ep2config:0000000000000000 $d
+     /tmp/ccryAsYa.s:369    .rodata.ep2config:0000000000000000 ep2config
+     /tmp/ccryAsYa.s:382    .text.usb_event:0000000000000000 $t
+     /tmp/ccryAsYa.s:387    .text.usb_event:0000000000000000 usb_event
+     /tmp/ccryAsYa.s:409    .text.usb_event:000000000000001c $d
+     /tmp/ccryAsYa.s:415    .text.usb_event:0000000000000034 $t
+     /tmp/ccryAsYa.s:461    .text.usb_event:000000000000006c $d
+     /tmp/ccryAsYa.s:471    .rodata.usbcfg:0000000000000000 usbcfg
+     /tmp/ccryAsYa.s:468    .rodata.usbcfg:0000000000000000 $d
+     /tmp/ccryAsYa.s:481    .rodata.serusbcfg:0000000000000000 serusbcfg
+     /tmp/ccryAsYa.s:478    .rodata.serusbcfg:0000000000000000 $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccryAsYa.s:467    .text.usb_event:0000000000000074 $t
+
+UNDEFINED SYMBOLS
+sduDataTransmitted
+sduDataReceived
+sduInterruptTransmitted
+dbg_check_lock_from_isr
+usbInitEndpointI
+sduConfigureHookI
+dbg_check_unlock_from_isr
+sduRequestsHook
+USBD1

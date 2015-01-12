@@ -1,0 +1,1127 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chcond.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.prio_insert,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.thumb
+  23              		.thumb_func
+  25              	prio_insert:
+  26              	.LFB0:
+  27              		.file 1 "/usr/src/chibiostest/os/kernel/include/chinline.h"
+   1:/usr/src/chibiostest/os/kernel/include/chinline.h **** /*
+   2:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/include/chinline.h ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   5:/usr/src/chibiostest/os/kernel/include/chinline.h ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   7:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/include/chinline.h ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/include/chinline.h ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/include/chinline.h ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  12:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/include/chinline.h ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/include/chinline.h ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/include/chinline.h ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  17:/usr/src/chibiostest/os/kernel/include/chinline.h ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/include/chinline.h ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/include/chinline.h **** */
+  20:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  21:/usr/src/chibiostest/os/kernel/include/chinline.h **** /**
+  22:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @file    chinline.h
+  23:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @brief   Kernel inlined functions.
+  24:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @details In this file there are a set of inlined functions if the
+  25:/usr/src/chibiostest/os/kernel/include/chinline.h ****  *          @p CH_OPTIMIZE_SPEED is enabled.
+  26:/usr/src/chibiostest/os/kernel/include/chinline.h ****  */
+  27:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  28:/usr/src/chibiostest/os/kernel/include/chinline.h **** #ifndef _CHINLINE_H_
+  29:/usr/src/chibiostest/os/kernel/include/chinline.h **** #define _CHINLINE_H_
+  30:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  31:/usr/src/chibiostest/os/kernel/include/chinline.h **** /* If the performance code path has been chosen then all the following
+  32:/usr/src/chibiostest/os/kernel/include/chinline.h ****    functions are inlined into the various kernel modules.*/
+  33:/usr/src/chibiostest/os/kernel/include/chinline.h **** #if CH_OPTIMIZE_SPEED
+  34:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void prio_insert(Thread *tp, ThreadsQueue *tqp) {
+  28              		.loc 1 34 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 16
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33 0000 84B0     		sub	sp, sp, #16
+  34              		.cfi_def_cfa_offset 16
+  35 0002 0190     		str	r0, [sp, #4]
+  36 0004 0091     		str	r1, [sp]
+  35:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  36:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *cp = (Thread *)tqp;
+  37              		.loc 1 36 0
+  38 0006 009B     		ldr	r3, [sp]
+  39 0008 0393     		str	r3, [sp, #12]
+  40              	.L3:
+  37:/usr/src/chibiostest/os/kernel/include/chinline.h ****   do {
+  38:/usr/src/chibiostest/os/kernel/include/chinline.h ****     cp = cp->p_next;
+  41              		.loc 1 38 0 discriminator 1
+  42 000a 039B     		ldr	r3, [sp, #12]
+  43 000c 1B68     		ldr	r3, [r3]
+  44 000e 0393     		str	r3, [sp, #12]
+  39:/usr/src/chibiostest/os/kernel/include/chinline.h ****   } while ((cp != (Thread *)tqp) && (cp->p_prio >= tp->p_prio));
+  45              		.loc 1 39 0 discriminator 1
+  46 0010 039A     		ldr	r2, [sp, #12]
+  47 0012 009B     		ldr	r3, [sp]
+  48 0014 9A42     		cmp	r2, r3
+  49 0016 05D0     		beq	.L2
+  50 0018 039B     		ldr	r3, [sp, #12]
+  51 001a 9A68     		ldr	r2, [r3, #8]
+  52 001c 019B     		ldr	r3, [sp, #4]
+  53 001e 9B68     		ldr	r3, [r3, #8]
+  54 0020 9A42     		cmp	r2, r3
+  55 0022 F2D2     		bcs	.L3
+  56              	.L2:
+  40:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = cp;
+  57              		.loc 1 40 0
+  58 0024 019B     		ldr	r3, [sp, #4]
+  59 0026 039A     		ldr	r2, [sp, #12]
+  60 0028 1A60     		str	r2, [r3]
+  41:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = cp->p_prev;
+  61              		.loc 1 41 0
+  62 002a 039B     		ldr	r3, [sp, #12]
+  63 002c 5A68     		ldr	r2, [r3, #4]
+  64 002e 019B     		ldr	r3, [sp, #4]
+  65 0030 5A60     		str	r2, [r3, #4]
+  42:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = cp->p_prev = tp;
+  66              		.loc 1 42 0
+  67 0032 019B     		ldr	r3, [sp, #4]
+  68 0034 5B68     		ldr	r3, [r3, #4]
+  69 0036 039A     		ldr	r2, [sp, #12]
+  70 0038 0199     		ldr	r1, [sp, #4]
+  71 003a 5160     		str	r1, [r2, #4]
+  72 003c 039A     		ldr	r2, [sp, #12]
+  73 003e 5268     		ldr	r2, [r2, #4]
+  74 0040 1A60     		str	r2, [r3]
+  43:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  75              		.loc 1 43 0
+  76 0042 04B0     		add	sp, sp, #16
+  77              		@ sp needed
+  78 0044 7047     		bx	lr
+  79              		.cfi_endproc
+  80              	.LFE0:
+  82 0046 00BFAFF3 		.section	.text.fifo_remove,"ax",%progbits
+  82      0080AFF3 
+  82      0080
+  83              		.align	2
+  84              		.p2align 4,,15
+  85              		.thumb
+  86              		.thumb_func
+  88              	fifo_remove:
+  89              	.LFB2:
+  44:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  45:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void queue_insert(Thread *tp, ThreadsQueue *tqp) {
+  46:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  47:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = (Thread *)tqp;
+  48:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = tqp->p_prev;
+  49:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = tqp->p_prev = tp;
+  50:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  51:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  52:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *fifo_remove(ThreadsQueue *tqp) {
+  90              		.loc 1 52 0
+  91              		.cfi_startproc
+  92              		@ args = 0, pretend = 0, frame = 16
+  93              		@ frame_needed = 0, uses_anonymous_args = 0
+  94              		@ link register save eliminated.
+  95 0000 84B0     		sub	sp, sp, #16
+  96              		.cfi_def_cfa_offset 16
+  97 0002 0190     		str	r0, [sp, #4]
+  53:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *tp = tqp->p_next;
+  98              		.loc 1 53 0
+  99 0004 019B     		ldr	r3, [sp, #4]
+ 100 0006 1B68     		ldr	r3, [r3]
+ 101 0008 0393     		str	r3, [sp, #12]
+  54:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  55:/usr/src/chibiostest/os/kernel/include/chinline.h ****   (tqp->p_next = tp->p_next)->p_prev = (Thread *)tqp;
+ 102              		.loc 1 55 0
+ 103 000a 039B     		ldr	r3, [sp, #12]
+ 104 000c 1A68     		ldr	r2, [r3]
+ 105 000e 019B     		ldr	r3, [sp, #4]
+ 106 0010 1A60     		str	r2, [r3]
+ 107 0012 019B     		ldr	r3, [sp, #4]
+ 108 0014 1B68     		ldr	r3, [r3]
+ 109 0016 019A     		ldr	r2, [sp, #4]
+ 110 0018 5A60     		str	r2, [r3, #4]
+  56:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+ 111              		.loc 1 56 0
+ 112 001a 039B     		ldr	r3, [sp, #12]
+  57:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+ 113              		.loc 1 57 0
+ 114 001c 1846     		mov	r0, r3
+ 115 001e 04B0     		add	sp, sp, #16
+ 116              		@ sp needed
+ 117 0020 7047     		bx	lr
+ 118              		.cfi_endproc
+ 119              	.LFE2:
+ 121 0022 00BFAFF3 		.section	.rodata
+ 121      0080AFF3 
+ 121      0080AFF3 
+ 121      0080
+ 122              		.align	2
+ 123              	.LC0:
+ 124 0000 22636843 		.ascii	"\"chCondInit\"()\000"
+ 124      6F6E6449 
+ 124      6E697422 
+ 124      282900
+ 125              		.section	.text.chCondInit,"ax",%progbits
+ 126              		.align	2
+ 127              		.p2align 4,,15
+ 128              		.global	chCondInit
+ 129              		.thumb
+ 130              		.thumb_func
+ 132              	chCondInit:
+ 133              	.LFB7:
+ 134              		.file 2 "/usr/src/chibiostest/os/kernel/src/chcond.c"
+   1:/usr/src/chibiostest/os/kernel/src/chcond.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chcond.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chcond.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chcond.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chcond.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chcond.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chcond.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chcond.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chcond.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chcond.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chcond.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chcond.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chcond.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chcond.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chcond.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chcond.c **** /*
+  21:/usr/src/chibiostest/os/kernel/src/chcond.c ****    Concepts and parts of this file have been contributed by Leon Woestenberg.
+  22:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+  23:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  24:/usr/src/chibiostest/os/kernel/src/chcond.c **** /**
+  25:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @file    chcond.c
+  26:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @brief   Condition Variables code.
+  27:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+  28:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @addtogroup condvars Condition Variables
+  29:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @details This module implements the Condition Variables mechanism. Condition
+  30:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          variables are an extensions to the Mutex subsystem and cannot
+  31:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          work alone.
+  32:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          <h2>Operation mode</h2>
+  33:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          The condition variable is a synchronization object meant to be
+  34:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          used inside a zone protected by a @p Mutex. Mutexes and CondVars
+  35:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          together can implement a Monitor construct.
+  36:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @pre     In order to use the condition variable APIs the @p CH_USE_CONDVARS
+  37:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          option must be enabled in @p chconf.h.
+  38:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @{
+  39:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+  40:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  41:/usr/src/chibiostest/os/kernel/src/chcond.c **** #include "ch.h"
+  42:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  43:/usr/src/chibiostest/os/kernel/src/chcond.c **** #if (CH_USE_CONDVARS && CH_USE_MUTEXES) || defined(__DOXYGEN__)
+  44:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  45:/usr/src/chibiostest/os/kernel/src/chcond.c **** /**
+  46:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @brief   Initializes s @p CondVar structure.
+  47:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+  48:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[out] cp       pointer to a @p CondVar structure
+  49:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+  50:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @init
+  51:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+  52:/usr/src/chibiostest/os/kernel/src/chcond.c **** void chCondInit(CondVar *cp) {
+ 135              		.loc 2 52 0
+ 136              		.cfi_startproc
+ 137              		@ args = 0, pretend = 0, frame = 8
+ 138              		@ frame_needed = 0, uses_anonymous_args = 0
+ 139 0000 00B5     		push	{lr}
+ 140              		.cfi_def_cfa_offset 4
+ 141              		.cfi_offset 14, -4
+ 142 0002 83B0     		sub	sp, sp, #12
+ 143              		.cfi_def_cfa_offset 16
+ 144 0004 0190     		str	r0, [sp, #4]
+  53:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  54:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgCheck(cp != NULL, "chCondInit");
+ 145              		.loc 2 54 0
+ 146 0006 019B     		ldr	r3, [sp, #4]
+ 147 0008 002B     		cmp	r3, #0
+ 148 000a 02D1     		bne	.L7
+ 149              		.loc 2 54 0 is_stmt 0 discriminator 1
+ 150 000c 0648     		ldr	r0, .L8
+ 151 000e FFF7FEFF 		bl	chDbgPanic
+ 152              	.L7:
+  55:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  56:/usr/src/chibiostest/os/kernel/src/chcond.c ****   queue_init(&cp->c_queue);
+ 153              		.loc 2 56 0 is_stmt 1
+ 154 0012 019A     		ldr	r2, [sp, #4]
+ 155 0014 019B     		ldr	r3, [sp, #4]
+ 156 0016 5A60     		str	r2, [r3, #4]
+ 157 0018 019B     		ldr	r3, [sp, #4]
+ 158 001a 5A68     		ldr	r2, [r3, #4]
+ 159 001c 019B     		ldr	r3, [sp, #4]
+ 160 001e 1A60     		str	r2, [r3]
+  57:/usr/src/chibiostest/os/kernel/src/chcond.c **** }
+ 161              		.loc 2 57 0
+ 162 0020 03B0     		add	sp, sp, #12
+ 163              		@ sp needed
+ 164 0022 5DF804FB 		ldr	pc, [sp], #4
+ 165              	.L9:
+ 166 0026 00BF     		.align	2
+ 167              	.L8:
+ 168 0028 00000000 		.word	.LC0
+ 169              		.cfi_endproc
+ 170              	.LFE7:
+ 172 002c AFF30080 		.section	.rodata
+ 173 000f 00       		.align	2
+ 174              	.LC1:
+ 175 0010 22636843 		.ascii	"\"chCondSignal\"()\000"
+ 175      6F6E6453 
+ 175      69676E61 
+ 175      6C222829 
+ 175      00
+ 176              		.section	.text.chCondSignal,"ax",%progbits
+ 177              		.align	2
+ 178              		.p2align 4,,15
+ 179              		.global	chCondSignal
+ 180              		.thumb
+ 181              		.thumb_func
+ 183              	chCondSignal:
+ 184              	.LFB8:
+  58:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  59:/usr/src/chibiostest/os/kernel/src/chcond.c **** /**
+  60:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @brief   Signals one thread that is waiting on the condition variable.
+  61:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+  62:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[in] cp        pointer to the @p CondVar structure
+  63:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+  64:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @api
+  65:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+  66:/usr/src/chibiostest/os/kernel/src/chcond.c **** void chCondSignal(CondVar *cp) {
+ 185              		.loc 2 66 0
+ 186              		.cfi_startproc
+ 187              		@ args = 0, pretend = 0, frame = 8
+ 188              		@ frame_needed = 0, uses_anonymous_args = 0
+ 189 0000 00B5     		push	{lr}
+ 190              		.cfi_def_cfa_offset 4
+ 191              		.cfi_offset 14, -4
+ 192 0002 83B0     		sub	sp, sp, #12
+ 193              		.cfi_def_cfa_offset 16
+ 194 0004 0190     		str	r0, [sp, #4]
+  67:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  68:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgCheck(cp != NULL, "chCondSignal");
+ 195              		.loc 2 68 0
+ 196 0006 019B     		ldr	r3, [sp, #4]
+ 197 0008 002B     		cmp	r3, #0
+ 198 000a 02D1     		bne	.L11
+ 199              		.loc 2 68 0 is_stmt 0 discriminator 1
+ 200 000c 0E48     		ldr	r0, .L13
+ 201 000e FFF7FEFF 		bl	chDbgPanic
+ 202              	.L11:
+ 203              	.LBB2:
+  69:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  70:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chSysLock();
+ 204              		.loc 2 70 0 is_stmt 1
+ 205 0012 2023     		movs	r3, #32
+ 206              	@ 70 "/usr/src/chibiostest/os/kernel/src/chcond.c" 1
+ 207 0014 83F31188 		msr     BASEPRI, r3
+ 208              	@ 0 "" 2
+ 209              		.thumb
+ 210              	.LBE2:
+ 211 0018 FFF7FEFF 		bl	dbg_check_lock
+  71:/usr/src/chibiostest/os/kernel/src/chcond.c ****   if (notempty(&cp->c_queue))
+ 212              		.loc 2 71 0
+ 213 001c 019B     		ldr	r3, [sp, #4]
+ 214 001e 1A68     		ldr	r2, [r3]
+ 215 0020 019B     		ldr	r3, [sp, #4]
+ 216 0022 9A42     		cmp	r2, r3
+ 217 0024 08D0     		beq	.L12
+  72:/usr/src/chibiostest/os/kernel/src/chcond.c ****     chSchWakeupS(fifo_remove(&cp->c_queue), RDY_OK);
+ 218              		.loc 2 72 0
+ 219 0026 019B     		ldr	r3, [sp, #4]
+ 220 0028 1846     		mov	r0, r3
+ 221 002a FFF7FEFF 		bl	fifo_remove
+ 222 002e 0346     		mov	r3, r0
+ 223 0030 1846     		mov	r0, r3
+ 224 0032 0021     		movs	r1, #0
+ 225 0034 FFF7FEFF 		bl	chSchWakeupS
+ 226              	.L12:
+  73:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chSysUnlock();
+ 227              		.loc 2 73 0
+ 228 0038 FFF7FEFF 		bl	dbg_check_unlock
+ 229              	.LBB3:
+ 230 003c 0023     		movs	r3, #0
+ 231              	@ 73 "/usr/src/chibiostest/os/kernel/src/chcond.c" 1
+ 232 003e 83F31188 		msr     BASEPRI, r3
+ 233              	@ 0 "" 2
+ 234              		.thumb
+ 235              	.LBE3:
+  74:/usr/src/chibiostest/os/kernel/src/chcond.c **** }
+ 236              		.loc 2 74 0
+ 237 0042 03B0     		add	sp, sp, #12
+ 238              		@ sp needed
+ 239 0044 5DF804FB 		ldr	pc, [sp], #4
+ 240              	.L14:
+ 241              		.align	2
+ 242              	.L13:
+ 243 0048 10000000 		.word	.LC1
+ 244              		.cfi_endproc
+ 245              	.LFE8:
+ 247 004c AFF30080 		.section	.rodata
+ 248 0021 000000   		.align	2
+ 249              	.LC2:
+ 250 0024 22636843 		.ascii	"\"chCondSignalI\"()\000"
+ 250      6F6E6453 
+ 250      69676E61 
+ 250      6C492228 
+ 250      2900
+ 251              		.section	.text.chCondSignalI,"ax",%progbits
+ 252              		.align	2
+ 253              		.p2align 4,,15
+ 254              		.global	chCondSignalI
+ 255              		.thumb
+ 256              		.thumb_func
+ 258              	chCondSignalI:
+ 259              	.LFB9:
+  75:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  76:/usr/src/chibiostest/os/kernel/src/chcond.c **** /**
+  77:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @brief   Signals one thread that is waiting on the condition variable.
+  78:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @post    This function does not reschedule so a call to a rescheduling
+  79:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          function must be performed before unlocking the kernel. Note that
+  80:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          interrupt handlers always reschedule on exit so an explicit
+  81:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          reschedule must not be performed in ISRs.
+  82:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+  83:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[in] cp        pointer to the @p CondVar structure
+  84:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+  85:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @iclass
+  86:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+  87:/usr/src/chibiostest/os/kernel/src/chcond.c **** void chCondSignalI(CondVar *cp) {
+ 260              		.loc 2 87 0
+ 261              		.cfi_startproc
+ 262              		@ args = 0, pretend = 0, frame = 8
+ 263              		@ frame_needed = 0, uses_anonymous_args = 0
+ 264 0000 00B5     		push	{lr}
+ 265              		.cfi_def_cfa_offset 4
+ 266              		.cfi_offset 14, -4
+ 267 0002 83B0     		sub	sp, sp, #12
+ 268              		.cfi_def_cfa_offset 16
+ 269 0004 0190     		str	r0, [sp, #4]
+  88:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  89:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgCheckClassI();
+ 270              		.loc 2 89 0
+ 271 0006 FFF7FEFF 		bl	chDbgCheckClassI
+  90:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgCheck(cp != NULL, "chCondSignalI");
+ 272              		.loc 2 90 0
+ 273 000a 019B     		ldr	r3, [sp, #4]
+ 274 000c 002B     		cmp	r3, #0
+ 275 000e 02D1     		bne	.L16
+ 276              		.loc 2 90 0 is_stmt 0 discriminator 1
+ 277 0010 0A48     		ldr	r0, .L18
+ 278 0012 FFF7FEFF 		bl	chDbgPanic
+ 279              	.L16:
+  91:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  92:/usr/src/chibiostest/os/kernel/src/chcond.c ****   if (notempty(&cp->c_queue))
+ 280              		.loc 2 92 0 is_stmt 1
+ 281 0016 019B     		ldr	r3, [sp, #4]
+ 282 0018 1A68     		ldr	r2, [r3]
+ 283 001a 019B     		ldr	r3, [sp, #4]
+ 284 001c 9A42     		cmp	r2, r3
+ 285 001e 0AD0     		beq	.L15
+  93:/usr/src/chibiostest/os/kernel/src/chcond.c ****     chSchReadyI(fifo_remove(&cp->c_queue))->p_u.rdymsg = RDY_OK;
+ 286              		.loc 2 93 0
+ 287 0020 019B     		ldr	r3, [sp, #4]
+ 288 0022 1846     		mov	r0, r3
+ 289 0024 FFF7FEFF 		bl	fifo_remove
+ 290 0028 0346     		mov	r3, r0
+ 291 002a 1846     		mov	r0, r3
+ 292 002c FFF7FEFF 		bl	chSchReadyI
+ 293 0030 0346     		mov	r3, r0
+ 294 0032 0022     		movs	r2, #0
+ 295 0034 9A62     		str	r2, [r3, #40]
+ 296              	.L15:
+  94:/usr/src/chibiostest/os/kernel/src/chcond.c **** }
+ 297              		.loc 2 94 0
+ 298 0036 03B0     		add	sp, sp, #12
+ 299              		@ sp needed
+ 300 0038 5DF804FB 		ldr	pc, [sp], #4
+ 301              	.L19:
+ 302              		.align	2
+ 303              	.L18:
+ 304 003c 24000000 		.word	.LC2
+ 305              		.cfi_endproc
+ 306              	.LFE9:
+ 308              		.section	.text.chCondBroadcast,"ax",%progbits
+ 309              		.align	2
+ 310              		.p2align 4,,15
+ 311              		.global	chCondBroadcast
+ 312              		.thumb
+ 313              		.thumb_func
+ 315              	chCondBroadcast:
+ 316              	.LFB10:
+  95:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+  96:/usr/src/chibiostest/os/kernel/src/chcond.c **** /**
+  97:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @brief   Signals all threads that are waiting on the condition variable.
+  98:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+  99:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[in] cp        pointer to the @p CondVar structure
+ 100:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 101:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @api
+ 102:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+ 103:/usr/src/chibiostest/os/kernel/src/chcond.c **** void chCondBroadcast(CondVar *cp) {
+ 317              		.loc 2 103 0
+ 318              		.cfi_startproc
+ 319              		@ args = 0, pretend = 0, frame = 8
+ 320              		@ frame_needed = 0, uses_anonymous_args = 0
+ 321 0000 00B5     		push	{lr}
+ 322              		.cfi_def_cfa_offset 4
+ 323              		.cfi_offset 14, -4
+ 324 0002 83B0     		sub	sp, sp, #12
+ 325              		.cfi_def_cfa_offset 16
+ 326 0004 0190     		str	r0, [sp, #4]
+ 327              	.LBB4:
+ 104:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 105:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chSysLock();
+ 328              		.loc 2 105 0
+ 329 0006 2023     		movs	r3, #32
+ 330              	@ 105 "/usr/src/chibiostest/os/kernel/src/chcond.c" 1
+ 331 0008 83F31188 		msr     BASEPRI, r3
+ 332              	@ 0 "" 2
+ 333              		.thumb
+ 334              	.LBE4:
+ 335 000c FFF7FEFF 		bl	dbg_check_lock
+ 106:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chCondBroadcastI(cp);
+ 336              		.loc 2 106 0
+ 337 0010 0198     		ldr	r0, [sp, #4]
+ 338 0012 FFF7FEFF 		bl	chCondBroadcastI
+ 107:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chSchRescheduleS();
+ 339              		.loc 2 107 0
+ 340 0016 FFF7FEFF 		bl	chSchRescheduleS
+ 108:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chSysUnlock();
+ 341              		.loc 2 108 0
+ 342 001a FFF7FEFF 		bl	dbg_check_unlock
+ 343              	.LBB5:
+ 344 001e 0023     		movs	r3, #0
+ 345              	@ 108 "/usr/src/chibiostest/os/kernel/src/chcond.c" 1
+ 346 0020 83F31188 		msr     BASEPRI, r3
+ 347              	@ 0 "" 2
+ 348              		.thumb
+ 349              	.LBE5:
+ 109:/usr/src/chibiostest/os/kernel/src/chcond.c **** }
+ 350              		.loc 2 109 0
+ 351 0024 03B0     		add	sp, sp, #12
+ 352              		@ sp needed
+ 353 0026 5DF804FB 		ldr	pc, [sp], #4
+ 354              		.cfi_endproc
+ 355              	.LFE10:
+ 357 002a 00BFAFF3 		.section	.rodata
+ 357      0080
+ 358 0036 0000     		.align	2
+ 359              	.LC3:
+ 360 0038 22636843 		.ascii	"\"chCondBroadcastI\"()\000"
+ 360      6F6E6442 
+ 360      726F6164 
+ 360      63617374 
+ 360      49222829 
+ 361              		.section	.text.chCondBroadcastI,"ax",%progbits
+ 362              		.align	2
+ 363              		.p2align 4,,15
+ 364              		.global	chCondBroadcastI
+ 365              		.thumb
+ 366              		.thumb_func
+ 368              	chCondBroadcastI:
+ 369              	.LFB11:
+ 110:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 111:/usr/src/chibiostest/os/kernel/src/chcond.c **** /**
+ 112:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @brief   Signals all threads that are waiting on the condition variable.
+ 113:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @post    This function does not reschedule so a call to a rescheduling
+ 114:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          function must be performed before unlocking the kernel. Note that
+ 115:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          interrupt handlers always reschedule on exit so an explicit
+ 116:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          reschedule must not be performed in ISRs.
+ 117:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 118:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[in] cp        pointer to the @p CondVar structure
+ 119:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 120:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @iclass
+ 121:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+ 122:/usr/src/chibiostest/os/kernel/src/chcond.c **** void chCondBroadcastI(CondVar *cp) {
+ 370              		.loc 2 122 0
+ 371              		.cfi_startproc
+ 372              		@ args = 0, pretend = 0, frame = 8
+ 373              		@ frame_needed = 0, uses_anonymous_args = 0
+ 374 0000 00B5     		push	{lr}
+ 375              		.cfi_def_cfa_offset 4
+ 376              		.cfi_offset 14, -4
+ 377 0002 83B0     		sub	sp, sp, #12
+ 378              		.cfi_def_cfa_offset 16
+ 379 0004 0190     		str	r0, [sp, #4]
+ 123:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 124:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgCheckClassI();
+ 380              		.loc 2 124 0
+ 381 0006 FFF7FEFF 		bl	chDbgCheckClassI
+ 125:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgCheck(cp != NULL, "chCondBroadcastI");
+ 382              		.loc 2 125 0
+ 383 000a 019B     		ldr	r3, [sp, #4]
+ 384 000c 002B     		cmp	r3, #0
+ 385 000e 03D1     		bne	.L22
+ 386              		.loc 2 125 0 is_stmt 0 discriminator 1
+ 387 0010 0C48     		ldr	r0, .L25
+ 388 0012 FFF7FEFF 		bl	chDbgPanic
+ 126:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 127:/usr/src/chibiostest/os/kernel/src/chcond.c ****   /* Empties the condition variable queue and inserts all the Threads into the
+ 128:/usr/src/chibiostest/os/kernel/src/chcond.c ****      ready list in FIFO order. The wakeup message is set to @p RDY_RESET in
+ 129:/usr/src/chibiostest/os/kernel/src/chcond.c ****      order to make a chCondBroadcast() detectable from a chCondSignal().*/
+ 130:/usr/src/chibiostest/os/kernel/src/chcond.c ****   while (cp->c_queue.p_next != (void *)&cp->c_queue)
+ 389              		.loc 2 130 0 is_stmt 1 discriminator 1
+ 390 0016 0CE0     		b	.L23
+ 391              	.L22:
+ 392              		.loc 2 130 0 is_stmt 0
+ 393 0018 0BE0     		b	.L23
+ 394              	.L24:
+ 131:/usr/src/chibiostest/os/kernel/src/chcond.c ****     chSchReadyI(fifo_remove(&cp->c_queue))->p_u.rdymsg = RDY_RESET;
+ 395              		.loc 2 131 0 is_stmt 1
+ 396 001a 019B     		ldr	r3, [sp, #4]
+ 397 001c 1846     		mov	r0, r3
+ 398 001e FFF7FEFF 		bl	fifo_remove
+ 399 0022 0346     		mov	r3, r0
+ 400 0024 1846     		mov	r0, r3
+ 401 0026 FFF7FEFF 		bl	chSchReadyI
+ 402 002a 0346     		mov	r3, r0
+ 403 002c 6FF00102 		mvn	r2, #1
+ 404 0030 9A62     		str	r2, [r3, #40]
+ 405              	.L23:
+ 130:/usr/src/chibiostest/os/kernel/src/chcond.c ****     chSchReadyI(fifo_remove(&cp->c_queue))->p_u.rdymsg = RDY_RESET;
+ 406              		.loc 2 130 0 discriminator 1
+ 407 0032 019B     		ldr	r3, [sp, #4]
+ 408 0034 1A68     		ldr	r2, [r3]
+ 409 0036 019B     		ldr	r3, [sp, #4]
+ 410 0038 9A42     		cmp	r2, r3
+ 411 003a EED1     		bne	.L24
+ 132:/usr/src/chibiostest/os/kernel/src/chcond.c **** }
+ 412              		.loc 2 132 0
+ 413 003c 03B0     		add	sp, sp, #12
+ 414              		@ sp needed
+ 415 003e 5DF804FB 		ldr	pc, [sp], #4
+ 416              	.L26:
+ 417 0042 00BF     		.align	2
+ 418              	.L25:
+ 419 0044 38000000 		.word	.LC3
+ 420              		.cfi_endproc
+ 421              	.LFE11:
+ 423 0048 AFF30080 		.section	.text.chCondWait,"ax",%progbits
+ 423      AFF30080 
+ 424              		.align	2
+ 425              		.p2align 4,,15
+ 426              		.global	chCondWait
+ 427              		.thumb
+ 428              		.thumb_func
+ 430              	chCondWait:
+ 431              	.LFB12:
+ 133:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 134:/usr/src/chibiostest/os/kernel/src/chcond.c **** /**
+ 135:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @brief   Waits on the condition variable releasing the mutex lock.
+ 136:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @details Releases the currently owned mutex, waits on the condition
+ 137:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          variable, and finally acquires the mutex again. All the sequence
+ 138:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          is performed atomically.
+ 139:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @pre     The invoking thread <b>must</b> have at least one owned mutex.
+ 140:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 141:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[in] cp        pointer to the @p CondVar structure
+ 142:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @return              A message specifying how the invoking thread has been
+ 143:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      released from the condition variable.
+ 144:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @retval RDY_OK       if the condvar has been signaled using
+ 145:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      @p chCondSignal().
+ 146:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @retval RDY_RESET    if the condvar has been signaled using
+ 147:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      @p chCondBroadcast().
+ 148:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 149:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @api
+ 150:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+ 151:/usr/src/chibiostest/os/kernel/src/chcond.c **** msg_t chCondWait(CondVar *cp) {
+ 432              		.loc 2 151 0
+ 433              		.cfi_startproc
+ 434              		@ args = 0, pretend = 0, frame = 16
+ 435              		@ frame_needed = 0, uses_anonymous_args = 0
+ 436 0000 00B5     		push	{lr}
+ 437              		.cfi_def_cfa_offset 4
+ 438              		.cfi_offset 14, -4
+ 439 0002 85B0     		sub	sp, sp, #20
+ 440              		.cfi_def_cfa_offset 24
+ 441 0004 0190     		str	r0, [sp, #4]
+ 442              	.LBB6:
+ 152:/usr/src/chibiostest/os/kernel/src/chcond.c ****   msg_t msg;
+ 153:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 154:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chSysLock();
+ 443              		.loc 2 154 0
+ 444 0006 2023     		movs	r3, #32
+ 445              	@ 154 "/usr/src/chibiostest/os/kernel/src/chcond.c" 1
+ 446 0008 83F31188 		msr     BASEPRI, r3
+ 447              	@ 0 "" 2
+ 448              		.thumb
+ 449              	.LBE6:
+ 450 000c FFF7FEFF 		bl	dbg_check_lock
+ 155:/usr/src/chibiostest/os/kernel/src/chcond.c ****   msg = chCondWaitS(cp);
+ 451              		.loc 2 155 0
+ 452 0010 0198     		ldr	r0, [sp, #4]
+ 453 0012 FFF7FEFF 		bl	chCondWaitS
+ 454 0016 0390     		str	r0, [sp, #12]
+ 156:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chSysUnlock();
+ 455              		.loc 2 156 0
+ 456 0018 FFF7FEFF 		bl	dbg_check_unlock
+ 457              	.LBB7:
+ 458 001c 0023     		movs	r3, #0
+ 459              	@ 156 "/usr/src/chibiostest/os/kernel/src/chcond.c" 1
+ 460 001e 83F31188 		msr     BASEPRI, r3
+ 461              	@ 0 "" 2
+ 462              		.thumb
+ 463              	.LBE7:
+ 157:/usr/src/chibiostest/os/kernel/src/chcond.c ****   return msg;
+ 464              		.loc 2 157 0
+ 465 0022 039B     		ldr	r3, [sp, #12]
+ 158:/usr/src/chibiostest/os/kernel/src/chcond.c **** }
+ 466              		.loc 2 158 0
+ 467 0024 1846     		mov	r0, r3
+ 468 0026 05B0     		add	sp, sp, #20
+ 469              		@ sp needed
+ 470 0028 5DF804FB 		ldr	pc, [sp], #4
+ 471              		.cfi_endproc
+ 472              	.LFE12:
+ 474 002c AFF30080 		.section	.rodata
+ 475 004d 000000   		.align	2
+ 476              	.LC4:
+ 477 0050 22636843 		.ascii	"\"chCondWaitS\"()\000"
+ 477      6F6E6457 
+ 477      61697453 
+ 477      22282900 
+ 478              		.align	2
+ 479              	.LC5:
+ 480 0060 6368436F 		.ascii	"chCondWaitS(), #1\000"
+ 480      6E645761 
+ 480      69745328 
+ 480      292C2023 
+ 480      3100
+ 481              		.section	.text.chCondWaitS,"ax",%progbits
+ 482              		.align	2
+ 483              		.p2align 4,,15
+ 484              		.global	chCondWaitS
+ 485              		.thumb
+ 486              		.thumb_func
+ 488              	chCondWaitS:
+ 489              	.LFB13:
+ 159:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 160:/usr/src/chibiostest/os/kernel/src/chcond.c **** /**
+ 161:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @brief   Waits on the condition variable releasing the mutex lock.
+ 162:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @details Releases the currently owned mutex, waits on the condition
+ 163:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          variable, and finally acquires the mutex again. All the sequence
+ 164:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          is performed atomically.
+ 165:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @pre     The invoking thread <b>must</b> have at least one owned mutex.
+ 166:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 167:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[in] cp        pointer to the @p CondVar structure
+ 168:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @return              A message specifying how the invoking thread has been
+ 169:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      released from the condition variable.
+ 170:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @retval RDY_OK       if the condvar has been signaled using
+ 171:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      @p chCondSignal().
+ 172:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @retval RDY_RESET    if the condvar has been signaled using
+ 173:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      @p chCondBroadcast().
+ 174:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 175:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @sclass
+ 176:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+ 177:/usr/src/chibiostest/os/kernel/src/chcond.c **** msg_t chCondWaitS(CondVar *cp) {
+ 490              		.loc 2 177 0
+ 491              		.cfi_startproc
+ 492              		@ args = 0, pretend = 0, frame = 24
+ 493              		@ frame_needed = 0, uses_anonymous_args = 0
+ 494 0000 00B5     		push	{lr}
+ 495              		.cfi_def_cfa_offset 4
+ 496              		.cfi_offset 14, -4
+ 497 0002 87B0     		sub	sp, sp, #28
+ 498              		.cfi_def_cfa_offset 32
+ 499 0004 0190     		str	r0, [sp, #4]
+ 178:/usr/src/chibiostest/os/kernel/src/chcond.c ****   Thread *ctp = currp;
+ 500              		.loc 2 178 0
+ 501 0006 154B     		ldr	r3, .L33
+ 502 0008 9B69     		ldr	r3, [r3, #24]
+ 503 000a 0593     		str	r3, [sp, #20]
+ 179:/usr/src/chibiostest/os/kernel/src/chcond.c ****   Mutex *mp;
+ 180:/usr/src/chibiostest/os/kernel/src/chcond.c ****   msg_t msg;
+ 181:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 182:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgCheckClassS();
+ 504              		.loc 2 182 0
+ 505 000c FFF7FEFF 		bl	chDbgCheckClassS
+ 183:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgCheck(cp != NULL, "chCondWaitS");
+ 506              		.loc 2 183 0
+ 507 0010 019B     		ldr	r3, [sp, #4]
+ 508 0012 002B     		cmp	r3, #0
+ 509 0014 02D1     		bne	.L30
+ 510              		.loc 2 183 0 is_stmt 0 discriminator 1
+ 511 0016 1248     		ldr	r0, .L33+4
+ 512 0018 FFF7FEFF 		bl	chDbgPanic
+ 513              	.L30:
+ 184:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgAssert(ctp->p_mtxlist != NULL,
+ 514              		.loc 2 184 0 is_stmt 1
+ 515 001c 059B     		ldr	r3, [sp, #20]
+ 516 001e 1B6C     		ldr	r3, [r3, #64]
+ 517 0020 002B     		cmp	r3, #0
+ 518 0022 02D1     		bne	.L31
+ 519              		.loc 2 184 0 is_stmt 0 discriminator 1
+ 520 0024 0F48     		ldr	r0, .L33+8
+ 521 0026 FFF7FEFF 		bl	chDbgPanic
+ 522              	.L31:
+ 185:/usr/src/chibiostest/os/kernel/src/chcond.c ****               "chCondWaitS(), #1",
+ 186:/usr/src/chibiostest/os/kernel/src/chcond.c ****               "not owning a mutex");
+ 187:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 188:/usr/src/chibiostest/os/kernel/src/chcond.c ****   mp = chMtxUnlockS();
+ 523              		.loc 2 188 0 is_stmt 1
+ 524 002a FFF7FEFF 		bl	chMtxUnlockS
+ 525 002e 0490     		str	r0, [sp, #16]
+ 189:/usr/src/chibiostest/os/kernel/src/chcond.c ****   ctp->p_u.wtobjp = cp;
+ 526              		.loc 2 189 0
+ 527 0030 059B     		ldr	r3, [sp, #20]
+ 528 0032 019A     		ldr	r2, [sp, #4]
+ 529 0034 9A62     		str	r2, [r3, #40]
+ 190:/usr/src/chibiostest/os/kernel/src/chcond.c ****   prio_insert(ctp, &cp->c_queue);
+ 530              		.loc 2 190 0
+ 531 0036 019B     		ldr	r3, [sp, #4]
+ 532 0038 0598     		ldr	r0, [sp, #20]
+ 533 003a 1946     		mov	r1, r3
+ 534 003c FFF7FEFF 		bl	prio_insert
+ 191:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chSchGoSleepS(THD_STATE_WTCOND);
+ 535              		.loc 2 191 0
+ 536 0040 0520     		movs	r0, #5
+ 537 0042 FFF7FEFF 		bl	chSchGoSleepS
+ 192:/usr/src/chibiostest/os/kernel/src/chcond.c ****   msg = ctp->p_u.rdymsg;
+ 538              		.loc 2 192 0
+ 539 0046 059B     		ldr	r3, [sp, #20]
+ 540 0048 9B6A     		ldr	r3, [r3, #40]
+ 541 004a 0393     		str	r3, [sp, #12]
+ 193:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chMtxLockS(mp);
+ 542              		.loc 2 193 0
+ 543 004c 0498     		ldr	r0, [sp, #16]
+ 544 004e FFF7FEFF 		bl	chMtxLockS
+ 194:/usr/src/chibiostest/os/kernel/src/chcond.c ****   return msg;
+ 545              		.loc 2 194 0
+ 546 0052 039B     		ldr	r3, [sp, #12]
+ 195:/usr/src/chibiostest/os/kernel/src/chcond.c **** }
+ 547              		.loc 2 195 0
+ 548 0054 1846     		mov	r0, r3
+ 549 0056 07B0     		add	sp, sp, #28
+ 550              		@ sp needed
+ 551 0058 5DF804FB 		ldr	pc, [sp], #4
+ 552              	.L34:
+ 553              		.align	2
+ 554              	.L33:
+ 555 005c 00000000 		.word	rlist
+ 556 0060 50000000 		.word	.LC4
+ 557 0064 60000000 		.word	.LC5
+ 558              		.cfi_endproc
+ 559              	.LFE13:
+ 561 0068 AFF30080 		.section	.text.chCondWaitTimeout,"ax",%progbits
+ 561      AFF30080 
+ 562              		.align	2
+ 563              		.p2align 4,,15
+ 564              		.global	chCondWaitTimeout
+ 565              		.thumb
+ 566              		.thumb_func
+ 568              	chCondWaitTimeout:
+ 569              	.LFB14:
+ 196:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 197:/usr/src/chibiostest/os/kernel/src/chcond.c **** #if CH_USE_CONDVARS_TIMEOUT || defined(__DOXYGEN__)
+ 198:/usr/src/chibiostest/os/kernel/src/chcond.c **** /**
+ 199:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @brief   Waits on the condition variable releasing the mutex lock.
+ 200:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @details Releases the currently owned mutex, waits on the condition
+ 201:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          variable, and finally acquires the mutex again. All the sequence
+ 202:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          is performed atomically.
+ 203:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @pre     The invoking thread <b>must</b> have at least one owned mutex.
+ 204:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @pre     The configuration option @p CH_USE_CONDVARS_TIMEOUT must be enabled
+ 205:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          in order to use this function.
+ 206:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @post    Exiting the function because a timeout does not re-acquire the
+ 207:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          mutex, the mutex ownership is lost.
+ 208:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 209:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[in] cp        pointer to the @p CondVar structure
+ 210:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[in] time      the number of ticks before the operation timeouts, the
+ 211:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      special values are handled as follow:
+ 212:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      - @a TIME_INFINITE no timeout.
+ 213:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      - @a TIME_IMMEDIATE this value is not allowed.
+ 214:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      .
+ 215:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @return              A message specifying how the invoking thread has been
+ 216:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      released from the condition variable.
+ 217:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @retval RDY_OK       if the condvar has been signaled using
+ 218:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      @p chCondSignal().
+ 219:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @retval RDY_RESET    if the condvar has been signaled using
+ 220:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      @p chCondBroadcast().
+ 221:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @retval RDY_TIMEOUT  if the condvar has not been signaled within the
+ 222:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      specified timeout.
+ 223:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 224:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @api
+ 225:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+ 226:/usr/src/chibiostest/os/kernel/src/chcond.c **** msg_t chCondWaitTimeout(CondVar *cp, systime_t time) {
+ 570              		.loc 2 226 0
+ 571              		.cfi_startproc
+ 572              		@ args = 0, pretend = 0, frame = 16
+ 573              		@ frame_needed = 0, uses_anonymous_args = 0
+ 574 0000 00B5     		push	{lr}
+ 575              		.cfi_def_cfa_offset 4
+ 576              		.cfi_offset 14, -4
+ 577 0002 85B0     		sub	sp, sp, #20
+ 578              		.cfi_def_cfa_offset 24
+ 579 0004 0190     		str	r0, [sp, #4]
+ 580 0006 0091     		str	r1, [sp]
+ 581              	.LBB8:
+ 227:/usr/src/chibiostest/os/kernel/src/chcond.c ****   msg_t msg;
+ 228:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 229:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chSysLock();
+ 582              		.loc 2 229 0
+ 583 0008 2023     		movs	r3, #32
+ 584              	@ 229 "/usr/src/chibiostest/os/kernel/src/chcond.c" 1
+ 585 000a 83F31188 		msr     BASEPRI, r3
+ 586              	@ 0 "" 2
+ 587              		.thumb
+ 588              	.LBE8:
+ 589 000e FFF7FEFF 		bl	dbg_check_lock
+ 230:/usr/src/chibiostest/os/kernel/src/chcond.c ****   msg = chCondWaitTimeoutS(cp, time);
+ 590              		.loc 2 230 0
+ 591 0012 0198     		ldr	r0, [sp, #4]
+ 592 0014 0099     		ldr	r1, [sp]
+ 593 0016 FFF7FEFF 		bl	chCondWaitTimeoutS
+ 594 001a 0390     		str	r0, [sp, #12]
+ 231:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chSysUnlock();
+ 595              		.loc 2 231 0
+ 596 001c FFF7FEFF 		bl	dbg_check_unlock
+ 597              	.LBB9:
+ 598 0020 0023     		movs	r3, #0
+ 599              	@ 231 "/usr/src/chibiostest/os/kernel/src/chcond.c" 1
+ 600 0022 83F31188 		msr     BASEPRI, r3
+ 601              	@ 0 "" 2
+ 602              		.thumb
+ 603              	.LBE9:
+ 232:/usr/src/chibiostest/os/kernel/src/chcond.c ****   return msg;
+ 604              		.loc 2 232 0
+ 605 0026 039B     		ldr	r3, [sp, #12]
+ 233:/usr/src/chibiostest/os/kernel/src/chcond.c **** }
+ 606              		.loc 2 233 0
+ 607 0028 1846     		mov	r0, r3
+ 608 002a 05B0     		add	sp, sp, #20
+ 609              		@ sp needed
+ 610 002c 5DF804FB 		ldr	pc, [sp], #4
+ 611              		.cfi_endproc
+ 612              	.LFE14:
+ 614              		.section	.rodata
+ 615 0072 0000     		.align	2
+ 616              	.LC6:
+ 617 0074 22636843 		.ascii	"\"chCondWaitTimeoutS\"()\000"
+ 617      6F6E6457 
+ 617      61697454 
+ 617      696D656F 
+ 617      75745322 
+ 618 008b 00       		.align	2
+ 619              	.LC7:
+ 620 008c 6368436F 		.ascii	"chCondWaitTimeoutS(), #1\000"
+ 620      6E645761 
+ 620      69745469 
+ 620      6D656F75 
+ 620      74532829 
+ 621 00a5 000000   		.section	.text.chCondWaitTimeoutS,"ax",%progbits
+ 622              		.align	2
+ 623              		.p2align 4,,15
+ 624              		.global	chCondWaitTimeoutS
+ 625              		.thumb
+ 626              		.thumb_func
+ 628              	chCondWaitTimeoutS:
+ 629              	.LFB15:
+ 234:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 235:/usr/src/chibiostest/os/kernel/src/chcond.c **** /**
+ 236:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @brief   Waits on the condition variable releasing the mutex lock.
+ 237:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @details Releases the currently owned mutex, waits on the condition
+ 238:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          variable, and finally acquires the mutex again. All the sequence
+ 239:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          is performed atomically.
+ 240:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @pre     The invoking thread <b>must</b> have at least one owned mutex.
+ 241:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @pre     The configuration option @p CH_USE_CONDVARS_TIMEOUT must be enabled
+ 242:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          in order to use this function.
+ 243:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @post    Exiting the function because a timeout does not re-acquire the
+ 244:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *          mutex, the mutex ownership is lost.
+ 245:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 246:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[in] cp        pointer to the @p CondVar structure
+ 247:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @param[in] time      the number of ticks before the operation timeouts, the
+ 248:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      special values are handled as follow:
+ 249:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      - @a TIME_INFINITE no timeout.
+ 250:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      - @a TIME_IMMEDIATE this value is not allowed.
+ 251:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      .
+ 252:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @return              A message specifying how the invoking thread has been
+ 253:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      released from the condition variable.
+ 254:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @retval RDY_OK       if the condvar has been signaled using
+ 255:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      @p chCondSignal().
+ 256:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @retval RDY_RESET    if the condvar has been signaled using
+ 257:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      @p chCondBroadcast().
+ 258:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @retval RDY_TIMEOUT  if the condvar has not been signaled within the
+ 259:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *                      specified timeout.
+ 260:/usr/src/chibiostest/os/kernel/src/chcond.c ****  *
+ 261:/usr/src/chibiostest/os/kernel/src/chcond.c ****  * @sclass
+ 262:/usr/src/chibiostest/os/kernel/src/chcond.c ****  */
+ 263:/usr/src/chibiostest/os/kernel/src/chcond.c **** msg_t chCondWaitTimeoutS(CondVar *cp, systime_t time) {
+ 630              		.loc 2 263 0
+ 631              		.cfi_startproc
+ 632              		@ args = 0, pretend = 0, frame = 16
+ 633              		@ frame_needed = 0, uses_anonymous_args = 0
+ 634 0000 00B5     		push	{lr}
+ 635              		.cfi_def_cfa_offset 4
+ 636              		.cfi_offset 14, -4
+ 637 0002 85B0     		sub	sp, sp, #20
+ 638              		.cfi_def_cfa_offset 24
+ 639 0004 0190     		str	r0, [sp, #4]
+ 640 0006 0091     		str	r1, [sp]
+ 264:/usr/src/chibiostest/os/kernel/src/chcond.c ****   Mutex *mp;
+ 265:/usr/src/chibiostest/os/kernel/src/chcond.c ****   msg_t msg;
+ 266:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 267:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgCheckClassS();
+ 641              		.loc 2 267 0
+ 642 0008 FFF7FEFF 		bl	chDbgCheckClassS
+ 268:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgCheck((cp != NULL) && (time != TIME_IMMEDIATE), "chCondWaitTimeoutS");
+ 643              		.loc 2 268 0
+ 644 000c 019B     		ldr	r3, [sp, #4]
+ 645 000e 002B     		cmp	r3, #0
+ 646 0010 02D0     		beq	.L38
+ 647              		.loc 2 268 0 is_stmt 0 discriminator 2
+ 648 0012 009B     		ldr	r3, [sp]
+ 649 0014 002B     		cmp	r3, #0
+ 650 0016 02D1     		bne	.L39
+ 651              	.L38:
+ 652              		.loc 2 268 0 discriminator 1
+ 653 0018 1448     		ldr	r0, .L43
+ 654 001a FFF7FEFF 		bl	chDbgPanic
+ 655              	.L39:
+ 269:/usr/src/chibiostest/os/kernel/src/chcond.c ****   chDbgAssert(currp->p_mtxlist != NULL,
+ 656              		.loc 2 269 0 is_stmt 1
+ 657 001e 144B     		ldr	r3, .L43+4
+ 658 0020 9B69     		ldr	r3, [r3, #24]
+ 659 0022 1B6C     		ldr	r3, [r3, #64]
+ 660 0024 002B     		cmp	r3, #0
+ 661 0026 02D1     		bne	.L40
+ 662              		.loc 2 269 0 is_stmt 0 discriminator 1
+ 663 0028 1248     		ldr	r0, .L43+8
+ 664 002a FFF7FEFF 		bl	chDbgPanic
+ 665              	.L40:
+ 270:/usr/src/chibiostest/os/kernel/src/chcond.c ****               "chCondWaitTimeoutS(), #1",
+ 271:/usr/src/chibiostest/os/kernel/src/chcond.c ****               "not owning a mutex");
+ 272:/usr/src/chibiostest/os/kernel/src/chcond.c **** 
+ 273:/usr/src/chibiostest/os/kernel/src/chcond.c ****   mp = chMtxUnlockS();
+ 666              		.loc 2 273 0 is_stmt 1
+ 667 002e FFF7FEFF 		bl	chMtxUnlockS
+ 668 0032 0390     		str	r0, [sp, #12]
+ 274:/usr/src/chibiostest/os/kernel/src/chcond.c ****   currp->p_u.wtobjp = cp;
+ 669              		.loc 2 274 0
+ 670 0034 0E4B     		ldr	r3, .L43+4
+ 671 0036 9B69     		ldr	r3, [r3, #24]
+ 672 0038 019A     		ldr	r2, [sp, #4]
+ 673 003a 9A62     		str	r2, [r3, #40]
+ 275:/usr/src/chibiostest/os/kernel/src/chcond.c ****   prio_insert(currp, &cp->c_queue);
+ 674              		.loc 2 275 0
+ 675 003c 0C4B     		ldr	r3, .L43+4
+ 676 003e 9A69     		ldr	r2, [r3, #24]
+ 677 0040 019B     		ldr	r3, [sp, #4]
+ 678 0042 1046     		mov	r0, r2
+ 679 0044 1946     		mov	r1, r3
+ 680 0046 FFF7FEFF 		bl	prio_insert
+ 276:/usr/src/chibiostest/os/kernel/src/chcond.c ****   msg = chSchGoSleepTimeoutS(THD_STATE_WTCOND, time);
+ 681              		.loc 2 276 0
+ 682 004a 0520     		movs	r0, #5
+ 683 004c 0099     		ldr	r1, [sp]
+ 684 004e FFF7FEFF 		bl	chSchGoSleepTimeoutS
+ 685 0052 0290     		str	r0, [sp, #8]
+ 277:/usr/src/chibiostest/os/kernel/src/chcond.c ****   if (msg != RDY_TIMEOUT)
+ 686              		.loc 2 277 0
+ 687 0054 029B     		ldr	r3, [sp, #8]
+ 688 0056 B3F1FF3F 		cmp	r3, #-1
+ 689 005a 02D0     		beq	.L41
+ 278:/usr/src/chibiostest/os/kernel/src/chcond.c ****     chMtxLockS(mp);
+ 690              		.loc 2 278 0
+ 691 005c 0398     		ldr	r0, [sp, #12]
+ 692 005e FFF7FEFF 		bl	chMtxLockS
+ 693              	.L41:
+ 279:/usr/src/chibiostest/os/kernel/src/chcond.c ****   return msg;
+ 694              		.loc 2 279 0
+ 695 0062 029B     		ldr	r3, [sp, #8]
+ 280:/usr/src/chibiostest/os/kernel/src/chcond.c **** }
+ 696              		.loc 2 280 0
+ 697 0064 1846     		mov	r0, r3
+ 698 0066 05B0     		add	sp, sp, #20
+ 699              		@ sp needed
+ 700 0068 5DF804FB 		ldr	pc, [sp], #4
+ 701              	.L44:
+ 702              		.align	2
+ 703              	.L43:
+ 704 006c 74000000 		.word	.LC6
+ 705 0070 00000000 		.word	rlist
+ 706 0074 8C000000 		.word	.LC7
+ 707              		.cfi_endproc
+ 708              	.LFE15:
+ 710 0078 AFF30080 		.text
+ 710      AFF30080 
+ 711              	.Letext0:
+ 712              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 713              		.file 4 "/usr/include/newlib/stdint.h"
+ 714              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 715              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 716              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 717              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 718              		.file 9 "/usr/src/chibiostest/os/kernel/include/chschd.h"
+ 719              		.file 10 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+ 720              		.file 11 "/usr/src/chibiostest/os/kernel/include/chcond.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chcond.c
+     /tmp/cc8bQpL8.s:20     .text.prio_insert:0000000000000000 $t
+     /tmp/cc8bQpL8.s:25     .text.prio_insert:0000000000000000 prio_insert
+     /tmp/cc8bQpL8.s:83     .text.fifo_remove:0000000000000000 $t
+     /tmp/cc8bQpL8.s:88     .text.fifo_remove:0000000000000000 fifo_remove
+     /tmp/cc8bQpL8.s:122    .rodata:0000000000000000 $d
+     /tmp/cc8bQpL8.s:126    .text.chCondInit:0000000000000000 $t
+     /tmp/cc8bQpL8.s:132    .text.chCondInit:0000000000000000 chCondInit
+     /tmp/cc8bQpL8.s:168    .text.chCondInit:0000000000000028 $d
+     /tmp/cc8bQpL8.s:177    .text.chCondSignal:0000000000000000 $t
+     /tmp/cc8bQpL8.s:183    .text.chCondSignal:0000000000000000 chCondSignal
+     /tmp/cc8bQpL8.s:243    .text.chCondSignal:0000000000000048 $d
+     /tmp/cc8bQpL8.s:252    .text.chCondSignalI:0000000000000000 $t
+     /tmp/cc8bQpL8.s:258    .text.chCondSignalI:0000000000000000 chCondSignalI
+     /tmp/cc8bQpL8.s:304    .text.chCondSignalI:000000000000003c $d
+     /tmp/cc8bQpL8.s:309    .text.chCondBroadcast:0000000000000000 $t
+     /tmp/cc8bQpL8.s:315    .text.chCondBroadcast:0000000000000000 chCondBroadcast
+     /tmp/cc8bQpL8.s:368    .text.chCondBroadcastI:0000000000000000 chCondBroadcastI
+     /tmp/cc8bQpL8.s:362    .text.chCondBroadcastI:0000000000000000 $t
+     /tmp/cc8bQpL8.s:419    .text.chCondBroadcastI:0000000000000044 $d
+     /tmp/cc8bQpL8.s:424    .text.chCondWait:0000000000000000 $t
+     /tmp/cc8bQpL8.s:430    .text.chCondWait:0000000000000000 chCondWait
+     /tmp/cc8bQpL8.s:488    .text.chCondWaitS:0000000000000000 chCondWaitS
+     /tmp/cc8bQpL8.s:482    .text.chCondWaitS:0000000000000000 $t
+     /tmp/cc8bQpL8.s:555    .text.chCondWaitS:000000000000005c $d
+     /tmp/cc8bQpL8.s:562    .text.chCondWaitTimeout:0000000000000000 $t
+     /tmp/cc8bQpL8.s:568    .text.chCondWaitTimeout:0000000000000000 chCondWaitTimeout
+     /tmp/cc8bQpL8.s:628    .text.chCondWaitTimeoutS:0000000000000000 chCondWaitTimeoutS
+     /tmp/cc8bQpL8.s:622    .text.chCondWaitTimeoutS:0000000000000000 $t
+     /tmp/cc8bQpL8.s:704    .text.chCondWaitTimeoutS:000000000000006c $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/cc8bQpL8.s:172    .text.chCondInit:000000000000002c $t
+     /tmp/cc8bQpL8.s:247    .text.chCondSignal:000000000000004c $t
+     /tmp/cc8bQpL8.s:423    .text.chCondBroadcastI:0000000000000048 $t
+     /tmp/cc8bQpL8.s:561    .text.chCondWaitS:0000000000000068 $t
+     /tmp/cc8bQpL8.s:710    .text.chCondWaitTimeoutS:0000000000000078 $t
+
+UNDEFINED SYMBOLS
+chDbgPanic
+dbg_check_lock
+chSchWakeupS
+dbg_check_unlock
+chDbgCheckClassI
+chSchReadyI
+chSchRescheduleS
+chDbgCheckClassS
+chMtxUnlockS
+chSchGoSleepS
+chMtxLockS
+rlist
+chSchGoSleepTimeoutS

@@ -1,0 +1,688 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chdynamic.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.rodata
+  20              		.align	2
+  21              	.LC0:
+  22 0000 63685468 		.ascii	"chThdAddRef(), #1\000"
+  22      64416464 
+  22      52656628 
+  22      292C2023 
+  22      3100
+  23              		.section	.text.chThdAddRef,"ax",%progbits
+  24              		.align	2
+  25              		.p2align 4,,15
+  26              		.global	chThdAddRef
+  27              		.thumb
+  28              		.thumb_func
+  30              	chThdAddRef:
+  31              	.LFB7:
+  32              		.file 1 "/usr/src/chibiostest/os/kernel/src/chdynamic.c"
+   1:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+  21:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** /**
+  22:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @file    chdynamic.c
+  23:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @brief   Dynamic threads code.
+  24:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *
+  25:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @addtogroup dynamic_threads
+  26:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @details Dynamic threads related APIs and services.
+  27:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @{
+  28:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  */
+  29:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+  30:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #include "ch.h"
+  31:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+  32:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #if CH_USE_DYNAMIC || defined(__DOXYGEN__)
+  33:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+  34:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** /**
+  35:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @brief   Adds a reference to a thread object.
+  36:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @pre     The configuration option @p CH_USE_DYNAMIC must be enabled in order
+  37:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          to use this function.
+  38:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *
+  39:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] tp        pointer to the thread
+  40:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @return              The same thread pointer passed as parameter
+  41:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *                      representing the new reference.
+  42:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *
+  43:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @api
+  44:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  */
+  45:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** Thread *chThdAddRef(Thread *tp) {
+  33              		.loc 1 45 0
+  34              		.cfi_startproc
+  35              		@ args = 0, pretend = 0, frame = 8
+  36              		@ frame_needed = 0, uses_anonymous_args = 0
+  37 0000 00B5     		push	{lr}
+  38              		.cfi_def_cfa_offset 4
+  39              		.cfi_offset 14, -4
+  40 0002 83B0     		sub	sp, sp, #12
+  41              		.cfi_def_cfa_offset 16
+  42 0004 0190     		str	r0, [sp, #4]
+  43              	.LBB2:
+  46:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+  47:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chSysLock();
+  44              		.loc 1 47 0
+  45 0006 2023     		movs	r3, #32
+  46              	@ 47 "/usr/src/chibiostest/os/kernel/src/chdynamic.c" 1
+  47 0008 83F31188 		msr     BASEPRI, r3
+  48              	@ 0 "" 2
+  49              		.thumb
+  50              	.LBE2:
+  51 000c FFF7FEFF 		bl	dbg_check_lock
+  48:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chDbgAssert(tp->p_refs < 255, "chThdAddRef(), #1", "too many references");
+  52              		.loc 1 48 0
+  53 0010 019B     		ldr	r3, [sp, #4]
+  54 0012 93F82230 		ldrb	r3, [r3, #34]	@ zero_extendqisi2
+  55 0016 FF2B     		cmp	r3, #255
+  56 0018 02D1     		bne	.L2
+  57              		.loc 1 48 0 is_stmt 0 discriminator 1
+  58 001a 0A48     		ldr	r0, .L4
+  59 001c FFF7FEFF 		bl	chDbgPanic
+  60              	.L2:
+  49:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   tp->p_refs++;
+  61              		.loc 1 49 0 is_stmt 1
+  62 0020 019B     		ldr	r3, [sp, #4]
+  63 0022 93F82230 		ldrb	r3, [r3, #34]	@ zero_extendqisi2
+  64 0026 0133     		adds	r3, r3, #1
+  65 0028 DAB2     		uxtb	r2, r3
+  66 002a 019B     		ldr	r3, [sp, #4]
+  67 002c 83F82220 		strb	r2, [r3, #34]
+  50:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chSysUnlock();
+  68              		.loc 1 50 0
+  69 0030 FFF7FEFF 		bl	dbg_check_unlock
+  70              	.LBB3:
+  71 0034 0023     		movs	r3, #0
+  72              	@ 50 "/usr/src/chibiostest/os/kernel/src/chdynamic.c" 1
+  73 0036 83F31188 		msr     BASEPRI, r3
+  74              	@ 0 "" 2
+  75              		.thumb
+  76              	.LBE3:
+  51:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   return tp;
+  77              		.loc 1 51 0
+  78 003a 019B     		ldr	r3, [sp, #4]
+  52:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** }
+  79              		.loc 1 52 0
+  80 003c 1846     		mov	r0, r3
+  81 003e 03B0     		add	sp, sp, #12
+  82              		@ sp needed
+  83 0040 5DF804FB 		ldr	pc, [sp], #4
+  84              	.L5:
+  85              		.align	2
+  86              	.L4:
+  87 0044 00000000 		.word	.LC0
+  88              		.cfi_endproc
+  89              	.LFE7:
+  91 0048 AFF30080 		.section	.rodata
+  91      AFF30080 
+  92 0012 0000     		.align	2
+  93              	.LC1:
+  94 0014 63685468 		.ascii	"chThdRelease(), #1\000"
+  94      6452656C 
+  94      65617365 
+  94      28292C20 
+  94      233100
+  95              		.section	.text.chThdRelease,"ax",%progbits
+  96              		.align	2
+  97              		.p2align 4,,15
+  98              		.global	chThdRelease
+  99              		.thumb
+ 100              		.thumb_func
+ 102              	chThdRelease:
+ 103              	.LFB8:
+  53:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+  54:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** /**
+  55:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @brief   Releases a reference to a thread object.
+  56:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @details If the references counter reaches zero <b>and</b> the thread
+  57:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          is in the @p THD_STATE_FINAL state then the thread's memory is
+  58:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          returned to the proper allocator.
+  59:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @pre     The configuration option @p CH_USE_DYNAMIC must be enabled in order
+  60:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          to use this function.
+  61:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @note    Static threads are not affected.
+  62:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *
+  63:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] tp        pointer to the thread
+  64:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *
+  65:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @api
+  66:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  */
+  67:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** void chThdRelease(Thread *tp) {
+ 104              		.loc 1 67 0
+ 105              		.cfi_startproc
+ 106              		@ args = 0, pretend = 0, frame = 16
+ 107              		@ frame_needed = 0, uses_anonymous_args = 0
+ 108 0000 00B5     		push	{lr}
+ 109              		.cfi_def_cfa_offset 4
+ 110              		.cfi_offset 14, -4
+ 111 0002 85B0     		sub	sp, sp, #20
+ 112              		.cfi_def_cfa_offset 24
+ 113 0004 0190     		str	r0, [sp, #4]
+ 114              	.LBB4:
+  68:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   trefs_t refs;
+  69:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+  70:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chSysLock();
+ 115              		.loc 1 70 0
+ 116 0006 2023     		movs	r3, #32
+ 117              	@ 70 "/usr/src/chibiostest/os/kernel/src/chdynamic.c" 1
+ 118 0008 83F31188 		msr     BASEPRI, r3
+ 119              	@ 0 "" 2
+ 120              		.thumb
+ 121              	.LBE4:
+ 122 000c FFF7FEFF 		bl	dbg_check_lock
+  71:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chDbgAssert(tp->p_refs > 0, "chThdRelease(), #1", "not referenced");
+ 123              		.loc 1 71 0
+ 124 0010 019B     		ldr	r3, [sp, #4]
+ 125 0012 93F82230 		ldrb	r3, [r3, #34]	@ zero_extendqisi2
+ 126 0016 002B     		cmp	r3, #0
+ 127 0018 02D1     		bne	.L7
+ 128              		.loc 1 71 0 is_stmt 0 discriminator 1
+ 129 001a 2548     		ldr	r0, .L11
+ 130 001c FFF7FEFF 		bl	chDbgPanic
+ 131              	.L7:
+  72:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   refs = --tp->p_refs;
+ 132              		.loc 1 72 0 is_stmt 1
+ 133 0020 019B     		ldr	r3, [sp, #4]
+ 134 0022 93F82230 		ldrb	r3, [r3, #34]	@ zero_extendqisi2
+ 135 0026 013B     		subs	r3, r3, #1
+ 136 0028 DAB2     		uxtb	r2, r3
+ 137 002a 019B     		ldr	r3, [sp, #4]
+ 138 002c 83F82220 		strb	r2, [r3, #34]
+ 139 0030 019B     		ldr	r3, [sp, #4]
+ 140 0032 93F82230 		ldrb	r3, [r3, #34]
+ 141 0036 8DF80F30 		strb	r3, [sp, #15]
+  73:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chSysUnlock();
+ 142              		.loc 1 73 0
+ 143 003a FFF7FEFF 		bl	dbg_check_unlock
+ 144              	.LBB5:
+ 145 003e 0023     		movs	r3, #0
+ 146              	@ 73 "/usr/src/chibiostest/os/kernel/src/chdynamic.c" 1
+ 147 0040 83F31188 		msr     BASEPRI, r3
+ 148              	@ 0 "" 2
+ 149              		.thumb
+ 150              	.LBE5:
+  74:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+  75:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   /* If the references counter reaches zero and the thread is in its
+  76:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****      terminated state then the memory can be returned to the proper
+  77:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****      allocator. Of course static threads are not affected.*/
+  78:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   if ((refs == 0) && (tp->p_state == THD_STATE_FINAL)) {
+ 151              		.loc 1 78 0
+ 152 0044 9DF80F30 		ldrb	r3, [sp, #15]	@ zero_extendqisi2
+ 153 0048 002B     		cmp	r3, #0
+ 154 004a 2DD1     		bne	.L6
+ 155              		.loc 1 78 0 is_stmt 0 discriminator 1
+ 156 004c 019B     		ldr	r3, [sp, #4]
+ 157 004e 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 158 0052 0E2B     		cmp	r3, #14
+ 159 0054 28D1     		bne	.L6
+  79:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     switch (tp->p_flags & THD_MEM_MODE_MASK) {
+ 160              		.loc 1 79 0 is_stmt 1
+ 161 0056 019B     		ldr	r3, [sp, #4]
+ 162 0058 93F82130 		ldrb	r3, [r3, #33]	@ zero_extendqisi2
+ 163 005c 03F00303 		and	r3, r3, #3
+ 164 0060 012B     		cmp	r3, #1
+ 165 0062 02D0     		beq	.L9
+ 166 0064 022B     		cmp	r3, #2
+ 167 0066 0ED0     		beq	.L10
+ 168 0068 1EE0     		b	.L6
+ 169              	.L9:
+  80:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #if CH_USE_HEAP
+  81:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     case THD_MEM_MODE_HEAP:
+  82:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #if CH_USE_REGISTRY
+  83:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****       REG_REMOVE(tp);
+ 170              		.loc 1 83 0
+ 171 006a 019B     		ldr	r3, [sp, #4]
+ 172 006c 5B69     		ldr	r3, [r3, #20]
+ 173 006e 019A     		ldr	r2, [sp, #4]
+ 174 0070 1269     		ldr	r2, [r2, #16]
+ 175 0072 1A61     		str	r2, [r3, #16]
+ 176 0074 019B     		ldr	r3, [sp, #4]
+ 177 0076 1B69     		ldr	r3, [r3, #16]
+ 178 0078 019A     		ldr	r2, [sp, #4]
+ 179 007a 5269     		ldr	r2, [r2, #20]
+ 180 007c 5A61     		str	r2, [r3, #20]
+  84:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #endif
+  85:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****       chHeapFree(tp);
+ 181              		.loc 1 85 0
+ 182 007e 0198     		ldr	r0, [sp, #4]
+ 183 0080 FFF7FEFF 		bl	chHeapFree
+  86:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****       break;
+ 184              		.loc 1 86 0
+ 185 0084 10E0     		b	.L6
+ 186              	.L10:
+  87:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #endif
+  88:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #if CH_USE_MEMPOOLS
+  89:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     case THD_MEM_MODE_MEMPOOL:
+  90:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #if CH_USE_REGISTRY
+  91:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****       REG_REMOVE(tp);
+ 187              		.loc 1 91 0
+ 188 0086 019B     		ldr	r3, [sp, #4]
+ 189 0088 5B69     		ldr	r3, [r3, #20]
+ 190 008a 019A     		ldr	r2, [sp, #4]
+ 191 008c 1269     		ldr	r2, [r2, #16]
+ 192 008e 1A61     		str	r2, [r3, #16]
+ 193 0090 019B     		ldr	r3, [sp, #4]
+ 194 0092 1B69     		ldr	r3, [r3, #16]
+ 195 0094 019A     		ldr	r2, [sp, #4]
+ 196 0096 5269     		ldr	r2, [r2, #20]
+ 197 0098 5A61     		str	r2, [r3, #20]
+  92:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #endif
+  93:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****       chPoolFree(tp->p_mpool, tp);
+ 198              		.loc 1 93 0
+ 199 009a 019B     		ldr	r3, [sp, #4]
+ 200 009c 9B6C     		ldr	r3, [r3, #72]
+ 201 009e 1846     		mov	r0, r3
+ 202 00a0 0199     		ldr	r1, [sp, #4]
+ 203 00a2 FFF7FEFF 		bl	chPoolFree
+  94:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****       break;
+ 204              		.loc 1 94 0
+ 205 00a6 00BF     		nop
+ 206              	.L6:
+  95:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #endif
+  96:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     }
+  97:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   }
+  98:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** }
+ 207              		.loc 1 98 0
+ 208 00a8 05B0     		add	sp, sp, #20
+ 209              		@ sp needed
+ 210 00aa 5DF804FB 		ldr	pc, [sp], #4
+ 211              	.L12:
+ 212 00ae 00BF     		.align	2
+ 213              	.L11:
+ 214 00b0 14000000 		.word	.LC1
+ 215              		.cfi_endproc
+ 216              	.LFE8:
+ 218 00b4 AFF30080 		.section	.text.chThdCreateFromHeap,"ax",%progbits
+ 218      AFF30080 
+ 218      AFF30080 
+ 219              		.align	2
+ 220              		.p2align 4,,15
+ 221              		.global	chThdCreateFromHeap
+ 222              		.thumb
+ 223              		.thumb_func
+ 225              	chThdCreateFromHeap:
+ 226              	.LFB9:
+  99:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+ 100:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #if CH_USE_HEAP || defined(__DOXYGEN__)
+ 101:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** /**
+ 102:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @brief   Creates a new thread allocating the memory from the heap.
+ 103:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @pre     The configuration options @p CH_USE_DYNAMIC and @p CH_USE_HEAP
+ 104:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          must be enabled in order to use this function.
+ 105:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @note    A thread can terminate by calling @p chThdExit() or by simply
+ 106:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          returning from its main function.
+ 107:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @note    The memory allocated for the thread is not released when the thread
+ 108:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          terminates but when a @p chThdWait() is performed.
+ 109:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *
+ 110:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] heapp     heap from which allocate the memory or @p NULL for the
+ 111:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *                      default heap
+ 112:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] size      size of the working area to be allocated
+ 113:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] prio      the priority level for the new thread
+ 114:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] pf        the thread function
+ 115:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] arg       an argument passed to the thread function. It can be
+ 116:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *                      @p NULL.
+ 117:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @return              The pointer to the @p Thread structure allocated for
+ 118:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *                      the thread into the working space area.
+ 119:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @retval NULL         if the memory cannot be allocated.
+ 120:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *
+ 121:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @api
+ 122:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  */
+ 123:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** Thread *chThdCreateFromHeap(MemoryHeap *heapp, size_t size,
+ 124:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                             tprio_t prio, tfunc_t pf, void *arg) {
+ 227              		.loc 1 124 0
+ 228              		.cfi_startproc
+ 229              		@ args = 4, pretend = 0, frame = 24
+ 230              		@ frame_needed = 0, uses_anonymous_args = 0
+ 231 0000 00B5     		push	{lr}
+ 232              		.cfi_def_cfa_offset 4
+ 233              		.cfi_offset 14, -4
+ 234 0002 89B0     		sub	sp, sp, #36
+ 235              		.cfi_def_cfa_offset 40
+ 236 0004 0590     		str	r0, [sp, #20]
+ 237 0006 0491     		str	r1, [sp, #16]
+ 238 0008 0392     		str	r2, [sp, #12]
+ 239 000a 0293     		str	r3, [sp, #8]
+ 125:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   void *wsp;
+ 126:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   Thread *tp;
+ 127:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+ 128:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   wsp = chHeapAlloc(heapp, size);
+ 240              		.loc 1 128 0
+ 241 000c 0598     		ldr	r0, [sp, #20]
+ 242 000e 0499     		ldr	r1, [sp, #16]
+ 243 0010 FFF7FEFF 		bl	chHeapAlloc
+ 244 0014 0790     		str	r0, [sp, #28]
+ 129:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   if (wsp == NULL)
+ 245              		.loc 1 129 0
+ 246 0016 079B     		ldr	r3, [sp, #28]
+ 247 0018 002B     		cmp	r3, #0
+ 248 001a 01D1     		bne	.L14
+ 130:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     return NULL;
+ 249              		.loc 1 130 0
+ 250 001c 0023     		movs	r3, #0
+ 251 001e 2DE0     		b	.L15
+ 252              	.L14:
+ 131:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   
+ 132:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #if CH_DBG_FILL_THREADS
+ 133:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   _thread_memfill((uint8_t *)wsp,
+ 253              		.loc 1 133 0
+ 254 0020 079B     		ldr	r3, [sp, #28]
+ 255 0022 4C33     		adds	r3, r3, #76
+ 256 0024 0798     		ldr	r0, [sp, #28]
+ 257 0026 1946     		mov	r1, r3
+ 258 0028 FF22     		movs	r2, #255
+ 259 002a FFF7FEFF 		bl	_thread_memfill
+ 134:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                   (uint8_t *)wsp + sizeof(Thread),
+ 135:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                   CH_THREAD_FILL_VALUE);
+ 136:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   _thread_memfill((uint8_t *)wsp + sizeof(Thread),
+ 260              		.loc 1 136 0
+ 261 002e 079B     		ldr	r3, [sp, #28]
+ 262 0030 03F14C02 		add	r2, r3, #76
+ 263 0034 0799     		ldr	r1, [sp, #28]
+ 264 0036 049B     		ldr	r3, [sp, #16]
+ 265 0038 0B44     		add	r3, r3, r1
+ 266 003a 1046     		mov	r0, r2
+ 267 003c 1946     		mov	r1, r3
+ 268 003e 5522     		movs	r2, #85
+ 269 0040 FFF7FEFF 		bl	_thread_memfill
+ 270              	.LBB6:
+ 137:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                   (uint8_t *)wsp + size,
+ 138:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                   CH_STACK_FILL_VALUE);
+ 139:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #endif
+ 140:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   
+ 141:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chSysLock();
+ 271              		.loc 1 141 0
+ 272 0044 2023     		movs	r3, #32
+ 273              	@ 141 "/usr/src/chibiostest/os/kernel/src/chdynamic.c" 1
+ 274 0046 83F31188 		msr     BASEPRI, r3
+ 275              	@ 0 "" 2
+ 276              		.thumb
+ 277              	.LBE6:
+ 278 004a FFF7FEFF 		bl	dbg_check_lock
+ 142:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   tp = chThdCreateI(wsp, size, prio, pf, arg);
+ 279              		.loc 1 142 0
+ 280 004e 0A9B     		ldr	r3, [sp, #40]
+ 281 0050 0093     		str	r3, [sp]
+ 282 0052 0798     		ldr	r0, [sp, #28]
+ 283 0054 0499     		ldr	r1, [sp, #16]
+ 284 0056 039A     		ldr	r2, [sp, #12]
+ 285 0058 029B     		ldr	r3, [sp, #8]
+ 286 005a FFF7FEFF 		bl	chThdCreateI
+ 287 005e 0690     		str	r0, [sp, #24]
+ 143:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   tp->p_flags = THD_MEM_MODE_HEAP;
+ 288              		.loc 1 143 0
+ 289 0060 069B     		ldr	r3, [sp, #24]
+ 290 0062 0122     		movs	r2, #1
+ 291 0064 83F82120 		strb	r2, [r3, #33]
+ 144:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chSchWakeupS(tp, RDY_OK);
+ 292              		.loc 1 144 0
+ 293 0068 0698     		ldr	r0, [sp, #24]
+ 294 006a 0021     		movs	r1, #0
+ 295 006c FFF7FEFF 		bl	chSchWakeupS
+ 145:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chSysUnlock();
+ 296              		.loc 1 145 0
+ 297 0070 FFF7FEFF 		bl	dbg_check_unlock
+ 298              	.LBB7:
+ 299 0074 0023     		movs	r3, #0
+ 300              	@ 145 "/usr/src/chibiostest/os/kernel/src/chdynamic.c" 1
+ 301 0076 83F31188 		msr     BASEPRI, r3
+ 302              	@ 0 "" 2
+ 303              		.thumb
+ 304              	.LBE7:
+ 146:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   return tp;
+ 305              		.loc 1 146 0
+ 306 007a 069B     		ldr	r3, [sp, #24]
+ 307              	.L15:
+ 147:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** }
+ 308              		.loc 1 147 0
+ 309 007c 1846     		mov	r0, r3
+ 310 007e 09B0     		add	sp, sp, #36
+ 311              		@ sp needed
+ 312 0080 5DF804FB 		ldr	pc, [sp], #4
+ 313              		.cfi_endproc
+ 314              	.LFE9:
+ 316 0084 AFF30080 		.section	.rodata
+ 316      AFF30080 
+ 316      AFF30080 
+ 317 0027 00       		.align	2
+ 318              	.LC2:
+ 319 0028 22636854 		.ascii	"\"chThdCreateFromMemoryPool\"()\000"
+ 319      68644372 
+ 319      65617465 
+ 319      46726F6D 
+ 319      4D656D6F 
+ 320 0046 0000     		.section	.text.chThdCreateFromMemoryPool,"ax",%progbits
+ 321              		.align	2
+ 322              		.p2align 4,,15
+ 323              		.global	chThdCreateFromMemoryPool
+ 324              		.thumb
+ 325              		.thumb_func
+ 327              	chThdCreateFromMemoryPool:
+ 328              	.LFB10:
+ 148:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #endif /* CH_USE_HEAP */
+ 149:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+ 150:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #if CH_USE_MEMPOOLS || defined(__DOXYGEN__)
+ 151:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** /**
+ 152:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @brief   Creates a new thread allocating the memory from the specified
+ 153:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          memory pool.
+ 154:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @pre     The configuration options @p CH_USE_DYNAMIC and @p CH_USE_MEMPOOLS
+ 155:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          must be enabled in order to use this function.
+ 156:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @note    A thread can terminate by calling @p chThdExit() or by simply
+ 157:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          returning from its main function.
+ 158:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @note    The memory allocated for the thread is not released when the thread
+ 159:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *          terminates but when a @p chThdWait() is performed.
+ 160:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *
+ 161:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] mp        pointer to the memory pool object
+ 162:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] prio      the priority level for the new thread
+ 163:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] pf        the thread function
+ 164:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @param[in] arg       an argument passed to the thread function. It can be
+ 165:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *                      @p NULL.
+ 166:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @return              The pointer to the @p Thread structure allocated for
+ 167:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *                      the thread into the working space area.
+ 168:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @retval  NULL        if the memory pool is empty.
+ 169:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  *
+ 170:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  * @api
+ 171:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****  */
+ 172:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** Thread *chThdCreateFromMemoryPool(MemoryPool *mp, tprio_t prio,
+ 173:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                                   tfunc_t pf, void *arg) {
+ 329              		.loc 1 173 0
+ 330              		.cfi_startproc
+ 331              		@ args = 0, pretend = 0, frame = 24
+ 332              		@ frame_needed = 0, uses_anonymous_args = 0
+ 333 0000 00B5     		push	{lr}
+ 334              		.cfi_def_cfa_offset 4
+ 335              		.cfi_offset 14, -4
+ 336 0002 89B0     		sub	sp, sp, #36
+ 337              		.cfi_def_cfa_offset 40
+ 338 0004 0590     		str	r0, [sp, #20]
+ 339 0006 0491     		str	r1, [sp, #16]
+ 340 0008 0392     		str	r2, [sp, #12]
+ 341 000a 0293     		str	r3, [sp, #8]
+ 174:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   void *wsp;
+ 175:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   Thread *tp;
+ 176:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+ 177:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chDbgCheck(mp != NULL, "chThdCreateFromMemoryPool");
+ 342              		.loc 1 177 0
+ 343 000c 059B     		ldr	r3, [sp, #20]
+ 344 000e 002B     		cmp	r3, #0
+ 345 0010 02D1     		bne	.L17
+ 346              		.loc 1 177 0 is_stmt 0 discriminator 1
+ 347 0012 2248     		ldr	r0, .L20
+ 348 0014 FFF7FEFF 		bl	chDbgPanic
+ 349              	.L17:
+ 178:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+ 179:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   wsp = chPoolAlloc(mp);
+ 350              		.loc 1 179 0 is_stmt 1
+ 351 0018 0598     		ldr	r0, [sp, #20]
+ 352 001a FFF7FEFF 		bl	chPoolAlloc
+ 353 001e 0790     		str	r0, [sp, #28]
+ 180:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   if (wsp == NULL)
+ 354              		.loc 1 180 0
+ 355 0020 079B     		ldr	r3, [sp, #28]
+ 356 0022 002B     		cmp	r3, #0
+ 357 0024 01D1     		bne	.L18
+ 181:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****     return NULL;
+ 358              		.loc 1 181 0
+ 359 0026 0023     		movs	r3, #0
+ 360 0028 33E0     		b	.L19
+ 361              	.L18:
+ 182:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   
+ 183:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #if CH_DBG_FILL_THREADS
+ 184:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   _thread_memfill((uint8_t *)wsp,
+ 362              		.loc 1 184 0
+ 363 002a 079B     		ldr	r3, [sp, #28]
+ 364 002c 4C33     		adds	r3, r3, #76
+ 365 002e 0798     		ldr	r0, [sp, #28]
+ 366 0030 1946     		mov	r1, r3
+ 367 0032 FF22     		movs	r2, #255
+ 368 0034 FFF7FEFF 		bl	_thread_memfill
+ 185:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                   (uint8_t *)wsp + sizeof(Thread),
+ 186:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                   CH_THREAD_FILL_VALUE);
+ 187:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   _thread_memfill((uint8_t *)wsp + sizeof(Thread),
+ 369              		.loc 1 187 0
+ 370 0038 079B     		ldr	r3, [sp, #28]
+ 371 003a 03F14C02 		add	r2, r3, #76
+ 188:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                   (uint8_t *)wsp + mp->mp_object_size,
+ 372              		.loc 1 188 0
+ 373 003e 059B     		ldr	r3, [sp, #20]
+ 374 0040 5B68     		ldr	r3, [r3, #4]
+ 187:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                   (uint8_t *)wsp + mp->mp_object_size,
+ 375              		.loc 1 187 0
+ 376 0042 0799     		ldr	r1, [sp, #28]
+ 377 0044 0B44     		add	r3, r3, r1
+ 378 0046 1046     		mov	r0, r2
+ 379 0048 1946     		mov	r1, r3
+ 380 004a 5522     		movs	r2, #85
+ 381 004c FFF7FEFF 		bl	_thread_memfill
+ 382              	.LBB8:
+ 189:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****                   CH_STACK_FILL_VALUE);
+ 190:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** #endif
+ 191:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** 
+ 192:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chSysLock();
+ 383              		.loc 1 192 0
+ 384 0050 2023     		movs	r3, #32
+ 385              	@ 192 "/usr/src/chibiostest/os/kernel/src/chdynamic.c" 1
+ 386 0052 83F31188 		msr     BASEPRI, r3
+ 387              	@ 0 "" 2
+ 388              		.thumb
+ 389              	.LBE8:
+ 390 0056 FFF7FEFF 		bl	dbg_check_lock
+ 193:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   tp = chThdCreateI(wsp, mp->mp_object_size, prio, pf, arg);
+ 391              		.loc 1 193 0
+ 392 005a 059B     		ldr	r3, [sp, #20]
+ 393 005c 5B68     		ldr	r3, [r3, #4]
+ 394 005e 029A     		ldr	r2, [sp, #8]
+ 395 0060 0092     		str	r2, [sp]
+ 396 0062 0798     		ldr	r0, [sp, #28]
+ 397 0064 1946     		mov	r1, r3
+ 398 0066 049A     		ldr	r2, [sp, #16]
+ 399 0068 039B     		ldr	r3, [sp, #12]
+ 400 006a FFF7FEFF 		bl	chThdCreateI
+ 401 006e 0690     		str	r0, [sp, #24]
+ 194:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   tp->p_flags = THD_MEM_MODE_MEMPOOL;
+ 402              		.loc 1 194 0
+ 403 0070 069B     		ldr	r3, [sp, #24]
+ 404 0072 0222     		movs	r2, #2
+ 405 0074 83F82120 		strb	r2, [r3, #33]
+ 195:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   tp->p_mpool = mp;
+ 406              		.loc 1 195 0
+ 407 0078 069B     		ldr	r3, [sp, #24]
+ 408 007a 059A     		ldr	r2, [sp, #20]
+ 409 007c 9A64     		str	r2, [r3, #72]
+ 196:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chSchWakeupS(tp, RDY_OK);
+ 410              		.loc 1 196 0
+ 411 007e 0698     		ldr	r0, [sp, #24]
+ 412 0080 0021     		movs	r1, #0
+ 413 0082 FFF7FEFF 		bl	chSchWakeupS
+ 197:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   chSysUnlock();
+ 414              		.loc 1 197 0
+ 415 0086 FFF7FEFF 		bl	dbg_check_unlock
+ 416              	.LBB9:
+ 417 008a 0023     		movs	r3, #0
+ 418              	@ 197 "/usr/src/chibiostest/os/kernel/src/chdynamic.c" 1
+ 419 008c 83F31188 		msr     BASEPRI, r3
+ 420              	@ 0 "" 2
+ 421              		.thumb
+ 422              	.LBE9:
+ 198:/usr/src/chibiostest/os/kernel/src/chdynamic.c ****   return tp;
+ 423              		.loc 1 198 0
+ 424 0090 069B     		ldr	r3, [sp, #24]
+ 425              	.L19:
+ 199:/usr/src/chibiostest/os/kernel/src/chdynamic.c **** }
+ 426              		.loc 1 199 0
+ 427 0092 1846     		mov	r0, r3
+ 428 0094 09B0     		add	sp, sp, #36
+ 429              		@ sp needed
+ 430 0096 5DF804FB 		ldr	pc, [sp], #4
+ 431              	.L21:
+ 432 009a 00BF     		.align	2
+ 433              	.L20:
+ 434 009c 28000000 		.word	.LC2
+ 435              		.cfi_endproc
+ 436              	.LFE10:
+ 438              		.text
+ 439              	.Letext0:
+ 440              		.file 2 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
+ 441              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 442              		.file 4 "/usr/include/newlib/stdint.h"
+ 443              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 444              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 445              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 446              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 447              		.file 9 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+ 448              		.file 10 "/usr/src/chibiostest/os/kernel/include/chmemcore.h"
+ 449              		.file 11 "/usr/src/chibiostest/os/kernel/include/chheap.h"
+ 450              		.file 12 "/usr/src/chibiostest/os/kernel/include/chmempools.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chdynamic.c
+     /tmp/ccObI1AR.s:20     .rodata:0000000000000000 $d
+     /tmp/ccObI1AR.s:24     .text.chThdAddRef:0000000000000000 $t
+     /tmp/ccObI1AR.s:30     .text.chThdAddRef:0000000000000000 chThdAddRef
+     /tmp/ccObI1AR.s:87     .text.chThdAddRef:0000000000000044 $d
+     /tmp/ccObI1AR.s:96     .text.chThdRelease:0000000000000000 $t
+     /tmp/ccObI1AR.s:102    .text.chThdRelease:0000000000000000 chThdRelease
+     /tmp/ccObI1AR.s:214    .text.chThdRelease:00000000000000b0 $d
+     /tmp/ccObI1AR.s:219    .text.chThdCreateFromHeap:0000000000000000 $t
+     /tmp/ccObI1AR.s:225    .text.chThdCreateFromHeap:0000000000000000 chThdCreateFromHeap
+     /tmp/ccObI1AR.s:321    .text.chThdCreateFromMemoryPool:0000000000000000 $t
+     /tmp/ccObI1AR.s:327    .text.chThdCreateFromMemoryPool:0000000000000000 chThdCreateFromMemoryPool
+     /tmp/ccObI1AR.s:434    .text.chThdCreateFromMemoryPool:000000000000009c $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccObI1AR.s:91     .text.chThdAddRef:0000000000000048 $t
+     /tmp/ccObI1AR.s:218    .text.chThdRelease:00000000000000b4 $t
+
+UNDEFINED SYMBOLS
+dbg_check_lock
+chDbgPanic
+dbg_check_unlock
+chHeapFree
+chPoolFree
+chHeapAlloc
+_thread_memfill
+chThdCreateI
+chSchWakeupS
+chPoolAlloc

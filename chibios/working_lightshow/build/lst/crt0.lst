@@ -1,0 +1,645 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"crt0.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.__early_init,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.weak	__early_init
+  23              		.thumb
+  24              		.thumb_func
+  26              	__early_init:
+  27              	.LFB7:
+  28              		.file 1 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c"
+   1:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /*
+   2:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+   5:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+   7:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  12:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  17:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** */
+  20:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  21:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+  22:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @file    ARMCMx/crt0.c
+  23:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Generic ARMvx-M (Cortex-M0/M1/M3/M4) startup file for ChibiOS/RT.
+  24:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *
+  25:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @addtogroup ARMCMx_STARTUP
+  26:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @{
+  27:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+  28:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  29:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #include "ch.h"
+  30:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  31:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** typedef void (*funcp_t)(void);
+  32:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** typedef funcp_t * funcpp_t;
+  33:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  34:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #define SYMVAL(sym) (uint32_t)(((uint8_t *)&(sym)) - ((uint8_t *)0))
+  35:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  36:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /*
+  37:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * Area fill code, it is a macro because here functions cannot be called
+  38:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * until stacks are initialized.
+  39:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+  40:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #define fill32(start, end, filler) {                                        \
+  41:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   uint32_t *p1 = start;                                                     \
+  42:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   uint32_t *p2 = end;                                                       \
+  43:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   while (p1 < p2)                                                           \
+  44:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     *p1++ = filler;                                                         \
+  45:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** }
+  46:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  47:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /*===========================================================================*/
+  48:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+  49:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @name    Startup settings
+  50:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @{
+  51:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+  52:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /*===========================================================================*/
+  53:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  54:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+  55:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Control special register initialization value.
+  56:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @details The system is setup to run in privileged mode using the PSP
+  57:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *          stack (dual stack mode).
+  58:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+  59:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(CRT0_CONTROL_INIT) || defined(__DOXYGEN__)
+  60:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #define CRT0_CONTROL_INIT           0x00000002
+  61:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+  62:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  63:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+  64:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Stack segments initialization switch.
+  65:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+  66:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(CRT0_STACKS_FILL_PATTERN) || defined(__DOXYGEN__)
+  67:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #define CRT0_STACKS_FILL_PATTERN    0x55555555
+  68:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+  69:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  70:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+  71:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Stack segments initialization switch.
+  72:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+  73:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(CRT0_INIT_STACKS) || defined(__DOXYGEN__)
+  74:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #define CRT0_INIT_STACKS            TRUE
+  75:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+  76:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  77:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+  78:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   DATA segment initialization switch.
+  79:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+  80:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(CRT0_INIT_DATA) || defined(__DOXYGEN__)
+  81:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #define CRT0_INIT_DATA              TRUE
+  82:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+  83:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  84:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+  85:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   BSS segment initialization switch.
+  86:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+  87:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(CRT0_INIT_BSS) || defined(__DOXYGEN__)
+  88:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #define CRT0_INIT_BSS               TRUE
+  89:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+  90:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  91:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+  92:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Constructors invocation switch.
+  93:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+  94:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(CRT0_CALL_CONSTRUCTORS) || defined(__DOXYGEN__)
+  95:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #define CRT0_CALL_CONSTRUCTORS      TRUE
+  96:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+  97:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+  98:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+  99:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Destructors invocation switch.
+ 100:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 101:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(CRT0_CALL_DESTRUCTORS) || defined(__DOXYGEN__)
+ 102:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #define CRT0_CALL_DESTRUCTORS       TRUE
+ 103:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 104:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 105:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /** @} */
+ 106:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 107:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /*===========================================================================*/
+ 108:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 109:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @name    Symbols from the scatter file
+ 110:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 111:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /*===========================================================================*/
+ 112:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 113:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 114:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Main stack lower boundary.
+ 115:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @details This symbol must be exported by the linker script and represents
+ 116:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *          the main stack lower boundary.
+ 117:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 118:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern uint32_t __main_stack_base__;
+ 119:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 120:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 121:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *
+ 122:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Main stack initial position.
+ 123:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @details This symbol must be exported by the linker script and represents
+ 124:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *          the main stack initial position.
+ 125:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 126:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern uint32_t __main_stack_end__;
+ 127:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 128:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 129:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Process stack lower boundary.
+ 130:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @details This symbol must be exported by the linker script and represents
+ 131:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *          the process stack lower boundary.
+ 132:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 133:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern uint32_t __process_stack_base__;
+ 134:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 135:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 136:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Process stack initial position.
+ 137:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @details This symbol must be exported by the linker script and represents
+ 138:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *          the process stack initial position.
+ 139:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 140:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern uint32_t __process_stack_end__;
+ 141:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 142:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 143:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   ROM image of the data segment start.
+ 144:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @pre     The symbol must be aligned to a 32 bits boundary.
+ 145:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 146:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern uint32_t _textdata;
+ 147:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 148:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 149:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Data segment start.
+ 150:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @pre     The symbol must be aligned to a 32 bits boundary.
+ 151:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 152:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern uint32_t _data;
+ 153:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 154:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 155:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Data segment end.
+ 156:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @pre     The symbol must be aligned to a 32 bits boundary.
+ 157:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 158:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern uint32_t _edata;
+ 159:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 160:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 161:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   BSS segment start.
+ 162:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @pre     The symbol must be aligned to a 32 bits boundary.
+ 163:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 164:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern uint32_t _bss_start;
+ 165:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 166:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 167:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   BSS segment end.
+ 168:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @pre     The symbol must be aligned to a 32 bits boundary.
+ 169:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 170:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern uint32_t _bss_end;
+ 171:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 172:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 173:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Constructors table start.
+ 174:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @pre     The symbol must be aligned to a 32 bits boundary.
+ 175:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 176:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern funcp_t __init_array_start;
+ 177:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 178:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 179:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Constructors table end.
+ 180:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @pre     The symbol must be aligned to a 32 bits boundary.
+ 181:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 182:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern funcp_t __init_array_end;
+ 183:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 184:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 185:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Destructors table start.
+ 186:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @pre     The symbol must be aligned to a 32 bits boundary.
+ 187:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 188:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern funcp_t __fini_array_start;
+ 189:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 190:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 191:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Destructors table end.
+ 192:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @pre     The symbol must be aligned to a 32 bits boundary.
+ 193:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 194:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern funcp_t __fini_array_end;
+ 195:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 196:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /** @} */
+ 197:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 198:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 199:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Application @p main() function.
+ 200:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 201:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** extern void main(void);
+ 202:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 203:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 204:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Early initialization.
+ 205:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @details This hook is invoked immediately after the stack initialization
+ 206:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *          and before the DATA and BSS segments initialization. The
+ 207:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *          default behavior is to do nothing.
+ 208:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @note    This function is a weak symbol.
+ 209:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 210:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(__DOXYGEN__)
+ 211:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** __attribute__((weak))
+ 212:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 213:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** void __early_init(void) {}
+  29              		.loc 1 213 0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              		.loc 1 213 0
+  35 0000 7047     		bx	lr
+  36              		.cfi_endproc
+  37              	.LFE7:
+  39 0002 00BFAFF3 		.section	.text.__late_init,"ax",%progbits
+  39      0080AFF3 
+  39      0080AFF3 
+  39      0080
+  40              		.align	2
+  41              		.p2align 4,,15
+  42              		.weak	__late_init
+  43              		.thumb
+  44              		.thumb_func
+  46              	__late_init:
+  47              	.LFB8:
+ 214:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 215:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 216:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Late initialization.
+ 217:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @details This hook is invoked after the DATA and BSS segments
+ 218:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *          initialization and before any static constructor. The
+ 219:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *          default behavior is to do nothing.
+ 220:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @note    This function is a weak symbol.
+ 221:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 222:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(__DOXYGEN__)
+ 223:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** __attribute__((weak))
+ 224:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 225:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** void __late_init(void) {}
+  48              		.loc 1 225 0
+  49              		.cfi_startproc
+  50              		@ args = 0, pretend = 0, frame = 0
+  51              		@ frame_needed = 0, uses_anonymous_args = 0
+  52              		@ link register save eliminated.
+  53              		.loc 1 225 0
+  54 0000 7047     		bx	lr
+  55              		.cfi_endproc
+  56              	.LFE8:
+  58 0002 00BFAFF3 		.section	.text._default_exit,"ax",%progbits
+  58      0080AFF3 
+  58      0080AFF3 
+  58      0080
+  59              		.align	2
+  60              		.p2align 4,,15
+  61              		.weak	_default_exit
+  62              		.thumb
+  63              		.thumb_func
+  65              	_default_exit:
+  66              	.LFB9:
+ 226:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 227:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 228:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Default @p main() function exit handler.
+ 229:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @details This handler is invoked or the @p main() function exit. The
+ 230:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  *          default behavior is to enter an infinite loop.
+ 231:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @note    This function is a weak symbol.
+ 232:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 233:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(__DOXYGEN__)
+ 234:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** __attribute__((weak, naked))
+ 235:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 236:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** void _default_exit(void) {
+  67              		.loc 1 236 0
+  68              		.cfi_startproc
+  69              		@ Naked Function: prologue and epilogue provided by programmer.
+  70              		@ args = 0, pretend = 0, frame = 0
+  71              		@ frame_needed = 0, uses_anonymous_args = 0
+  72              	.L4:
+ 237:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   while (1)
+ 238:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     ;
+  73              		.loc 1 238 0 discriminator 1
+  74 0000 FEE7     		b	.L4
+  75              		.cfi_endproc
+  76              	.LFE9:
+  78 0002 00BFAFF3 		.section	.text.ResetHandler,"ax",%progbits
+  78      0080AFF3 
+  78      0080AFF3 
+  78      0080
+  79              		.align	2
+  80              		.p2align 4,,15
+  81              		.global	ResetHandler
+  82              		.thumb
+  83              		.thumb_func
+  85              	ResetHandler:
+  86              	.LFB10:
+ 239:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** }
+ 240:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 241:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** /**
+ 242:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  * @brief   Reset vector.
+ 243:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****  */
+ 244:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if !defined(__DOXYGEN__)
+ 245:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** __attribute__((naked))
+ 246:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 247:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** void ResetHandler(void) {
+  87              		.loc 1 247 0
+  88              		.cfi_startproc
+  89              		@ Naked Function: prologue and epilogue provided by programmer.
+  90              		@ args = 0, pretend = 0, frame = 0
+  91              		@ frame_needed = 0, uses_anonymous_args = 0
+ 248:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   uint32_t psp, reg;
+ 249:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 250:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* Process Stack initialization, it is allocated starting from the
+ 251:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****      symbol __process_stack_end__ and its lower limit is the symbol
+ 252:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****      __process_stack_base__.*/
+ 253:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   asm volatile ("cpsid   i");
+  92              		.loc 1 253 0
+  93              	@ 253 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c" 1
+  94 0000 72B6     		cpsid   i
+  95              	@ 0 "" 2
+ 254:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   psp = SYMVAL(__process_stack_end__);
+  96              		.loc 1 254 0
+  97              		.thumb
+  98 0002 2D4C     		ldr	r4, .L18
+ 255:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   asm volatile ("msr     PSP, %0" : : "r" (psp));
+  99              		.loc 1 255 0
+ 100              	@ 255 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c" 1
+ 101 0004 84F30988 		msr     PSP, r4
+ 102              	@ 0 "" 2
+ 256:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 257:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if CORTEX_USE_FPU
+ 258:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* Initializing the FPU context save in lazy mode.*/
+ 259:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   SCB_FPCCR = FPCCR_ASPEN | FPCCR_LSPEN;
+ 103              		.loc 1 259 0
+ 104              		.thumb
+ 105 0008 2C4B     		ldr	r3, .L18+4
+ 106 000a 4FF04042 		mov	r2, #-1073741824
+ 107 000e 5A60     		str	r2, [r3, #4]
+ 260:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 261:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* CP10 and CP11 set to full access.*/
+ 262:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   SCB_CPACR |= 0x00F00000;
+ 108              		.loc 1 262 0
+ 109 0010 2B4B     		ldr	r3, .L18+8
+ 110 0012 2B4A     		ldr	r2, .L18+8
+ 111 0014 D2F88820 		ldr	r2, [r2, #136]
+ 112 0018 42F47002 		orr	r2, r2, #15728640
+ 113 001c C3F88820 		str	r2, [r3, #136]
+ 263:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 264:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* FPSCR and FPDSCR initially zero.*/
+ 265:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   reg = 0;
+ 114              		.loc 1 265 0
+ 115 0020 0024     		movs	r4, #0
+ 266:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   asm volatile ("vmsr    FPSCR, %0" : : "r" (reg) : "memory");
+ 116              		.loc 1 266 0
+ 117              	@ 266 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c" 1
+ 118 0022 E1EE104A 		vmsr    FPSCR, r4
+ 119              	@ 0 "" 2
+ 267:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   SCB_FPDSCR = reg;
+ 120              		.loc 1 267 0
+ 121              		.thumb
+ 122 0026 254B     		ldr	r3, .L18+4
+ 123 0028 DC60     		str	r4, [r3, #12]
+ 268:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 269:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* CPU mode initialization, enforced FPCA bit.*/
+ 270:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   reg = CRT0_CONTROL_INIT | 4;
+ 124              		.loc 1 270 0
+ 125 002a 0624     		movs	r4, #6
+ 271:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #else
+ 272:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* CPU mode initialization.*/
+ 273:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   reg = CRT0_CONTROL_INIT;
+ 274:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 275:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   asm volatile ("msr     CONTROL, %0" : : "r" (reg));
+ 126              		.loc 1 275 0
+ 127              	@ 275 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c" 1
+ 128 002c 84F31488 		msr     CONTROL, r4
+ 129              	@ 0 "" 2
+ 276:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   asm volatile ("isb");
+ 130              		.loc 1 276 0
+ 131              	@ 276 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c" 1
+ 132 0030 BFF36F8F 		isb
+ 133              	@ 0 "" 2
+ 134              		.thumb
+ 135              	.LBB2:
+ 277:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 278:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if CRT0_INIT_STACKS
+ 279:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* Main and Process stacks initialization.*/
+ 280:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   fill32(&__main_stack_base__,
+ 136              		.loc 1 280 0
+ 137 0034 234C     		ldr	r4, .L18+12
+ 138 0036 244D     		ldr	r5, .L18+16
+ 139 0038 04E0     		b	.L6
+ 140              	.L7:
+ 141              		.loc 1 280 0 is_stmt 0 discriminator 2
+ 142 003a 2346     		mov	r3, r4
+ 143 003c 1C1D     		adds	r4, r3, #4
+ 144 003e 4FF05532 		mov	r2, #1431655765
+ 145 0042 1A60     		str	r2, [r3]
+ 146              	.L6:
+ 147              		.loc 1 280 0 discriminator 1
+ 148 0044 AC42     		cmp	r4, r5
+ 149 0046 F8D3     		bcc	.L7
+ 150              	.LBE2:
+ 151              	.LBB3:
+ 281:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****          &__main_stack_end__,
+ 282:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****          CRT0_STACKS_FILL_PATTERN);
+ 283:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   fill32(&__process_stack_base__,
+ 152              		.loc 1 283 0 is_stmt 1
+ 153 0048 204C     		ldr	r4, .L18+20
+ 154 004a 1B4D     		ldr	r5, .L18
+ 155 004c 04E0     		b	.L8
+ 156              	.L9:
+ 157              		.loc 1 283 0 is_stmt 0 discriminator 2
+ 158 004e 2346     		mov	r3, r4
+ 159 0050 1C1D     		adds	r4, r3, #4
+ 160 0052 4FF05532 		mov	r2, #1431655765
+ 161 0056 1A60     		str	r2, [r3]
+ 162              	.L8:
+ 163              		.loc 1 283 0 discriminator 1
+ 164 0058 AC42     		cmp	r4, r5
+ 165 005a F8D3     		bcc	.L9
+ 166              	.LBE3:
+ 284:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****          &__process_stack_end__,
+ 285:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****          CRT0_STACKS_FILL_PATTERN);
+ 286:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 287:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 288:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* Early initialization hook invocation.*/
+ 289:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   __early_init();
+ 167              		.loc 1 289 0 is_stmt 1
+ 168 005c FFF7FEFF 		bl	__early_init
+ 169              	.LBB4:
+ 290:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 291:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if CRT0_INIT_DATA
+ 292:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* DATA segment initialization.*/
+ 293:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   {
+ 294:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     uint32_t *tp, *dp;
+ 295:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 296:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     tp = &_textdata;
+ 170              		.loc 1 296 0
+ 171 0060 1B4D     		ldr	r5, .L18+24
+ 297:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     dp = &_data;
+ 172              		.loc 1 297 0
+ 173 0062 1C4C     		ldr	r4, .L18+28
+ 298:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     while (dp < &_edata)
+ 174              		.loc 1 298 0
+ 175 0064 05E0     		b	.L10
+ 176              	.L11:
+ 299:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****       *dp++ = *tp++;
+ 177              		.loc 1 299 0
+ 178 0066 2346     		mov	r3, r4
+ 179 0068 1C1D     		adds	r4, r3, #4
+ 180 006a 2A46     		mov	r2, r5
+ 181 006c 151D     		adds	r5, r2, #4
+ 182 006e 1268     		ldr	r2, [r2]
+ 183 0070 1A60     		str	r2, [r3]
+ 184              	.L10:
+ 298:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     while (dp < &_edata)
+ 185              		.loc 1 298 0 discriminator 1
+ 186 0072 194B     		ldr	r3, .L18+32
+ 187 0074 9C42     		cmp	r4, r3
+ 188 0076 F6D3     		bcc	.L11
+ 189              	.LBE4:
+ 190              	.LBB5:
+ 300:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   }
+ 301:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 302:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 303:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if CRT0_INIT_BSS
+ 304:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* BSS segment initialization.*/
+ 305:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   fill32(&_bss_start, &_bss_end, 0);
+ 191              		.loc 1 305 0
+ 192 0078 184C     		ldr	r4, .L18+36
+ 193 007a 194D     		ldr	r5, .L18+40
+ 194 007c 03E0     		b	.L12
+ 195              	.L13:
+ 196              		.loc 1 305 0 is_stmt 0 discriminator 2
+ 197 007e 2346     		mov	r3, r4
+ 198 0080 1C1D     		adds	r4, r3, #4
+ 199 0082 0022     		movs	r2, #0
+ 200 0084 1A60     		str	r2, [r3]
+ 201              	.L12:
+ 202              		.loc 1 305 0 discriminator 1
+ 203 0086 AC42     		cmp	r4, r5
+ 204 0088 F9D3     		bcc	.L13
+ 205              	.LBE5:
+ 306:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 307:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 308:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* Late initialization hook invocation.*/
+ 309:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   __late_init();
+ 206              		.loc 1 309 0 is_stmt 1
+ 207 008a FFF7FEFF 		bl	__late_init
+ 208              	.LBB6:
+ 310:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 311:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if CRT0_CALL_CONSTRUCTORS
+ 312:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* Constructors invocation.*/
+ 313:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   {
+ 314:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     funcpp_t fpp = &__init_array_start;
+ 209              		.loc 1 314 0
+ 210 008e 154C     		ldr	r4, .L18+44
+ 315:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     while (fpp < &__init_array_end) {
+ 211              		.loc 1 315 0
+ 212 0090 02E0     		b	.L14
+ 213              	.L15:
+ 316:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****       (*fpp)();
+ 214              		.loc 1 316 0
+ 215 0092 2368     		ldr	r3, [r4]
+ 216 0094 9847     		blx	r3
+ 317:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****       fpp++;
+ 217              		.loc 1 317 0
+ 218 0096 0434     		adds	r4, r4, #4
+ 219              	.L14:
+ 315:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     while (fpp < &__init_array_end) {
+ 220              		.loc 1 315 0 discriminator 1
+ 221 0098 134B     		ldr	r3, .L18+48
+ 222 009a 9C42     		cmp	r4, r3
+ 223 009c F9D3     		bcc	.L15
+ 224              	.LBE6:
+ 318:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     }
+ 319:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   }
+ 320:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 321:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 322:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* Invoking application main() function.*/
+ 323:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   main();
+ 225              		.loc 1 323 0
+ 226 009e FFF7FEFF 		bl	main
+ 227              	.LBB7:
+ 324:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 325:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #if CRT0_CALL_DESTRUCTORS
+ 326:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* Destructors invocation.*/
+ 327:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   {
+ 328:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     funcpp_t fpp = &__fini_array_start;
+ 228              		.loc 1 328 0
+ 229 00a2 124C     		ldr	r4, .L18+52
+ 329:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     while (fpp < &__fini_array_end) {
+ 230              		.loc 1 329 0
+ 231 00a4 02E0     		b	.L16
+ 232              	.L17:
+ 330:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****       (*fpp)();
+ 233              		.loc 1 330 0
+ 234 00a6 2368     		ldr	r3, [r4]
+ 235 00a8 9847     		blx	r3
+ 331:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****       fpp++;
+ 236              		.loc 1 331 0
+ 237 00aa 0434     		adds	r4, r4, #4
+ 238              	.L16:
+ 329:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     while (fpp < &__fini_array_end) {
+ 239              		.loc 1 329 0 discriminator 1
+ 240 00ac 104B     		ldr	r3, .L18+56
+ 241 00ae 9C42     		cmp	r4, r3
+ 242 00b0 F9D3     		bcc	.L17
+ 243              	.LBE7:
+ 332:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****     }
+ 333:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   }
+ 334:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** #endif
+ 335:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** 
+ 336:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   /* Invoking the exit handler.*/
+ 337:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c ****   _default_exit();
+ 244              		.loc 1 337 0
+ 245 00b2 FFF7FEFF 		bl	_default_exit
+ 338:/usr/src/chibiostest/os/ports/GCC/ARMCMx/crt0.c **** }
+ 246              		.loc 1 338 0
+ 247              	.L19:
+ 248 00b6 00BF     		.align	2
+ 249              	.L18:
+ 250 00b8 00000000 		.word	__process_stack_end__
+ 251 00bc 30EF00E0 		.word	-536809680
+ 252 00c0 00ED00E0 		.word	-536810240
+ 253 00c4 00000000 		.word	__main_stack_base__
+ 254 00c8 00000000 		.word	__main_stack_end__
+ 255 00cc 00000000 		.word	__process_stack_base__
+ 256 00d0 00000000 		.word	_textdata
+ 257 00d4 00000000 		.word	_data
+ 258 00d8 00000000 		.word	_edata
+ 259 00dc 00000000 		.word	_bss_start
+ 260 00e0 00000000 		.word	_bss_end
+ 261 00e4 00000000 		.word	__init_array_start
+ 262 00e8 00000000 		.word	__init_array_end
+ 263 00ec 00000000 		.word	__fini_array_start
+ 264 00f0 00000000 		.word	__fini_array_end
+ 265              		.cfi_endproc
+ 266              	.LFE10:
+ 268 00f4 AFF30080 		.text
+ 268      AFF30080 
+ 268      AFF30080 
+ 269              	.Letext0:
+ 270              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 271              		.file 3 "/usr/include/newlib/stdint.h"
+ 272              		.file 4 "/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 crt0.c
+     /tmp/ccFYYmgo.s:20     .text.__early_init:0000000000000000 $t
+     /tmp/ccFYYmgo.s:26     .text.__early_init:0000000000000000 __early_init
+     /tmp/ccFYYmgo.s:40     .text.__late_init:0000000000000000 $t
+     /tmp/ccFYYmgo.s:46     .text.__late_init:0000000000000000 __late_init
+     /tmp/ccFYYmgo.s:59     .text._default_exit:0000000000000000 $t
+     /tmp/ccFYYmgo.s:65     .text._default_exit:0000000000000000 _default_exit
+     /tmp/ccFYYmgo.s:79     .text.ResetHandler:0000000000000000 $t
+     /tmp/ccFYYmgo.s:85     .text.ResetHandler:0000000000000000 ResetHandler
+     /tmp/ccFYYmgo.s:250    .text.ResetHandler:00000000000000b8 $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccFYYmgo.s:268    .text.ResetHandler:00000000000000f4 $t
+
+UNDEFINED SYMBOLS
+main
+__process_stack_end__
+__main_stack_base__
+__main_stack_end__
+__process_stack_base__
+_textdata
+_data
+_edata
+_bss_start
+_bss_end
+__init_array_start
+__init_array_end
+__fini_array_start
+__fini_array_end

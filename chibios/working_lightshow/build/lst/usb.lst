@@ -1,0 +1,3181 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"usb.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.rodata.zero_status,"a",%progbits
+  20              		.align	2
+  23              	zero_status:
+  24 0000 0000     		.space	2
+  25 0002 0000     		.section	.rodata.active_status,"a",%progbits
+  26              		.align	2
+  29              	active_status:
+  30 0000 0000     		.space	2
+  31 0002 0000     		.section	.rodata.halted_status,"a",%progbits
+  32              		.align	2
+  35              	halted_status:
+  36 0000 01       		.byte	1
+  37 0001 00       		.byte	0
+  38 0002 0000     		.section	.text.set_address,"ax",%progbits
+  39              		.align	2
+  40              		.p2align 4,,15
+  41              		.thumb
+  42              		.thumb_func
+  44              	set_address:
+  45              	.LFB118:
+  46              		.file 1 "/usr/src/chibiostest/os/hal/src/usb.c"
+   1:/usr/src/chibiostest/os/hal/src/usb.c **** /*
+   2:/usr/src/chibiostest/os/hal/src/usb.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/hal/src/usb.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/hal/src/usb.c **** 
+   5:/usr/src/chibiostest/os/hal/src/usb.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/hal/src/usb.c **** 
+   7:/usr/src/chibiostest/os/hal/src/usb.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/hal/src/usb.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/hal/src/usb.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/hal/src/usb.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  12:/usr/src/chibiostest/os/hal/src/usb.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/hal/src/usb.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/hal/src/usb.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/hal/src/usb.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  17:/usr/src/chibiostest/os/hal/src/usb.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/hal/src/usb.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/hal/src/usb.c **** */
+  20:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  21:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+  22:/usr/src/chibiostest/os/hal/src/usb.c ****  * @file    usb.c
+  23:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   USB Driver code.
+  24:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+  25:/usr/src/chibiostest/os/hal/src/usb.c ****  * @addtogroup USB
+  26:/usr/src/chibiostest/os/hal/src/usb.c ****  * @{
+  27:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+  28:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  29:/usr/src/chibiostest/os/hal/src/usb.c **** #include <string.h>
+  30:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  31:/usr/src/chibiostest/os/hal/src/usb.c **** #include "ch.h"
+  32:/usr/src/chibiostest/os/hal/src/usb.c **** #include "hal.h"
+  33:/usr/src/chibiostest/os/hal/src/usb.c **** #include "usb.h"
+  34:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  35:/usr/src/chibiostest/os/hal/src/usb.c **** #if HAL_USE_USB || defined(__DOXYGEN__)
+  36:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  37:/usr/src/chibiostest/os/hal/src/usb.c **** /*===========================================================================*/
+  38:/usr/src/chibiostest/os/hal/src/usb.c **** /* Driver local definitions.                                                 */
+  39:/usr/src/chibiostest/os/hal/src/usb.c **** /*===========================================================================*/
+  40:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  41:/usr/src/chibiostest/os/hal/src/usb.c **** /*===========================================================================*/
+  42:/usr/src/chibiostest/os/hal/src/usb.c **** /* Driver exported variables.                                                */
+  43:/usr/src/chibiostest/os/hal/src/usb.c **** /*===========================================================================*/
+  44:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  45:/usr/src/chibiostest/os/hal/src/usb.c **** /*===========================================================================*/
+  46:/usr/src/chibiostest/os/hal/src/usb.c **** /* Driver local variables.                                                   */
+  47:/usr/src/chibiostest/os/hal/src/usb.c **** /*===========================================================================*/
+  48:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  49:/usr/src/chibiostest/os/hal/src/usb.c **** static const uint8_t zero_status[] = {0x00, 0x00};
+  50:/usr/src/chibiostest/os/hal/src/usb.c **** static const uint8_t active_status[] ={0x00, 0x00};
+  51:/usr/src/chibiostest/os/hal/src/usb.c **** static const uint8_t halted_status[] = {0x01, 0x00};
+  52:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  53:/usr/src/chibiostest/os/hal/src/usb.c **** /*===========================================================================*/
+  54:/usr/src/chibiostest/os/hal/src/usb.c **** /* Driver local functions.                                                   */
+  55:/usr/src/chibiostest/os/hal/src/usb.c **** /*===========================================================================*/
+  56:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  57:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+  58:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief  SET ADDRESS transaction callback.
+  59:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+  60:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+  61:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+  62:/usr/src/chibiostest/os/hal/src/usb.c **** static void set_address(USBDriver *usbp) {
+  47              		.loc 1 62 0
+  48              		.cfi_startproc
+  49              		@ args = 0, pretend = 0, frame = 8
+  50              		@ frame_needed = 0, uses_anonymous_args = 0
+  51 0000 00B5     		push	{lr}
+  52              		.cfi_def_cfa_offset 4
+  53              		.cfi_offset 14, -4
+  54 0002 83B0     		sub	sp, sp, #12
+  55              		.cfi_def_cfa_offset 16
+  56 0004 0190     		str	r0, [sp, #4]
+  63:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  64:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->address = usbp->setup[2];
+  57              		.loc 1 64 0
+  58 0006 019B     		ldr	r3, [sp, #4]
+  59 0008 93F83220 		ldrb	r2, [r3, #50]	@ zero_extendqisi2
+  60 000c 019B     		ldr	r3, [sp, #4]
+  61 000e 83F83A20 		strb	r2, [r3, #58]
+  65:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_set_address(usbp);
+  62              		.loc 1 65 0
+  63 0012 0198     		ldr	r0, [sp, #4]
+  64 0014 FFF7FEFF 		bl	usb_lld_set_address
+  66:/usr/src/chibiostest/os/hal/src/usb.c ****   _usb_isr_invoke_event_cb(usbp, USB_EVENT_ADDRESS);
+  65              		.loc 1 66 0
+  66 0018 019B     		ldr	r3, [sp, #4]
+  67 001a 5B68     		ldr	r3, [r3, #4]
+  68 001c 1B68     		ldr	r3, [r3]
+  69 001e 002B     		cmp	r3, #0
+  70 0020 05D0     		beq	.L2
+  71              		.loc 1 66 0 is_stmt 0 discriminator 1
+  72 0022 019B     		ldr	r3, [sp, #4]
+  73 0024 5B68     		ldr	r3, [r3, #4]
+  74 0026 1B68     		ldr	r3, [r3]
+  75 0028 0198     		ldr	r0, [sp, #4]
+  76 002a 0121     		movs	r1, #1
+  77 002c 9847     		blx	r3
+  78              	.L2:
+  67:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->state = USB_SELECTED;
+  79              		.loc 1 67 0 is_stmt 1
+  80 002e 019B     		ldr	r3, [sp, #4]
+  81 0030 0322     		movs	r2, #3
+  82 0032 1A70     		strb	r2, [r3]
+  68:/usr/src/chibiostest/os/hal/src/usb.c **** }
+  83              		.loc 1 68 0
+  84 0034 03B0     		add	sp, sp, #12
+  85              		@ sp needed
+  86 0036 5DF804FB 		ldr	pc, [sp], #4
+  87              		.cfi_endproc
+  88              	.LFE118:
+  90 003a 00BFAFF3 		.section	.text.default_handler,"ax",%progbits
+  90      0080
+  91              		.align	2
+  92              		.p2align 4,,15
+  93              		.thumb
+  94              		.thumb_func
+  96              	default_handler:
+  97              	.LFB119:
+  69:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  70:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+  71:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Standard requests handler.
+  72:/usr/src/chibiostest/os/hal/src/usb.c ****  * @details This is the standard requests default handler, most standard
+  73:/usr/src/chibiostest/os/hal/src/usb.c ****  *          requests are handled here, the user can override the standard
+  74:/usr/src/chibiostest/os/hal/src/usb.c ****  *          handling using the @p requests_hook_cb hook in the
+  75:/usr/src/chibiostest/os/hal/src/usb.c ****  *          @p USBConfig structure.
+  76:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+  77:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+  78:/usr/src/chibiostest/os/hal/src/usb.c ****  * @return              The request handling exit code.
+  79:/usr/src/chibiostest/os/hal/src/usb.c ****  * @retval FALSE        Request not recognized by the handler or error.
+  80:/usr/src/chibiostest/os/hal/src/usb.c ****  * @retval TRUE         Request handled.
+  81:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+  82:/usr/src/chibiostest/os/hal/src/usb.c **** static bool_t default_handler(USBDriver *usbp) {
+  98              		.loc 1 82 0
+  99              		.cfi_startproc
+ 100              		@ args = 0, pretend = 0, frame = 16
+ 101              		@ frame_needed = 0, uses_anonymous_args = 0
+ 102 0000 10B5     		push	{r4, lr}
+ 103              		.cfi_def_cfa_offset 8
+ 104              		.cfi_offset 4, -8
+ 105              		.cfi_offset 14, -4
+ 106 0002 84B0     		sub	sp, sp, #16
+ 107              		.cfi_def_cfa_offset 24
+ 108 0004 0190     		str	r0, [sp, #4]
+  83:/usr/src/chibiostest/os/hal/src/usb.c ****   const USBDescriptor *dp;
+  84:/usr/src/chibiostest/os/hal/src/usb.c **** 
+  85:/usr/src/chibiostest/os/hal/src/usb.c ****   /* Decoding the request.*/
+  86:/usr/src/chibiostest/os/hal/src/usb.c ****   switch (((usbp->setup[0] & (USB_RTYPE_RECIPIENT_MASK |
+ 109              		.loc 1 86 0
+ 110 0006 019B     		ldr	r3, [sp, #4]
+ 111 0008 93F83030 		ldrb	r3, [r3, #48]	@ zero_extendqisi2
+ 112 000c 03F07F02 		and	r2, r3, #127
+  87:/usr/src/chibiostest/os/hal/src/usb.c ****                               USB_RTYPE_TYPE_MASK)) |
+  88:/usr/src/chibiostest/os/hal/src/usb.c ****            (usbp->setup[1] << 8))) {
+ 113              		.loc 1 88 0
+ 114 0010 019B     		ldr	r3, [sp, #4]
+ 115 0012 93F83130 		ldrb	r3, [r3, #49]	@ zero_extendqisi2
+ 116 0016 1B02     		lsls	r3, r3, #8
+  87:/usr/src/chibiostest/os/hal/src/usb.c ****                               USB_RTYPE_TYPE_MASK)) |
+ 117              		.loc 1 87 0
+ 118 0018 1343     		orrs	r3, r3, r2
+  86:/usr/src/chibiostest/os/hal/src/usb.c ****                               USB_RTYPE_TYPE_MASK)) |
+ 119              		.loc 1 86 0
+ 120 001a B3F5407F 		cmp	r3, #768
+ 121 001e 58D0     		beq	.L5
+ 122 0020 B3F5407F 		cmp	r3, #768
+ 123 0024 12DC     		bgt	.L6
+ 124 0026 022B     		cmp	r3, #2
+ 125 0028 00F0EE80 		beq	.L7
+ 126 002c 022B     		cmp	r3, #2
+ 127 002e 05DC     		bgt	.L8
+ 128 0030 002B     		cmp	r3, #0
+ 129 0032 28D0     		beq	.L9
+ 130 0034 012B     		cmp	r3, #1
+ 131 0036 00F0DC80 		beq	.L10
+ 132 003a A6E1     		b	.L4
+ 133              	.L8:
+ 134 003c B3F5807F 		cmp	r3, #256
+ 135 0040 2ED0     		beq	.L11
+ 136 0042 B3F5817F 		cmp	r3, #258
+ 137 0046 00F03681 		beq	.L12
+ 138 004a 9EE1     		b	.L4
+ 139              	.L6:
+ 140 004c B3F5C06F 		cmp	r3, #1536
+ 141 0050 70D0     		beq	.L13
+ 142 0052 B3F5C06F 		cmp	r3, #1536
+ 143 0056 08DC     		bgt	.L14
+ 144 0058 40F20232 		movw	r2, #770
+ 145 005c 9342     		cmp	r3, r2
+ 146 005e 00F05F81 		beq	.L15
+ 147 0062 B3F5A06F 		cmp	r3, #1280
+ 148 0066 4DD0     		beq	.L16
+ 149 0068 8FE1     		b	.L4
+ 150              	.L14:
+ 151 006a B3F5106F 		cmp	r3, #2304
+ 152 006e 00F09880 		beq	.L17
+ 153 0072 40F60242 		movw	r2, #3074
+ 154 0076 9342     		cmp	r3, r2
+ 155 0078 00F0BB80 		beq	.L10
+ 156 007c B3F5006F 		cmp	r3, #2048
+ 157 0080 00F08280 		beq	.L18
+ 158 0084 81E1     		b	.L4
+ 159              	.L9:
+  89:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_DEVICE | (USB_REQ_GET_STATUS << 8):
+  90:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Just returns the current status word.*/
+  91:/usr/src/chibiostest/os/hal/src/usb.c ****     usbSetupTransfer(usbp, (uint8_t *)&usbp->status, 2, NULL);
+ 160              		.loc 1 91 0
+ 161 0086 019B     		ldr	r3, [sp, #4]
+ 162 0088 03F13802 		add	r2, r3, #56
+ 163 008c 019B     		ldr	r3, [sp, #4]
+ 164 008e 5A62     		str	r2, [r3, #36]
+ 165 0090 019B     		ldr	r3, [sp, #4]
+ 166 0092 0222     		movs	r2, #2
+ 167 0094 9A62     		str	r2, [r3, #40]
+ 168 0096 019B     		ldr	r3, [sp, #4]
+ 169 0098 0022     		movs	r2, #0
+ 170 009a DA62     		str	r2, [r3, #44]
+  92:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 171              		.loc 1 92 0
+ 172 009c 0123     		movs	r3, #1
+ 173 009e 75E1     		b	.L19
+ 174              	.L11:
+  93:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_DEVICE | (USB_REQ_CLEAR_FEATURE << 8):
+  94:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Only the DEVICE_REMOTE_WAKEUP is handled here, any other feature
+  95:/usr/src/chibiostest/os/hal/src/usb.c ****        number is handled as an error.*/
+  96:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbp->setup[2] == USB_FEATURE_DEVICE_REMOTE_WAKEUP) {
+ 175              		.loc 1 96 0
+ 176 00a0 019B     		ldr	r3, [sp, #4]
+ 177 00a2 93F83230 		ldrb	r3, [r3, #50]	@ zero_extendqisi2
+ 178 00a6 012B     		cmp	r3, #1
+ 179 00a8 11D1     		bne	.L20
+  97:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->status &= ~2;
+ 180              		.loc 1 97 0
+ 181 00aa 019B     		ldr	r3, [sp, #4]
+ 182 00ac 1B8F     		ldrh	r3, [r3, #56]
+ 183 00ae 23F00203 		bic	r3, r3, #2
+ 184 00b2 9AB2     		uxth	r2, r3
+ 185 00b4 019B     		ldr	r3, [sp, #4]
+ 186 00b6 1A87     		strh	r2, [r3, #56]	@ movhi
+  98:/usr/src/chibiostest/os/hal/src/usb.c ****       usbSetupTransfer(usbp, NULL, 0, NULL);
+ 187              		.loc 1 98 0
+ 188 00b8 019B     		ldr	r3, [sp, #4]
+ 189 00ba 0022     		movs	r2, #0
+ 190 00bc 5A62     		str	r2, [r3, #36]
+ 191 00be 019B     		ldr	r3, [sp, #4]
+ 192 00c0 0022     		movs	r2, #0
+ 193 00c2 9A62     		str	r2, [r3, #40]
+ 194 00c4 019B     		ldr	r3, [sp, #4]
+ 195 00c6 0022     		movs	r2, #0
+ 196 00c8 DA62     		str	r2, [r3, #44]
+  99:/usr/src/chibiostest/os/hal/src/usb.c ****       return TRUE;
+ 197              		.loc 1 99 0
+ 198 00ca 0123     		movs	r3, #1
+ 199 00cc 5EE1     		b	.L19
+ 200              	.L20:
+ 100:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 101:/usr/src/chibiostest/os/hal/src/usb.c ****     return FALSE;
+ 201              		.loc 1 101 0
+ 202 00ce 0023     		movs	r3, #0
+ 203 00d0 5CE1     		b	.L19
+ 204              	.L5:
+ 102:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_DEVICE | (USB_REQ_SET_FEATURE << 8):
+ 103:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Only the DEVICE_REMOTE_WAKEUP is handled here, any other feature
+ 104:/usr/src/chibiostest/os/hal/src/usb.c ****        number is handled as an error.*/
+ 105:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbp->setup[2] == USB_FEATURE_DEVICE_REMOTE_WAKEUP) {
+ 205              		.loc 1 105 0
+ 206 00d2 019B     		ldr	r3, [sp, #4]
+ 207 00d4 93F83230 		ldrb	r3, [r3, #50]	@ zero_extendqisi2
+ 208 00d8 012B     		cmp	r3, #1
+ 209 00da 11D1     		bne	.L21
+ 106:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->status |= 2;
+ 210              		.loc 1 106 0
+ 211 00dc 019B     		ldr	r3, [sp, #4]
+ 212 00de 1B8F     		ldrh	r3, [r3, #56]
+ 213 00e0 43F00203 		orr	r3, r3, #2
+ 214 00e4 9AB2     		uxth	r2, r3
+ 215 00e6 019B     		ldr	r3, [sp, #4]
+ 216 00e8 1A87     		strh	r2, [r3, #56]	@ movhi
+ 107:/usr/src/chibiostest/os/hal/src/usb.c ****       usbSetupTransfer(usbp, NULL, 0, NULL);
+ 217              		.loc 1 107 0
+ 218 00ea 019B     		ldr	r3, [sp, #4]
+ 219 00ec 0022     		movs	r2, #0
+ 220 00ee 5A62     		str	r2, [r3, #36]
+ 221 00f0 019B     		ldr	r3, [sp, #4]
+ 222 00f2 0022     		movs	r2, #0
+ 223 00f4 9A62     		str	r2, [r3, #40]
+ 224 00f6 019B     		ldr	r3, [sp, #4]
+ 225 00f8 0022     		movs	r2, #0
+ 226 00fa DA62     		str	r2, [r3, #44]
+ 108:/usr/src/chibiostest/os/hal/src/usb.c ****       return TRUE;
+ 227              		.loc 1 108 0
+ 228 00fc 0123     		movs	r3, #1
+ 229 00fe 45E1     		b	.L19
+ 230              	.L21:
+ 109:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 110:/usr/src/chibiostest/os/hal/src/usb.c ****     return FALSE;
+ 231              		.loc 1 110 0
+ 232 0100 0023     		movs	r3, #0
+ 233 0102 43E1     		b	.L19
+ 234              	.L16:
+ 111:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_DEVICE | (USB_REQ_SET_ADDRESS << 8):
+ 112:/usr/src/chibiostest/os/hal/src/usb.c ****     /* The SET_ADDRESS handling can be performed here or postponed after
+ 113:/usr/src/chibiostest/os/hal/src/usb.c ****        the status packed depending on the USB_SET_ADDRESS_MODE low
+ 114:/usr/src/chibiostest/os/hal/src/usb.c ****        driver setting.*/
+ 115:/usr/src/chibiostest/os/hal/src/usb.c **** #if USB_SET_ADDRESS_MODE == USB_EARLY_SET_ADDRESS
+ 116:/usr/src/chibiostest/os/hal/src/usb.c ****     if ((usbp->setup[0] == USB_RTYPE_RECIPIENT_DEVICE) &&
+ 235              		.loc 1 116 0
+ 236 0104 019B     		ldr	r3, [sp, #4]
+ 237 0106 93F83030 		ldrb	r3, [r3, #48]	@ zero_extendqisi2
+ 238 010a 002B     		cmp	r3, #0
+ 239 010c 07D1     		bne	.L22
+ 117:/usr/src/chibiostest/os/hal/src/usb.c ****         (usbp->setup[1] == USB_REQ_SET_ADDRESS))
+ 240              		.loc 1 117 0 discriminator 1
+ 241 010e 019B     		ldr	r3, [sp, #4]
+ 242 0110 93F83130 		ldrb	r3, [r3, #49]	@ zero_extendqisi2
+ 116:/usr/src/chibiostest/os/hal/src/usb.c ****         (usbp->setup[1] == USB_REQ_SET_ADDRESS))
+ 243              		.loc 1 116 0 discriminator 1
+ 244 0114 052B     		cmp	r3, #5
+ 245 0116 02D1     		bne	.L22
+ 118:/usr/src/chibiostest/os/hal/src/usb.c ****       set_address(usbp);
+ 246              		.loc 1 118 0
+ 247 0118 0198     		ldr	r0, [sp, #4]
+ 248 011a FFF7FEFF 		bl	set_address
+ 249              	.L22:
+ 119:/usr/src/chibiostest/os/hal/src/usb.c ****     usbSetupTransfer(usbp, NULL, 0, NULL);
+ 250              		.loc 1 119 0
+ 251 011e 019B     		ldr	r3, [sp, #4]
+ 252 0120 0022     		movs	r2, #0
+ 253 0122 5A62     		str	r2, [r3, #36]
+ 254 0124 019B     		ldr	r3, [sp, #4]
+ 255 0126 0022     		movs	r2, #0
+ 256 0128 9A62     		str	r2, [r3, #40]
+ 257 012a 019B     		ldr	r3, [sp, #4]
+ 258 012c 0022     		movs	r2, #0
+ 259 012e DA62     		str	r2, [r3, #44]
+ 120:/usr/src/chibiostest/os/hal/src/usb.c **** #else
+ 121:/usr/src/chibiostest/os/hal/src/usb.c ****     usbSetupTransfer(usbp, NULL, 0, set_address);
+ 122:/usr/src/chibiostest/os/hal/src/usb.c **** #endif
+ 123:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 260              		.loc 1 123 0
+ 261 0130 0123     		movs	r3, #1
+ 262 0132 2BE1     		b	.L19
+ 263              	.L13:
+ 124:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_DEVICE | (USB_REQ_GET_DESCRIPTOR << 8):
+ 125:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Handling descriptor requests from the host.*/
+ 126:/usr/src/chibiostest/os/hal/src/usb.c ****     dp = usbp->config->get_descriptor_cb(
+ 264              		.loc 1 126 0
+ 265 0134 019B     		ldr	r3, [sp, #4]
+ 266 0136 5B68     		ldr	r3, [r3, #4]
+ 267 0138 5C68     		ldr	r4, [r3, #4]
+ 268 013a 019B     		ldr	r3, [sp, #4]
+ 269 013c 93F83310 		ldrb	r1, [r3, #51]	@ zero_extendqisi2
+ 270 0140 019B     		ldr	r3, [sp, #4]
+ 271 0142 93F83220 		ldrb	r2, [r3, #50]	@ zero_extendqisi2
+ 127:/usr/src/chibiostest/os/hal/src/usb.c ****            usbp, usbp->setup[3], usbp->setup[2],
+ 128:/usr/src/chibiostest/os/hal/src/usb.c ****            usbFetchWord(&usbp->setup[4]));
+ 272              		.loc 1 128 0
+ 273 0146 019B     		ldr	r3, [sp, #4]
+ 274 0148 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 126:/usr/src/chibiostest/os/hal/src/usb.c ****            usbp, usbp->setup[3], usbp->setup[2],
+ 275              		.loc 1 126 0
+ 276 014c 1846     		mov	r0, r3
+ 277              		.loc 1 128 0
+ 278 014e 019B     		ldr	r3, [sp, #4]
+ 279 0150 93F83530 		ldrb	r3, [r3, #53]	@ zero_extendqisi2
+ 280 0154 1B02     		lsls	r3, r3, #8
+ 126:/usr/src/chibiostest/os/hal/src/usb.c ****            usbp, usbp->setup[3], usbp->setup[2],
+ 281              		.loc 1 126 0
+ 282 0156 9BB2     		uxth	r3, r3
+ 283 0158 0343     		orrs	r3, r3, r0
+ 284 015a 9BB2     		uxth	r3, r3
+ 285 015c 9BB2     		uxth	r3, r3
+ 286 015e 0198     		ldr	r0, [sp, #4]
+ 287 0160 A047     		blx	r4
+ 288 0162 0390     		str	r0, [sp, #12]
+ 129:/usr/src/chibiostest/os/hal/src/usb.c ****     if (dp == NULL)
+ 289              		.loc 1 129 0
+ 290 0164 039B     		ldr	r3, [sp, #12]
+ 291 0166 002B     		cmp	r3, #0
+ 292 0168 01D1     		bne	.L23
+ 130:/usr/src/chibiostest/os/hal/src/usb.c ****       return FALSE;
+ 293              		.loc 1 130 0
+ 294 016a 0023     		movs	r3, #0
+ 295 016c 0EE1     		b	.L19
+ 296              	.L23:
+ 131:/usr/src/chibiostest/os/hal/src/usb.c ****     usbSetupTransfer(usbp, (uint8_t *)dp->ud_string, dp->ud_size, NULL);
+ 297              		.loc 1 131 0
+ 298 016e 039B     		ldr	r3, [sp, #12]
+ 299 0170 5A68     		ldr	r2, [r3, #4]
+ 300 0172 019B     		ldr	r3, [sp, #4]
+ 301 0174 5A62     		str	r2, [r3, #36]
+ 302 0176 039B     		ldr	r3, [sp, #12]
+ 303 0178 1A68     		ldr	r2, [r3]
+ 304 017a 019B     		ldr	r3, [sp, #4]
+ 305 017c 9A62     		str	r2, [r3, #40]
+ 306 017e 019B     		ldr	r3, [sp, #4]
+ 307 0180 0022     		movs	r2, #0
+ 308 0182 DA62     		str	r2, [r3, #44]
+ 132:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 309              		.loc 1 132 0
+ 310 0184 0123     		movs	r3, #1
+ 311 0186 01E1     		b	.L19
+ 312              	.L18:
+ 133:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_DEVICE | (USB_REQ_GET_CONFIGURATION << 8):
+ 134:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Returning the last selected configuration.*/
+ 135:/usr/src/chibiostest/os/hal/src/usb.c ****     usbSetupTransfer(usbp, &usbp->configuration, 1, NULL);
+ 313              		.loc 1 135 0
+ 314 0188 019B     		ldr	r3, [sp, #4]
+ 315 018a 03F13B02 		add	r2, r3, #59
+ 316 018e 019B     		ldr	r3, [sp, #4]
+ 317 0190 5A62     		str	r2, [r3, #36]
+ 318 0192 019B     		ldr	r3, [sp, #4]
+ 319 0194 0122     		movs	r2, #1
+ 320 0196 9A62     		str	r2, [r3, #40]
+ 321 0198 019B     		ldr	r3, [sp, #4]
+ 322 019a 0022     		movs	r2, #0
+ 323 019c DA62     		str	r2, [r3, #44]
+ 136:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 324              		.loc 1 136 0
+ 325 019e 0123     		movs	r3, #1
+ 326 01a0 F4E0     		b	.L19
+ 327              	.L17:
+ 137:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_DEVICE | (USB_REQ_SET_CONFIGURATION << 8):
+ 138:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Handling configuration selection from the host.*/
+ 139:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->configuration = usbp->setup[2];
+ 328              		.loc 1 139 0
+ 329 01a2 019B     		ldr	r3, [sp, #4]
+ 330 01a4 93F83220 		ldrb	r2, [r3, #50]	@ zero_extendqisi2
+ 331 01a8 019B     		ldr	r3, [sp, #4]
+ 332 01aa 83F83B20 		strb	r2, [r3, #59]
+ 140:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbp->configuration == 0)
+ 333              		.loc 1 140 0
+ 334 01ae 019B     		ldr	r3, [sp, #4]
+ 335 01b0 93F83B30 		ldrb	r3, [r3, #59]	@ zero_extendqisi2
+ 336 01b4 002B     		cmp	r3, #0
+ 337 01b6 03D1     		bne	.L24
+ 141:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->state = USB_SELECTED;
+ 338              		.loc 1 141 0
+ 339 01b8 019B     		ldr	r3, [sp, #4]
+ 340 01ba 0322     		movs	r2, #3
+ 341 01bc 1A70     		strb	r2, [r3]
+ 342 01be 02E0     		b	.L25
+ 343              	.L24:
+ 142:/usr/src/chibiostest/os/hal/src/usb.c ****     else
+ 143:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->state = USB_ACTIVE;
+ 344              		.loc 1 143 0
+ 345 01c0 019B     		ldr	r3, [sp, #4]
+ 346 01c2 0422     		movs	r2, #4
+ 347 01c4 1A70     		strb	r2, [r3]
+ 348              	.L25:
+ 144:/usr/src/chibiostest/os/hal/src/usb.c ****     _usb_isr_invoke_event_cb(usbp, USB_EVENT_CONFIGURED);
+ 349              		.loc 1 144 0
+ 350 01c6 019B     		ldr	r3, [sp, #4]
+ 351 01c8 5B68     		ldr	r3, [r3, #4]
+ 352 01ca 1B68     		ldr	r3, [r3]
+ 353 01cc 002B     		cmp	r3, #0
+ 354 01ce 05D0     		beq	.L26
+ 355              		.loc 1 144 0 is_stmt 0 discriminator 1
+ 356 01d0 019B     		ldr	r3, [sp, #4]
+ 357 01d2 5B68     		ldr	r3, [r3, #4]
+ 358 01d4 1B68     		ldr	r3, [r3]
+ 359 01d6 0198     		ldr	r0, [sp, #4]
+ 360 01d8 0221     		movs	r1, #2
+ 361 01da 9847     		blx	r3
+ 362              	.L26:
+ 145:/usr/src/chibiostest/os/hal/src/usb.c ****     usbSetupTransfer(usbp, NULL, 0, NULL);
+ 363              		.loc 1 145 0 is_stmt 1
+ 364 01dc 019B     		ldr	r3, [sp, #4]
+ 365 01de 0022     		movs	r2, #0
+ 366 01e0 5A62     		str	r2, [r3, #36]
+ 367 01e2 019B     		ldr	r3, [sp, #4]
+ 368 01e4 0022     		movs	r2, #0
+ 369 01e6 9A62     		str	r2, [r3, #40]
+ 370 01e8 019B     		ldr	r3, [sp, #4]
+ 371 01ea 0022     		movs	r2, #0
+ 372 01ec DA62     		str	r2, [r3, #44]
+ 146:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 373              		.loc 1 146 0
+ 374 01ee 0123     		movs	r3, #1
+ 375 01f0 CCE0     		b	.L19
+ 376              	.L10:
+ 147:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_INTERFACE | (USB_REQ_GET_STATUS << 8):
+ 148:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_ENDPOINT | (USB_REQ_SYNCH_FRAME << 8):
+ 149:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Just sending two zero bytes, the application can change the behavior
+ 150:/usr/src/chibiostest/os/hal/src/usb.c ****        using a hook..*/
+ 151:/usr/src/chibiostest/os/hal/src/usb.c ****     usbSetupTransfer(usbp, (uint8_t *)zero_status, 2, NULL);
+ 377              		.loc 1 151 0
+ 378 01f2 019B     		ldr	r3, [sp, #4]
+ 379 01f4 674A     		ldr	r2, .L42
+ 380 01f6 5A62     		str	r2, [r3, #36]
+ 381 01f8 019B     		ldr	r3, [sp, #4]
+ 382 01fa 0222     		movs	r2, #2
+ 383 01fc 9A62     		str	r2, [r3, #40]
+ 384 01fe 019B     		ldr	r3, [sp, #4]
+ 385 0200 0022     		movs	r2, #0
+ 386 0202 DA62     		str	r2, [r3, #44]
+ 152:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 387              		.loc 1 152 0
+ 388 0204 0123     		movs	r3, #1
+ 389 0206 C1E0     		b	.L19
+ 390              	.L7:
+ 153:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_ENDPOINT | (USB_REQ_GET_STATUS << 8):
+ 154:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Sending the EP status.*/
+ 155:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbp->setup[4] & 0x80) {
+ 391              		.loc 1 155 0
+ 392 0208 019B     		ldr	r3, [sp, #4]
+ 393 020a 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 394 020e DBB2     		uxtb	r3, r3
+ 395 0210 5BB2     		sxtb	r3, r3
+ 396 0212 002B     		cmp	r3, #0
+ 397 0214 27DA     		bge	.L27
+ 156:/usr/src/chibiostest/os/hal/src/usb.c ****       switch (usb_lld_get_status_in(usbp, usbp->setup[4] & 0x0F)) {
+ 398              		.loc 1 156 0
+ 399 0216 019B     		ldr	r3, [sp, #4]
+ 400 0218 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 401 021c 03F00F03 		and	r3, r3, #15
+ 402 0220 DBB2     		uxtb	r3, r3
+ 403 0222 0198     		ldr	r0, [sp, #4]
+ 404 0224 1946     		mov	r1, r3
+ 405 0226 FFF7FEFF 		bl	usb_lld_get_status_in
+ 406 022a 0346     		mov	r3, r0
+ 407 022c 012B     		cmp	r3, #1
+ 408 022e 02D0     		beq	.L29
+ 409 0230 022B     		cmp	r3, #2
+ 410 0232 0BD0     		beq	.L30
+ 411 0234 15E0     		b	.L40
+ 412              	.L29:
+ 157:/usr/src/chibiostest/os/hal/src/usb.c ****       case EP_STATUS_STALLED:
+ 158:/usr/src/chibiostest/os/hal/src/usb.c ****         usbSetupTransfer(usbp, (uint8_t *)halted_status, 2, NULL);
+ 413              		.loc 1 158 0
+ 414 0236 019B     		ldr	r3, [sp, #4]
+ 415 0238 574A     		ldr	r2, .L42+4
+ 416 023a 5A62     		str	r2, [r3, #36]
+ 417 023c 019B     		ldr	r3, [sp, #4]
+ 418 023e 0222     		movs	r2, #2
+ 419 0240 9A62     		str	r2, [r3, #40]
+ 420 0242 019B     		ldr	r3, [sp, #4]
+ 421 0244 0022     		movs	r2, #0
+ 422 0246 DA62     		str	r2, [r3, #44]
+ 159:/usr/src/chibiostest/os/hal/src/usb.c ****         return TRUE;
+ 423              		.loc 1 159 0
+ 424 0248 0123     		movs	r3, #1
+ 425 024a 9FE0     		b	.L19
+ 426              	.L30:
+ 160:/usr/src/chibiostest/os/hal/src/usb.c ****       case EP_STATUS_ACTIVE:
+ 161:/usr/src/chibiostest/os/hal/src/usb.c ****         usbSetupTransfer(usbp, (uint8_t *)active_status, 2, NULL);
+ 427              		.loc 1 161 0
+ 428 024c 019B     		ldr	r3, [sp, #4]
+ 429 024e 534A     		ldr	r2, .L42+8
+ 430 0250 5A62     		str	r2, [r3, #36]
+ 431 0252 019B     		ldr	r3, [sp, #4]
+ 432 0254 0222     		movs	r2, #2
+ 433 0256 9A62     		str	r2, [r3, #40]
+ 434 0258 019B     		ldr	r3, [sp, #4]
+ 435 025a 0022     		movs	r2, #0
+ 436 025c DA62     		str	r2, [r3, #44]
+ 162:/usr/src/chibiostest/os/hal/src/usb.c ****         return TRUE;
+ 437              		.loc 1 162 0
+ 438 025e 0123     		movs	r3, #1
+ 439 0260 94E0     		b	.L19
+ 440              	.L40:
+ 163:/usr/src/chibiostest/os/hal/src/usb.c ****       default:
+ 164:/usr/src/chibiostest/os/hal/src/usb.c ****         return FALSE;
+ 441              		.loc 1 164 0
+ 442 0262 0023     		movs	r3, #0
+ 443 0264 92E0     		b	.L19
+ 444              	.L27:
+ 165:/usr/src/chibiostest/os/hal/src/usb.c ****       }
+ 166:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 167:/usr/src/chibiostest/os/hal/src/usb.c ****     else {
+ 168:/usr/src/chibiostest/os/hal/src/usb.c ****       switch (usb_lld_get_status_out(usbp, usbp->setup[4] & 0x0F)) {
+ 445              		.loc 1 168 0
+ 446 0266 019B     		ldr	r3, [sp, #4]
+ 447 0268 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 448 026c 03F00F03 		and	r3, r3, #15
+ 449 0270 DBB2     		uxtb	r3, r3
+ 450 0272 0198     		ldr	r0, [sp, #4]
+ 451 0274 1946     		mov	r1, r3
+ 452 0276 FFF7FEFF 		bl	usb_lld_get_status_out
+ 453 027a 0346     		mov	r3, r0
+ 454 027c 012B     		cmp	r3, #1
+ 455 027e 02D0     		beq	.L32
+ 456 0280 022B     		cmp	r3, #2
+ 457 0282 0BD0     		beq	.L33
+ 458 0284 15E0     		b	.L41
+ 459              	.L32:
+ 169:/usr/src/chibiostest/os/hal/src/usb.c ****       case EP_STATUS_STALLED:
+ 170:/usr/src/chibiostest/os/hal/src/usb.c ****         usbSetupTransfer(usbp, (uint8_t *)halted_status, 2, NULL);
+ 460              		.loc 1 170 0
+ 461 0286 019B     		ldr	r3, [sp, #4]
+ 462 0288 434A     		ldr	r2, .L42+4
+ 463 028a 5A62     		str	r2, [r3, #36]
+ 464 028c 019B     		ldr	r3, [sp, #4]
+ 465 028e 0222     		movs	r2, #2
+ 466 0290 9A62     		str	r2, [r3, #40]
+ 467 0292 019B     		ldr	r3, [sp, #4]
+ 468 0294 0022     		movs	r2, #0
+ 469 0296 DA62     		str	r2, [r3, #44]
+ 171:/usr/src/chibiostest/os/hal/src/usb.c ****         return TRUE;
+ 470              		.loc 1 171 0
+ 471 0298 0123     		movs	r3, #1
+ 472 029a 77E0     		b	.L19
+ 473              	.L33:
+ 172:/usr/src/chibiostest/os/hal/src/usb.c ****       case EP_STATUS_ACTIVE:
+ 173:/usr/src/chibiostest/os/hal/src/usb.c ****         usbSetupTransfer(usbp, (uint8_t *)active_status, 2, NULL);
+ 474              		.loc 1 173 0
+ 475 029c 019B     		ldr	r3, [sp, #4]
+ 476 029e 3F4A     		ldr	r2, .L42+8
+ 477 02a0 5A62     		str	r2, [r3, #36]
+ 478 02a2 019B     		ldr	r3, [sp, #4]
+ 479 02a4 0222     		movs	r2, #2
+ 480 02a6 9A62     		str	r2, [r3, #40]
+ 481 02a8 019B     		ldr	r3, [sp, #4]
+ 482 02aa 0022     		movs	r2, #0
+ 483 02ac DA62     		str	r2, [r3, #44]
+ 174:/usr/src/chibiostest/os/hal/src/usb.c ****         return TRUE;
+ 484              		.loc 1 174 0
+ 485 02ae 0123     		movs	r3, #1
+ 486 02b0 6CE0     		b	.L19
+ 487              	.L41:
+ 175:/usr/src/chibiostest/os/hal/src/usb.c ****       default:
+ 176:/usr/src/chibiostest/os/hal/src/usb.c ****         return FALSE;
+ 488              		.loc 1 176 0
+ 489 02b2 0023     		movs	r3, #0
+ 490 02b4 6AE0     		b	.L19
+ 491              	.L12:
+ 177:/usr/src/chibiostest/os/hal/src/usb.c ****       }
+ 178:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 179:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_ENDPOINT | (USB_REQ_CLEAR_FEATURE << 8):
+ 180:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Only ENDPOINT_HALT is handled as feature.*/
+ 181:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbp->setup[2] != USB_FEATURE_ENDPOINT_HALT)
+ 492              		.loc 1 181 0
+ 493 02b6 019B     		ldr	r3, [sp, #4]
+ 494 02b8 93F83230 		ldrb	r3, [r3, #50]	@ zero_extendqisi2
+ 495 02bc 002B     		cmp	r3, #0
+ 496 02be 01D0     		beq	.L34
+ 182:/usr/src/chibiostest/os/hal/src/usb.c ****       return FALSE;
+ 497              		.loc 1 182 0
+ 498 02c0 0023     		movs	r3, #0
+ 499 02c2 63E0     		b	.L19
+ 500              	.L34:
+ 183:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Clearing the EP status, not valid for EP0, it is ignored in that case.*/
+ 184:/usr/src/chibiostest/os/hal/src/usb.c ****     if ((usbp->setup[4] & 0x0F) > 0) {
+ 501              		.loc 1 184 0
+ 502 02c4 019B     		ldr	r3, [sp, #4]
+ 503 02c6 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 504 02ca 03F00F03 		and	r3, r3, #15
+ 505 02ce 002B     		cmp	r3, #0
+ 506 02d0 1BDD     		ble	.L35
+ 185:/usr/src/chibiostest/os/hal/src/usb.c ****       if (usbp->setup[4] & 0x80)
+ 507              		.loc 1 185 0
+ 508 02d2 019B     		ldr	r3, [sp, #4]
+ 509 02d4 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 510 02d8 DBB2     		uxtb	r3, r3
+ 511 02da 5BB2     		sxtb	r3, r3
+ 512 02dc 002B     		cmp	r3, #0
+ 513 02de 0ADA     		bge	.L36
+ 186:/usr/src/chibiostest/os/hal/src/usb.c ****         usb_lld_clear_in(usbp, usbp->setup[4] & 0x0F);
+ 514              		.loc 1 186 0
+ 515 02e0 019B     		ldr	r3, [sp, #4]
+ 516 02e2 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 517 02e6 03F00F03 		and	r3, r3, #15
+ 518 02ea DBB2     		uxtb	r3, r3
+ 519 02ec 0198     		ldr	r0, [sp, #4]
+ 520 02ee 1946     		mov	r1, r3
+ 521 02f0 FFF7FEFF 		bl	usb_lld_clear_in
+ 522 02f4 09E0     		b	.L35
+ 523              	.L36:
+ 187:/usr/src/chibiostest/os/hal/src/usb.c ****       else
+ 188:/usr/src/chibiostest/os/hal/src/usb.c ****         usb_lld_clear_out(usbp, usbp->setup[4] & 0x0F);
+ 524              		.loc 1 188 0
+ 525 02f6 019B     		ldr	r3, [sp, #4]
+ 526 02f8 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 527 02fc 03F00F03 		and	r3, r3, #15
+ 528 0300 DBB2     		uxtb	r3, r3
+ 529 0302 0198     		ldr	r0, [sp, #4]
+ 530 0304 1946     		mov	r1, r3
+ 531 0306 FFF7FEFF 		bl	usb_lld_clear_out
+ 532              	.L35:
+ 189:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 190:/usr/src/chibiostest/os/hal/src/usb.c ****     usbSetupTransfer(usbp, NULL, 0, NULL);
+ 533              		.loc 1 190 0
+ 534 030a 019B     		ldr	r3, [sp, #4]
+ 535 030c 0022     		movs	r2, #0
+ 536 030e 5A62     		str	r2, [r3, #36]
+ 537 0310 019B     		ldr	r3, [sp, #4]
+ 538 0312 0022     		movs	r2, #0
+ 539 0314 9A62     		str	r2, [r3, #40]
+ 540 0316 019B     		ldr	r3, [sp, #4]
+ 541 0318 0022     		movs	r2, #0
+ 542 031a DA62     		str	r2, [r3, #44]
+ 191:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 543              		.loc 1 191 0
+ 544 031c 0123     		movs	r3, #1
+ 545 031e 35E0     		b	.L19
+ 546              	.L15:
+ 192:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_ENDPOINT | (USB_REQ_SET_FEATURE << 8):
+ 193:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Only ENDPOINT_HALT is handled as feature.*/
+ 194:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbp->setup[2] != USB_FEATURE_ENDPOINT_HALT)
+ 547              		.loc 1 194 0
+ 548 0320 019B     		ldr	r3, [sp, #4]
+ 549 0322 93F83230 		ldrb	r3, [r3, #50]	@ zero_extendqisi2
+ 550 0326 002B     		cmp	r3, #0
+ 551 0328 01D0     		beq	.L37
+ 195:/usr/src/chibiostest/os/hal/src/usb.c ****       return FALSE;
+ 552              		.loc 1 195 0
+ 553 032a 0023     		movs	r3, #0
+ 554 032c 2EE0     		b	.L19
+ 555              	.L37:
+ 196:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Stalling the EP, not valid for EP0, it is ignored in that case.*/
+ 197:/usr/src/chibiostest/os/hal/src/usb.c ****     if ((usbp->setup[4] & 0x0F) > 0) {
+ 556              		.loc 1 197 0
+ 557 032e 019B     		ldr	r3, [sp, #4]
+ 558 0330 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 559 0334 03F00F03 		and	r3, r3, #15
+ 560 0338 002B     		cmp	r3, #0
+ 561 033a 1BDD     		ble	.L38
+ 198:/usr/src/chibiostest/os/hal/src/usb.c ****       if (usbp->setup[4] & 0x80)
+ 562              		.loc 1 198 0
+ 563 033c 019B     		ldr	r3, [sp, #4]
+ 564 033e 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 565 0342 DBB2     		uxtb	r3, r3
+ 566 0344 5BB2     		sxtb	r3, r3
+ 567 0346 002B     		cmp	r3, #0
+ 568 0348 0ADA     		bge	.L39
+ 199:/usr/src/chibiostest/os/hal/src/usb.c ****         usb_lld_stall_in(usbp, usbp->setup[4] & 0x0F);
+ 569              		.loc 1 199 0
+ 570 034a 019B     		ldr	r3, [sp, #4]
+ 571 034c 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 572 0350 03F00F03 		and	r3, r3, #15
+ 573 0354 DBB2     		uxtb	r3, r3
+ 574 0356 0198     		ldr	r0, [sp, #4]
+ 575 0358 1946     		mov	r1, r3
+ 576 035a FFF7FEFF 		bl	usb_lld_stall_in
+ 577 035e 09E0     		b	.L38
+ 578              	.L39:
+ 200:/usr/src/chibiostest/os/hal/src/usb.c ****       else
+ 201:/usr/src/chibiostest/os/hal/src/usb.c ****         usb_lld_stall_out(usbp, usbp->setup[4] & 0x0F);
+ 579              		.loc 1 201 0
+ 580 0360 019B     		ldr	r3, [sp, #4]
+ 581 0362 93F83430 		ldrb	r3, [r3, #52]	@ zero_extendqisi2
+ 582 0366 03F00F03 		and	r3, r3, #15
+ 583 036a DBB2     		uxtb	r3, r3
+ 584 036c 0198     		ldr	r0, [sp, #4]
+ 585 036e 1946     		mov	r1, r3
+ 586 0370 FFF7FEFF 		bl	usb_lld_stall_out
+ 587              	.L38:
+ 202:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 203:/usr/src/chibiostest/os/hal/src/usb.c ****     usbSetupTransfer(usbp, NULL, 0, NULL);
+ 588              		.loc 1 203 0
+ 589 0374 019B     		ldr	r3, [sp, #4]
+ 590 0376 0022     		movs	r2, #0
+ 591 0378 5A62     		str	r2, [r3, #36]
+ 592 037a 019B     		ldr	r3, [sp, #4]
+ 593 037c 0022     		movs	r2, #0
+ 594 037e 9A62     		str	r2, [r3, #40]
+ 595 0380 019B     		ldr	r3, [sp, #4]
+ 596 0382 0022     		movs	r2, #0
+ 597 0384 DA62     		str	r2, [r3, #44]
+ 204:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 598              		.loc 1 204 0
+ 599 0386 0123     		movs	r3, #1
+ 600 0388 00E0     		b	.L19
+ 601              	.L4:
+ 205:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_DEVICE | (USB_REQ_SET_DESCRIPTOR << 8):
+ 206:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_INTERFACE | (USB_REQ_CLEAR_FEATURE << 8):
+ 207:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_INTERFACE | (USB_REQ_SET_FEATURE << 8):
+ 208:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_INTERFACE | (USB_REQ_GET_INTERFACE << 8):
+ 209:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_RTYPE_RECIPIENT_INTERFACE | (USB_REQ_SET_INTERFACE << 8):
+ 210:/usr/src/chibiostest/os/hal/src/usb.c ****     /* All the above requests are not handled here, if you need them then
+ 211:/usr/src/chibiostest/os/hal/src/usb.c ****        use the hook mechanism and provide handling.*/
+ 212:/usr/src/chibiostest/os/hal/src/usb.c ****   default:
+ 213:/usr/src/chibiostest/os/hal/src/usb.c ****     return FALSE;
+ 602              		.loc 1 213 0
+ 603 038a 0023     		movs	r3, #0
+ 604              	.L19:
+ 214:/usr/src/chibiostest/os/hal/src/usb.c ****   }
+ 215:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 605              		.loc 1 215 0
+ 606 038c 1846     		mov	r0, r3
+ 607 038e 04B0     		add	sp, sp, #16
+ 608              		@ sp needed
+ 609 0390 10BD     		pop	{r4, pc}
+ 610              	.L43:
+ 611 0392 00BF     		.align	2
+ 612              	.L42:
+ 613 0394 00000000 		.word	zero_status
+ 614 0398 00000000 		.word	halted_status
+ 615 039c 00000000 		.word	active_status
+ 616              		.cfi_endproc
+ 617              	.LFE119:
+ 619              		.section	.text.usbInit,"ax",%progbits
+ 620              		.align	2
+ 621              		.p2align 4,,15
+ 622              		.global	usbInit
+ 623              		.thumb
+ 624              		.thumb_func
+ 626              	usbInit:
+ 627              	.LFB120:
+ 216:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 217:/usr/src/chibiostest/os/hal/src/usb.c **** /*===========================================================================*/
+ 218:/usr/src/chibiostest/os/hal/src/usb.c **** /* Driver exported functions.                                                */
+ 219:/usr/src/chibiostest/os/hal/src/usb.c **** /*===========================================================================*/
+ 220:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 221:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 222:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   USB Driver initialization.
+ 223:/usr/src/chibiostest/os/hal/src/usb.c ****  * @note    This function is implicitly invoked by @p halInit(), there is
+ 224:/usr/src/chibiostest/os/hal/src/usb.c ****  *          no need to explicitly initialize the driver.
+ 225:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 226:/usr/src/chibiostest/os/hal/src/usb.c ****  * @init
+ 227:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 228:/usr/src/chibiostest/os/hal/src/usb.c **** void usbInit(void) {
+ 628              		.loc 1 228 0
+ 629              		.cfi_startproc
+ 630              		@ args = 0, pretend = 0, frame = 0
+ 631              		@ frame_needed = 0, uses_anonymous_args = 0
+ 632 0000 08B5     		push	{r3, lr}
+ 633              		.cfi_def_cfa_offset 8
+ 634              		.cfi_offset 3, -8
+ 635              		.cfi_offset 14, -4
+ 229:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 230:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_init();
+ 636              		.loc 1 230 0
+ 637 0002 FFF7FEFF 		bl	usb_lld_init
+ 231:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 638              		.loc 1 231 0
+ 639 0006 08BD     		pop	{r3, pc}
+ 640              		.cfi_endproc
+ 641              	.LFE120:
+ 643 0008 AFF30080 		.section	.text.usbObjectInit,"ax",%progbits
+ 643      AFF30080 
+ 644              		.align	2
+ 645              		.p2align 4,,15
+ 646              		.global	usbObjectInit
+ 647              		.thumb
+ 648              		.thumb_func
+ 650              	usbObjectInit:
+ 651              	.LFB121:
+ 232:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 233:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 234:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Initializes the standard part of a @p USBDriver structure.
+ 235:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 236:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[out] usbp     pointer to the @p USBDriver object
+ 237:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 238:/usr/src/chibiostest/os/hal/src/usb.c ****  * @init
+ 239:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 240:/usr/src/chibiostest/os/hal/src/usb.c **** void usbObjectInit(USBDriver *usbp) {
+ 652              		.loc 1 240 0
+ 653              		.cfi_startproc
+ 654              		@ args = 0, pretend = 0, frame = 8
+ 655              		@ frame_needed = 0, uses_anonymous_args = 0
+ 656              		@ link register save eliminated.
+ 657 0000 82B0     		sub	sp, sp, #8
+ 658              		.cfi_def_cfa_offset 8
+ 659 0002 0190     		str	r0, [sp, #4]
+ 241:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 242:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->state        = USB_STOP;
+ 660              		.loc 1 242 0
+ 661 0004 019B     		ldr	r3, [sp, #4]
+ 662 0006 0122     		movs	r2, #1
+ 663 0008 1A70     		strb	r2, [r3]
+ 243:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->config       = NULL;
+ 664              		.loc 1 243 0
+ 665 000a 019B     		ldr	r3, [sp, #4]
+ 666 000c 0022     		movs	r2, #0
+ 667 000e 5A60     		str	r2, [r3, #4]
+ 244:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->param        = NULL;
+ 668              		.loc 1 244 0
+ 669 0010 019B     		ldr	r3, [sp, #4]
+ 670 0012 0022     		movs	r2, #0
+ 671 0014 9A60     		str	r2, [r3, #8]
+ 245:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->transmitting = 0;
+ 672              		.loc 1 245 0
+ 673 0016 019B     		ldr	r3, [sp, #4]
+ 674 0018 0022     		movs	r2, #0
+ 675 001a 9A81     		strh	r2, [r3, #12]	@ movhi
+ 246:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->receiving    = 0;
+ 676              		.loc 1 246 0
+ 677 001c 019B     		ldr	r3, [sp, #4]
+ 678 001e 0022     		movs	r2, #0
+ 679 0020 DA81     		strh	r2, [r3, #14]	@ movhi
+ 247:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 680              		.loc 1 247 0
+ 681 0022 02B0     		add	sp, sp, #8
+ 682              		@ sp needed
+ 683 0024 7047     		bx	lr
+ 684              		.cfi_endproc
+ 685              	.LFE121:
+ 687              		.section	.rodata
+ 688              		.align	2
+ 689              	.LC0:
+ 690 0000 22757362 		.ascii	"\"usbStart\"()\000"
+ 690      53746172 
+ 690      74222829 
+ 690      00
+ 691 000d 000000   		.align	2
+ 692              	.LC1:
+ 693 0010 75736253 		.ascii	"usbStart(), #1\000"
+ 693      74617274 
+ 693      28292C20 
+ 693      233100
+ 694              		.section	.text.usbStart,"ax",%progbits
+ 695              		.align	2
+ 696              		.p2align 4,,15
+ 697              		.global	usbStart
+ 698              		.thumb
+ 699              		.thumb_func
+ 701              	usbStart:
+ 702              	.LFB122:
+ 248:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 249:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 250:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Configures and activates the USB peripheral.
+ 251:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 252:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 253:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] config    pointer to the @p USBConfig object
+ 254:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 255:/usr/src/chibiostest/os/hal/src/usb.c ****  * @api
+ 256:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 257:/usr/src/chibiostest/os/hal/src/usb.c **** void usbStart(USBDriver *usbp, const USBConfig *config) {
+ 703              		.loc 1 257 0
+ 704              		.cfi_startproc
+ 705              		@ args = 0, pretend = 0, frame = 16
+ 706              		@ frame_needed = 0, uses_anonymous_args = 0
+ 707 0000 00B5     		push	{lr}
+ 708              		.cfi_def_cfa_offset 4
+ 709              		.cfi_offset 14, -4
+ 710 0002 85B0     		sub	sp, sp, #20
+ 711              		.cfi_def_cfa_offset 24
+ 712 0004 0190     		str	r0, [sp, #4]
+ 713 0006 0091     		str	r1, [sp]
+ 258:/usr/src/chibiostest/os/hal/src/usb.c ****   unsigned i;
+ 259:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 260:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheck((usbp != NULL) && (config != NULL), "usbStart");
+ 714              		.loc 1 260 0
+ 715 0008 019B     		ldr	r3, [sp, #4]
+ 716 000a 002B     		cmp	r3, #0
+ 717 000c 02D0     		beq	.L47
+ 718              		.loc 1 260 0 is_stmt 0 discriminator 2
+ 719 000e 009B     		ldr	r3, [sp]
+ 720 0010 002B     		cmp	r3, #0
+ 721 0012 02D1     		bne	.L48
+ 722              	.L47:
+ 723              		.loc 1 260 0 discriminator 1
+ 724 0014 1948     		ldr	r0, .L52
+ 725 0016 FFF7FEFF 		bl	chDbgPanic
+ 726              	.L48:
+ 727              	.LBB2:
+ 261:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 262:/usr/src/chibiostest/os/hal/src/usb.c ****   chSysLock();
+ 728              		.loc 1 262 0 is_stmt 1
+ 729 001a 2023     		movs	r3, #32
+ 730              	@ 262 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 731 001c 83F31188 		msr     BASEPRI, r3
+ 732              	@ 0 "" 2
+ 733              		.thumb
+ 734              	.LBE2:
+ 735 0020 FFF7FEFF 		bl	dbg_check_lock
+ 263:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgAssert((usbp->state == USB_STOP) || (usbp->state == USB_READY),
+ 736              		.loc 1 263 0
+ 737 0024 019B     		ldr	r3, [sp, #4]
+ 738 0026 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 739 0028 012B     		cmp	r3, #1
+ 740 002a 06D0     		beq	.L49
+ 741              		.loc 1 263 0 is_stmt 0 discriminator 1
+ 742 002c 019B     		ldr	r3, [sp, #4]
+ 743 002e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 744 0030 022B     		cmp	r3, #2
+ 745 0032 02D0     		beq	.L49
+ 746 0034 1248     		ldr	r0, .L52+4
+ 747 0036 FFF7FEFF 		bl	chDbgPanic
+ 748              	.L49:
+ 264:/usr/src/chibiostest/os/hal/src/usb.c ****               "usbStart(), #1", "invalid state");
+ 265:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->config = config;
+ 749              		.loc 1 265 0 is_stmt 1
+ 750 003a 019B     		ldr	r3, [sp, #4]
+ 751 003c 009A     		ldr	r2, [sp]
+ 752 003e 5A60     		str	r2, [r3, #4]
+ 266:/usr/src/chibiostest/os/hal/src/usb.c ****   for (i = 0; i <= USB_MAX_ENDPOINTS; i++)
+ 753              		.loc 1 266 0
+ 754 0040 0023     		movs	r3, #0
+ 755 0042 0393     		str	r3, [sp, #12]
+ 756 0044 08E0     		b	.L50
+ 757              	.L51:
+ 267:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->epc[i] = NULL;
+ 758              		.loc 1 267 0 discriminator 2
+ 759 0046 019B     		ldr	r3, [sp, #4]
+ 760 0048 039A     		ldr	r2, [sp, #12]
+ 761 004a 0432     		adds	r2, r2, #4
+ 762 004c 0021     		movs	r1, #0
+ 763 004e 43F82210 		str	r1, [r3, r2, lsl #2]
+ 266:/usr/src/chibiostest/os/hal/src/usb.c ****   for (i = 0; i <= USB_MAX_ENDPOINTS; i++)
+ 764              		.loc 1 266 0 discriminator 2
+ 765 0052 039B     		ldr	r3, [sp, #12]
+ 766 0054 0133     		adds	r3, r3, #1
+ 767 0056 0393     		str	r3, [sp, #12]
+ 768              	.L50:
+ 266:/usr/src/chibiostest/os/hal/src/usb.c ****   for (i = 0; i <= USB_MAX_ENDPOINTS; i++)
+ 769              		.loc 1 266 0 is_stmt 0 discriminator 1
+ 770 0058 039B     		ldr	r3, [sp, #12]
+ 771 005a 032B     		cmp	r3, #3
+ 772 005c F3D9     		bls	.L51
+ 268:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_start(usbp);
+ 773              		.loc 1 268 0 is_stmt 1
+ 774 005e 0198     		ldr	r0, [sp, #4]
+ 775 0060 FFF7FEFF 		bl	usb_lld_start
+ 269:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->state = USB_READY;
+ 776              		.loc 1 269 0
+ 777 0064 019B     		ldr	r3, [sp, #4]
+ 778 0066 0222     		movs	r2, #2
+ 779 0068 1A70     		strb	r2, [r3]
+ 270:/usr/src/chibiostest/os/hal/src/usb.c ****   chSysUnlock();
+ 780              		.loc 1 270 0
+ 781 006a FFF7FEFF 		bl	dbg_check_unlock
+ 782              	.LBB3:
+ 783 006e 0023     		movs	r3, #0
+ 784              	@ 270 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 785 0070 83F31188 		msr     BASEPRI, r3
+ 786              	@ 0 "" 2
+ 787              		.thumb
+ 788              	.LBE3:
+ 271:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 789              		.loc 1 271 0
+ 790 0074 05B0     		add	sp, sp, #20
+ 791              		@ sp needed
+ 792 0076 5DF804FB 		ldr	pc, [sp], #4
+ 793              	.L53:
+ 794 007a 00BF     		.align	2
+ 795              	.L52:
+ 796 007c 00000000 		.word	.LC0
+ 797 0080 10000000 		.word	.LC1
+ 798              		.cfi_endproc
+ 799              	.LFE122:
+ 801 0084 AFF30080 		.section	.rodata
+ 801      AFF30080 
+ 801      AFF30080 
+ 802 001f 00       		.align	2
+ 803              	.LC2:
+ 804 0020 22757362 		.ascii	"\"usbStop\"()\000"
+ 804      53746F70 
+ 804      22282900 
+ 805              		.align	2
+ 806              	.LC3:
+ 807 002c 75736253 		.ascii	"usbStop(), #1\000"
+ 807      746F7028 
+ 807      292C2023 
+ 807      3100
+ 808              		.section	.text.usbStop,"ax",%progbits
+ 809              		.align	2
+ 810              		.p2align 4,,15
+ 811              		.global	usbStop
+ 812              		.thumb
+ 813              		.thumb_func
+ 815              	usbStop:
+ 816              	.LFB123:
+ 272:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 273:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 274:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Deactivates the USB peripheral.
+ 275:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 276:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 277:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 278:/usr/src/chibiostest/os/hal/src/usb.c ****  * @api
+ 279:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 280:/usr/src/chibiostest/os/hal/src/usb.c **** void usbStop(USBDriver *usbp) {
+ 817              		.loc 1 280 0
+ 818              		.cfi_startproc
+ 819              		@ args = 0, pretend = 0, frame = 8
+ 820              		@ frame_needed = 0, uses_anonymous_args = 0
+ 821 0000 00B5     		push	{lr}
+ 822              		.cfi_def_cfa_offset 4
+ 823              		.cfi_offset 14, -4
+ 824 0002 83B0     		sub	sp, sp, #12
+ 825              		.cfi_def_cfa_offset 16
+ 826 0004 0190     		str	r0, [sp, #4]
+ 281:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 282:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheck(usbp != NULL, "usbStop");
+ 827              		.loc 1 282 0
+ 828 0006 019B     		ldr	r3, [sp, #4]
+ 829 0008 002B     		cmp	r3, #0
+ 830 000a 02D1     		bne	.L55
+ 831              		.loc 1 282 0 is_stmt 0 discriminator 1
+ 832 000c 1048     		ldr	r0, .L57
+ 833 000e FFF7FEFF 		bl	chDbgPanic
+ 834              	.L55:
+ 835              	.LBB4:
+ 283:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 284:/usr/src/chibiostest/os/hal/src/usb.c ****   chSysLock();
+ 836              		.loc 1 284 0 is_stmt 1
+ 837 0012 2023     		movs	r3, #32
+ 838              	@ 284 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 839 0014 83F31188 		msr     BASEPRI, r3
+ 840              	@ 0 "" 2
+ 841              		.thumb
+ 842              	.LBE4:
+ 843 0018 FFF7FEFF 		bl	dbg_check_lock
+ 285:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgAssert((usbp->state == USB_STOP) || (usbp->state == USB_READY),
+ 844              		.loc 1 285 0
+ 845 001c 019B     		ldr	r3, [sp, #4]
+ 846 001e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 847 0020 012B     		cmp	r3, #1
+ 848 0022 06D0     		beq	.L56
+ 849              		.loc 1 285 0 is_stmt 0 discriminator 1
+ 850 0024 019B     		ldr	r3, [sp, #4]
+ 851 0026 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 852 0028 022B     		cmp	r3, #2
+ 853 002a 02D0     		beq	.L56
+ 854 002c 0948     		ldr	r0, .L57+4
+ 855 002e FFF7FEFF 		bl	chDbgPanic
+ 856              	.L56:
+ 286:/usr/src/chibiostest/os/hal/src/usb.c ****               "usbStop(), #1", "invalid state");
+ 287:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_stop(usbp);
+ 857              		.loc 1 287 0 is_stmt 1
+ 858 0032 0198     		ldr	r0, [sp, #4]
+ 859 0034 FFF7FEFF 		bl	usb_lld_stop
+ 288:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->state = USB_STOP;
+ 860              		.loc 1 288 0
+ 861 0038 019B     		ldr	r3, [sp, #4]
+ 862 003a 0122     		movs	r2, #1
+ 863 003c 1A70     		strb	r2, [r3]
+ 289:/usr/src/chibiostest/os/hal/src/usb.c ****   chSysUnlock();
+ 864              		.loc 1 289 0
+ 865 003e FFF7FEFF 		bl	dbg_check_unlock
+ 866              	.LBB5:
+ 867 0042 0023     		movs	r3, #0
+ 868              	@ 289 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 869 0044 83F31188 		msr     BASEPRI, r3
+ 870              	@ 0 "" 2
+ 871              		.thumb
+ 872              	.LBE5:
+ 290:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 873              		.loc 1 290 0
+ 874 0048 03B0     		add	sp, sp, #12
+ 875              		@ sp needed
+ 876 004a 5DF804FB 		ldr	pc, [sp], #4
+ 877              	.L58:
+ 878 004e 00BF     		.align	2
+ 879              	.L57:
+ 880 0050 20000000 		.word	.LC2
+ 881 0054 2C000000 		.word	.LC3
+ 882              		.cfi_endproc
+ 883              	.LFE123:
+ 885 0058 AFF30080 		.section	.rodata
+ 885      AFF30080 
+ 886 003a 0000     		.align	2
+ 887              	.LC4:
+ 888 003c 22757362 		.ascii	"\"usbInitEndpointI\"()\000"
+ 888      496E6974 
+ 888      456E6470 
+ 888      6F696E74 
+ 888      49222829 
+ 889 0051 000000   		.align	2
+ 890              	.LC5:
+ 891 0054 75736245 		.ascii	"usbEnableEndpointI(), #1\000"
+ 891      6E61626C 
+ 891      65456E64 
+ 891      706F696E 
+ 891      74492829 
+ 892 006d 000000   		.align	2
+ 893              	.LC6:
+ 894 0070 75736245 		.ascii	"usbEnableEndpointI(), #2\000"
+ 894      6E61626C 
+ 894      65456E64 
+ 894      706F696E 
+ 894      74492829 
+ 895              		.section	.text.usbInitEndpointI,"ax",%progbits
+ 896              		.align	2
+ 897              		.p2align 4,,15
+ 898              		.global	usbInitEndpointI
+ 899              		.thumb
+ 900              		.thumb_func
+ 902              	usbInitEndpointI:
+ 903              	.LFB124:
+ 291:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 292:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 293:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Enables an endpoint.
+ 294:/usr/src/chibiostest/os/hal/src/usb.c ****  * @details This function enables an endpoint, both IN and/or OUT directions
+ 295:/usr/src/chibiostest/os/hal/src/usb.c ****  *          depending on the configuration structure.
+ 296:/usr/src/chibiostest/os/hal/src/usb.c ****  * @note    This function must be invoked in response of a SET_CONFIGURATION
+ 297:/usr/src/chibiostest/os/hal/src/usb.c ****  *          or SET_INTERFACE message.
+ 298:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 299:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 300:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number
+ 301:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] epcp      the endpoint configuration
+ 302:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 303:/usr/src/chibiostest/os/hal/src/usb.c ****  * @iclass
+ 304:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 305:/usr/src/chibiostest/os/hal/src/usb.c **** void usbInitEndpointI(USBDriver *usbp, usbep_t ep,
+ 306:/usr/src/chibiostest/os/hal/src/usb.c ****                       const USBEndpointConfig *epcp) {
+ 904              		.loc 1 306 0
+ 905              		.cfi_startproc
+ 906              		@ args = 0, pretend = 0, frame = 16
+ 907              		@ frame_needed = 0, uses_anonymous_args = 0
+ 908 0000 00B5     		push	{lr}
+ 909              		.cfi_def_cfa_offset 4
+ 910              		.cfi_offset 14, -4
+ 911 0002 85B0     		sub	sp, sp, #20
+ 912              		.cfi_def_cfa_offset 24
+ 913 0004 0390     		str	r0, [sp, #12]
+ 914 0006 0B46     		mov	r3, r1
+ 915 0008 0192     		str	r2, [sp, #4]
+ 916 000a 8DF80B30 		strb	r3, [sp, #11]
+ 307:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 308:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheckClassI();
+ 917              		.loc 1 308 0
+ 918 000e FFF7FEFF 		bl	chDbgCheckClassI
+ 309:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheck((usbp != NULL) && (epcp != NULL), "usbInitEndpointI");
+ 919              		.loc 1 309 0
+ 920 0012 039B     		ldr	r3, [sp, #12]
+ 921 0014 002B     		cmp	r3, #0
+ 922 0016 02D0     		beq	.L60
+ 923              		.loc 1 309 0 is_stmt 0 discriminator 2
+ 924 0018 019B     		ldr	r3, [sp, #4]
+ 925 001a 002B     		cmp	r3, #0
+ 926 001c 02D1     		bne	.L61
+ 927              	.L60:
+ 928              		.loc 1 309 0 discriminator 1
+ 929 001e 1D48     		ldr	r0, .L66
+ 930 0020 FFF7FEFF 		bl	chDbgPanic
+ 931              	.L61:
+ 310:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgAssert(usbp->state == USB_ACTIVE,
+ 932              		.loc 1 310 0 is_stmt 1
+ 933 0024 039B     		ldr	r3, [sp, #12]
+ 934 0026 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 935 0028 042B     		cmp	r3, #4
+ 936 002a 02D0     		beq	.L62
+ 937              		.loc 1 310 0 is_stmt 0 discriminator 1
+ 938 002c 1A48     		ldr	r0, .L66+4
+ 939 002e FFF7FEFF 		bl	chDbgPanic
+ 940              	.L62:
+ 311:/usr/src/chibiostest/os/hal/src/usb.c ****               "usbEnableEndpointI(), #1", "invalid state");
+ 312:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgAssert(usbp->epc[ep] == NULL,
+ 941              		.loc 1 312 0 is_stmt 1
+ 942 0032 9DF80B20 		ldrb	r2, [sp, #11]	@ zero_extendqisi2
+ 943 0036 039B     		ldr	r3, [sp, #12]
+ 944 0038 0432     		adds	r2, r2, #4
+ 945 003a 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 946 003e 002B     		cmp	r3, #0
+ 947 0040 02D0     		beq	.L63
+ 948              		.loc 1 312 0 is_stmt 0 discriminator 1
+ 949 0042 1648     		ldr	r0, .L66+8
+ 950 0044 FFF7FEFF 		bl	chDbgPanic
+ 951              	.L63:
+ 313:/usr/src/chibiostest/os/hal/src/usb.c ****               "usbEnableEndpointI(), #2", "already initialized");
+ 314:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 315:/usr/src/chibiostest/os/hal/src/usb.c ****   /* Logically enabling the endpoint in the USBDriver structure.*/
+ 316:/usr/src/chibiostest/os/hal/src/usb.c ****   if (epcp->in_state != NULL)
+ 952              		.loc 1 316 0 is_stmt 1
+ 953 0048 019B     		ldr	r3, [sp, #4]
+ 954 004a 5B69     		ldr	r3, [r3, #20]
+ 955 004c 002B     		cmp	r3, #0
+ 956 004e 06D0     		beq	.L64
+ 317:/usr/src/chibiostest/os/hal/src/usb.c ****     memset(epcp->in_state, 0, sizeof(USBInEndpointState));
+ 957              		.loc 1 317 0
+ 958 0050 019B     		ldr	r3, [sp, #4]
+ 959 0052 5B69     		ldr	r3, [r3, #20]
+ 960 0054 1846     		mov	r0, r3
+ 961 0056 0021     		movs	r1, #0
+ 962 0058 1022     		movs	r2, #16
+ 963 005a FFF7FEFF 		bl	memset
+ 964              	.L64:
+ 318:/usr/src/chibiostest/os/hal/src/usb.c ****   if (epcp->out_state != NULL)
+ 965              		.loc 1 318 0
+ 966 005e 019B     		ldr	r3, [sp, #4]
+ 967 0060 9B69     		ldr	r3, [r3, #24]
+ 968 0062 002B     		cmp	r3, #0
+ 969 0064 06D0     		beq	.L65
+ 319:/usr/src/chibiostest/os/hal/src/usb.c ****     memset(epcp->out_state, 0, sizeof(USBOutEndpointState));
+ 970              		.loc 1 319 0
+ 971 0066 019B     		ldr	r3, [sp, #4]
+ 972 0068 9B69     		ldr	r3, [r3, #24]
+ 973 006a 1846     		mov	r0, r3
+ 974 006c 0021     		movs	r1, #0
+ 975 006e 1022     		movs	r2, #16
+ 976 0070 FFF7FEFF 		bl	memset
+ 977              	.L65:
+ 320:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 321:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->epc[ep] = epcp;
+ 978              		.loc 1 321 0
+ 979 0074 9DF80B20 		ldrb	r2, [sp, #11]	@ zero_extendqisi2
+ 980 0078 039B     		ldr	r3, [sp, #12]
+ 981 007a 0432     		adds	r2, r2, #4
+ 982 007c 0199     		ldr	r1, [sp, #4]
+ 983 007e 43F82210 		str	r1, [r3, r2, lsl #2]
+ 322:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 323:/usr/src/chibiostest/os/hal/src/usb.c ****   /* Low level endpoint activation.*/
+ 324:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_init_endpoint(usbp, ep);
+ 984              		.loc 1 324 0
+ 985 0082 9DF80B30 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 986 0086 0398     		ldr	r0, [sp, #12]
+ 987 0088 1946     		mov	r1, r3
+ 988 008a FFF7FEFF 		bl	usb_lld_init_endpoint
+ 325:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 989              		.loc 1 325 0
+ 990 008e 05B0     		add	sp, sp, #20
+ 991              		@ sp needed
+ 992 0090 5DF804FB 		ldr	pc, [sp], #4
+ 993              	.L67:
+ 994              		.align	2
+ 995              	.L66:
+ 996 0094 3C000000 		.word	.LC4
+ 997 0098 54000000 		.word	.LC5
+ 998 009c 70000000 		.word	.LC6
+ 999              		.cfi_endproc
+ 1000              	.LFE124:
+ 1002              		.section	.rodata
+ 1003 0089 000000   		.align	2
+ 1004              	.LC7:
+ 1005 008c 22757362 		.ascii	"\"usbDisableEndpointsI\"()\000"
+ 1005      44697361 
+ 1005      626C6545 
+ 1005      6E64706F 
+ 1005      696E7473 
+ 1006 00a5 000000   		.align	2
+ 1007              	.LC8:
+ 1008 00a8 75736244 		.ascii	"usbDisableEndpointsI(), #1\000"
+ 1008      69736162 
+ 1008      6C65456E 
+ 1008      64706F69 
+ 1008      6E747349 
+ 1009              		.section	.text.usbDisableEndpointsI,"ax",%progbits
+ 1010              		.align	2
+ 1011              		.p2align 4,,15
+ 1012              		.global	usbDisableEndpointsI
+ 1013              		.thumb
+ 1014              		.thumb_func
+ 1016              	usbDisableEndpointsI:
+ 1017              	.LFB125:
+ 326:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 327:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 328:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Disables all the active endpoints.
+ 329:/usr/src/chibiostest/os/hal/src/usb.c ****  * @details This function disables all the active endpoints except the
+ 330:/usr/src/chibiostest/os/hal/src/usb.c ****  *          endpoint zero.
+ 331:/usr/src/chibiostest/os/hal/src/usb.c ****  * @note    This function must be invoked in response of a SET_CONFIGURATION
+ 332:/usr/src/chibiostest/os/hal/src/usb.c ****  *          message with configuration number zero.
+ 333:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 334:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 335:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 336:/usr/src/chibiostest/os/hal/src/usb.c ****  * @iclass
+ 337:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 338:/usr/src/chibiostest/os/hal/src/usb.c **** void usbDisableEndpointsI(USBDriver *usbp) {
+ 1018              		.loc 1 338 0
+ 1019              		.cfi_startproc
+ 1020              		@ args = 0, pretend = 0, frame = 16
+ 1021              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1022 0000 00B5     		push	{lr}
+ 1023              		.cfi_def_cfa_offset 4
+ 1024              		.cfi_offset 14, -4
+ 1025 0002 85B0     		sub	sp, sp, #20
+ 1026              		.cfi_def_cfa_offset 24
+ 1027 0004 0190     		str	r0, [sp, #4]
+ 339:/usr/src/chibiostest/os/hal/src/usb.c ****   unsigned i;
+ 340:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 341:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheckClassI();
+ 1028              		.loc 1 341 0
+ 1029 0006 FFF7FEFF 		bl	chDbgCheckClassI
+ 342:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheck(usbp != NULL, "usbDisableEndpointsI");
+ 1030              		.loc 1 342 0
+ 1031 000a 019B     		ldr	r3, [sp, #4]
+ 1032 000c 002B     		cmp	r3, #0
+ 1033 000e 02D1     		bne	.L69
+ 1034              		.loc 1 342 0 is_stmt 0 discriminator 1
+ 1035 0010 1648     		ldr	r0, .L73
+ 1036 0012 FFF7FEFF 		bl	chDbgPanic
+ 1037              	.L69:
+ 343:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgAssert(usbp->state == USB_SELECTED,
+ 1038              		.loc 1 343 0 is_stmt 1
+ 1039 0016 019B     		ldr	r3, [sp, #4]
+ 1040 0018 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1041 001a 032B     		cmp	r3, #3
+ 1042 001c 02D0     		beq	.L70
+ 1043              		.loc 1 343 0 is_stmt 0 discriminator 1
+ 1044 001e 1448     		ldr	r0, .L73+4
+ 1045 0020 FFF7FEFF 		bl	chDbgPanic
+ 1046              	.L70:
+ 344:/usr/src/chibiostest/os/hal/src/usb.c ****               "usbDisableEndpointsI(), #1", "invalid state");
+ 345:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 346:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->transmitting &= ~1;
+ 1047              		.loc 1 346 0 is_stmt 1
+ 1048 0024 019B     		ldr	r3, [sp, #4]
+ 1049 0026 9B89     		ldrh	r3, [r3, #12]
+ 1050 0028 23F00103 		bic	r3, r3, #1
+ 1051 002c 9AB2     		uxth	r2, r3
+ 1052 002e 019B     		ldr	r3, [sp, #4]
+ 1053 0030 9A81     		strh	r2, [r3, #12]	@ movhi
+ 347:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->receiving    &= ~1;
+ 1054              		.loc 1 347 0
+ 1055 0032 019B     		ldr	r3, [sp, #4]
+ 1056 0034 DB89     		ldrh	r3, [r3, #14]
+ 1057 0036 23F00103 		bic	r3, r3, #1
+ 1058 003a 9AB2     		uxth	r2, r3
+ 1059 003c 019B     		ldr	r3, [sp, #4]
+ 1060 003e DA81     		strh	r2, [r3, #14]	@ movhi
+ 348:/usr/src/chibiostest/os/hal/src/usb.c ****   for (i = 1; i <= USB_MAX_ENDPOINTS; i++)
+ 1061              		.loc 1 348 0
+ 1062 0040 0123     		movs	r3, #1
+ 1063 0042 0393     		str	r3, [sp, #12]
+ 1064 0044 08E0     		b	.L71
+ 1065              	.L72:
+ 349:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->epc[i] = NULL;
+ 1066              		.loc 1 349 0 discriminator 2
+ 1067 0046 019B     		ldr	r3, [sp, #4]
+ 1068 0048 039A     		ldr	r2, [sp, #12]
+ 1069 004a 0432     		adds	r2, r2, #4
+ 1070 004c 0021     		movs	r1, #0
+ 1071 004e 43F82210 		str	r1, [r3, r2, lsl #2]
+ 348:/usr/src/chibiostest/os/hal/src/usb.c ****   for (i = 1; i <= USB_MAX_ENDPOINTS; i++)
+ 1072              		.loc 1 348 0 discriminator 2
+ 1073 0052 039B     		ldr	r3, [sp, #12]
+ 1074 0054 0133     		adds	r3, r3, #1
+ 1075 0056 0393     		str	r3, [sp, #12]
+ 1076              	.L71:
+ 348:/usr/src/chibiostest/os/hal/src/usb.c ****   for (i = 1; i <= USB_MAX_ENDPOINTS; i++)
+ 1077              		.loc 1 348 0 is_stmt 0 discriminator 1
+ 1078 0058 039B     		ldr	r3, [sp, #12]
+ 1079 005a 032B     		cmp	r3, #3
+ 1080 005c F3D9     		bls	.L72
+ 350:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 351:/usr/src/chibiostest/os/hal/src/usb.c ****   /* Low level endpoints deactivation.*/
+ 352:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_disable_endpoints(usbp);
+ 1081              		.loc 1 352 0 is_stmt 1
+ 1082 005e 0198     		ldr	r0, [sp, #4]
+ 1083 0060 FFF7FEFF 		bl	usb_lld_disable_endpoints
+ 353:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1084              		.loc 1 353 0
+ 1085 0064 05B0     		add	sp, sp, #20
+ 1086              		@ sp needed
+ 1087 0066 5DF804FB 		ldr	pc, [sp], #4
+ 1088              	.L74:
+ 1089 006a 00BF     		.align	2
+ 1090              	.L73:
+ 1091 006c 8C000000 		.word	.LC7
+ 1092 0070 A8000000 		.word	.LC8
+ 1093              		.cfi_endproc
+ 1094              	.LFE125:
+ 1096 0074 AFF30080 		.section	.text.usbPrepareReceive,"ax",%progbits
+ 1096      AFF30080 
+ 1096      AFF30080 
+ 1097              		.align	2
+ 1098              		.p2align 4,,15
+ 1099              		.global	usbPrepareReceive
+ 1100              		.thumb
+ 1101              		.thumb_func
+ 1103              	usbPrepareReceive:
+ 1104              	.LFB126:
+ 354:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 355:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 356:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Prepares for a receive transaction on an OUT endpoint.
+ 357:/usr/src/chibiostest/os/hal/src/usb.c ****  * @post    The endpoint is ready for @p usbStartReceiveI().
+ 358:/usr/src/chibiostest/os/hal/src/usb.c ****  * @note    This function can be called both in ISR and thread context.
+ 359:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 360:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 361:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number
+ 362:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[out] buf      buffer where to copy the received data
+ 363:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] n         transaction size
+ 364:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 365:/usr/src/chibiostest/os/hal/src/usb.c ****  * @special
+ 366:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 367:/usr/src/chibiostest/os/hal/src/usb.c **** void usbPrepareReceive(USBDriver *usbp, usbep_t ep, uint8_t *buf, size_t n) {
+ 1105              		.loc 1 367 0
+ 1106              		.cfi_startproc
+ 1107              		@ args = 0, pretend = 0, frame = 24
+ 1108              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1109 0000 00B5     		push	{lr}
+ 1110              		.cfi_def_cfa_offset 4
+ 1111              		.cfi_offset 14, -4
+ 1112 0002 87B0     		sub	sp, sp, #28
+ 1113              		.cfi_def_cfa_offset 32
+ 1114 0004 0390     		str	r0, [sp, #12]
+ 1115 0006 0192     		str	r2, [sp, #4]
+ 1116 0008 0093     		str	r3, [sp]
+ 1117 000a 0B46     		mov	r3, r1
+ 1118 000c 8DF80B30 		strb	r3, [sp, #11]
+ 368:/usr/src/chibiostest/os/hal/src/usb.c ****   USBOutEndpointState *osp = usbp->epc[ep]->out_state;
+ 1119              		.loc 1 368 0
+ 1120 0010 9DF80B20 		ldrb	r2, [sp, #11]	@ zero_extendqisi2
+ 1121 0014 039B     		ldr	r3, [sp, #12]
+ 1122 0016 0432     		adds	r2, r2, #4
+ 1123 0018 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 1124 001c 9B69     		ldr	r3, [r3, #24]
+ 1125 001e 0593     		str	r3, [sp, #20]
+ 369:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 370:/usr/src/chibiostest/os/hal/src/usb.c ****   osp->rxqueued           = FALSE;
+ 1126              		.loc 1 370 0
+ 1127 0020 059B     		ldr	r3, [sp, #20]
+ 1128 0022 0022     		movs	r2, #0
+ 1129 0024 1A60     		str	r2, [r3]
+ 371:/usr/src/chibiostest/os/hal/src/usb.c ****   osp->mode.linear.rxbuf  = buf;
+ 1130              		.loc 1 371 0
+ 1131 0026 059B     		ldr	r3, [sp, #20]
+ 1132 0028 019A     		ldr	r2, [sp, #4]
+ 1133 002a DA60     		str	r2, [r3, #12]
+ 372:/usr/src/chibiostest/os/hal/src/usb.c ****   osp->rxsize             = n;
+ 1134              		.loc 1 372 0
+ 1135 002c 059B     		ldr	r3, [sp, #20]
+ 1136 002e 009A     		ldr	r2, [sp]
+ 1137 0030 5A60     		str	r2, [r3, #4]
+ 373:/usr/src/chibiostest/os/hal/src/usb.c ****   osp->rxcnt              = 0;
+ 1138              		.loc 1 373 0
+ 1139 0032 059B     		ldr	r3, [sp, #20]
+ 1140 0034 0022     		movs	r2, #0
+ 1141 0036 9A60     		str	r2, [r3, #8]
+ 374:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 375:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_prepare_receive(usbp, ep);
+ 1142              		.loc 1 375 0
+ 1143 0038 9DF80B30 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 1144 003c 0398     		ldr	r0, [sp, #12]
+ 1145 003e 1946     		mov	r1, r3
+ 1146 0040 FFF7FEFF 		bl	usb_lld_prepare_receive
+ 376:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1147              		.loc 1 376 0
+ 1148 0044 07B0     		add	sp, sp, #28
+ 1149              		@ sp needed
+ 1150 0046 5DF804FB 		ldr	pc, [sp], #4
+ 1151              		.cfi_endproc
+ 1152              	.LFE126:
+ 1154 004a 00BFAFF3 		.section	.text.usbPrepareTransmit,"ax",%progbits
+ 1154      0080
+ 1155              		.align	2
+ 1156              		.p2align 4,,15
+ 1157              		.global	usbPrepareTransmit
+ 1158              		.thumb
+ 1159              		.thumb_func
+ 1161              	usbPrepareTransmit:
+ 1162              	.LFB127:
+ 377:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 378:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 379:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Prepares for a transmit transaction on an IN endpoint.
+ 380:/usr/src/chibiostest/os/hal/src/usb.c ****  * @post    The endpoint is ready for @p usbStartTransmitI().
+ 381:/usr/src/chibiostest/os/hal/src/usb.c ****  * @note    This function can be called both in ISR and thread context.
+ 382:/usr/src/chibiostest/os/hal/src/usb.c ****  * @note    The queue must contain at least the amount of data specified
+ 383:/usr/src/chibiostest/os/hal/src/usb.c ****  *          as transaction size.
+ 384:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 385:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 386:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number
+ 387:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] buf       buffer where to fetch the data to be transmitted
+ 388:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] n         transaction size
+ 389:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 390:/usr/src/chibiostest/os/hal/src/usb.c ****  * @special
+ 391:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 392:/usr/src/chibiostest/os/hal/src/usb.c **** void usbPrepareTransmit(USBDriver *usbp, usbep_t ep,
+ 393:/usr/src/chibiostest/os/hal/src/usb.c ****                         const uint8_t *buf, size_t n) {
+ 1163              		.loc 1 393 0
+ 1164              		.cfi_startproc
+ 1165              		@ args = 0, pretend = 0, frame = 24
+ 1166              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1167 0000 00B5     		push	{lr}
+ 1168              		.cfi_def_cfa_offset 4
+ 1169              		.cfi_offset 14, -4
+ 1170 0002 87B0     		sub	sp, sp, #28
+ 1171              		.cfi_def_cfa_offset 32
+ 1172 0004 0390     		str	r0, [sp, #12]
+ 1173 0006 0192     		str	r2, [sp, #4]
+ 1174 0008 0093     		str	r3, [sp]
+ 1175 000a 0B46     		mov	r3, r1
+ 1176 000c 8DF80B30 		strb	r3, [sp, #11]
+ 394:/usr/src/chibiostest/os/hal/src/usb.c ****   USBInEndpointState *isp = usbp->epc[ep]->in_state;
+ 1177              		.loc 1 394 0
+ 1178 0010 9DF80B20 		ldrb	r2, [sp, #11]	@ zero_extendqisi2
+ 1179 0014 039B     		ldr	r3, [sp, #12]
+ 1180 0016 0432     		adds	r2, r2, #4
+ 1181 0018 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 1182 001c 5B69     		ldr	r3, [r3, #20]
+ 1183 001e 0593     		str	r3, [sp, #20]
+ 395:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 396:/usr/src/chibiostest/os/hal/src/usb.c ****   isp->txqueued           = FALSE;
+ 1184              		.loc 1 396 0
+ 1185 0020 059B     		ldr	r3, [sp, #20]
+ 1186 0022 0022     		movs	r2, #0
+ 1187 0024 1A60     		str	r2, [r3]
+ 397:/usr/src/chibiostest/os/hal/src/usb.c ****   isp->mode.linear.txbuf  = buf;
+ 1188              		.loc 1 397 0
+ 1189 0026 059B     		ldr	r3, [sp, #20]
+ 1190 0028 019A     		ldr	r2, [sp, #4]
+ 1191 002a DA60     		str	r2, [r3, #12]
+ 398:/usr/src/chibiostest/os/hal/src/usb.c ****   isp->txsize             = n;
+ 1192              		.loc 1 398 0
+ 1193 002c 059B     		ldr	r3, [sp, #20]
+ 1194 002e 009A     		ldr	r2, [sp]
+ 1195 0030 5A60     		str	r2, [r3, #4]
+ 399:/usr/src/chibiostest/os/hal/src/usb.c ****   isp->txcnt              = 0;
+ 1196              		.loc 1 399 0
+ 1197 0032 059B     		ldr	r3, [sp, #20]
+ 1198 0034 0022     		movs	r2, #0
+ 1199 0036 9A60     		str	r2, [r3, #8]
+ 400:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 401:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_prepare_transmit(usbp, ep);
+ 1200              		.loc 1 401 0
+ 1201 0038 9DF80B30 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 1202 003c 0398     		ldr	r0, [sp, #12]
+ 1203 003e 1946     		mov	r1, r3
+ 1204 0040 FFF7FEFF 		bl	usb_lld_prepare_transmit
+ 402:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1205              		.loc 1 402 0
+ 1206 0044 07B0     		add	sp, sp, #28
+ 1207              		@ sp needed
+ 1208 0046 5DF804FB 		ldr	pc, [sp], #4
+ 1209              		.cfi_endproc
+ 1210              	.LFE127:
+ 1212 004a 00BFAFF3 		.section	.text.usbPrepareQueuedReceive,"ax",%progbits
+ 1212      0080
+ 1213              		.align	2
+ 1214              		.p2align 4,,15
+ 1215              		.global	usbPrepareQueuedReceive
+ 1216              		.thumb
+ 1217              		.thumb_func
+ 1219              	usbPrepareQueuedReceive:
+ 1220              	.LFB128:
+ 403:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 404:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 405:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Prepares for a receive transaction on an OUT endpoint.
+ 406:/usr/src/chibiostest/os/hal/src/usb.c ****  * @post    The endpoint is ready for @p usbStartReceiveI().
+ 407:/usr/src/chibiostest/os/hal/src/usb.c ****  * @note    This function can be called both in ISR and thread context.
+ 408:/usr/src/chibiostest/os/hal/src/usb.c ****  * @note    The queue must have enough free space to accommodate the
+ 409:/usr/src/chibiostest/os/hal/src/usb.c ****  *          specified transaction size rounded to the next packet size
+ 410:/usr/src/chibiostest/os/hal/src/usb.c ****  *          boundary. For example if the transaction size is 1 and the
+ 411:/usr/src/chibiostest/os/hal/src/usb.c ****  *          packet size is 64 then the queue must have space for at least
+ 412:/usr/src/chibiostest/os/hal/src/usb.c ****  *          64 bytes.
+ 413:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 414:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 415:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number
+ 416:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] iqp       input queue to be filled with incoming data
+ 417:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] n         transaction size
+ 418:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 419:/usr/src/chibiostest/os/hal/src/usb.c ****  * @special
+ 420:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 421:/usr/src/chibiostest/os/hal/src/usb.c **** void usbPrepareQueuedReceive(USBDriver *usbp, usbep_t ep,
+ 422:/usr/src/chibiostest/os/hal/src/usb.c ****                              InputQueue *iqp, size_t n) {
+ 1221              		.loc 1 422 0
+ 1222              		.cfi_startproc
+ 1223              		@ args = 0, pretend = 0, frame = 24
+ 1224              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1225 0000 00B5     		push	{lr}
+ 1226              		.cfi_def_cfa_offset 4
+ 1227              		.cfi_offset 14, -4
+ 1228 0002 87B0     		sub	sp, sp, #28
+ 1229              		.cfi_def_cfa_offset 32
+ 1230 0004 0390     		str	r0, [sp, #12]
+ 1231 0006 0192     		str	r2, [sp, #4]
+ 1232 0008 0093     		str	r3, [sp]
+ 1233 000a 0B46     		mov	r3, r1
+ 1234 000c 8DF80B30 		strb	r3, [sp, #11]
+ 423:/usr/src/chibiostest/os/hal/src/usb.c ****   USBOutEndpointState *osp = usbp->epc[ep]->out_state;
+ 1235              		.loc 1 423 0
+ 1236 0010 9DF80B20 		ldrb	r2, [sp, #11]	@ zero_extendqisi2
+ 1237 0014 039B     		ldr	r3, [sp, #12]
+ 1238 0016 0432     		adds	r2, r2, #4
+ 1239 0018 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 1240 001c 9B69     		ldr	r3, [r3, #24]
+ 1241 001e 0593     		str	r3, [sp, #20]
+ 424:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 425:/usr/src/chibiostest/os/hal/src/usb.c ****   osp->rxqueued           = TRUE;
+ 1242              		.loc 1 425 0
+ 1243 0020 059B     		ldr	r3, [sp, #20]
+ 1244 0022 0122     		movs	r2, #1
+ 1245 0024 1A60     		str	r2, [r3]
+ 426:/usr/src/chibiostest/os/hal/src/usb.c ****   osp->mode.queue.rxqueue = iqp;
+ 1246              		.loc 1 426 0
+ 1247 0026 059B     		ldr	r3, [sp, #20]
+ 1248 0028 019A     		ldr	r2, [sp, #4]
+ 1249 002a DA60     		str	r2, [r3, #12]
+ 427:/usr/src/chibiostest/os/hal/src/usb.c ****   osp->rxsize             = n;
+ 1250              		.loc 1 427 0
+ 1251 002c 059B     		ldr	r3, [sp, #20]
+ 1252 002e 009A     		ldr	r2, [sp]
+ 1253 0030 5A60     		str	r2, [r3, #4]
+ 428:/usr/src/chibiostest/os/hal/src/usb.c ****   osp->rxcnt              = 0;
+ 1254              		.loc 1 428 0
+ 1255 0032 059B     		ldr	r3, [sp, #20]
+ 1256 0034 0022     		movs	r2, #0
+ 1257 0036 9A60     		str	r2, [r3, #8]
+ 429:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 430:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_prepare_receive(usbp, ep);
+ 1258              		.loc 1 430 0
+ 1259 0038 9DF80B30 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 1260 003c 0398     		ldr	r0, [sp, #12]
+ 1261 003e 1946     		mov	r1, r3
+ 1262 0040 FFF7FEFF 		bl	usb_lld_prepare_receive
+ 431:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1263              		.loc 1 431 0
+ 1264 0044 07B0     		add	sp, sp, #28
+ 1265              		@ sp needed
+ 1266 0046 5DF804FB 		ldr	pc, [sp], #4
+ 1267              		.cfi_endproc
+ 1268              	.LFE128:
+ 1270 004a 00BFAFF3 		.section	.text.usbPrepareQueuedTransmit,"ax",%progbits
+ 1270      0080
+ 1271              		.align	2
+ 1272              		.p2align 4,,15
+ 1273              		.global	usbPrepareQueuedTransmit
+ 1274              		.thumb
+ 1275              		.thumb_func
+ 1277              	usbPrepareQueuedTransmit:
+ 1278              	.LFB129:
+ 432:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 433:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 434:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Prepares for a transmit transaction on an IN endpoint.
+ 435:/usr/src/chibiostest/os/hal/src/usb.c ****  * @post    The endpoint is ready for @p usbStartTransmitI().
+ 436:/usr/src/chibiostest/os/hal/src/usb.c ****  * @note    This function can be called both in ISR and thread context.
+ 437:/usr/src/chibiostest/os/hal/src/usb.c ****  * @note    The transmit transaction size is equal to the data contained
+ 438:/usr/src/chibiostest/os/hal/src/usb.c ****  *          in the queue.
+ 439:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 440:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 441:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number
+ 442:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] oqp       output queue to be fetched for outgoing data
+ 443:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] n         transaction size
+ 444:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 445:/usr/src/chibiostest/os/hal/src/usb.c ****  * @special
+ 446:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 447:/usr/src/chibiostest/os/hal/src/usb.c **** void usbPrepareQueuedTransmit(USBDriver *usbp, usbep_t ep,
+ 448:/usr/src/chibiostest/os/hal/src/usb.c ****                               OutputQueue *oqp, size_t n) {
+ 1279              		.loc 1 448 0
+ 1280              		.cfi_startproc
+ 1281              		@ args = 0, pretend = 0, frame = 24
+ 1282              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1283 0000 00B5     		push	{lr}
+ 1284              		.cfi_def_cfa_offset 4
+ 1285              		.cfi_offset 14, -4
+ 1286 0002 87B0     		sub	sp, sp, #28
+ 1287              		.cfi_def_cfa_offset 32
+ 1288 0004 0390     		str	r0, [sp, #12]
+ 1289 0006 0192     		str	r2, [sp, #4]
+ 1290 0008 0093     		str	r3, [sp]
+ 1291 000a 0B46     		mov	r3, r1
+ 1292 000c 8DF80B30 		strb	r3, [sp, #11]
+ 449:/usr/src/chibiostest/os/hal/src/usb.c ****   USBInEndpointState *isp = usbp->epc[ep]->in_state;
+ 1293              		.loc 1 449 0
+ 1294 0010 9DF80B20 		ldrb	r2, [sp, #11]	@ zero_extendqisi2
+ 1295 0014 039B     		ldr	r3, [sp, #12]
+ 1296 0016 0432     		adds	r2, r2, #4
+ 1297 0018 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 1298 001c 5B69     		ldr	r3, [r3, #20]
+ 1299 001e 0593     		str	r3, [sp, #20]
+ 450:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 451:/usr/src/chibiostest/os/hal/src/usb.c ****   isp->txqueued           = TRUE;
+ 1300              		.loc 1 451 0
+ 1301 0020 059B     		ldr	r3, [sp, #20]
+ 1302 0022 0122     		movs	r2, #1
+ 1303 0024 1A60     		str	r2, [r3]
+ 452:/usr/src/chibiostest/os/hal/src/usb.c ****   isp->mode.queue.txqueue = oqp;
+ 1304              		.loc 1 452 0
+ 1305 0026 059B     		ldr	r3, [sp, #20]
+ 1306 0028 019A     		ldr	r2, [sp, #4]
+ 1307 002a DA60     		str	r2, [r3, #12]
+ 453:/usr/src/chibiostest/os/hal/src/usb.c ****   isp->txsize             = n;
+ 1308              		.loc 1 453 0
+ 1309 002c 059B     		ldr	r3, [sp, #20]
+ 1310 002e 009A     		ldr	r2, [sp]
+ 1311 0030 5A60     		str	r2, [r3, #4]
+ 454:/usr/src/chibiostest/os/hal/src/usb.c ****   isp->txcnt              = 0;
+ 1312              		.loc 1 454 0
+ 1313 0032 059B     		ldr	r3, [sp, #20]
+ 1314 0034 0022     		movs	r2, #0
+ 1315 0036 9A60     		str	r2, [r3, #8]
+ 455:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 456:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_prepare_transmit(usbp, ep);
+ 1316              		.loc 1 456 0
+ 1317 0038 9DF80B30 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 1318 003c 0398     		ldr	r0, [sp, #12]
+ 1319 003e 1946     		mov	r1, r3
+ 1320 0040 FFF7FEFF 		bl	usb_lld_prepare_transmit
+ 457:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1321              		.loc 1 457 0
+ 1322 0044 07B0     		add	sp, sp, #28
+ 1323              		@ sp needed
+ 1324 0046 5DF804FB 		ldr	pc, [sp], #4
+ 1325              		.cfi_endproc
+ 1326              	.LFE129:
+ 1328 004a 00BFAFF3 		.section	.rodata
+ 1328      0080
+ 1329 00c3 00       		.align	2
+ 1330              	.LC9:
+ 1331 00c4 22757362 		.ascii	"\"usbStartReceiveI\"()\000"
+ 1331      53746172 
+ 1331      74526563 
+ 1331      65697665 
+ 1331      49222829 
+ 1332              		.section	.text.usbStartReceiveI,"ax",%progbits
+ 1333              		.align	2
+ 1334              		.p2align 4,,15
+ 1335              		.global	usbStartReceiveI
+ 1336              		.thumb
+ 1337              		.thumb_func
+ 1339              	usbStartReceiveI:
+ 1340              	.LFB130:
+ 458:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 459:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 460:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Starts a receive transaction on an OUT endpoint.
+ 461:/usr/src/chibiostest/os/hal/src/usb.c ****  * @post    The endpoint callback is invoked when the transfer has been
+ 462:/usr/src/chibiostest/os/hal/src/usb.c ****  *          completed.
+ 463:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 464:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 465:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number
+ 466:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 467:/usr/src/chibiostest/os/hal/src/usb.c ****  * @return              The operation status.
+ 468:/usr/src/chibiostest/os/hal/src/usb.c ****  * @retval FALSE        Operation started successfully.
+ 469:/usr/src/chibiostest/os/hal/src/usb.c ****  * @retval TRUE         Endpoint busy, operation not started.
+ 470:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 471:/usr/src/chibiostest/os/hal/src/usb.c ****  * @iclass
+ 472:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 473:/usr/src/chibiostest/os/hal/src/usb.c **** bool_t usbStartReceiveI(USBDriver *usbp, usbep_t ep) {
+ 1341              		.loc 1 473 0
+ 1342              		.cfi_startproc
+ 1343              		@ args = 0, pretend = 0, frame = 8
+ 1344              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1345 0000 00B5     		push	{lr}
+ 1346              		.cfi_def_cfa_offset 4
+ 1347              		.cfi_offset 14, -4
+ 1348 0002 83B0     		sub	sp, sp, #12
+ 1349              		.cfi_def_cfa_offset 16
+ 1350 0004 0190     		str	r0, [sp, #4]
+ 1351 0006 0B46     		mov	r3, r1
+ 1352 0008 8DF80330 		strb	r3, [sp, #3]
+ 474:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 475:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheckClassI();
+ 1353              		.loc 1 475 0
+ 1354 000c FFF7FEFF 		bl	chDbgCheckClassI
+ 476:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheck(usbp != NULL, "usbStartReceiveI");
+ 1355              		.loc 1 476 0
+ 1356 0010 019B     		ldr	r3, [sp, #4]
+ 1357 0012 002B     		cmp	r3, #0
+ 1358 0014 02D1     		bne	.L80
+ 1359              		.loc 1 476 0 is_stmt 0 discriminator 1
+ 1360 0016 1448     		ldr	r0, .L83
+ 1361 0018 FFF7FEFF 		bl	chDbgPanic
+ 1362              	.L80:
+ 477:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 478:/usr/src/chibiostest/os/hal/src/usb.c ****   if (usbGetReceiveStatusI(usbp, ep))
+ 1363              		.loc 1 478 0 is_stmt 1
+ 1364 001c 019B     		ldr	r3, [sp, #4]
+ 1365 001e DB89     		ldrh	r3, [r3, #14]
+ 1366 0020 1A46     		mov	r2, r3
+ 1367 0022 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1368 0026 42FA03F3 		asr	r3, r2, r3
+ 1369 002a 03F00103 		and	r3, r3, #1
+ 1370 002e 002B     		cmp	r3, #0
+ 1371 0030 01D0     		beq	.L81
+ 479:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 1372              		.loc 1 479 0
+ 1373 0032 0123     		movs	r3, #1
+ 1374 0034 14E0     		b	.L82
+ 1375              	.L81:
+ 480:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 481:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->receiving |= (1 << ep);
+ 1376              		.loc 1 481 0
+ 1377 0036 019B     		ldr	r3, [sp, #4]
+ 1378 0038 DB89     		ldrh	r3, [r3, #14]
+ 1379 003a 9AB2     		uxth	r2, r3
+ 1380 003c 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1381 0040 0121     		movs	r1, #1
+ 1382 0042 01FA03F3 		lsl	r3, r1, r3
+ 1383 0046 9BB2     		uxth	r3, r3
+ 1384 0048 1343     		orrs	r3, r3, r2
+ 1385 004a 9BB2     		uxth	r3, r3
+ 1386 004c 9AB2     		uxth	r2, r3
+ 1387 004e 019B     		ldr	r3, [sp, #4]
+ 1388 0050 DA81     		strh	r2, [r3, #14]	@ movhi
+ 482:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_start_out(usbp, ep);
+ 1389              		.loc 1 482 0
+ 1390 0052 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1391 0056 0198     		ldr	r0, [sp, #4]
+ 1392 0058 1946     		mov	r1, r3
+ 1393 005a FFF7FEFF 		bl	usb_lld_start_out
+ 483:/usr/src/chibiostest/os/hal/src/usb.c ****   return FALSE;
+ 1394              		.loc 1 483 0
+ 1395 005e 0023     		movs	r3, #0
+ 1396              	.L82:
+ 484:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1397              		.loc 1 484 0
+ 1398 0060 1846     		mov	r0, r3
+ 1399 0062 03B0     		add	sp, sp, #12
+ 1400              		@ sp needed
+ 1401 0064 5DF804FB 		ldr	pc, [sp], #4
+ 1402              	.L84:
+ 1403              		.align	2
+ 1404              	.L83:
+ 1405 0068 C4000000 		.word	.LC9
+ 1406              		.cfi_endproc
+ 1407              	.LFE130:
+ 1409 006c AFF30080 		.section	.rodata
+ 1410 00d9 000000   		.align	2
+ 1411              	.LC10:
+ 1412 00dc 22757362 		.ascii	"\"usbStartTransmitI\"()\000"
+ 1412      53746172 
+ 1412      74547261 
+ 1412      6E736D69 
+ 1412      74492228 
+ 1413              		.section	.text.usbStartTransmitI,"ax",%progbits
+ 1414              		.align	2
+ 1415              		.p2align 4,,15
+ 1416              		.global	usbStartTransmitI
+ 1417              		.thumb
+ 1418              		.thumb_func
+ 1420              	usbStartTransmitI:
+ 1421              	.LFB131:
+ 485:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 486:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 487:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Starts a transmit transaction on an IN endpoint.
+ 488:/usr/src/chibiostest/os/hal/src/usb.c ****  * @post    The endpoint callback is invoked when the transfer has been
+ 489:/usr/src/chibiostest/os/hal/src/usb.c ****  *          completed.
+ 490:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 491:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 492:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number
+ 493:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 494:/usr/src/chibiostest/os/hal/src/usb.c ****  * @return              The operation status.
+ 495:/usr/src/chibiostest/os/hal/src/usb.c ****  * @retval FALSE        Operation started successfully.
+ 496:/usr/src/chibiostest/os/hal/src/usb.c ****  * @retval TRUE         Endpoint busy, operation not started.
+ 497:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 498:/usr/src/chibiostest/os/hal/src/usb.c ****  * @iclass
+ 499:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 500:/usr/src/chibiostest/os/hal/src/usb.c **** bool_t usbStartTransmitI(USBDriver *usbp, usbep_t ep) {
+ 1422              		.loc 1 500 0
+ 1423              		.cfi_startproc
+ 1424              		@ args = 0, pretend = 0, frame = 8
+ 1425              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1426 0000 00B5     		push	{lr}
+ 1427              		.cfi_def_cfa_offset 4
+ 1428              		.cfi_offset 14, -4
+ 1429 0002 83B0     		sub	sp, sp, #12
+ 1430              		.cfi_def_cfa_offset 16
+ 1431 0004 0190     		str	r0, [sp, #4]
+ 1432 0006 0B46     		mov	r3, r1
+ 1433 0008 8DF80330 		strb	r3, [sp, #3]
+ 501:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 502:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheckClassI();
+ 1434              		.loc 1 502 0
+ 1435 000c FFF7FEFF 		bl	chDbgCheckClassI
+ 503:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheck(usbp != NULL, "usbStartTransmitI");
+ 1436              		.loc 1 503 0
+ 1437 0010 019B     		ldr	r3, [sp, #4]
+ 1438 0012 002B     		cmp	r3, #0
+ 1439 0014 02D1     		bne	.L86
+ 1440              		.loc 1 503 0 is_stmt 0 discriminator 1
+ 1441 0016 1448     		ldr	r0, .L89
+ 1442 0018 FFF7FEFF 		bl	chDbgPanic
+ 1443              	.L86:
+ 504:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 505:/usr/src/chibiostest/os/hal/src/usb.c ****   if (usbGetTransmitStatusI(usbp, ep))
+ 1444              		.loc 1 505 0 is_stmt 1
+ 1445 001c 019B     		ldr	r3, [sp, #4]
+ 1446 001e 9B89     		ldrh	r3, [r3, #12]
+ 1447 0020 1A46     		mov	r2, r3
+ 1448 0022 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1449 0026 42FA03F3 		asr	r3, r2, r3
+ 1450 002a 03F00103 		and	r3, r3, #1
+ 1451 002e 002B     		cmp	r3, #0
+ 1452 0030 01D0     		beq	.L87
+ 506:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 1453              		.loc 1 506 0
+ 1454 0032 0123     		movs	r3, #1
+ 1455 0034 14E0     		b	.L88
+ 1456              	.L87:
+ 507:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 508:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->transmitting |= (1 << ep);
+ 1457              		.loc 1 508 0
+ 1458 0036 019B     		ldr	r3, [sp, #4]
+ 1459 0038 9B89     		ldrh	r3, [r3, #12]
+ 1460 003a 9AB2     		uxth	r2, r3
+ 1461 003c 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1462 0040 0121     		movs	r1, #1
+ 1463 0042 01FA03F3 		lsl	r3, r1, r3
+ 1464 0046 9BB2     		uxth	r3, r3
+ 1465 0048 1343     		orrs	r3, r3, r2
+ 1466 004a 9BB2     		uxth	r3, r3
+ 1467 004c 9AB2     		uxth	r2, r3
+ 1468 004e 019B     		ldr	r3, [sp, #4]
+ 1469 0050 9A81     		strh	r2, [r3, #12]	@ movhi
+ 509:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_start_in(usbp, ep);
+ 1470              		.loc 1 509 0
+ 1471 0052 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1472 0056 0198     		ldr	r0, [sp, #4]
+ 1473 0058 1946     		mov	r1, r3
+ 1474 005a FFF7FEFF 		bl	usb_lld_start_in
+ 510:/usr/src/chibiostest/os/hal/src/usb.c ****   return FALSE;
+ 1475              		.loc 1 510 0
+ 1476 005e 0023     		movs	r3, #0
+ 1477              	.L88:
+ 511:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1478              		.loc 1 511 0
+ 1479 0060 1846     		mov	r0, r3
+ 1480 0062 03B0     		add	sp, sp, #12
+ 1481              		@ sp needed
+ 1482 0064 5DF804FB 		ldr	pc, [sp], #4
+ 1483              	.L90:
+ 1484              		.align	2
+ 1485              	.L89:
+ 1486 0068 DC000000 		.word	.LC10
+ 1487              		.cfi_endproc
+ 1488              	.LFE131:
+ 1490 006c AFF30080 		.section	.rodata
+ 1491 00f2 0000     		.align	2
+ 1492              	.LC11:
+ 1493 00f4 22757362 		.ascii	"\"usbStallReceiveI\"()\000"
+ 1493      5374616C 
+ 1493      6C526563 
+ 1493      65697665 
+ 1493      49222829 
+ 1494              		.section	.text.usbStallReceiveI,"ax",%progbits
+ 1495              		.align	2
+ 1496              		.p2align 4,,15
+ 1497              		.global	usbStallReceiveI
+ 1498              		.thumb
+ 1499              		.thumb_func
+ 1501              	usbStallReceiveI:
+ 1502              	.LFB132:
+ 512:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 513:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 514:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Stalls an OUT endpoint.
+ 515:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 516:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 517:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number
+ 518:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 519:/usr/src/chibiostest/os/hal/src/usb.c ****  * @return              The operation status.
+ 520:/usr/src/chibiostest/os/hal/src/usb.c ****  * @retval FALSE        Endpoint stalled.
+ 521:/usr/src/chibiostest/os/hal/src/usb.c ****  * @retval TRUE         Endpoint busy, not stalled.
+ 522:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 523:/usr/src/chibiostest/os/hal/src/usb.c ****  * @iclass
+ 524:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 525:/usr/src/chibiostest/os/hal/src/usb.c **** bool_t usbStallReceiveI(USBDriver *usbp, usbep_t ep) {
+ 1503              		.loc 1 525 0
+ 1504              		.cfi_startproc
+ 1505              		@ args = 0, pretend = 0, frame = 8
+ 1506              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1507 0000 00B5     		push	{lr}
+ 1508              		.cfi_def_cfa_offset 4
+ 1509              		.cfi_offset 14, -4
+ 1510 0002 83B0     		sub	sp, sp, #12
+ 1511              		.cfi_def_cfa_offset 16
+ 1512 0004 0190     		str	r0, [sp, #4]
+ 1513 0006 0B46     		mov	r3, r1
+ 1514 0008 8DF80330 		strb	r3, [sp, #3]
+ 526:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 527:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheckClassI();
+ 1515              		.loc 1 527 0
+ 1516 000c FFF7FEFF 		bl	chDbgCheckClassI
+ 528:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheck(usbp != NULL, "usbStallReceiveI");
+ 1517              		.loc 1 528 0
+ 1518 0010 019B     		ldr	r3, [sp, #4]
+ 1519 0012 002B     		cmp	r3, #0
+ 1520 0014 02D1     		bne	.L92
+ 1521              		.loc 1 528 0 is_stmt 0 discriminator 1
+ 1522 0016 0D48     		ldr	r0, .L95
+ 1523 0018 FFF7FEFF 		bl	chDbgPanic
+ 1524              	.L92:
+ 529:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 530:/usr/src/chibiostest/os/hal/src/usb.c ****   if (usbGetReceiveStatusI(usbp, ep))
+ 1525              		.loc 1 530 0 is_stmt 1
+ 1526 001c 019B     		ldr	r3, [sp, #4]
+ 1527 001e DB89     		ldrh	r3, [r3, #14]
+ 1528 0020 1A46     		mov	r2, r3
+ 1529 0022 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1530 0026 42FA03F3 		asr	r3, r2, r3
+ 1531 002a 03F00103 		and	r3, r3, #1
+ 1532 002e 002B     		cmp	r3, #0
+ 1533 0030 01D0     		beq	.L93
+ 531:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 1534              		.loc 1 531 0
+ 1535 0032 0123     		movs	r3, #1
+ 1536 0034 06E0     		b	.L94
+ 1537              	.L93:
+ 532:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 533:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_stall_out(usbp, ep);
+ 1538              		.loc 1 533 0
+ 1539 0036 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1540 003a 0198     		ldr	r0, [sp, #4]
+ 1541 003c 1946     		mov	r1, r3
+ 1542 003e FFF7FEFF 		bl	usb_lld_stall_out
+ 534:/usr/src/chibiostest/os/hal/src/usb.c ****   return FALSE;
+ 1543              		.loc 1 534 0
+ 1544 0042 0023     		movs	r3, #0
+ 1545              	.L94:
+ 535:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1546              		.loc 1 535 0
+ 1547 0044 1846     		mov	r0, r3
+ 1548 0046 03B0     		add	sp, sp, #12
+ 1549              		@ sp needed
+ 1550 0048 5DF804FB 		ldr	pc, [sp], #4
+ 1551              	.L96:
+ 1552              		.align	2
+ 1553              	.L95:
+ 1554 004c F4000000 		.word	.LC11
+ 1555              		.cfi_endproc
+ 1556              	.LFE132:
+ 1558              		.section	.rodata
+ 1559 0109 000000   		.align	2
+ 1560              	.LC12:
+ 1561 010c 22757362 		.ascii	"\"usbStallTransmitI\"()\000"
+ 1561      5374616C 
+ 1561      6C547261 
+ 1561      6E736D69 
+ 1561      74492228 
+ 1562 0122 0000     		.section	.text.usbStallTransmitI,"ax",%progbits
+ 1563              		.align	2
+ 1564              		.p2align 4,,15
+ 1565              		.global	usbStallTransmitI
+ 1566              		.thumb
+ 1567              		.thumb_func
+ 1569              	usbStallTransmitI:
+ 1570              	.LFB133:
+ 536:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 537:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 538:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Stalls an IN endpoint.
+ 539:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 540:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 541:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number
+ 542:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 543:/usr/src/chibiostest/os/hal/src/usb.c ****  * @return              The operation status.
+ 544:/usr/src/chibiostest/os/hal/src/usb.c ****  * @retval FALSE        Endpoint stalled.
+ 545:/usr/src/chibiostest/os/hal/src/usb.c ****  * @retval TRUE         Endpoint busy, not stalled.
+ 546:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 547:/usr/src/chibiostest/os/hal/src/usb.c ****  * @iclass
+ 548:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 549:/usr/src/chibiostest/os/hal/src/usb.c **** bool_t usbStallTransmitI(USBDriver *usbp, usbep_t ep) {
+ 1571              		.loc 1 549 0
+ 1572              		.cfi_startproc
+ 1573              		@ args = 0, pretend = 0, frame = 8
+ 1574              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1575 0000 00B5     		push	{lr}
+ 1576              		.cfi_def_cfa_offset 4
+ 1577              		.cfi_offset 14, -4
+ 1578 0002 83B0     		sub	sp, sp, #12
+ 1579              		.cfi_def_cfa_offset 16
+ 1580 0004 0190     		str	r0, [sp, #4]
+ 1581 0006 0B46     		mov	r3, r1
+ 1582 0008 8DF80330 		strb	r3, [sp, #3]
+ 550:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 551:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheckClassI();
+ 1583              		.loc 1 551 0
+ 1584 000c FFF7FEFF 		bl	chDbgCheckClassI
+ 552:/usr/src/chibiostest/os/hal/src/usb.c ****   chDbgCheck(usbp != NULL, "usbStallTransmitI");
+ 1585              		.loc 1 552 0
+ 1586 0010 019B     		ldr	r3, [sp, #4]
+ 1587 0012 002B     		cmp	r3, #0
+ 1588 0014 02D1     		bne	.L98
+ 1589              		.loc 1 552 0 is_stmt 0 discriminator 1
+ 1590 0016 0D48     		ldr	r0, .L101
+ 1591 0018 FFF7FEFF 		bl	chDbgPanic
+ 1592              	.L98:
+ 553:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 554:/usr/src/chibiostest/os/hal/src/usb.c ****   if (usbGetTransmitStatusI(usbp, ep))
+ 1593              		.loc 1 554 0 is_stmt 1
+ 1594 001c 019B     		ldr	r3, [sp, #4]
+ 1595 001e 9B89     		ldrh	r3, [r3, #12]
+ 1596 0020 1A46     		mov	r2, r3
+ 1597 0022 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1598 0026 42FA03F3 		asr	r3, r2, r3
+ 1599 002a 03F00103 		and	r3, r3, #1
+ 1600 002e 002B     		cmp	r3, #0
+ 1601 0030 01D0     		beq	.L99
+ 555:/usr/src/chibiostest/os/hal/src/usb.c ****     return TRUE;
+ 1602              		.loc 1 555 0
+ 1603 0032 0123     		movs	r3, #1
+ 1604 0034 06E0     		b	.L100
+ 1605              	.L99:
+ 556:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 557:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_stall_in(usbp, ep);
+ 1606              		.loc 1 557 0
+ 1607 0036 9DF80330 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 1608 003a 0198     		ldr	r0, [sp, #4]
+ 1609 003c 1946     		mov	r1, r3
+ 1610 003e FFF7FEFF 		bl	usb_lld_stall_in
+ 558:/usr/src/chibiostest/os/hal/src/usb.c ****   return FALSE;
+ 1611              		.loc 1 558 0
+ 1612 0042 0023     		movs	r3, #0
+ 1613              	.L100:
+ 559:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1614              		.loc 1 559 0
+ 1615 0044 1846     		mov	r0, r3
+ 1616 0046 03B0     		add	sp, sp, #12
+ 1617              		@ sp needed
+ 1618 0048 5DF804FB 		ldr	pc, [sp], #4
+ 1619              	.L102:
+ 1620              		.align	2
+ 1621              	.L101:
+ 1622 004c 0C010000 		.word	.LC12
+ 1623              		.cfi_endproc
+ 1624              	.LFE133:
+ 1626              		.section	.text._usb_reset,"ax",%progbits
+ 1627              		.align	2
+ 1628              		.p2align 4,,15
+ 1629              		.global	_usb_reset
+ 1630              		.thumb
+ 1631              		.thumb_func
+ 1633              	_usb_reset:
+ 1634              	.LFB134:
+ 560:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 561:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 562:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   USB reset routine.
+ 563:/usr/src/chibiostest/os/hal/src/usb.c ****  * @details This function must be invoked when an USB bus reset condition is
+ 564:/usr/src/chibiostest/os/hal/src/usb.c ****  *          detected.
+ 565:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 566:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 567:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 568:/usr/src/chibiostest/os/hal/src/usb.c ****  * @notapi
+ 569:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 570:/usr/src/chibiostest/os/hal/src/usb.c **** void _usb_reset(USBDriver *usbp) {
+ 1635              		.loc 1 570 0
+ 1636              		.cfi_startproc
+ 1637              		@ args = 0, pretend = 0, frame = 16
+ 1638              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1639 0000 00B5     		push	{lr}
+ 1640              		.cfi_def_cfa_offset 4
+ 1641              		.cfi_offset 14, -4
+ 1642 0002 85B0     		sub	sp, sp, #20
+ 1643              		.cfi_def_cfa_offset 24
+ 1644 0004 0190     		str	r0, [sp, #4]
+ 571:/usr/src/chibiostest/os/hal/src/usb.c ****   unsigned i;
+ 572:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 573:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->state         = USB_READY;
+ 1645              		.loc 1 573 0
+ 1646 0006 019B     		ldr	r3, [sp, #4]
+ 1647 0008 0222     		movs	r2, #2
+ 1648 000a 1A70     		strb	r2, [r3]
+ 574:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->status        = 0;
+ 1649              		.loc 1 574 0
+ 1650 000c 019B     		ldr	r3, [sp, #4]
+ 1651 000e 0022     		movs	r2, #0
+ 1652 0010 1A87     		strh	r2, [r3, #56]	@ movhi
+ 575:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->address       = 0;
+ 1653              		.loc 1 575 0
+ 1654 0012 019B     		ldr	r3, [sp, #4]
+ 1655 0014 0022     		movs	r2, #0
+ 1656 0016 83F83A20 		strb	r2, [r3, #58]
+ 576:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->configuration = 0;
+ 1657              		.loc 1 576 0
+ 1658 001a 019B     		ldr	r3, [sp, #4]
+ 1659 001c 0022     		movs	r2, #0
+ 1660 001e 83F83B20 		strb	r2, [r3, #59]
+ 577:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->transmitting  = 0;
+ 1661              		.loc 1 577 0
+ 1662 0022 019B     		ldr	r3, [sp, #4]
+ 1663 0024 0022     		movs	r2, #0
+ 1664 0026 9A81     		strh	r2, [r3, #12]	@ movhi
+ 578:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->receiving     = 0;
+ 1665              		.loc 1 578 0
+ 1666 0028 019B     		ldr	r3, [sp, #4]
+ 1667 002a 0022     		movs	r2, #0
+ 1668 002c DA81     		strh	r2, [r3, #14]	@ movhi
+ 579:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 580:/usr/src/chibiostest/os/hal/src/usb.c ****   /* Invalidates all endpoints into the USBDriver structure.*/
+ 581:/usr/src/chibiostest/os/hal/src/usb.c ****   for (i = 0; i <= USB_MAX_ENDPOINTS; i++)
+ 1669              		.loc 1 581 0
+ 1670 002e 0023     		movs	r3, #0
+ 1671 0030 0393     		str	r3, [sp, #12]
+ 1672 0032 08E0     		b	.L104
+ 1673              	.L105:
+ 582:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->epc[i] = NULL;
+ 1674              		.loc 1 582 0 discriminator 2
+ 1675 0034 019B     		ldr	r3, [sp, #4]
+ 1676 0036 039A     		ldr	r2, [sp, #12]
+ 1677 0038 0432     		adds	r2, r2, #4
+ 1678 003a 0021     		movs	r1, #0
+ 1679 003c 43F82210 		str	r1, [r3, r2, lsl #2]
+ 581:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->epc[i] = NULL;
+ 1680              		.loc 1 581 0 discriminator 2
+ 1681 0040 039B     		ldr	r3, [sp, #12]
+ 1682 0042 0133     		adds	r3, r3, #1
+ 1683 0044 0393     		str	r3, [sp, #12]
+ 1684              	.L104:
+ 581:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->epc[i] = NULL;
+ 1685              		.loc 1 581 0 is_stmt 0 discriminator 1
+ 1686 0046 039B     		ldr	r3, [sp, #12]
+ 1687 0048 032B     		cmp	r3, #3
+ 1688 004a F3D9     		bls	.L105
+ 583:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 584:/usr/src/chibiostest/os/hal/src/usb.c ****   /* EP0 state machine initialization.*/
+ 585:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->ep0state = USB_EP0_WAITING_SETUP;
+ 1689              		.loc 1 585 0 is_stmt 1
+ 1690 004c 019B     		ldr	r3, [sp, #4]
+ 1691 004e 0022     		movs	r2, #0
+ 1692 0050 83F82020 		strb	r2, [r3, #32]
+ 586:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 587:/usr/src/chibiostest/os/hal/src/usb.c ****   /* Low level reset.*/
+ 588:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_reset(usbp);
+ 1693              		.loc 1 588 0
+ 1694 0054 0198     		ldr	r0, [sp, #4]
+ 1695 0056 FFF7FEFF 		bl	usb_lld_reset
+ 589:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1696              		.loc 1 589 0
+ 1697 005a 05B0     		add	sp, sp, #20
+ 1698              		@ sp needed
+ 1699 005c 5DF804FB 		ldr	pc, [sp], #4
+ 1700              		.cfi_endproc
+ 1701              	.LFE134:
+ 1703              		.section	.text._usb_ep0setup,"ax",%progbits
+ 1704              		.align	2
+ 1705              		.p2align 4,,15
+ 1706              		.global	_usb_ep0setup
+ 1707              		.thumb
+ 1708              		.thumb_func
+ 1710              	_usb_ep0setup:
+ 1711              	.LFB135:
+ 590:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 591:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 592:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Default EP0 SETUP callback.
+ 593:/usr/src/chibiostest/os/hal/src/usb.c ****  * @details This function is used by the low level driver as default handler
+ 594:/usr/src/chibiostest/os/hal/src/usb.c ****  *          for EP0 SETUP events.
+ 595:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 596:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 597:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number, always zero
+ 598:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 599:/usr/src/chibiostest/os/hal/src/usb.c ****  * @notapi
+ 600:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 601:/usr/src/chibiostest/os/hal/src/usb.c **** void _usb_ep0setup(USBDriver *usbp, usbep_t ep) {
+ 1712              		.loc 1 601 0
+ 1713              		.cfi_startproc
+ 1714              		@ args = 0, pretend = 0, frame = 16
+ 1715              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1716 0000 00B5     		push	{lr}
+ 1717              		.cfi_def_cfa_offset 4
+ 1718              		.cfi_offset 14, -4
+ 1719 0002 85B0     		sub	sp, sp, #20
+ 1720              		.cfi_def_cfa_offset 24
+ 1721 0004 0190     		str	r0, [sp, #4]
+ 1722 0006 0B46     		mov	r3, r1
+ 1723 0008 8DF80330 		strb	r3, [sp, #3]
+ 602:/usr/src/chibiostest/os/hal/src/usb.c ****   size_t max;
+ 603:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 604:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->ep0state = USB_EP0_WAITING_SETUP;
+ 1724              		.loc 1 604 0
+ 1725 000c 019B     		ldr	r3, [sp, #4]
+ 1726 000e 0022     		movs	r2, #0
+ 1727 0010 83F82020 		strb	r2, [r3, #32]
+ 605:/usr/src/chibiostest/os/hal/src/usb.c ****   usbReadSetup(usbp, ep, usbp->setup);
+ 1728              		.loc 1 605 0
+ 1729 0014 019B     		ldr	r3, [sp, #4]
+ 1730 0016 3033     		adds	r3, r3, #48
+ 1731 0018 9DF80320 		ldrb	r2, [sp, #3]	@ zero_extendqisi2
+ 1732 001c 0198     		ldr	r0, [sp, #4]
+ 1733 001e 1146     		mov	r1, r2
+ 1734 0020 1A46     		mov	r2, r3
+ 1735 0022 FFF7FEFF 		bl	usb_lld_read_setup
+ 606:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 607:/usr/src/chibiostest/os/hal/src/usb.c ****   /* First verify if the application has an handler installed for this
+ 608:/usr/src/chibiostest/os/hal/src/usb.c ****      request.*/
+ 609:/usr/src/chibiostest/os/hal/src/usb.c ****   if (!(usbp->config->requests_hook_cb) ||
+ 1736              		.loc 1 609 0
+ 1737 0026 019B     		ldr	r3, [sp, #4]
+ 1738 0028 5B68     		ldr	r3, [r3, #4]
+ 1739 002a 9B68     		ldr	r3, [r3, #8]
+ 1740 002c 002B     		cmp	r3, #0
+ 1741 002e 07D0     		beq	.L107
+ 610:/usr/src/chibiostest/os/hal/src/usb.c ****       !(usbp->config->requests_hook_cb(usbp))) {
+ 1742              		.loc 1 610 0 discriminator 1
+ 1743 0030 019B     		ldr	r3, [sp, #4]
+ 1744 0032 5B68     		ldr	r3, [r3, #4]
+ 1745 0034 9B68     		ldr	r3, [r3, #8]
+ 1746 0036 0198     		ldr	r0, [sp, #4]
+ 1747 0038 9847     		blx	r3
+ 1748 003a 0346     		mov	r3, r0
+ 609:/usr/src/chibiostest/os/hal/src/usb.c ****       !(usbp->config->requests_hook_cb(usbp))) {
+ 1749              		.loc 1 609 0 discriminator 1
+ 1750 003c 002B     		cmp	r3, #0
+ 1751 003e 24D1     		bne	.L108
+ 1752              	.L107:
+ 611:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Invoking the default handler, if this fails then stalls the
+ 612:/usr/src/chibiostest/os/hal/src/usb.c ****        endpoint zero as error.*/
+ 613:/usr/src/chibiostest/os/hal/src/usb.c ****     if (((usbp->setup[0] & USB_RTYPE_TYPE_MASK) != USB_RTYPE_TYPE_STD) ||
+ 1753              		.loc 1 613 0
+ 1754 0040 019B     		ldr	r3, [sp, #4]
+ 1755 0042 93F83030 		ldrb	r3, [r3, #48]	@ zero_extendqisi2
+ 1756 0046 03F06003 		and	r3, r3, #96
+ 1757 004a 002B     		cmp	r3, #0
+ 1758 004c 05D1     		bne	.L109
+ 614:/usr/src/chibiostest/os/hal/src/usb.c ****         !default_handler(usbp)) {
+ 1759              		.loc 1 614 0 discriminator 1
+ 1760 004e 0198     		ldr	r0, [sp, #4]
+ 1761 0050 FFF7FEFF 		bl	default_handler
+ 1762 0054 0346     		mov	r3, r0
+ 613:/usr/src/chibiostest/os/hal/src/usb.c ****         !default_handler(usbp)) {
+ 1763              		.loc 1 613 0 discriminator 1
+ 1764 0056 002B     		cmp	r3, #0
+ 1765 0058 17D1     		bne	.L108
+ 1766              	.L109:
+ 615:/usr/src/chibiostest/os/hal/src/usb.c ****       /* Error response, the state machine goes into an error state, the low
+ 616:/usr/src/chibiostest/os/hal/src/usb.c ****          level layer will have to reset it to USB_EP0_WAITING_SETUP after
+ 617:/usr/src/chibiostest/os/hal/src/usb.c ****          receiving a SETUP packet.*/
+ 618:/usr/src/chibiostest/os/hal/src/usb.c ****       usb_lld_stall_in(usbp, 0);
+ 1767              		.loc 1 618 0
+ 1768 005a 0198     		ldr	r0, [sp, #4]
+ 1769 005c 0021     		movs	r1, #0
+ 1770 005e FFF7FEFF 		bl	usb_lld_stall_in
+ 619:/usr/src/chibiostest/os/hal/src/usb.c ****       usb_lld_stall_out(usbp, 0);
+ 1771              		.loc 1 619 0
+ 1772 0062 0198     		ldr	r0, [sp, #4]
+ 1773 0064 0021     		movs	r1, #0
+ 1774 0066 FFF7FEFF 		bl	usb_lld_stall_out
+ 620:/usr/src/chibiostest/os/hal/src/usb.c ****       _usb_isr_invoke_event_cb(usbp, USB_EVENT_STALLED);
+ 1775              		.loc 1 620 0
+ 1776 006a 019B     		ldr	r3, [sp, #4]
+ 1777 006c 5B68     		ldr	r3, [r3, #4]
+ 1778 006e 1B68     		ldr	r3, [r3]
+ 1779 0070 002B     		cmp	r3, #0
+ 1780 0072 05D0     		beq	.L110
+ 1781              		.loc 1 620 0 is_stmt 0 discriminator 1
+ 1782 0074 019B     		ldr	r3, [sp, #4]
+ 1783 0076 5B68     		ldr	r3, [r3, #4]
+ 1784 0078 1B68     		ldr	r3, [r3]
+ 1785 007a 0198     		ldr	r0, [sp, #4]
+ 1786 007c 0521     		movs	r1, #5
+ 1787 007e 9847     		blx	r3
+ 1788              	.L110:
+ 621:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->ep0state = USB_EP0_ERROR;
+ 1789              		.loc 1 621 0 is_stmt 1
+ 1790 0080 019B     		ldr	r3, [sp, #4]
+ 1791 0082 0522     		movs	r2, #5
+ 1792 0084 83F82020 		strb	r2, [r3, #32]
+ 622:/usr/src/chibiostest/os/hal/src/usb.c ****       return;
+ 1793              		.loc 1 622 0
+ 1794 0088 87E0     		b	.L106
+ 1795              	.L108:
+ 623:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 624:/usr/src/chibiostest/os/hal/src/usb.c ****   }
+ 625:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 626:/usr/src/chibiostest/os/hal/src/usb.c ****   /* Transfer preparation. The request handler must have populated
+ 627:/usr/src/chibiostest/os/hal/src/usb.c ****      correctly the fields ep0next, ep0n and ep0endcb using the macro
+ 628:/usr/src/chibiostest/os/hal/src/usb.c ****      usbSetupTransfer().*/
+ 629:/usr/src/chibiostest/os/hal/src/usb.c ****   max = usbFetchWord(&usbp->setup[6]);
+ 1796              		.loc 1 629 0
+ 1797 008a 019B     		ldr	r3, [sp, #4]
+ 1798 008c 93F83630 		ldrb	r3, [r3, #54]	@ zero_extendqisi2
+ 1799 0090 1A46     		mov	r2, r3
+ 1800 0092 019B     		ldr	r3, [sp, #4]
+ 1801 0094 93F83730 		ldrb	r3, [r3, #55]	@ zero_extendqisi2
+ 1802 0098 1B02     		lsls	r3, r3, #8
+ 1803 009a 1343     		orrs	r3, r3, r2
+ 1804 009c 0393     		str	r3, [sp, #12]
+ 630:/usr/src/chibiostest/os/hal/src/usb.c ****   /* The transfer size cannot exceed the specified amount.*/
+ 631:/usr/src/chibiostest/os/hal/src/usb.c ****   if (usbp->ep0n > max)
+ 1805              		.loc 1 631 0
+ 1806 009e 019B     		ldr	r3, [sp, #4]
+ 1807 00a0 9A6A     		ldr	r2, [r3, #40]
+ 1808 00a2 039B     		ldr	r3, [sp, #12]
+ 1809 00a4 9A42     		cmp	r2, r3
+ 1810 00a6 02D9     		bls	.L112
+ 632:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->ep0n = max;
+ 1811              		.loc 1 632 0
+ 1812 00a8 019B     		ldr	r3, [sp, #4]
+ 1813 00aa 039A     		ldr	r2, [sp, #12]
+ 1814 00ac 9A62     		str	r2, [r3, #40]
+ 1815              	.L112:
+ 633:/usr/src/chibiostest/os/hal/src/usb.c ****   if ((usbp->setup[0] & USB_RTYPE_DIR_MASK) == USB_RTYPE_DIR_DEV2HOST) {
+ 1816              		.loc 1 633 0
+ 1817 00ae 019B     		ldr	r3, [sp, #4]
+ 1818 00b0 93F83030 		ldrb	r3, [r3, #48]	@ zero_extendqisi2
+ 1819 00b4 DBB2     		uxtb	r3, r3
+ 1820 00b6 5BB2     		sxtb	r3, r3
+ 1821 00b8 002B     		cmp	r3, #0
+ 1822 00ba 37DA     		bge	.L113
+ 634:/usr/src/chibiostest/os/hal/src/usb.c ****     /* IN phase.*/
+ 635:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbp->ep0n > 0) {
+ 1823              		.loc 1 635 0
+ 1824 00bc 019B     		ldr	r3, [sp, #4]
+ 1825 00be 9B6A     		ldr	r3, [r3, #40]
+ 1826 00c0 002B     		cmp	r3, #0
+ 1827 00c2 1AD0     		beq	.L114
+ 636:/usr/src/chibiostest/os/hal/src/usb.c ****       /* Starts the transmit phase.*/
+ 637:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->ep0state = USB_EP0_TX;
+ 1828              		.loc 1 637 0
+ 1829 00c4 019B     		ldr	r3, [sp, #4]
+ 1830 00c6 0122     		movs	r2, #1
+ 1831 00c8 83F82020 		strb	r2, [r3, #32]
+ 638:/usr/src/chibiostest/os/hal/src/usb.c ****       usbPrepareTransmit(usbp, 0, usbp->ep0next, usbp->ep0n);
+ 1832              		.loc 1 638 0
+ 1833 00cc 019B     		ldr	r3, [sp, #4]
+ 1834 00ce 5A6A     		ldr	r2, [r3, #36]
+ 1835 00d0 019B     		ldr	r3, [sp, #4]
+ 1836 00d2 9B6A     		ldr	r3, [r3, #40]
+ 1837 00d4 0198     		ldr	r0, [sp, #4]
+ 1838 00d6 0021     		movs	r1, #0
+ 1839 00d8 FFF7FEFF 		bl	usbPrepareTransmit
+ 1840              	.LBB6:
+ 639:/usr/src/chibiostest/os/hal/src/usb.c ****       chSysLockFromIsr();
+ 1841              		.loc 1 639 0
+ 1842 00dc 2023     		movs	r3, #32
+ 1843              	@ 639 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 1844 00de 83F31188 		msr     BASEPRI, r3
+ 1845              	@ 0 "" 2
+ 1846              		.thumb
+ 1847              	.LBE6:
+ 1848 00e2 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 640:/usr/src/chibiostest/os/hal/src/usb.c ****       usbStartTransmitI(usbp, 0);
+ 1849              		.loc 1 640 0
+ 1850 00e6 0198     		ldr	r0, [sp, #4]
+ 1851 00e8 0021     		movs	r1, #0
+ 1852 00ea FFF7FEFF 		bl	usbStartTransmitI
+ 641:/usr/src/chibiostest/os/hal/src/usb.c ****       chSysUnlockFromIsr();
+ 1853              		.loc 1 641 0
+ 1854 00ee FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 1855              	.LBB7:
+ 1856 00f2 0023     		movs	r3, #0
+ 1857              	@ 641 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 1858 00f4 83F31188 		msr     BASEPRI, r3
+ 1859              	@ 0 "" 2
+ 1860              		.thumb
+ 1861              	.LBE7:
+ 1862 00f8 4FE0     		b	.L106
+ 1863              	.L114:
+ 642:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 643:/usr/src/chibiostest/os/hal/src/usb.c ****     else {
+ 644:/usr/src/chibiostest/os/hal/src/usb.c ****       /* No transmission phase, directly receiving the zero sized status
+ 645:/usr/src/chibiostest/os/hal/src/usb.c ****          packet.*/
+ 646:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->ep0state = USB_EP0_WAITING_STS;
+ 1864              		.loc 1 646 0
+ 1865 00fa 019B     		ldr	r3, [sp, #4]
+ 1866 00fc 0222     		movs	r2, #2
+ 1867 00fe 83F82020 		strb	r2, [r3, #32]
+ 647:/usr/src/chibiostest/os/hal/src/usb.c ****       usbPrepareReceive(usbp, 0, NULL, 0);
+ 1868              		.loc 1 647 0
+ 1869 0102 0198     		ldr	r0, [sp, #4]
+ 1870 0104 0021     		movs	r1, #0
+ 1871 0106 0022     		movs	r2, #0
+ 1872 0108 0023     		movs	r3, #0
+ 1873 010a FFF7FEFF 		bl	usbPrepareReceive
+ 1874              	.LBB8:
+ 648:/usr/src/chibiostest/os/hal/src/usb.c ****       chSysLockFromIsr();
+ 1875              		.loc 1 648 0
+ 1876 010e 2023     		movs	r3, #32
+ 1877              	@ 648 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 1878 0110 83F31188 		msr     BASEPRI, r3
+ 1879              	@ 0 "" 2
+ 1880              		.thumb
+ 1881              	.LBE8:
+ 1882 0114 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 649:/usr/src/chibiostest/os/hal/src/usb.c ****       usbStartReceiveI(usbp, 0);
+ 1883              		.loc 1 649 0
+ 1884 0118 0198     		ldr	r0, [sp, #4]
+ 1885 011a 0021     		movs	r1, #0
+ 1886 011c FFF7FEFF 		bl	usbStartReceiveI
+ 650:/usr/src/chibiostest/os/hal/src/usb.c ****       chSysUnlockFromIsr();
+ 1887              		.loc 1 650 0
+ 1888 0120 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 1889              	.LBB9:
+ 1890 0124 0023     		movs	r3, #0
+ 1891              	@ 650 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 1892 0126 83F31188 		msr     BASEPRI, r3
+ 1893              	@ 0 "" 2
+ 1894              		.thumb
+ 1895 012a 36E0     		b	.L106
+ 1896              	.L113:
+ 1897              	.LBE9:
+ 651:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 652:/usr/src/chibiostest/os/hal/src/usb.c ****   }
+ 653:/usr/src/chibiostest/os/hal/src/usb.c ****   else {
+ 654:/usr/src/chibiostest/os/hal/src/usb.c ****     /* OUT phase.*/
+ 655:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbp->ep0n > 0) {
+ 1898              		.loc 1 655 0
+ 1899 012c 019B     		ldr	r3, [sp, #4]
+ 1900 012e 9B6A     		ldr	r3, [r3, #40]
+ 1901 0130 002B     		cmp	r3, #0
+ 1902 0132 1AD0     		beq	.L116
+ 656:/usr/src/chibiostest/os/hal/src/usb.c ****       /* Starts the receive phase.*/
+ 657:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->ep0state = USB_EP0_RX;
+ 1903              		.loc 1 657 0
+ 1904 0134 019B     		ldr	r3, [sp, #4]
+ 1905 0136 0322     		movs	r2, #3
+ 1906 0138 83F82020 		strb	r2, [r3, #32]
+ 658:/usr/src/chibiostest/os/hal/src/usb.c ****       usbPrepareReceive(usbp, 0, usbp->ep0next, usbp->ep0n);
+ 1907              		.loc 1 658 0
+ 1908 013c 019B     		ldr	r3, [sp, #4]
+ 1909 013e 5A6A     		ldr	r2, [r3, #36]
+ 1910 0140 019B     		ldr	r3, [sp, #4]
+ 1911 0142 9B6A     		ldr	r3, [r3, #40]
+ 1912 0144 0198     		ldr	r0, [sp, #4]
+ 1913 0146 0021     		movs	r1, #0
+ 1914 0148 FFF7FEFF 		bl	usbPrepareReceive
+ 1915              	.LBB10:
+ 659:/usr/src/chibiostest/os/hal/src/usb.c ****       chSysLockFromIsr();
+ 1916              		.loc 1 659 0
+ 1917 014c 2023     		movs	r3, #32
+ 1918              	@ 659 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 1919 014e 83F31188 		msr     BASEPRI, r3
+ 1920              	@ 0 "" 2
+ 1921              		.thumb
+ 1922              	.LBE10:
+ 1923 0152 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 660:/usr/src/chibiostest/os/hal/src/usb.c ****       usbStartReceiveI(usbp, 0);
+ 1924              		.loc 1 660 0
+ 1925 0156 0198     		ldr	r0, [sp, #4]
+ 1926 0158 0021     		movs	r1, #0
+ 1927 015a FFF7FEFF 		bl	usbStartReceiveI
+ 661:/usr/src/chibiostest/os/hal/src/usb.c ****       chSysUnlockFromIsr();
+ 1928              		.loc 1 661 0
+ 1929 015e FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 1930              	.LBB11:
+ 1931 0162 0023     		movs	r3, #0
+ 1932              	@ 661 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 1933 0164 83F31188 		msr     BASEPRI, r3
+ 1934              	@ 0 "" 2
+ 1935              		.thumb
+ 1936              	.LBE11:
+ 1937 0168 17E0     		b	.L106
+ 1938              	.L116:
+ 662:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 663:/usr/src/chibiostest/os/hal/src/usb.c ****     else {
+ 664:/usr/src/chibiostest/os/hal/src/usb.c ****       /* No receive phase, directly sending the zero sized status
+ 665:/usr/src/chibiostest/os/hal/src/usb.c ****          packet.*/
+ 666:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->ep0state = USB_EP0_SENDING_STS;
+ 1939              		.loc 1 666 0
+ 1940 016a 019B     		ldr	r3, [sp, #4]
+ 1941 016c 0422     		movs	r2, #4
+ 1942 016e 83F82020 		strb	r2, [r3, #32]
+ 667:/usr/src/chibiostest/os/hal/src/usb.c ****       usbPrepareTransmit(usbp, 0, NULL, 0);
+ 1943              		.loc 1 667 0
+ 1944 0172 0198     		ldr	r0, [sp, #4]
+ 1945 0174 0021     		movs	r1, #0
+ 1946 0176 0022     		movs	r2, #0
+ 1947 0178 0023     		movs	r3, #0
+ 1948 017a FFF7FEFF 		bl	usbPrepareTransmit
+ 1949              	.LBB12:
+ 668:/usr/src/chibiostest/os/hal/src/usb.c ****       chSysLockFromIsr();
+ 1950              		.loc 1 668 0
+ 1951 017e 2023     		movs	r3, #32
+ 1952              	@ 668 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 1953 0180 83F31188 		msr     BASEPRI, r3
+ 1954              	@ 0 "" 2
+ 1955              		.thumb
+ 1956              	.LBE12:
+ 1957 0184 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 669:/usr/src/chibiostest/os/hal/src/usb.c ****       usbStartTransmitI(usbp, 0);
+ 1958              		.loc 1 669 0
+ 1959 0188 0198     		ldr	r0, [sp, #4]
+ 1960 018a 0021     		movs	r1, #0
+ 1961 018c FFF7FEFF 		bl	usbStartTransmitI
+ 670:/usr/src/chibiostest/os/hal/src/usb.c ****       chSysUnlockFromIsr();
+ 1962              		.loc 1 670 0
+ 1963 0190 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 1964              	.LBB13:
+ 1965 0194 0023     		movs	r3, #0
+ 1966              	@ 670 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 1967 0196 83F31188 		msr     BASEPRI, r3
+ 1968              	@ 0 "" 2
+ 1969              		.thumb
+ 1970              	.L106:
+ 1971              	.LBE13:
+ 671:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 672:/usr/src/chibiostest/os/hal/src/usb.c ****   }
+ 673:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 1972              		.loc 1 673 0
+ 1973 019a 05B0     		add	sp, sp, #20
+ 1974              		@ sp needed
+ 1975 019c 5DF804FB 		ldr	pc, [sp], #4
+ 1976              		.cfi_endproc
+ 1977              	.LFE135:
+ 1979              		.section	.text._usb_ep0in,"ax",%progbits
+ 1980              		.align	2
+ 1981              		.p2align 4,,15
+ 1982              		.global	_usb_ep0in
+ 1983              		.thumb
+ 1984              		.thumb_func
+ 1986              	_usb_ep0in:
+ 1987              	.LFB136:
+ 674:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 675:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 676:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Default EP0 IN callback.
+ 677:/usr/src/chibiostest/os/hal/src/usb.c ****  * @details This function is used by the low level driver as default handler
+ 678:/usr/src/chibiostest/os/hal/src/usb.c ****  *          for EP0 IN events.
+ 679:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 680:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 681:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number, always zero
+ 682:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 683:/usr/src/chibiostest/os/hal/src/usb.c ****  * @notapi
+ 684:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 685:/usr/src/chibiostest/os/hal/src/usb.c **** void _usb_ep0in(USBDriver *usbp, usbep_t ep) {
+ 1988              		.loc 1 685 0
+ 1989              		.cfi_startproc
+ 1990              		@ args = 0, pretend = 0, frame = 16
+ 1991              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1992 0000 00B5     		push	{lr}
+ 1993              		.cfi_def_cfa_offset 4
+ 1994              		.cfi_offset 14, -4
+ 1995 0002 85B0     		sub	sp, sp, #20
+ 1996              		.cfi_def_cfa_offset 24
+ 1997 0004 0190     		str	r0, [sp, #4]
+ 1998 0006 0B46     		mov	r3, r1
+ 1999 0008 8DF80330 		strb	r3, [sp, #3]
+ 686:/usr/src/chibiostest/os/hal/src/usb.c ****   size_t max;
+ 687:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 688:/usr/src/chibiostest/os/hal/src/usb.c ****   (void)ep;
+ 689:/usr/src/chibiostest/os/hal/src/usb.c ****   switch (usbp->ep0state) {
+ 2000              		.loc 1 689 0
+ 2001 000c 019B     		ldr	r3, [sp, #4]
+ 2002 000e 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 2003 0012 012B     		cmp	r3, #1
+ 2004 0014 02D0     		beq	.L119
+ 2005 0016 042B     		cmp	r3, #4
+ 2006 0018 49D0     		beq	.L120
+ 2007 001a 55E0     		b	.L125
+ 2008              	.L119:
+ 690:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_EP0_TX:
+ 691:/usr/src/chibiostest/os/hal/src/usb.c ****     max = usbFetchWord(&usbp->setup[6]);
+ 2009              		.loc 1 691 0
+ 2010 001c 019B     		ldr	r3, [sp, #4]
+ 2011 001e 93F83630 		ldrb	r3, [r3, #54]	@ zero_extendqisi2
+ 2012 0022 1A46     		mov	r2, r3
+ 2013 0024 019B     		ldr	r3, [sp, #4]
+ 2014 0026 93F83730 		ldrb	r3, [r3, #55]	@ zero_extendqisi2
+ 2015 002a 1B02     		lsls	r3, r3, #8
+ 2016 002c 1343     		orrs	r3, r3, r2
+ 2017 002e 0393     		str	r3, [sp, #12]
+ 692:/usr/src/chibiostest/os/hal/src/usb.c ****     /* If the transmitted size is less than the requested size and it is a
+ 693:/usr/src/chibiostest/os/hal/src/usb.c ****        multiple of the maximum packet size then a zero size packet must be
+ 694:/usr/src/chibiostest/os/hal/src/usb.c ****        transmitted.*/
+ 695:/usr/src/chibiostest/os/hal/src/usb.c ****     if ((usbp->ep0n < max) &&
+ 2018              		.loc 1 695 0
+ 2019 0030 019B     		ldr	r3, [sp, #4]
+ 2020 0032 9A6A     		ldr	r2, [r3, #40]
+ 2021 0034 039B     		ldr	r3, [sp, #12]
+ 2022 0036 9A42     		cmp	r2, r3
+ 2023 0038 20D2     		bcs	.L121
+ 696:/usr/src/chibiostest/os/hal/src/usb.c ****         ((usbp->ep0n % usbp->epc[0]->in_maxsize) == 0)) {
+ 2024              		.loc 1 696 0 discriminator 1
+ 2025 003a 019B     		ldr	r3, [sp, #4]
+ 2026 003c 9B6A     		ldr	r3, [r3, #40]
+ 2027 003e 019A     		ldr	r2, [sp, #4]
+ 2028 0040 1269     		ldr	r2, [r2, #16]
+ 2029 0042 128A     		ldrh	r2, [r2, #16]
+ 2030 0044 B3FBF2F1 		udiv	r1, r3, r2
+ 2031 0048 02FB01F2 		mul	r2, r2, r1
+ 2032 004c 9B1A     		subs	r3, r3, r2
+ 695:/usr/src/chibiostest/os/hal/src/usb.c ****         ((usbp->ep0n % usbp->epc[0]->in_maxsize) == 0)) {
+ 2033              		.loc 1 695 0 discriminator 1
+ 2034 004e 002B     		cmp	r3, #0
+ 2035 0050 14D1     		bne	.L121
+ 697:/usr/src/chibiostest/os/hal/src/usb.c ****       usbPrepareTransmit(usbp, 0, NULL, 0);
+ 2036              		.loc 1 697 0
+ 2037 0052 0198     		ldr	r0, [sp, #4]
+ 2038 0054 0021     		movs	r1, #0
+ 2039 0056 0022     		movs	r2, #0
+ 2040 0058 0023     		movs	r3, #0
+ 2041 005a FFF7FEFF 		bl	usbPrepareTransmit
+ 2042              	.LBB14:
+ 698:/usr/src/chibiostest/os/hal/src/usb.c ****       chSysLockFromIsr();
+ 2043              		.loc 1 698 0
+ 2044 005e 2023     		movs	r3, #32
+ 2045              	@ 698 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 2046 0060 83F31188 		msr     BASEPRI, r3
+ 2047              	@ 0 "" 2
+ 2048              		.thumb
+ 2049              	.LBE14:
+ 2050 0064 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 699:/usr/src/chibiostest/os/hal/src/usb.c ****       usbStartTransmitI(usbp, 0);
+ 2051              		.loc 1 699 0
+ 2052 0068 0198     		ldr	r0, [sp, #4]
+ 2053 006a 0021     		movs	r1, #0
+ 2054 006c FFF7FEFF 		bl	usbStartTransmitI
+ 700:/usr/src/chibiostest/os/hal/src/usb.c ****       chSysUnlockFromIsr();
+ 2055              		.loc 1 700 0
+ 2056 0070 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 2057              	.LBB15:
+ 2058 0074 0023     		movs	r3, #0
+ 2059              	@ 700 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 2060 0076 83F31188 		msr     BASEPRI, r3
+ 2061              	@ 0 "" 2
+ 2062              		.thumb
+ 2063              	.LBE15:
+ 701:/usr/src/chibiostest/os/hal/src/usb.c ****       return;
+ 2064              		.loc 1 701 0
+ 2065 007a 3CE0     		b	.L117
+ 2066              	.L121:
+ 702:/usr/src/chibiostest/os/hal/src/usb.c ****     }
+ 703:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 704:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Transmit phase over, receiving the zero sized status packet.*/
+ 705:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->ep0state = USB_EP0_WAITING_STS;
+ 2067              		.loc 1 705 0
+ 2068 007c 019B     		ldr	r3, [sp, #4]
+ 2069 007e 0222     		movs	r2, #2
+ 2070 0080 83F82020 		strb	r2, [r3, #32]
+ 706:/usr/src/chibiostest/os/hal/src/usb.c ****     usbPrepareReceive(usbp, 0, NULL, 0);
+ 2071              		.loc 1 706 0
+ 2072 0084 0198     		ldr	r0, [sp, #4]
+ 2073 0086 0021     		movs	r1, #0
+ 2074 0088 0022     		movs	r2, #0
+ 2075 008a 0023     		movs	r3, #0
+ 2076 008c FFF7FEFF 		bl	usbPrepareReceive
+ 2077              	.LBB16:
+ 707:/usr/src/chibiostest/os/hal/src/usb.c ****     chSysLockFromIsr();
+ 2078              		.loc 1 707 0
+ 2079 0090 2023     		movs	r3, #32
+ 2080              	@ 707 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 2081 0092 83F31188 		msr     BASEPRI, r3
+ 2082              	@ 0 "" 2
+ 2083              		.thumb
+ 2084              	.LBE16:
+ 2085 0096 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 708:/usr/src/chibiostest/os/hal/src/usb.c ****     usbStartReceiveI(usbp, 0);
+ 2086              		.loc 1 708 0
+ 2087 009a 0198     		ldr	r0, [sp, #4]
+ 2088 009c 0021     		movs	r1, #0
+ 2089 009e FFF7FEFF 		bl	usbStartReceiveI
+ 709:/usr/src/chibiostest/os/hal/src/usb.c ****     chSysUnlockFromIsr();
+ 2090              		.loc 1 709 0
+ 2091 00a2 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 2092              	.LBB17:
+ 2093 00a6 0023     		movs	r3, #0
+ 2094              	@ 709 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 2095 00a8 83F31188 		msr     BASEPRI, r3
+ 2096              	@ 0 "" 2
+ 2097              		.thumb
+ 2098              	.LBE17:
+ 710:/usr/src/chibiostest/os/hal/src/usb.c ****     return;
+ 2099              		.loc 1 710 0
+ 2100 00ac 23E0     		b	.L117
+ 2101              	.L120:
+ 711:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_EP0_SENDING_STS:
+ 712:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Status packet sent, invoking the callback if defined.*/
+ 713:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbp->ep0endcb != NULL)
+ 2102              		.loc 1 713 0
+ 2103 00ae 019B     		ldr	r3, [sp, #4]
+ 2104 00b0 DB6A     		ldr	r3, [r3, #44]
+ 2105 00b2 002B     		cmp	r3, #0
+ 2106 00b4 03D0     		beq	.L123
+ 714:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->ep0endcb(usbp);
+ 2107              		.loc 1 714 0
+ 2108 00b6 019B     		ldr	r3, [sp, #4]
+ 2109 00b8 DB6A     		ldr	r3, [r3, #44]
+ 2110 00ba 0198     		ldr	r0, [sp, #4]
+ 2111 00bc 9847     		blx	r3
+ 2112              	.L123:
+ 715:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->ep0state = USB_EP0_WAITING_SETUP;
+ 2113              		.loc 1 715 0
+ 2114 00be 019B     		ldr	r3, [sp, #4]
+ 2115 00c0 0022     		movs	r2, #0
+ 2116 00c2 83F82020 		strb	r2, [r3, #32]
+ 716:/usr/src/chibiostest/os/hal/src/usb.c ****     return;
+ 2117              		.loc 1 716 0
+ 2118 00c6 16E0     		b	.L117
+ 2119              	.L125:
+ 717:/usr/src/chibiostest/os/hal/src/usb.c ****   default:
+ 718:/usr/src/chibiostest/os/hal/src/usb.c ****     ;
+ 719:/usr/src/chibiostest/os/hal/src/usb.c ****   }
+ 720:/usr/src/chibiostest/os/hal/src/usb.c ****   /* Error response, the state machine goes into an error state, the low
+ 721:/usr/src/chibiostest/os/hal/src/usb.c ****      level layer will have to reset it to USB_EP0_WAITING_SETUP after
+ 722:/usr/src/chibiostest/os/hal/src/usb.c ****      receiving a SETUP packet.*/
+ 723:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_stall_in(usbp, 0);
+ 2120              		.loc 1 723 0
+ 2121 00c8 0198     		ldr	r0, [sp, #4]
+ 2122 00ca 0021     		movs	r1, #0
+ 2123 00cc FFF7FEFF 		bl	usb_lld_stall_in
+ 724:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_stall_out(usbp, 0);
+ 2124              		.loc 1 724 0
+ 2125 00d0 0198     		ldr	r0, [sp, #4]
+ 2126 00d2 0021     		movs	r1, #0
+ 2127 00d4 FFF7FEFF 		bl	usb_lld_stall_out
+ 725:/usr/src/chibiostest/os/hal/src/usb.c ****   _usb_isr_invoke_event_cb(usbp, USB_EVENT_STALLED);
+ 2128              		.loc 1 725 0
+ 2129 00d8 019B     		ldr	r3, [sp, #4]
+ 2130 00da 5B68     		ldr	r3, [r3, #4]
+ 2131 00dc 1B68     		ldr	r3, [r3]
+ 2132 00de 002B     		cmp	r3, #0
+ 2133 00e0 05D0     		beq	.L124
+ 2134              		.loc 1 725 0 is_stmt 0 discriminator 1
+ 2135 00e2 019B     		ldr	r3, [sp, #4]
+ 2136 00e4 5B68     		ldr	r3, [r3, #4]
+ 2137 00e6 1B68     		ldr	r3, [r3]
+ 2138 00e8 0198     		ldr	r0, [sp, #4]
+ 2139 00ea 0521     		movs	r1, #5
+ 2140 00ec 9847     		blx	r3
+ 2141              	.L124:
+ 726:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->ep0state = USB_EP0_ERROR;
+ 2142              		.loc 1 726 0 is_stmt 1
+ 2143 00ee 019B     		ldr	r3, [sp, #4]
+ 2144 00f0 0522     		movs	r2, #5
+ 2145 00f2 83F82020 		strb	r2, [r3, #32]
+ 2146              	.L117:
+ 727:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 2147              		.loc 1 727 0
+ 2148 00f6 05B0     		add	sp, sp, #20
+ 2149              		@ sp needed
+ 2150 00f8 5DF804FB 		ldr	pc, [sp], #4
+ 2151              		.cfi_endproc
+ 2152              	.LFE136:
+ 2154 00fc AFF30080 		.section	.text._usb_ep0out,"ax",%progbits
+ 2155              		.align	2
+ 2156              		.p2align 4,,15
+ 2157              		.global	_usb_ep0out
+ 2158              		.thumb
+ 2159              		.thumb_func
+ 2161              	_usb_ep0out:
+ 2162              	.LFB137:
+ 728:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 729:/usr/src/chibiostest/os/hal/src/usb.c **** /**
+ 730:/usr/src/chibiostest/os/hal/src/usb.c ****  * @brief   Default EP0 OUT callback.
+ 731:/usr/src/chibiostest/os/hal/src/usb.c ****  * @details This function is used by the low level driver as default handler
+ 732:/usr/src/chibiostest/os/hal/src/usb.c ****  *          for EP0 OUT events.
+ 733:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 734:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] usbp      pointer to the @p USBDriver object
+ 735:/usr/src/chibiostest/os/hal/src/usb.c ****  * @param[in] ep        endpoint number, always zero
+ 736:/usr/src/chibiostest/os/hal/src/usb.c ****  *
+ 737:/usr/src/chibiostest/os/hal/src/usb.c ****  * @notapi
+ 738:/usr/src/chibiostest/os/hal/src/usb.c ****  */
+ 739:/usr/src/chibiostest/os/hal/src/usb.c **** void _usb_ep0out(USBDriver *usbp, usbep_t ep) {
+ 2163              		.loc 1 739 0
+ 2164              		.cfi_startproc
+ 2165              		@ args = 0, pretend = 0, frame = 8
+ 2166              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2167 0000 00B5     		push	{lr}
+ 2168              		.cfi_def_cfa_offset 4
+ 2169              		.cfi_offset 14, -4
+ 2170 0002 83B0     		sub	sp, sp, #12
+ 2171              		.cfi_def_cfa_offset 16
+ 2172 0004 0190     		str	r0, [sp, #4]
+ 2173 0006 0B46     		mov	r3, r1
+ 2174 0008 8DF80330 		strb	r3, [sp, #3]
+ 740:/usr/src/chibiostest/os/hal/src/usb.c **** 
+ 741:/usr/src/chibiostest/os/hal/src/usb.c ****   (void)ep;
+ 742:/usr/src/chibiostest/os/hal/src/usb.c ****   switch (usbp->ep0state) {
+ 2175              		.loc 1 742 0
+ 2176 000c 019B     		ldr	r3, [sp, #4]
+ 2177 000e 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 2178 0012 022B     		cmp	r3, #2
+ 2179 0014 1AD0     		beq	.L128
+ 2180 0016 032B     		cmp	r3, #3
+ 2181 0018 2CD1     		bne	.L127
+ 743:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_EP0_RX:
+ 744:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Receive phase over, sending the zero sized status packet.*/
+ 745:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->ep0state = USB_EP0_SENDING_STS;
+ 2182              		.loc 1 745 0
+ 2183 001a 019B     		ldr	r3, [sp, #4]
+ 2184 001c 0422     		movs	r2, #4
+ 2185 001e 83F82020 		strb	r2, [r3, #32]
+ 746:/usr/src/chibiostest/os/hal/src/usb.c ****     usbPrepareTransmit(usbp, 0, NULL, 0);
+ 2186              		.loc 1 746 0
+ 2187 0022 0198     		ldr	r0, [sp, #4]
+ 2188 0024 0021     		movs	r1, #0
+ 2189 0026 0022     		movs	r2, #0
+ 2190 0028 0023     		movs	r3, #0
+ 2191 002a FFF7FEFF 		bl	usbPrepareTransmit
+ 2192              	.LBB18:
+ 747:/usr/src/chibiostest/os/hal/src/usb.c ****     chSysLockFromIsr();
+ 2193              		.loc 1 747 0
+ 2194 002e 2023     		movs	r3, #32
+ 2195              	@ 747 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 2196 0030 83F31188 		msr     BASEPRI, r3
+ 2197              	@ 0 "" 2
+ 2198              		.thumb
+ 2199              	.LBE18:
+ 2200 0034 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 748:/usr/src/chibiostest/os/hal/src/usb.c ****     usbStartTransmitI(usbp, 0);
+ 2201              		.loc 1 748 0
+ 2202 0038 0198     		ldr	r0, [sp, #4]
+ 2203 003a 0021     		movs	r1, #0
+ 2204 003c FFF7FEFF 		bl	usbStartTransmitI
+ 749:/usr/src/chibiostest/os/hal/src/usb.c ****     chSysUnlockFromIsr();
+ 2205              		.loc 1 749 0
+ 2206 0040 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 2207              	.LBB19:
+ 2208 0044 0023     		movs	r3, #0
+ 2209              	@ 749 "/usr/src/chibiostest/os/hal/src/usb.c" 1
+ 2210 0046 83F31188 		msr     BASEPRI, r3
+ 2211              	@ 0 "" 2
+ 2212              		.thumb
+ 2213              	.LBE19:
+ 750:/usr/src/chibiostest/os/hal/src/usb.c ****     return;
+ 2214              		.loc 1 750 0
+ 2215 004a 2AE0     		b	.L126
+ 2216              	.L128:
+ 751:/usr/src/chibiostest/os/hal/src/usb.c ****   case USB_EP0_WAITING_STS:
+ 752:/usr/src/chibiostest/os/hal/src/usb.c ****     /* Status packet received, it must be zero sized, invoking the callback
+ 753:/usr/src/chibiostest/os/hal/src/usb.c ****        if defined.*/
+ 754:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbGetReceiveTransactionSizeI(usbp, 0) != 0)
+ 2217              		.loc 1 754 0
+ 2218 004c 019B     		ldr	r3, [sp, #4]
+ 2219 004e 1B69     		ldr	r3, [r3, #16]
+ 2220 0050 9B69     		ldr	r3, [r3, #24]
+ 2221 0052 9B68     		ldr	r3, [r3, #8]
+ 2222 0054 002B     		cmp	r3, #0
+ 2223 0056 00D0     		beq	.L131
+ 755:/usr/src/chibiostest/os/hal/src/usb.c ****       break;
+ 2224              		.loc 1 755 0
+ 2225 0058 0CE0     		b	.L127
+ 2226              	.L131:
+ 756:/usr/src/chibiostest/os/hal/src/usb.c ****     if (usbp->ep0endcb != NULL)
+ 2227              		.loc 1 756 0
+ 2228 005a 019B     		ldr	r3, [sp, #4]
+ 2229 005c DB6A     		ldr	r3, [r3, #44]
+ 2230 005e 002B     		cmp	r3, #0
+ 2231 0060 03D0     		beq	.L132
+ 757:/usr/src/chibiostest/os/hal/src/usb.c ****       usbp->ep0endcb(usbp);
+ 2232              		.loc 1 757 0
+ 2233 0062 019B     		ldr	r3, [sp, #4]
+ 2234 0064 DB6A     		ldr	r3, [r3, #44]
+ 2235 0066 0198     		ldr	r0, [sp, #4]
+ 2236 0068 9847     		blx	r3
+ 2237              	.L132:
+ 758:/usr/src/chibiostest/os/hal/src/usb.c ****     usbp->ep0state = USB_EP0_WAITING_SETUP;
+ 2238              		.loc 1 758 0
+ 2239 006a 019B     		ldr	r3, [sp, #4]
+ 2240 006c 0022     		movs	r2, #0
+ 2241 006e 83F82020 		strb	r2, [r3, #32]
+ 759:/usr/src/chibiostest/os/hal/src/usb.c ****     return;
+ 2242              		.loc 1 759 0
+ 2243 0072 16E0     		b	.L126
+ 2244              	.L127:
+ 760:/usr/src/chibiostest/os/hal/src/usb.c ****   default:
+ 761:/usr/src/chibiostest/os/hal/src/usb.c ****     ;
+ 762:/usr/src/chibiostest/os/hal/src/usb.c ****   }
+ 763:/usr/src/chibiostest/os/hal/src/usb.c ****   /* Error response, the state machine goes into an error state, the low
+ 764:/usr/src/chibiostest/os/hal/src/usb.c ****      level layer will have to reset it to USB_EP0_WAITING_SETUP after
+ 765:/usr/src/chibiostest/os/hal/src/usb.c ****      receiving a SETUP packet.*/
+ 766:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_stall_in(usbp, 0);
+ 2245              		.loc 1 766 0
+ 2246 0074 0198     		ldr	r0, [sp, #4]
+ 2247 0076 0021     		movs	r1, #0
+ 2248 0078 FFF7FEFF 		bl	usb_lld_stall_in
+ 767:/usr/src/chibiostest/os/hal/src/usb.c ****   usb_lld_stall_out(usbp, 0);
+ 2249              		.loc 1 767 0
+ 2250 007c 0198     		ldr	r0, [sp, #4]
+ 2251 007e 0021     		movs	r1, #0
+ 2252 0080 FFF7FEFF 		bl	usb_lld_stall_out
+ 768:/usr/src/chibiostest/os/hal/src/usb.c ****   _usb_isr_invoke_event_cb(usbp, USB_EVENT_STALLED);
+ 2253              		.loc 1 768 0
+ 2254 0084 019B     		ldr	r3, [sp, #4]
+ 2255 0086 5B68     		ldr	r3, [r3, #4]
+ 2256 0088 1B68     		ldr	r3, [r3]
+ 2257 008a 002B     		cmp	r3, #0
+ 2258 008c 05D0     		beq	.L133
+ 2259              		.loc 1 768 0 is_stmt 0 discriminator 1
+ 2260 008e 019B     		ldr	r3, [sp, #4]
+ 2261 0090 5B68     		ldr	r3, [r3, #4]
+ 2262 0092 1B68     		ldr	r3, [r3]
+ 2263 0094 0198     		ldr	r0, [sp, #4]
+ 2264 0096 0521     		movs	r1, #5
+ 2265 0098 9847     		blx	r3
+ 2266              	.L133:
+ 769:/usr/src/chibiostest/os/hal/src/usb.c ****   usbp->ep0state = USB_EP0_ERROR;
+ 2267              		.loc 1 769 0 is_stmt 1
+ 2268 009a 019B     		ldr	r3, [sp, #4]
+ 2269 009c 0522     		movs	r2, #5
+ 2270 009e 83F82020 		strb	r2, [r3, #32]
+ 2271              	.L126:
+ 770:/usr/src/chibiostest/os/hal/src/usb.c **** }
+ 2272              		.loc 1 770 0
+ 2273 00a2 03B0     		add	sp, sp, #12
+ 2274              		@ sp needed
+ 2275 00a4 5DF804FB 		ldr	pc, [sp], #4
+ 2276              		.cfi_endproc
+ 2277              	.LFE137:
+ 2279 00a8 AFF30080 		.text
+ 2279      AFF30080 
+ 2280              	.Letext0:
+ 2281              		.file 2 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
+ 2282              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 2283              		.file 4 "/usr/include/newlib/stdint.h"
+ 2284              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 2285              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 2286              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 2287              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 2288              		.file 9 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+ 2289              		.file 10 "/usr/src/chibiostest/os/kernel/include/chqueues.h"
+ 2290              		.file 11 "/usr/src/chibiostest/os/hal/include/usb.h"
+ 2291              		.file 12 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/usb_lld.h"
+ 2292              		.file 13 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/stm32_otg.h"
+ 2293              		.file 14 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 usb.c
+     /tmp/ccPDULFb.s:20     .rodata.zero_status:0000000000000000 $d
+     /tmp/ccPDULFb.s:23     .rodata.zero_status:0000000000000000 zero_status
+     /tmp/ccPDULFb.s:26     .rodata.active_status:0000000000000000 $d
+     /tmp/ccPDULFb.s:29     .rodata.active_status:0000000000000000 active_status
+     /tmp/ccPDULFb.s:32     .rodata.halted_status:0000000000000000 $d
+     /tmp/ccPDULFb.s:35     .rodata.halted_status:0000000000000000 halted_status
+     /tmp/ccPDULFb.s:39     .text.set_address:0000000000000000 $t
+     /tmp/ccPDULFb.s:44     .text.set_address:0000000000000000 set_address
+     /tmp/ccPDULFb.s:91     .text.default_handler:0000000000000000 $t
+     /tmp/ccPDULFb.s:96     .text.default_handler:0000000000000000 default_handler
+     /tmp/ccPDULFb.s:613    .text.default_handler:0000000000000394 $d
+     /tmp/ccPDULFb.s:620    .text.usbInit:0000000000000000 $t
+     /tmp/ccPDULFb.s:626    .text.usbInit:0000000000000000 usbInit
+     /tmp/ccPDULFb.s:644    .text.usbObjectInit:0000000000000000 $t
+     /tmp/ccPDULFb.s:650    .text.usbObjectInit:0000000000000000 usbObjectInit
+     /tmp/ccPDULFb.s:688    .rodata:0000000000000000 $d
+     /tmp/ccPDULFb.s:695    .text.usbStart:0000000000000000 $t
+     /tmp/ccPDULFb.s:701    .text.usbStart:0000000000000000 usbStart
+     /tmp/ccPDULFb.s:796    .text.usbStart:000000000000007c $d
+     /tmp/ccPDULFb.s:809    .text.usbStop:0000000000000000 $t
+     /tmp/ccPDULFb.s:815    .text.usbStop:0000000000000000 usbStop
+     /tmp/ccPDULFb.s:880    .text.usbStop:0000000000000050 $d
+     /tmp/ccPDULFb.s:896    .text.usbInitEndpointI:0000000000000000 $t
+     /tmp/ccPDULFb.s:902    .text.usbInitEndpointI:0000000000000000 usbInitEndpointI
+     /tmp/ccPDULFb.s:996    .text.usbInitEndpointI:0000000000000094 $d
+     /tmp/ccPDULFb.s:1010   .text.usbDisableEndpointsI:0000000000000000 $t
+     /tmp/ccPDULFb.s:1016   .text.usbDisableEndpointsI:0000000000000000 usbDisableEndpointsI
+     /tmp/ccPDULFb.s:1091   .text.usbDisableEndpointsI:000000000000006c $d
+     /tmp/ccPDULFb.s:1097   .text.usbPrepareReceive:0000000000000000 $t
+     /tmp/ccPDULFb.s:1103   .text.usbPrepareReceive:0000000000000000 usbPrepareReceive
+     /tmp/ccPDULFb.s:1155   .text.usbPrepareTransmit:0000000000000000 $t
+     /tmp/ccPDULFb.s:1161   .text.usbPrepareTransmit:0000000000000000 usbPrepareTransmit
+     /tmp/ccPDULFb.s:1213   .text.usbPrepareQueuedReceive:0000000000000000 $t
+     /tmp/ccPDULFb.s:1219   .text.usbPrepareQueuedReceive:0000000000000000 usbPrepareQueuedReceive
+     /tmp/ccPDULFb.s:1271   .text.usbPrepareQueuedTransmit:0000000000000000 $t
+     /tmp/ccPDULFb.s:1277   .text.usbPrepareQueuedTransmit:0000000000000000 usbPrepareQueuedTransmit
+     /tmp/ccPDULFb.s:1333   .text.usbStartReceiveI:0000000000000000 $t
+     /tmp/ccPDULFb.s:1339   .text.usbStartReceiveI:0000000000000000 usbStartReceiveI
+     /tmp/ccPDULFb.s:1405   .text.usbStartReceiveI:0000000000000068 $d
+     /tmp/ccPDULFb.s:1414   .text.usbStartTransmitI:0000000000000000 $t
+     /tmp/ccPDULFb.s:1420   .text.usbStartTransmitI:0000000000000000 usbStartTransmitI
+     /tmp/ccPDULFb.s:1486   .text.usbStartTransmitI:0000000000000068 $d
+     /tmp/ccPDULFb.s:1495   .text.usbStallReceiveI:0000000000000000 $t
+     /tmp/ccPDULFb.s:1501   .text.usbStallReceiveI:0000000000000000 usbStallReceiveI
+     /tmp/ccPDULFb.s:1554   .text.usbStallReceiveI:000000000000004c $d
+     /tmp/ccPDULFb.s:1563   .text.usbStallTransmitI:0000000000000000 $t
+     /tmp/ccPDULFb.s:1569   .text.usbStallTransmitI:0000000000000000 usbStallTransmitI
+     /tmp/ccPDULFb.s:1622   .text.usbStallTransmitI:000000000000004c $d
+     /tmp/ccPDULFb.s:1627   .text._usb_reset:0000000000000000 $t
+     /tmp/ccPDULFb.s:1633   .text._usb_reset:0000000000000000 _usb_reset
+     /tmp/ccPDULFb.s:1704   .text._usb_ep0setup:0000000000000000 $t
+     /tmp/ccPDULFb.s:1710   .text._usb_ep0setup:0000000000000000 _usb_ep0setup
+     /tmp/ccPDULFb.s:1980   .text._usb_ep0in:0000000000000000 $t
+     /tmp/ccPDULFb.s:1986   .text._usb_ep0in:0000000000000000 _usb_ep0in
+     /tmp/ccPDULFb.s:2155   .text._usb_ep0out:0000000000000000 $t
+     /tmp/ccPDULFb.s:2161   .text._usb_ep0out:0000000000000000 _usb_ep0out
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccPDULFb.s:801    .text.usbStart:0000000000000084 $t
+     /tmp/ccPDULFb.s:885    .text.usbStop:0000000000000058 $t
+     /tmp/ccPDULFb.s:1096   .text.usbDisableEndpointsI:0000000000000074 $t
+     /tmp/ccPDULFb.s:1409   .text.usbStartReceiveI:000000000000006c $t
+     /tmp/ccPDULFb.s:1490   .text.usbStartTransmitI:000000000000006c $t
+
+UNDEFINED SYMBOLS
+usb_lld_set_address
+usb_lld_get_status_in
+usb_lld_get_status_out
+usb_lld_clear_in
+usb_lld_clear_out
+usb_lld_stall_in
+usb_lld_stall_out
+usb_lld_init
+chDbgPanic
+dbg_check_lock
+usb_lld_start
+dbg_check_unlock
+usb_lld_stop
+chDbgCheckClassI
+memset
+usb_lld_init_endpoint
+usb_lld_disable_endpoints
+usb_lld_prepare_receive
+usb_lld_prepare_transmit
+usb_lld_start_out
+usb_lld_start_in
+usb_lld_reset
+usb_lld_read_setup
+dbg_check_lock_from_isr
+dbg_check_unlock_from_isr

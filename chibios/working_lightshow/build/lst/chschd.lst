@@ -1,0 +1,1353 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chschd.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.fifo_remove,"ax",%progbits
+  20              		.align	2
+  21              		.p2align 4,,15
+  22              		.thumb
+  23              		.thumb_func
+  25              	fifo_remove:
+  26              	.LFB2:
+  27              		.file 1 "/usr/src/chibiostest/os/kernel/include/chinline.h"
+   1:/usr/src/chibiostest/os/kernel/include/chinline.h **** /*
+   2:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/include/chinline.h ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   5:/usr/src/chibiostest/os/kernel/include/chinline.h ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+   7:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/include/chinline.h ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/include/chinline.h ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/include/chinline.h ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  12:/usr/src/chibiostest/os/kernel/include/chinline.h ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/include/chinline.h ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/include/chinline.h ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/include/chinline.h ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  17:/usr/src/chibiostest/os/kernel/include/chinline.h ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/include/chinline.h ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/include/chinline.h **** */
+  20:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  21:/usr/src/chibiostest/os/kernel/include/chinline.h **** /**
+  22:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @file    chinline.h
+  23:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @brief   Kernel inlined functions.
+  24:/usr/src/chibiostest/os/kernel/include/chinline.h ****  * @details In this file there are a set of inlined functions if the
+  25:/usr/src/chibiostest/os/kernel/include/chinline.h ****  *          @p CH_OPTIMIZE_SPEED is enabled.
+  26:/usr/src/chibiostest/os/kernel/include/chinline.h ****  */
+  27:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  28:/usr/src/chibiostest/os/kernel/include/chinline.h **** #ifndef _CHINLINE_H_
+  29:/usr/src/chibiostest/os/kernel/include/chinline.h **** #define _CHINLINE_H_
+  30:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  31:/usr/src/chibiostest/os/kernel/include/chinline.h **** /* If the performance code path has been chosen then all the following
+  32:/usr/src/chibiostest/os/kernel/include/chinline.h ****    functions are inlined into the various kernel modules.*/
+  33:/usr/src/chibiostest/os/kernel/include/chinline.h **** #if CH_OPTIMIZE_SPEED
+  34:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void prio_insert(Thread *tp, ThreadsQueue *tqp) {
+  35:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  36:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *cp = (Thread *)tqp;
+  37:/usr/src/chibiostest/os/kernel/include/chinline.h ****   do {
+  38:/usr/src/chibiostest/os/kernel/include/chinline.h ****     cp = cp->p_next;
+  39:/usr/src/chibiostest/os/kernel/include/chinline.h ****   } while ((cp != (Thread *)tqp) && (cp->p_prio >= tp->p_prio));
+  40:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = cp;
+  41:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = cp->p_prev;
+  42:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = cp->p_prev = tp;
+  43:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  44:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  45:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE void queue_insert(Thread *tp, ThreadsQueue *tqp) {
+  46:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  47:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next = (Thread *)tqp;
+  48:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev = tqp->p_prev;
+  49:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = tqp->p_prev = tp;
+  50:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  51:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  52:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *fifo_remove(ThreadsQueue *tqp) {
+  28              		.loc 1 52 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 16
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33 0000 84B0     		sub	sp, sp, #16
+  34              		.cfi_def_cfa_offset 16
+  35 0002 0190     		str	r0, [sp, #4]
+  53:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *tp = tqp->p_next;
+  36              		.loc 1 53 0
+  37 0004 019B     		ldr	r3, [sp, #4]
+  38 0006 1B68     		ldr	r3, [r3]
+  39 0008 0393     		str	r3, [sp, #12]
+  54:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  55:/usr/src/chibiostest/os/kernel/include/chinline.h ****   (tqp->p_next = tp->p_next)->p_prev = (Thread *)tqp;
+  40              		.loc 1 55 0
+  41 000a 039B     		ldr	r3, [sp, #12]
+  42 000c 1A68     		ldr	r2, [r3]
+  43 000e 019B     		ldr	r3, [sp, #4]
+  44 0010 1A60     		str	r2, [r3]
+  45 0012 019B     		ldr	r3, [sp, #4]
+  46 0014 1B68     		ldr	r3, [r3]
+  47 0016 019A     		ldr	r2, [sp, #4]
+  48 0018 5A60     		str	r2, [r3, #4]
+  56:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+  49              		.loc 1 56 0
+  50 001a 039B     		ldr	r3, [sp, #12]
+  57:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  51              		.loc 1 57 0
+  52 001c 1846     		mov	r0, r3
+  53 001e 04B0     		add	sp, sp, #16
+  54              		@ sp needed
+  55 0020 7047     		bx	lr
+  56              		.cfi_endproc
+  57              	.LFE2:
+  59 0022 00BFAFF3 		.section	.text.dequeue,"ax",%progbits
+  59      0080AFF3 
+  59      0080AFF3 
+  59      0080
+  60              		.align	2
+  61              		.p2align 4,,15
+  62              		.thumb
+  63              		.thumb_func
+  65              	dequeue:
+  66              	.LFB4:
+  58:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  59:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *lifo_remove(ThreadsQueue *tqp) {
+  60:/usr/src/chibiostest/os/kernel/include/chinline.h ****   Thread *tp = tqp->p_prev;
+  61:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  62:/usr/src/chibiostest/os/kernel/include/chinline.h ****   (tqp->p_prev = tp->p_prev)->p_next = (Thread *)tqp;
+  63:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+  64:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  65:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  66:/usr/src/chibiostest/os/kernel/include/chinline.h **** static INLINE Thread *dequeue(Thread *tp) {
+  67              		.loc 1 66 0
+  68              		.cfi_startproc
+  69              		@ args = 0, pretend = 0, frame = 8
+  70              		@ frame_needed = 0, uses_anonymous_args = 0
+  71              		@ link register save eliminated.
+  72 0000 82B0     		sub	sp, sp, #8
+  73              		.cfi_def_cfa_offset 8
+  74 0002 0190     		str	r0, [sp, #4]
+  67:/usr/src/chibiostest/os/kernel/include/chinline.h **** 
+  68:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_prev->p_next = tp->p_next;
+  75              		.loc 1 68 0
+  76 0004 019B     		ldr	r3, [sp, #4]
+  77 0006 5B68     		ldr	r3, [r3, #4]
+  78 0008 019A     		ldr	r2, [sp, #4]
+  79 000a 1268     		ldr	r2, [r2]
+  80 000c 1A60     		str	r2, [r3]
+  69:/usr/src/chibiostest/os/kernel/include/chinline.h ****   tp->p_next->p_prev = tp->p_prev;
+  81              		.loc 1 69 0
+  82 000e 019B     		ldr	r3, [sp, #4]
+  83 0010 1B68     		ldr	r3, [r3]
+  84 0012 019A     		ldr	r2, [sp, #4]
+  85 0014 5268     		ldr	r2, [r2, #4]
+  86 0016 5A60     		str	r2, [r3, #4]
+  70:/usr/src/chibiostest/os/kernel/include/chinline.h ****   return tp;
+  87              		.loc 1 70 0
+  88 0018 019B     		ldr	r3, [sp, #4]
+  71:/usr/src/chibiostest/os/kernel/include/chinline.h **** }
+  89              		.loc 1 71 0
+  90 001a 1846     		mov	r0, r3
+  91 001c 02B0     		add	sp, sp, #8
+  92              		@ sp needed
+  93 001e 7047     		bx	lr
+  94              		.cfi_endproc
+  95              	.LFE4:
+  97              		.global	rlist
+  98              		.section	.bss.rlist,"aw",%nobits
+  99              		.align	2
+ 102              	rlist:
+ 103 0000 00000000 		.space	28
+ 103      00000000 
+ 103      00000000 
+ 103      00000000 
+ 103      00000000 
+ 104              		.section	.text._scheduler_init,"ax",%progbits
+ 105              		.align	2
+ 106              		.p2align 4,,15
+ 107              		.global	_scheduler_init
+ 108              		.thumb
+ 109              		.thumb_func
+ 111              	_scheduler_init:
+ 112              	.LFB7:
+ 113              		.file 2 "/usr/src/chibiostest/os/kernel/src/chschd.c"
+   1:/usr/src/chibiostest/os/kernel/src/chschd.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chschd.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chschd.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chschd.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chschd.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chschd.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chschd.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chschd.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chschd.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chschd.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chschd.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chschd.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chschd.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chschd.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chschd.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  21:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+  22:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @file    chschd.c
+  23:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Scheduler code.
+  24:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+  25:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @addtogroup scheduler
+  26:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @details This module provides the default portable scheduler code,
+  27:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          scheduler functions can be individually captured by the port
+  28:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          layer in order to provide architecture optimized equivalents.
+  29:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          When a function is captured its default code is not built into
+  30:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          the OS image, the optimized version is included instead.
+  31:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @{
+  32:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+  33:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  34:/usr/src/chibiostest/os/kernel/src/chschd.c **** #include "ch.h"
+  35:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  36:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+  37:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Ready list header.
+  38:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+  39:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if !defined(PORT_OPTIMIZED_RLIST_VAR) || defined(__DOXYGEN__)
+  40:/usr/src/chibiostest/os/kernel/src/chschd.c **** ReadyList rlist;
+  41:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif /* !defined(PORT_OPTIMIZED_RLIST_VAR) */
+  42:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  43:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+  44:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Scheduler initialization.
+  45:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+  46:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @notapi
+  47:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+  48:/usr/src/chibiostest/os/kernel/src/chschd.c **** void _scheduler_init(void) {
+ 114              		.loc 2 48 0
+ 115              		.cfi_startproc
+ 116              		@ args = 0, pretend = 0, frame = 0
+ 117              		@ frame_needed = 0, uses_anonymous_args = 0
+ 118              		@ link register save eliminated.
+  49:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  50:/usr/src/chibiostest/os/kernel/src/chschd.c ****   queue_init(&rlist.r_queue);
+ 119              		.loc 2 50 0
+ 120 0000 084B     		ldr	r3, .L6
+ 121 0002 084A     		ldr	r2, .L6
+ 122 0004 5A60     		str	r2, [r3, #4]
+ 123 0006 074B     		ldr	r3, .L6
+ 124 0008 5A68     		ldr	r2, [r3, #4]
+ 125 000a 064B     		ldr	r3, .L6
+ 126 000c 1A60     		str	r2, [r3]
+  51:/usr/src/chibiostest/os/kernel/src/chschd.c ****   rlist.r_prio = NOPRIO;
+ 127              		.loc 2 51 0
+ 128 000e 054B     		ldr	r3, .L6
+ 129 0010 0022     		movs	r2, #0
+ 130 0012 9A60     		str	r2, [r3, #8]
+  52:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if CH_USE_REGISTRY
+  53:/usr/src/chibiostest/os/kernel/src/chschd.c ****   rlist.r_newer = rlist.r_older = (Thread *)&rlist;
+ 131              		.loc 2 53 0
+ 132 0014 034B     		ldr	r3, .L6
+ 133 0016 034A     		ldr	r2, .L6
+ 134 0018 5A61     		str	r2, [r3, #20]
+ 135 001a 024B     		ldr	r3, .L6
+ 136 001c 5A69     		ldr	r2, [r3, #20]
+ 137 001e 014B     		ldr	r3, .L6
+ 138 0020 1A61     		str	r2, [r3, #16]
+  54:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif
+  55:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 139              		.loc 2 55 0
+ 140 0022 7047     		bx	lr
+ 141              	.L7:
+ 142              		.align	2
+ 143              	.L6:
+ 144 0024 00000000 		.word	rlist
+ 145              		.cfi_endproc
+ 146              	.LFE7:
+ 148 0028 AFF30080 		.section	.rodata
+ 148      AFF30080 
+ 149              		.align	2
+ 150              	.LC0:
+ 151 0000 63685363 		.ascii	"chSchReadyI(), #1\000"
+ 151      68526561 
+ 151      64794928 
+ 151      292C2023 
+ 151      3100
+ 152              		.section	.text.chSchReadyI,"ax",%progbits
+ 153              		.align	2
+ 154              		.p2align 4,,15
+ 155              		.global	chSchReadyI
+ 156              		.thumb
+ 157              		.thumb_func
+ 159              	chSchReadyI:
+ 160              	.LFB8:
+  56:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  57:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+  58:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Inserts a thread in the Ready List.
+  59:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @details The thread is positioned behind all threads with higher or equal
+  60:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          priority.
+  61:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @pre     The thread must not be already inserted in any list through its
+  62:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          @p p_next and @p p_prev or list corruption would occur.
+  63:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @post    This function does not reschedule so a call to a rescheduling
+  64:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          function must be performed before unlocking the kernel. Note that
+  65:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          interrupt handlers always reschedule on exit so an explicit
+  66:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          reschedule must not be performed in ISRs.
+  67:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+  68:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @param[in] tp        the thread to be made ready
+  69:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @return              The thread pointer.
+  70:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+  71:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @iclass
+  72:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+  73:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if !defined(PORT_OPTIMIZED_READYI) || defined(__DOXYGEN__)
+  74:/usr/src/chibiostest/os/kernel/src/chschd.c **** Thread *chSchReadyI(Thread *tp) {
+ 161              		.loc 2 74 0
+ 162              		.cfi_startproc
+ 163              		@ args = 0, pretend = 0, frame = 16
+ 164              		@ frame_needed = 0, uses_anonymous_args = 0
+ 165 0000 00B5     		push	{lr}
+ 166              		.cfi_def_cfa_offset 4
+ 167              		.cfi_offset 14, -4
+ 168 0002 85B0     		sub	sp, sp, #20
+ 169              		.cfi_def_cfa_offset 24
+ 170 0004 0190     		str	r0, [sp, #4]
+  75:/usr/src/chibiostest/os/kernel/src/chschd.c ****   Thread *cp;
+  76:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  77:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chDbgCheckClassI();
+ 171              		.loc 2 77 0
+ 172 0006 FFF7FEFF 		bl	chDbgCheckClassI
+  78:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  79:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* Integrity checks.*/
+  80:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chDbgAssert((tp->p_state != THD_STATE_READY) &&
+ 173              		.loc 2 80 0
+ 174 000a 019B     		ldr	r3, [sp, #4]
+ 175 000c 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 176 0010 002B     		cmp	r3, #0
+ 177 0012 04D0     		beq	.L9
+ 178              		.loc 2 80 0 is_stmt 0 discriminator 2
+ 179 0014 019B     		ldr	r3, [sp, #4]
+ 180 0016 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 181 001a 0E2B     		cmp	r3, #14
+ 182 001c 02D1     		bne	.L10
+ 183              	.L9:
+ 184              		.loc 2 80 0 discriminator 1
+ 185 001e 1348     		ldr	r0, .L13
+ 186 0020 FFF7FEFF 		bl	chDbgPanic
+ 187              	.L10:
+  81:/usr/src/chibiostest/os/kernel/src/chschd.c ****               (tp->p_state != THD_STATE_FINAL),
+  82:/usr/src/chibiostest/os/kernel/src/chschd.c ****               "chSchReadyI(), #1",
+  83:/usr/src/chibiostest/os/kernel/src/chschd.c ****               "invalid state");
+  84:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  85:/usr/src/chibiostest/os/kernel/src/chschd.c ****   tp->p_state = THD_STATE_READY;
+ 188              		.loc 2 85 0 is_stmt 1
+ 189 0024 019B     		ldr	r3, [sp, #4]
+ 190 0026 0022     		movs	r2, #0
+ 191 0028 83F82020 		strb	r2, [r3, #32]
+  86:/usr/src/chibiostest/os/kernel/src/chschd.c ****   cp = (Thread *)&rlist.r_queue;
+ 192              		.loc 2 86 0
+ 193 002c 104B     		ldr	r3, .L13+4
+ 194 002e 0393     		str	r3, [sp, #12]
+ 195              	.L11:
+  87:/usr/src/chibiostest/os/kernel/src/chschd.c ****   do {
+  88:/usr/src/chibiostest/os/kernel/src/chschd.c ****     cp = cp->p_next;
+ 196              		.loc 2 88 0 discriminator 1
+ 197 0030 039B     		ldr	r3, [sp, #12]
+ 198 0032 1B68     		ldr	r3, [r3]
+ 199 0034 0393     		str	r3, [sp, #12]
+  89:/usr/src/chibiostest/os/kernel/src/chschd.c ****   } while (cp->p_prio >= tp->p_prio);
+ 200              		.loc 2 89 0 discriminator 1
+ 201 0036 039B     		ldr	r3, [sp, #12]
+ 202 0038 9A68     		ldr	r2, [r3, #8]
+ 203 003a 019B     		ldr	r3, [sp, #4]
+ 204 003c 9B68     		ldr	r3, [r3, #8]
+ 205 003e 9A42     		cmp	r2, r3
+ 206 0040 F6D2     		bcs	.L11
+  90:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* Insertion on p_prev.*/
+  91:/usr/src/chibiostest/os/kernel/src/chschd.c ****   tp->p_next = cp;
+ 207              		.loc 2 91 0
+ 208 0042 019B     		ldr	r3, [sp, #4]
+ 209 0044 039A     		ldr	r2, [sp, #12]
+ 210 0046 1A60     		str	r2, [r3]
+  92:/usr/src/chibiostest/os/kernel/src/chschd.c ****   tp->p_prev = cp->p_prev;
+ 211              		.loc 2 92 0
+ 212 0048 039B     		ldr	r3, [sp, #12]
+ 213 004a 5A68     		ldr	r2, [r3, #4]
+ 214 004c 019B     		ldr	r3, [sp, #4]
+ 215 004e 5A60     		str	r2, [r3, #4]
+  93:/usr/src/chibiostest/os/kernel/src/chschd.c ****   tp->p_prev->p_next = cp->p_prev = tp;
+ 216              		.loc 2 93 0
+ 217 0050 019B     		ldr	r3, [sp, #4]
+ 218 0052 5B68     		ldr	r3, [r3, #4]
+ 219 0054 039A     		ldr	r2, [sp, #12]
+ 220 0056 0199     		ldr	r1, [sp, #4]
+ 221 0058 5160     		str	r1, [r2, #4]
+ 222 005a 039A     		ldr	r2, [sp, #12]
+ 223 005c 5268     		ldr	r2, [r2, #4]
+ 224 005e 1A60     		str	r2, [r3]
+  94:/usr/src/chibiostest/os/kernel/src/chschd.c ****   return tp;
+ 225              		.loc 2 94 0
+ 226 0060 019B     		ldr	r3, [sp, #4]
+  95:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 227              		.loc 2 95 0
+ 228 0062 1846     		mov	r0, r3
+ 229 0064 05B0     		add	sp, sp, #20
+ 230              		@ sp needed
+ 231 0066 5DF804FB 		ldr	pc, [sp], #4
+ 232              	.L14:
+ 233 006a 00BF     		.align	2
+ 234              	.L13:
+ 235 006c 00000000 		.word	.LC0
+ 236 0070 00000000 		.word	rlist
+ 237              		.cfi_endproc
+ 238              	.LFE8:
+ 240 0074 AFF30080 		.section	.rodata
+ 240      AFF30080 
+ 240      AFF30080 
+ 241 0012 0000     		.align	2
+ 242              	.LC1:
+ 243 0014 73746163 		.ascii	"stack overflow\000"
+ 243      6B206F76 
+ 243      6572666C 
+ 243      6F7700
+ 244 0023 00       		.section	.text.chSchGoSleepS,"ax",%progbits
+ 245              		.align	2
+ 246              		.p2align 4,,15
+ 247              		.global	chSchGoSleepS
+ 248              		.thumb
+ 249              		.thumb_func
+ 251              	chSchGoSleepS:
+ 252              	.LFB9:
+  96:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif /* !defined(PORT_OPTIMIZED_READYI) */
+  97:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+  98:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+  99:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Puts the current thread to sleep into the specified state.
+ 100:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @details The thread goes into a sleeping state. The possible
+ 101:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          @ref thread_states are defined into @p threads.h.
+ 102:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 103:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @param[in] newstate  the new thread state
+ 104:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 105:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @sclass
+ 106:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+ 107:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if !defined(PORT_OPTIMIZED_GOSLEEPS) || defined(__DOXYGEN__)
+ 108:/usr/src/chibiostest/os/kernel/src/chschd.c **** void chSchGoSleepS(tstate_t newstate) {
+ 253              		.loc 2 108 0
+ 254              		.cfi_startproc
+ 255              		@ args = 0, pretend = 0, frame = 16
+ 256              		@ frame_needed = 0, uses_anonymous_args = 0
+ 257 0000 00B5     		push	{lr}
+ 258              		.cfi_def_cfa_offset 4
+ 259              		.cfi_offset 14, -4
+ 260 0002 85B0     		sub	sp, sp, #20
+ 261              		.cfi_def_cfa_offset 24
+ 262 0004 0346     		mov	r3, r0
+ 263 0006 8DF80730 		strb	r3, [sp, #7]
+ 109:/usr/src/chibiostest/os/kernel/src/chschd.c ****   Thread *otp;
+ 110:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 111:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chDbgCheckClassS();
+ 264              		.loc 2 111 0
+ 265 000a FFF7FEFF 		bl	chDbgCheckClassS
+ 112:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 113:/usr/src/chibiostest/os/kernel/src/chschd.c ****   (otp = currp)->p_state = newstate;
+ 266              		.loc 2 113 0
+ 267 000e 164B     		ldr	r3, .L17
+ 268 0010 9B69     		ldr	r3, [r3, #24]
+ 269 0012 0393     		str	r3, [sp, #12]
+ 270 0014 039B     		ldr	r3, [sp, #12]
+ 271 0016 9DF80720 		ldrb	r2, [sp, #7]
+ 272 001a 83F82020 		strb	r2, [r3, #32]
+ 114:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if CH_TIME_QUANTUM > 0
+ 115:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* The thread is renouncing its remaining time slices so it will have a new
+ 116:/usr/src/chibiostest/os/kernel/src/chschd.c ****      time quantum when it will wakeup.*/
+ 117:/usr/src/chibiostest/os/kernel/src/chschd.c ****   otp->p_preempt = CH_TIME_QUANTUM;
+ 273              		.loc 2 117 0
+ 274 001e 039B     		ldr	r3, [sp, #12]
+ 275 0020 1422     		movs	r2, #20
+ 276 0022 83F82320 		strb	r2, [r3, #35]
+ 118:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif
+ 119:/usr/src/chibiostest/os/kernel/src/chschd.c ****   setcurrp(fifo_remove(&rlist.r_queue));
+ 277              		.loc 2 119 0
+ 278 0026 1048     		ldr	r0, .L17
+ 279 0028 FFF7FEFF 		bl	fifo_remove
+ 280 002c 0246     		mov	r2, r0
+ 281 002e 0E4B     		ldr	r3, .L17
+ 282 0030 9A61     		str	r2, [r3, #24]
+ 120:/usr/src/chibiostest/os/kernel/src/chschd.c ****   currp->p_state = THD_STATE_CURRENT;
+ 283              		.loc 2 120 0
+ 284 0032 0D4B     		ldr	r3, .L17
+ 285 0034 9B69     		ldr	r3, [r3, #24]
+ 286 0036 0122     		movs	r2, #1
+ 287 0038 83F82020 		strb	r2, [r3, #32]
+ 121:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chSysSwitch(currp, otp);
+ 288              		.loc 2 121 0
+ 289 003c 0398     		ldr	r0, [sp, #12]
+ 290 003e FFF7FEFF 		bl	dbg_trace
+ 291              	.LBB2:
+ 292 0042 6B46     		mov	r3, sp
+ 293 0044 A3F16402 		sub	r2, r3, #100
+ 294 0048 039B     		ldr	r3, [sp, #12]
+ 295 004a DB69     		ldr	r3, [r3, #28]
+ 296 004c 9A42     		cmp	r2, r3
+ 297 004e 02D2     		bcs	.L16
+ 298              		.loc 2 121 0 is_stmt 0 discriminator 1
+ 299 0050 0648     		ldr	r0, .L17+4
+ 300 0052 FFF7FEFF 		bl	chDbgPanic
+ 301              	.L16:
+ 302              		.loc 2 121 0 discriminator 2
+ 303 0056 044B     		ldr	r3, .L17
+ 304 0058 9B69     		ldr	r3, [r3, #24]
+ 305 005a 1846     		mov	r0, r3
+ 306 005c 0399     		ldr	r1, [sp, #12]
+ 307 005e FFF7FEFF 		bl	_port_switch
+ 308              	.LBE2:
+ 122:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 309              		.loc 2 122 0 is_stmt 1 discriminator 2
+ 310 0062 05B0     		add	sp, sp, #20
+ 311              		@ sp needed
+ 312 0064 5DF804FB 		ldr	pc, [sp], #4
+ 313              	.L18:
+ 314              		.align	2
+ 315              	.L17:
+ 316 0068 00000000 		.word	rlist
+ 317 006c 14000000 		.word	.LC1
+ 318              		.cfi_endproc
+ 319              	.LFE9:
+ 321              		.section	.text.wakeup,"ax",%progbits
+ 322              		.align	2
+ 323              		.p2align 4,,15
+ 324              		.thumb
+ 325              		.thumb_func
+ 327              	wakeup:
+ 328              	.LFB10:
+ 123:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif /* !defined(PORT_OPTIMIZED_GOSLEEPS) */
+ 124:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 125:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if !defined(PORT_OPTIMIZED_GOSLEEPTIMEOUTS) || defined(__DOXYGEN__)
+ 126:/usr/src/chibiostest/os/kernel/src/chschd.c **** /*
+ 127:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * Timeout wakeup callback.
+ 128:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+ 129:/usr/src/chibiostest/os/kernel/src/chschd.c **** static void wakeup(void *p) {
+ 329              		.loc 2 129 0
+ 330              		.cfi_startproc
+ 331              		@ args = 0, pretend = 0, frame = 16
+ 332              		@ frame_needed = 0, uses_anonymous_args = 0
+ 333 0000 00B5     		push	{lr}
+ 334              		.cfi_def_cfa_offset 4
+ 335              		.cfi_offset 14, -4
+ 336 0002 85B0     		sub	sp, sp, #20
+ 337              		.cfi_def_cfa_offset 24
+ 338 0004 0190     		str	r0, [sp, #4]
+ 130:/usr/src/chibiostest/os/kernel/src/chschd.c ****   Thread *tp = (Thread *)p;
+ 339              		.loc 2 130 0
+ 340 0006 019B     		ldr	r3, [sp, #4]
+ 341 0008 0393     		str	r3, [sp, #12]
+ 342              	.LBB3:
+ 131:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 132:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chSysLockFromIsr();
+ 343              		.loc 2 132 0
+ 344 000a 2023     		movs	r3, #32
+ 345              	@ 132 "/usr/src/chibiostest/os/kernel/src/chschd.c" 1
+ 346 000c 83F31188 		msr     BASEPRI, r3
+ 347              	@ 0 "" 2
+ 348              		.thumb
+ 349              	.LBE3:
+ 350 0010 FFF7FEFF 		bl	dbg_check_lock_from_isr
+ 133:/usr/src/chibiostest/os/kernel/src/chschd.c ****   switch (tp->p_state) {
+ 351              		.loc 2 133 0
+ 352 0014 039B     		ldr	r3, [sp, #12]
+ 353 0016 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 354 001a 0D2B     		cmp	r3, #13
+ 355 001c 2CD8     		bhi	.L20
+ 356 001e 01A2     		adr	r2, .L22
+ 357 0020 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 358              		.p2align 2
+ 359              	.L22:
+ 360 0024 5D000000 		.word	.L21+1
+ 361 0028 79000000 		.word	.L20+1
+ 362 002c 79000000 		.word	.L20+1
+ 363 0030 69000000 		.word	.L23+1
+ 364 0034 79000000 		.word	.L20+1
+ 365 0038 73000000 		.word	.L24+1
+ 366 003c 79000000 		.word	.L20+1
+ 367 0040 79000000 		.word	.L20+1
+ 368 0044 79000000 		.word	.L20+1
+ 369 0048 79000000 		.word	.L20+1
+ 370 004c 79000000 		.word	.L20+1
+ 371 0050 79000000 		.word	.L20+1
+ 372 0054 79000000 		.word	.L20+1
+ 373 0058 73000000 		.word	.L24+1
+ 374              		.p2align 1
+ 375              	.L21:
+ 134:/usr/src/chibiostest/os/kernel/src/chschd.c ****   case THD_STATE_READY:
+ 135:/usr/src/chibiostest/os/kernel/src/chschd.c ****     /* Handling the special case where the thread has been made ready by
+ 136:/usr/src/chibiostest/os/kernel/src/chschd.c ****        another thread with higher priority.*/
+ 137:/usr/src/chibiostest/os/kernel/src/chschd.c ****     chSysUnlockFromIsr();
+ 376              		.loc 2 137 0
+ 377 005c FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 378              	.LBB4:
+ 379 0060 0023     		movs	r3, #0
+ 380              	@ 137 "/usr/src/chibiostest/os/kernel/src/chschd.c" 1
+ 381 0062 83F31188 		msr     BASEPRI, r3
+ 382              	@ 0 "" 2
+ 383              		.thumb
+ 384              	.LBE4:
+ 138:/usr/src/chibiostest/os/kernel/src/chschd.c ****     return;
+ 385              		.loc 2 138 0
+ 386 0066 13E0     		b	.L19
+ 387              	.L23:
+ 139:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if CH_USE_SEMAPHORES || CH_USE_QUEUES ||                                   \
+ 140:/usr/src/chibiostest/os/kernel/src/chschd.c ****     (CH_USE_CONDVARS && CH_USE_CONDVARS_TIMEOUT)
+ 141:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if CH_USE_SEMAPHORES
+ 142:/usr/src/chibiostest/os/kernel/src/chschd.c ****   case THD_STATE_WTSEM:
+ 143:/usr/src/chibiostest/os/kernel/src/chschd.c ****     chSemFastSignalI((Semaphore *)tp->p_u.wtobjp);
+ 388              		.loc 2 143 0
+ 389 0068 039B     		ldr	r3, [sp, #12]
+ 390 006a 9B6A     		ldr	r3, [r3, #40]
+ 391 006c 9A68     		ldr	r2, [r3, #8]
+ 392 006e 0132     		adds	r2, r2, #1
+ 393 0070 9A60     		str	r2, [r3, #8]
+ 394              	.L24:
+ 144:/usr/src/chibiostest/os/kernel/src/chschd.c ****     /* Falls into, intentional. */
+ 145:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif
+ 146:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if CH_USE_QUEUES
+ 147:/usr/src/chibiostest/os/kernel/src/chschd.c ****   case THD_STATE_WTQUEUE:
+ 148:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif
+ 149:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if CH_USE_CONDVARS && CH_USE_CONDVARS_TIMEOUT
+ 150:/usr/src/chibiostest/os/kernel/src/chschd.c ****   case THD_STATE_WTCOND:
+ 151:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif
+ 152:/usr/src/chibiostest/os/kernel/src/chschd.c ****     /* States requiring dequeuing.*/
+ 153:/usr/src/chibiostest/os/kernel/src/chschd.c ****     dequeue(tp);
+ 395              		.loc 2 153 0
+ 396 0072 0398     		ldr	r0, [sp, #12]
+ 397 0074 FFF7FEFF 		bl	dequeue
+ 398              	.L20:
+ 154:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif
+ 155:/usr/src/chibiostest/os/kernel/src/chschd.c ****   }
+ 156:/usr/src/chibiostest/os/kernel/src/chschd.c ****   tp->p_u.rdymsg = RDY_TIMEOUT;
+ 399              		.loc 2 156 0
+ 400 0078 039B     		ldr	r3, [sp, #12]
+ 401 007a 4FF0FF32 		mov	r2, #-1
+ 402 007e 9A62     		str	r2, [r3, #40]
+ 157:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chSchReadyI(tp);
+ 403              		.loc 2 157 0
+ 404 0080 0398     		ldr	r0, [sp, #12]
+ 405 0082 FFF7FEFF 		bl	chSchReadyI
+ 158:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chSysUnlockFromIsr();
+ 406              		.loc 2 158 0
+ 407 0086 FFF7FEFF 		bl	dbg_check_unlock_from_isr
+ 408              	.LBB5:
+ 409 008a 0023     		movs	r3, #0
+ 410              	@ 158 "/usr/src/chibiostest/os/kernel/src/chschd.c" 1
+ 411 008c 83F31188 		msr     BASEPRI, r3
+ 412              	@ 0 "" 2
+ 413              		.thumb
+ 414              	.L19:
+ 415              	.LBE5:
+ 159:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 416              		.loc 2 159 0
+ 417 0090 05B0     		add	sp, sp, #20
+ 418              		@ sp needed
+ 419 0092 5DF804FB 		ldr	pc, [sp], #4
+ 420              		.cfi_endproc
+ 421              	.LFE10:
+ 423 0096 00BFAFF3 		.section	.text.chSchGoSleepTimeoutS,"ax",%progbits
+ 423      0080AFF3 
+ 423      0080
+ 424              		.align	2
+ 425              		.p2align 4,,15
+ 426              		.global	chSchGoSleepTimeoutS
+ 427              		.thumb
+ 428              		.thumb_func
+ 430              	chSchGoSleepTimeoutS:
+ 431              	.LFB11:
+ 160:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 161:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+ 162:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Puts the current thread to sleep into the specified state with
+ 163:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          timeout specification.
+ 164:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @details The thread goes into a sleeping state, if it is not awakened
+ 165:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          explicitly within the specified timeout then it is forcibly
+ 166:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          awakened with a @p RDY_TIMEOUT low level message. The possible
+ 167:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          @ref thread_states are defined into @p threads.h.
+ 168:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 169:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @param[in] newstate  the new thread state
+ 170:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @param[in] time      the number of ticks before the operation timeouts, the
+ 171:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *                      special values are handled as follow:
+ 172:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *                      - @a TIME_INFINITE the thread enters an infinite sleep
+ 173:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *                        state, this is equivalent to invoking
+ 174:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *                        @p chSchGoSleepS() but, of course, less efficient.
+ 175:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *                      - @a TIME_IMMEDIATE this value is not allowed.
+ 176:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *                      .
+ 177:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @return              The wakeup message.
+ 178:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @retval RDY_TIMEOUT if a timeout occurs.
+ 179:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 180:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @sclass
+ 181:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+ 182:/usr/src/chibiostest/os/kernel/src/chschd.c **** msg_t chSchGoSleepTimeoutS(tstate_t newstate, systime_t time) {
+ 432              		.loc 2 182 0
+ 433              		.cfi_startproc
+ 434              		@ args = 0, pretend = 0, frame = 32
+ 435              		@ frame_needed = 0, uses_anonymous_args = 0
+ 436 0000 00B5     		push	{lr}
+ 437              		.cfi_def_cfa_offset 4
+ 438              		.cfi_offset 14, -4
+ 439 0002 89B0     		sub	sp, sp, #36
+ 440              		.cfi_def_cfa_offset 40
+ 441 0004 0346     		mov	r3, r0
+ 442 0006 0091     		str	r1, [sp]
+ 443 0008 8DF80730 		strb	r3, [sp, #7]
+ 183:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 184:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chDbgCheckClassS();
+ 444              		.loc 2 184 0
+ 445 000c FFF7FEFF 		bl	chDbgCheckClassS
+ 185:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 186:/usr/src/chibiostest/os/kernel/src/chschd.c ****   if (TIME_INFINITE != time) {
+ 446              		.loc 2 186 0
+ 447 0010 009B     		ldr	r3, [sp]
+ 448 0012 B3F1FF3F 		cmp	r3, #-1
+ 449 0016 15D0     		beq	.L27
+ 450              	.LBB6:
+ 187:/usr/src/chibiostest/os/kernel/src/chschd.c ****     VirtualTimer vt;
+ 188:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 189:/usr/src/chibiostest/os/kernel/src/chschd.c ****     chVTSetI(&vt, time, wakeup, currp);
+ 451              		.loc 2 189 0
+ 452 0018 104B     		ldr	r3, .L31
+ 453 001a 9B69     		ldr	r3, [r3, #24]
+ 454 001c 03AA     		add	r2, sp, #12
+ 455 001e 1046     		mov	r0, r2
+ 456 0020 0099     		ldr	r1, [sp]
+ 457 0022 0F4A     		ldr	r2, .L31+4
+ 458 0024 FFF7FEFF 		bl	chVTSetI
+ 190:/usr/src/chibiostest/os/kernel/src/chschd.c ****     chSchGoSleepS(newstate);
+ 459              		.loc 2 190 0
+ 460 0028 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 461 002c 1846     		mov	r0, r3
+ 462 002e FFF7FEFF 		bl	chSchGoSleepS
+ 191:/usr/src/chibiostest/os/kernel/src/chschd.c ****     if (chVTIsArmedI(&vt))
+ 463              		.loc 2 191 0
+ 464 0032 069B     		ldr	r3, [sp, #24]
+ 465 0034 002B     		cmp	r3, #0
+ 466 0036 04D0     		beq	.L28
+ 192:/usr/src/chibiostest/os/kernel/src/chschd.c ****       chVTResetI(&vt);
+ 467              		.loc 2 192 0
+ 468 0038 03AB     		add	r3, sp, #12
+ 469 003a 1846     		mov	r0, r3
+ 470 003c FFF7FEFF 		bl	chVTResetI
+ 471              	.LBE6:
+ 472 0040 05E0     		b	.L29
+ 473              	.L28:
+ 474 0042 04E0     		b	.L29
+ 475              	.L27:
+ 193:/usr/src/chibiostest/os/kernel/src/chschd.c ****   }
+ 194:/usr/src/chibiostest/os/kernel/src/chschd.c ****   else
+ 195:/usr/src/chibiostest/os/kernel/src/chschd.c ****     chSchGoSleepS(newstate);
+ 476              		.loc 2 195 0
+ 477 0044 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 478 0048 1846     		mov	r0, r3
+ 479 004a FFF7FEFF 		bl	chSchGoSleepS
+ 480              	.L29:
+ 196:/usr/src/chibiostest/os/kernel/src/chschd.c ****   return currp->p_u.rdymsg;
+ 481              		.loc 2 196 0
+ 482 004e 034B     		ldr	r3, .L31
+ 483 0050 9B69     		ldr	r3, [r3, #24]
+ 484 0052 9B6A     		ldr	r3, [r3, #40]
+ 197:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 485              		.loc 2 197 0
+ 486 0054 1846     		mov	r0, r3
+ 487 0056 09B0     		add	sp, sp, #36
+ 488              		@ sp needed
+ 489 0058 5DF804FB 		ldr	pc, [sp], #4
+ 490              	.L32:
+ 491              		.align	2
+ 492              	.L31:
+ 493 005c 00000000 		.word	rlist
+ 494 0060 00000000 		.word	wakeup
+ 495              		.cfi_endproc
+ 496              	.LFE11:
+ 498 0064 AFF30080 		.section	.text.chSchWakeupS,"ax",%progbits
+ 498      AFF30080 
+ 498      AFF30080 
+ 499              		.align	2
+ 500              		.p2align 4,,15
+ 501              		.global	chSchWakeupS
+ 502              		.thumb
+ 503              		.thumb_func
+ 505              	chSchWakeupS:
+ 506              	.LFB12:
+ 198:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif /* !defined(PORT_OPTIMIZED_GOSLEEPTIMEOUTS) */
+ 199:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 200:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+ 201:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Wakes up a thread.
+ 202:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @details The thread is inserted into the ready list or immediately made
+ 203:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          running depending on its relative priority compared to the current
+ 204:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          thread.
+ 205:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @pre     The thread must not be already inserted in any list through its
+ 206:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          @p p_next and @p p_prev or list corruption would occur.
+ 207:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @note    It is equivalent to a @p chSchReadyI() followed by a
+ 208:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          @p chSchRescheduleS() but much more efficient.
+ 209:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @note    The function assumes that the current thread has the highest
+ 210:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          priority.
+ 211:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 212:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @param[in] ntp       the Thread to be made ready
+ 213:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @param[in] msg       message to the awakened thread
+ 214:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 215:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @sclass
+ 216:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+ 217:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if !defined(PORT_OPTIMIZED_WAKEUPS) || defined(__DOXYGEN__)
+ 218:/usr/src/chibiostest/os/kernel/src/chschd.c **** void chSchWakeupS(Thread *ntp, msg_t msg) {
+ 507              		.loc 2 218 0
+ 508              		.cfi_startproc
+ 509              		@ args = 0, pretend = 0, frame = 16
+ 510              		@ frame_needed = 0, uses_anonymous_args = 0
+ 511 0000 00B5     		push	{lr}
+ 512              		.cfi_def_cfa_offset 4
+ 513              		.cfi_offset 14, -4
+ 514 0002 85B0     		sub	sp, sp, #20
+ 515              		.cfi_def_cfa_offset 24
+ 516 0004 0190     		str	r0, [sp, #4]
+ 517 0006 0091     		str	r1, [sp]
+ 219:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 220:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chDbgCheckClassS();
+ 518              		.loc 2 220 0
+ 519 0008 FFF7FEFF 		bl	chDbgCheckClassS
+ 221:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 222:/usr/src/chibiostest/os/kernel/src/chschd.c ****   ntp->p_u.rdymsg = msg;
+ 520              		.loc 2 222 0
+ 521 000c 019B     		ldr	r3, [sp, #4]
+ 522 000e 009A     		ldr	r2, [sp]
+ 523 0010 9A62     		str	r2, [r3, #40]
+ 223:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* If the waken thread has a not-greater priority than the current
+ 224:/usr/src/chibiostest/os/kernel/src/chschd.c ****      one then it is just inserted in the ready list else it made
+ 225:/usr/src/chibiostest/os/kernel/src/chschd.c ****      running immediately and the invoking thread goes in the ready
+ 226:/usr/src/chibiostest/os/kernel/src/chschd.c ****      list instead.*/
+ 227:/usr/src/chibiostest/os/kernel/src/chschd.c ****   if (ntp->p_prio <= currp->p_prio)
+ 524              		.loc 2 227 0
+ 525 0012 019B     		ldr	r3, [sp, #4]
+ 526 0014 9A68     		ldr	r2, [r3, #8]
+ 527 0016 154B     		ldr	r3, .L37
+ 528 0018 9B69     		ldr	r3, [r3, #24]
+ 529 001a 9B68     		ldr	r3, [r3, #8]
+ 530 001c 9A42     		cmp	r2, r3
+ 531 001e 03D8     		bhi	.L34
+ 228:/usr/src/chibiostest/os/kernel/src/chschd.c ****     chSchReadyI(ntp);
+ 532              		.loc 2 228 0
+ 533 0020 0198     		ldr	r0, [sp, #4]
+ 534 0022 FFF7FEFF 		bl	chSchReadyI
+ 535 0026 1DE0     		b	.L33
+ 536              	.L34:
+ 537              	.LBB7:
+ 229:/usr/src/chibiostest/os/kernel/src/chschd.c ****   else {
+ 230:/usr/src/chibiostest/os/kernel/src/chschd.c ****     Thread *otp = chSchReadyI(currp);
+ 538              		.loc 2 230 0
+ 539 0028 104B     		ldr	r3, .L37
+ 540 002a 9B69     		ldr	r3, [r3, #24]
+ 541 002c 1846     		mov	r0, r3
+ 542 002e FFF7FEFF 		bl	chSchReadyI
+ 543 0032 0390     		str	r0, [sp, #12]
+ 231:/usr/src/chibiostest/os/kernel/src/chschd.c ****     setcurrp(ntp);
+ 544              		.loc 2 231 0
+ 545 0034 0D4B     		ldr	r3, .L37
+ 546 0036 019A     		ldr	r2, [sp, #4]
+ 547 0038 9A61     		str	r2, [r3, #24]
+ 232:/usr/src/chibiostest/os/kernel/src/chschd.c ****     ntp->p_state = THD_STATE_CURRENT;
+ 548              		.loc 2 232 0
+ 549 003a 019B     		ldr	r3, [sp, #4]
+ 550 003c 0122     		movs	r2, #1
+ 551 003e 83F82020 		strb	r2, [r3, #32]
+ 233:/usr/src/chibiostest/os/kernel/src/chschd.c ****     chSysSwitch(ntp, otp);
+ 552              		.loc 2 233 0
+ 553 0042 0398     		ldr	r0, [sp, #12]
+ 554 0044 FFF7FEFF 		bl	dbg_trace
+ 555              	.LBB8:
+ 556 0048 6B46     		mov	r3, sp
+ 557 004a A3F16402 		sub	r2, r3, #100
+ 558 004e 039B     		ldr	r3, [sp, #12]
+ 559 0050 DB69     		ldr	r3, [r3, #28]
+ 560 0052 9A42     		cmp	r2, r3
+ 561 0054 02D2     		bcs	.L36
+ 562              		.loc 2 233 0 is_stmt 0 discriminator 1
+ 563 0056 0648     		ldr	r0, .L37+4
+ 564 0058 FFF7FEFF 		bl	chDbgPanic
+ 565              	.L36:
+ 566              		.loc 2 233 0 discriminator 2
+ 567 005c 0198     		ldr	r0, [sp, #4]
+ 568 005e 0399     		ldr	r1, [sp, #12]
+ 569 0060 FFF7FEFF 		bl	_port_switch
+ 570              	.L33:
+ 571              	.LBE8:
+ 572              	.LBE7:
+ 234:/usr/src/chibiostest/os/kernel/src/chschd.c ****   }
+ 235:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 573              		.loc 2 235 0 is_stmt 1
+ 574 0064 05B0     		add	sp, sp, #20
+ 575              		@ sp needed
+ 576 0066 5DF804FB 		ldr	pc, [sp], #4
+ 577              	.L38:
+ 578 006a 00BF     		.align	2
+ 579              	.L37:
+ 580 006c 00000000 		.word	rlist
+ 581 0070 14000000 		.word	.LC1
+ 582              		.cfi_endproc
+ 583              	.LFE12:
+ 585 0074 AFF30080 		.section	.text.chSchRescheduleS,"ax",%progbits
+ 585      AFF30080 
+ 585      AFF30080 
+ 586              		.align	2
+ 587              		.p2align 4,,15
+ 588              		.global	chSchRescheduleS
+ 589              		.thumb
+ 590              		.thumb_func
+ 592              	chSchRescheduleS:
+ 593              	.LFB13:
+ 236:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif /* !defined(PORT_OPTIMIZED_WAKEUPS) */
+ 237:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 238:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+ 239:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Performs a reschedule if a higher priority thread is runnable.
+ 240:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @details If a thread with a higher priority than the current thread is in
+ 241:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          the ready list then make the higher priority thread running.
+ 242:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 243:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @sclass
+ 244:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+ 245:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if !defined(PORT_OPTIMIZED_RESCHEDULES) || defined(__DOXYGEN__)
+ 246:/usr/src/chibiostest/os/kernel/src/chschd.c **** void chSchRescheduleS(void) {
+ 594              		.loc 2 246 0
+ 595              		.cfi_startproc
+ 596              		@ args = 0, pretend = 0, frame = 0
+ 597              		@ frame_needed = 0, uses_anonymous_args = 0
+ 598 0000 08B5     		push	{r3, lr}
+ 599              		.cfi_def_cfa_offset 8
+ 600              		.cfi_offset 3, -8
+ 601              		.cfi_offset 14, -4
+ 247:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 248:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chDbgCheckClassS();
+ 602              		.loc 2 248 0
+ 603 0002 FFF7FEFF 		bl	chDbgCheckClassS
+ 249:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 250:/usr/src/chibiostest/os/kernel/src/chschd.c ****   if (chSchIsRescRequiredI())
+ 604              		.loc 2 250 0
+ 605 0006 054B     		ldr	r3, .L41
+ 606 0008 1B68     		ldr	r3, [r3]
+ 607 000a 9A68     		ldr	r2, [r3, #8]
+ 608 000c 034B     		ldr	r3, .L41
+ 609 000e 9B69     		ldr	r3, [r3, #24]
+ 610 0010 9B68     		ldr	r3, [r3, #8]
+ 611 0012 9A42     		cmp	r2, r3
+ 612 0014 01D9     		bls	.L39
+ 251:/usr/src/chibiostest/os/kernel/src/chschd.c ****     chSchDoRescheduleAhead();
+ 613              		.loc 2 251 0
+ 614 0016 FFF7FEFF 		bl	chSchDoRescheduleAhead
+ 615              	.L39:
+ 252:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 616              		.loc 2 252 0
+ 617 001a 08BD     		pop	{r3, pc}
+ 618              	.L42:
+ 619              		.align	2
+ 620              	.L41:
+ 621 001c 00000000 		.word	rlist
+ 622              		.cfi_endproc
+ 623              	.LFE13:
+ 625              		.section	.text.chSchDoRescheduleBehind,"ax",%progbits
+ 626              		.align	2
+ 627              		.p2align 4,,15
+ 628              		.global	chSchDoRescheduleBehind
+ 629              		.thumb
+ 630              		.thumb_func
+ 632              	chSchDoRescheduleBehind:
+ 633              	.LFB14:
+ 253:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif /* !defined(PORT_OPTIMIZED_RESCHEDULES) */
+ 254:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 255:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+ 256:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Evaluates if preemption is required.
+ 257:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @details The decision is taken by comparing the relative priorities and
+ 258:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          depending on the state of the round robin timeout counter.
+ 259:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @note    Not a user function, it is meant to be invoked by the scheduler
+ 260:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          itself or from within the port layer.
+ 261:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 262:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @retval TRUE         if there is a thread that must go in running state
+ 263:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *                      immediately.
+ 264:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @retval FALSE        if preemption is not required.
+ 265:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 266:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @special
+ 267:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+ 268:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if !defined(PORT_OPTIMIZED_ISPREEMPTIONREQUIRED) || defined(__DOXYGEN__)
+ 269:/usr/src/chibiostest/os/kernel/src/chschd.c **** bool_t chSchIsPreemptionRequired(void) {
+ 270:/usr/src/chibiostest/os/kernel/src/chschd.c ****   tprio_t p1 = firstprio(&rlist.r_queue);
+ 271:/usr/src/chibiostest/os/kernel/src/chschd.c ****   tprio_t p2 = currp->p_prio;
+ 272:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if CH_TIME_QUANTUM > 0
+ 273:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* If the running thread has not reached its time quantum, reschedule only
+ 274:/usr/src/chibiostest/os/kernel/src/chschd.c ****      if the first thread on the ready queue has a higher priority.
+ 275:/usr/src/chibiostest/os/kernel/src/chschd.c ****      Otherwise, if the running thread has used up its time quantum, reschedule
+ 276:/usr/src/chibiostest/os/kernel/src/chschd.c ****      if the first thread on the ready queue has equal or higher priority.*/
+ 277:/usr/src/chibiostest/os/kernel/src/chschd.c ****   return currp->p_preempt ? p1 > p2 : p1 >= p2;
+ 278:/usr/src/chibiostest/os/kernel/src/chschd.c **** #else
+ 279:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* If the round robin preemption feature is not enabled then performs a
+ 280:/usr/src/chibiostest/os/kernel/src/chschd.c ****      simpler comparison.*/
+ 281:/usr/src/chibiostest/os/kernel/src/chschd.c ****   return p1 > p2;
+ 282:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif
+ 283:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 284:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif /* !defined(PORT_OPTIMIZED_ISPREEMPTIONREQUIRED) */
+ 285:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 286:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+ 287:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Switches to the first thread on the runnable queue.
+ 288:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @details The current thread is positioned in the ready list behind all
+ 289:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          threads having the same priority. The thread regains its time
+ 290:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          quantum.
+ 291:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @note    Not a user function, it is meant to be invoked by the scheduler
+ 292:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          itself or from within the port layer.
+ 293:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 294:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @special
+ 295:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+ 296:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if !defined(PORT_OPTIMIZED_DORESCHEDULEBEHIND) || defined(__DOXYGEN__)
+ 297:/usr/src/chibiostest/os/kernel/src/chschd.c **** void chSchDoRescheduleBehind(void) {
+ 634              		.loc 2 297 0
+ 635              		.cfi_startproc
+ 636              		@ args = 0, pretend = 0, frame = 8
+ 637              		@ frame_needed = 0, uses_anonymous_args = 0
+ 638 0000 00B5     		push	{lr}
+ 639              		.cfi_def_cfa_offset 4
+ 640              		.cfi_offset 14, -4
+ 641 0002 83B0     		sub	sp, sp, #12
+ 642              		.cfi_def_cfa_offset 16
+ 298:/usr/src/chibiostest/os/kernel/src/chschd.c ****   Thread *otp;
+ 299:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 300:/usr/src/chibiostest/os/kernel/src/chschd.c ****   otp = currp;
+ 643              		.loc 2 300 0
+ 644 0004 154B     		ldr	r3, .L45
+ 645 0006 9B69     		ldr	r3, [r3, #24]
+ 646 0008 0193     		str	r3, [sp, #4]
+ 301:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* Picks the first thread from the ready queue and makes it current.*/
+ 302:/usr/src/chibiostest/os/kernel/src/chschd.c ****   setcurrp(fifo_remove(&rlist.r_queue));
+ 647              		.loc 2 302 0
+ 648 000a 1448     		ldr	r0, .L45
+ 649 000c FFF7FEFF 		bl	fifo_remove
+ 650 0010 0246     		mov	r2, r0
+ 651 0012 124B     		ldr	r3, .L45
+ 652 0014 9A61     		str	r2, [r3, #24]
+ 303:/usr/src/chibiostest/os/kernel/src/chschd.c ****   currp->p_state = THD_STATE_CURRENT;
+ 653              		.loc 2 303 0
+ 654 0016 114B     		ldr	r3, .L45
+ 655 0018 9B69     		ldr	r3, [r3, #24]
+ 656 001a 0122     		movs	r2, #1
+ 657 001c 83F82020 		strb	r2, [r3, #32]
+ 304:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if CH_TIME_QUANTUM > 0
+ 305:/usr/src/chibiostest/os/kernel/src/chschd.c ****   otp->p_preempt = CH_TIME_QUANTUM;
+ 658              		.loc 2 305 0
+ 659 0020 019B     		ldr	r3, [sp, #4]
+ 660 0022 1422     		movs	r2, #20
+ 661 0024 83F82320 		strb	r2, [r3, #35]
+ 306:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif
+ 307:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chSchReadyI(otp);
+ 662              		.loc 2 307 0
+ 663 0028 0198     		ldr	r0, [sp, #4]
+ 664 002a FFF7FEFF 		bl	chSchReadyI
+ 308:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chSysSwitch(currp, otp);
+ 665              		.loc 2 308 0
+ 666 002e 0198     		ldr	r0, [sp, #4]
+ 667 0030 FFF7FEFF 		bl	dbg_trace
+ 668              	.LBB9:
+ 669 0034 6B46     		mov	r3, sp
+ 670 0036 A3F16402 		sub	r2, r3, #100
+ 671 003a 019B     		ldr	r3, [sp, #4]
+ 672 003c DB69     		ldr	r3, [r3, #28]
+ 673 003e 9A42     		cmp	r2, r3
+ 674 0040 02D2     		bcs	.L44
+ 675              		.loc 2 308 0 is_stmt 0 discriminator 1
+ 676 0042 0748     		ldr	r0, .L45+4
+ 677 0044 FFF7FEFF 		bl	chDbgPanic
+ 678              	.L44:
+ 679              		.loc 2 308 0 discriminator 2
+ 680 0048 044B     		ldr	r3, .L45
+ 681 004a 9B69     		ldr	r3, [r3, #24]
+ 682 004c 1846     		mov	r0, r3
+ 683 004e 0199     		ldr	r1, [sp, #4]
+ 684 0050 FFF7FEFF 		bl	_port_switch
+ 685              	.LBE9:
+ 309:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 686              		.loc 2 309 0 is_stmt 1 discriminator 2
+ 687 0054 03B0     		add	sp, sp, #12
+ 688              		@ sp needed
+ 689 0056 5DF804FB 		ldr	pc, [sp], #4
+ 690              	.L46:
+ 691 005a 00BF     		.align	2
+ 692              	.L45:
+ 693 005c 00000000 		.word	rlist
+ 694 0060 14000000 		.word	.LC1
+ 695              		.cfi_endproc
+ 696              	.LFE14:
+ 698 0064 AFF30080 		.section	.text.chSchDoRescheduleAhead,"ax",%progbits
+ 698      AFF30080 
+ 698      AFF30080 
+ 699              		.align	2
+ 700              		.p2align 4,,15
+ 701              		.global	chSchDoRescheduleAhead
+ 702              		.thumb
+ 703              		.thumb_func
+ 705              	chSchDoRescheduleAhead:
+ 706              	.LFB15:
+ 310:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif /* !defined(PORT_OPTIMIZED_DORESCHEDULEBEHIND) */
+ 311:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 312:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+ 313:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Switches to the first thread on the runnable queue.
+ 314:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @details The current thread is positioned in the ready list ahead of all
+ 315:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          threads having the same priority.
+ 316:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @note    Not a user function, it is meant to be invoked by the scheduler
+ 317:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          itself or from within the port layer.
+ 318:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 319:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @special
+ 320:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+ 321:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if !defined(PORT_OPTIMIZED_DORESCHEDULEAHEAD) || defined(__DOXYGEN__)
+ 322:/usr/src/chibiostest/os/kernel/src/chschd.c **** void chSchDoRescheduleAhead(void) {
+ 707              		.loc 2 322 0
+ 708              		.cfi_startproc
+ 709              		@ args = 0, pretend = 0, frame = 8
+ 710              		@ frame_needed = 0, uses_anonymous_args = 0
+ 711 0000 00B5     		push	{lr}
+ 712              		.cfi_def_cfa_offset 4
+ 713              		.cfi_offset 14, -4
+ 714 0002 83B0     		sub	sp, sp, #12
+ 715              		.cfi_def_cfa_offset 16
+ 323:/usr/src/chibiostest/os/kernel/src/chschd.c ****   Thread *otp, *cp;
+ 324:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 325:/usr/src/chibiostest/os/kernel/src/chschd.c ****   otp = currp;
+ 716              		.loc 2 325 0
+ 717 0004 204B     		ldr	r3, .L50
+ 718 0006 9B69     		ldr	r3, [r3, #24]
+ 719 0008 0093     		str	r3, [sp]
+ 326:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* Picks the first thread from the ready queue and makes it current.*/
+ 327:/usr/src/chibiostest/os/kernel/src/chschd.c ****   setcurrp(fifo_remove(&rlist.r_queue));
+ 720              		.loc 2 327 0
+ 721 000a 1F48     		ldr	r0, .L50
+ 722 000c FFF7FEFF 		bl	fifo_remove
+ 723 0010 0246     		mov	r2, r0
+ 724 0012 1D4B     		ldr	r3, .L50
+ 725 0014 9A61     		str	r2, [r3, #24]
+ 328:/usr/src/chibiostest/os/kernel/src/chschd.c ****   currp->p_state = THD_STATE_CURRENT;
+ 726              		.loc 2 328 0
+ 727 0016 1C4B     		ldr	r3, .L50
+ 728 0018 9B69     		ldr	r3, [r3, #24]
+ 729 001a 0122     		movs	r2, #1
+ 730 001c 83F82020 		strb	r2, [r3, #32]
+ 329:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 330:/usr/src/chibiostest/os/kernel/src/chschd.c ****   otp->p_state = THD_STATE_READY;
+ 731              		.loc 2 330 0
+ 732 0020 009B     		ldr	r3, [sp]
+ 733 0022 0022     		movs	r2, #0
+ 734 0024 83F82020 		strb	r2, [r3, #32]
+ 331:/usr/src/chibiostest/os/kernel/src/chschd.c ****   cp = (Thread *)&rlist.r_queue;
+ 735              		.loc 2 331 0
+ 736 0028 174B     		ldr	r3, .L50
+ 737 002a 0193     		str	r3, [sp, #4]
+ 738              	.L48:
+ 332:/usr/src/chibiostest/os/kernel/src/chschd.c ****   do {
+ 333:/usr/src/chibiostest/os/kernel/src/chschd.c ****     cp = cp->p_next;
+ 739              		.loc 2 333 0 discriminator 1
+ 740 002c 019B     		ldr	r3, [sp, #4]
+ 741 002e 1B68     		ldr	r3, [r3]
+ 742 0030 0193     		str	r3, [sp, #4]
+ 334:/usr/src/chibiostest/os/kernel/src/chschd.c ****   } while (cp->p_prio > otp->p_prio);
+ 743              		.loc 2 334 0 discriminator 1
+ 744 0032 019B     		ldr	r3, [sp, #4]
+ 745 0034 9A68     		ldr	r2, [r3, #8]
+ 746 0036 009B     		ldr	r3, [sp]
+ 747 0038 9B68     		ldr	r3, [r3, #8]
+ 748 003a 9A42     		cmp	r2, r3
+ 749 003c F6D8     		bhi	.L48
+ 335:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* Insertion on p_prev.*/
+ 336:/usr/src/chibiostest/os/kernel/src/chschd.c ****   otp->p_next = cp;
+ 750              		.loc 2 336 0
+ 751 003e 009B     		ldr	r3, [sp]
+ 752 0040 019A     		ldr	r2, [sp, #4]
+ 753 0042 1A60     		str	r2, [r3]
+ 337:/usr/src/chibiostest/os/kernel/src/chschd.c ****   otp->p_prev = cp->p_prev;
+ 754              		.loc 2 337 0
+ 755 0044 019B     		ldr	r3, [sp, #4]
+ 756 0046 5A68     		ldr	r2, [r3, #4]
+ 757 0048 009B     		ldr	r3, [sp]
+ 758 004a 5A60     		str	r2, [r3, #4]
+ 338:/usr/src/chibiostest/os/kernel/src/chschd.c ****   otp->p_prev->p_next = cp->p_prev = otp;
+ 759              		.loc 2 338 0
+ 760 004c 009B     		ldr	r3, [sp]
+ 761 004e 5B68     		ldr	r3, [r3, #4]
+ 762 0050 019A     		ldr	r2, [sp, #4]
+ 763 0052 0099     		ldr	r1, [sp]
+ 764 0054 5160     		str	r1, [r2, #4]
+ 765 0056 019A     		ldr	r2, [sp, #4]
+ 766 0058 5268     		ldr	r2, [r2, #4]
+ 767 005a 1A60     		str	r2, [r3]
+ 339:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 340:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chSysSwitch(currp, otp);
+ 768              		.loc 2 340 0
+ 769 005c 0098     		ldr	r0, [sp]
+ 770 005e FFF7FEFF 		bl	dbg_trace
+ 771              	.LBB10:
+ 772 0062 6B46     		mov	r3, sp
+ 773 0064 A3F16402 		sub	r2, r3, #100
+ 774 0068 009B     		ldr	r3, [sp]
+ 775 006a DB69     		ldr	r3, [r3, #28]
+ 776 006c 9A42     		cmp	r2, r3
+ 777 006e 02D2     		bcs	.L49
+ 778              		.loc 2 340 0 is_stmt 0 discriminator 1
+ 779 0070 0648     		ldr	r0, .L50+4
+ 780 0072 FFF7FEFF 		bl	chDbgPanic
+ 781              	.L49:
+ 782              		.loc 2 340 0 discriminator 2
+ 783 0076 044B     		ldr	r3, .L50
+ 784 0078 9B69     		ldr	r3, [r3, #24]
+ 785 007a 1846     		mov	r0, r3
+ 786 007c 0099     		ldr	r1, [sp]
+ 787 007e FFF7FEFF 		bl	_port_switch
+ 788              	.LBE10:
+ 341:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 789              		.loc 2 341 0 is_stmt 1 discriminator 2
+ 790 0082 03B0     		add	sp, sp, #12
+ 791              		@ sp needed
+ 792 0084 5DF804FB 		ldr	pc, [sp], #4
+ 793              	.L51:
+ 794              		.align	2
+ 795              	.L50:
+ 796 0088 00000000 		.word	rlist
+ 797 008c 14000000 		.word	.LC1
+ 798              		.cfi_endproc
+ 799              	.LFE15:
+ 801              		.section	.text.chSchDoReschedule,"ax",%progbits
+ 802              		.align	2
+ 803              		.p2align 4,,15
+ 804              		.global	chSchDoReschedule
+ 805              		.thumb
+ 806              		.thumb_func
+ 808              	chSchDoReschedule:
+ 809              	.LFB16:
+ 342:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif /* !defined(PORT_OPTIMIZED_DORESCHEDULEAHEAD) */
+ 343:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 344:/usr/src/chibiostest/os/kernel/src/chschd.c **** /**
+ 345:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @brief   Switches to the first thread on the runnable queue.
+ 346:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @details The current thread is positioned in the ready list behind or
+ 347:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          ahead of all threads having the same priority depending on
+ 348:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          if it used its whole time slice.
+ 349:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @note    Not a user function, it is meant to be invoked by the scheduler
+ 350:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *          itself or from within the port layer.
+ 351:/usr/src/chibiostest/os/kernel/src/chschd.c ****  *
+ 352:/usr/src/chibiostest/os/kernel/src/chschd.c ****  * @special
+ 353:/usr/src/chibiostest/os/kernel/src/chschd.c ****  */
+ 354:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if !defined(PORT_OPTIMIZED_DORESCHEDULE) || defined(__DOXYGEN__)
+ 355:/usr/src/chibiostest/os/kernel/src/chschd.c **** void chSchDoReschedule(void) {
+ 810              		.loc 2 355 0
+ 811              		.cfi_startproc
+ 812              		@ args = 0, pretend = 0, frame = 0
+ 813              		@ frame_needed = 0, uses_anonymous_args = 0
+ 814 0000 08B5     		push	{r3, lr}
+ 815              		.cfi_def_cfa_offset 8
+ 816              		.cfi_offset 3, -8
+ 817              		.cfi_offset 14, -4
+ 356:/usr/src/chibiostest/os/kernel/src/chschd.c **** 
+ 357:/usr/src/chibiostest/os/kernel/src/chschd.c **** #if CH_TIME_QUANTUM > 0
+ 358:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* If CH_TIME_QUANTUM is enabled then there are two different scenarios to
+ 359:/usr/src/chibiostest/os/kernel/src/chschd.c ****      handle on preemption: time quantum elapsed or not.*/
+ 360:/usr/src/chibiostest/os/kernel/src/chschd.c ****   if (currp->p_preempt == 0) {
+ 818              		.loc 2 360 0
+ 819 0002 064B     		ldr	r3, .L55
+ 820 0004 9B69     		ldr	r3, [r3, #24]
+ 821 0006 93F82330 		ldrb	r3, [r3, #35]	@ zero_extendqisi2
+ 822 000a 002B     		cmp	r3, #0
+ 823 000c 02D1     		bne	.L53
+ 361:/usr/src/chibiostest/os/kernel/src/chschd.c ****     /* The thread consumed its time quantum so it is enqueued behind threads
+ 362:/usr/src/chibiostest/os/kernel/src/chschd.c ****        with same priority level, however, it acquires a new time quantum.*/
+ 363:/usr/src/chibiostest/os/kernel/src/chschd.c ****     chSchDoRescheduleBehind();
+ 824              		.loc 2 363 0
+ 825 000e FFF7FEFF 		bl	chSchDoRescheduleBehind
+ 826 0012 01E0     		b	.L52
+ 827              	.L53:
+ 364:/usr/src/chibiostest/os/kernel/src/chschd.c ****   }
+ 365:/usr/src/chibiostest/os/kernel/src/chschd.c ****   else {
+ 366:/usr/src/chibiostest/os/kernel/src/chschd.c ****     /* The thread didn't consume all its time quantum so it is put ahead of
+ 367:/usr/src/chibiostest/os/kernel/src/chschd.c ****        threads with equal priority and does not acquire a new time quantum.*/
+ 368:/usr/src/chibiostest/os/kernel/src/chschd.c ****     chSchDoRescheduleAhead();
+ 828              		.loc 2 368 0
+ 829 0014 FFF7FEFF 		bl	chSchDoRescheduleAhead
+ 830              	.L52:
+ 369:/usr/src/chibiostest/os/kernel/src/chschd.c ****   }
+ 370:/usr/src/chibiostest/os/kernel/src/chschd.c **** #else /* !(CH_TIME_QUANTUM > 0) */
+ 371:/usr/src/chibiostest/os/kernel/src/chschd.c ****   /* If the round-robin mechanism is disabled then the thread goes always
+ 372:/usr/src/chibiostest/os/kernel/src/chschd.c ****      ahead of its peers.*/
+ 373:/usr/src/chibiostest/os/kernel/src/chschd.c ****   chSchDoRescheduleAhead();
+ 374:/usr/src/chibiostest/os/kernel/src/chschd.c **** #endif /* !(CH_TIME_QUANTUM > 0) */
+ 375:/usr/src/chibiostest/os/kernel/src/chschd.c **** }
+ 831              		.loc 2 375 0
+ 832 0018 08BD     		pop	{r3, pc}
+ 833              	.L56:
+ 834 001a 00BF     		.align	2
+ 835              	.L55:
+ 836 001c 00000000 		.word	rlist
+ 837              		.cfi_endproc
+ 838              	.LFE16:
+ 840              		.text
+ 841              	.Letext0:
+ 842              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 843              		.file 4 "/usr/include/newlib/stdint.h"
+ 844              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 845              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 846              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 847              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 848              		.file 9 "/usr/src/chibiostest/os/kernel/include/chvt.h"
+ 849              		.file 10 "/usr/src/chibiostest/os/kernel/include/chschd.h"
+ 850              		.file 11 "/usr/src/chibiostest/os/kernel/include/chsem.h"
+ 851              		.file 12 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chschd.c
+     /tmp/cccAgqdU.s:20     .text.fifo_remove:0000000000000000 $t
+     /tmp/cccAgqdU.s:25     .text.fifo_remove:0000000000000000 fifo_remove
+     /tmp/cccAgqdU.s:60     .text.dequeue:0000000000000000 $t
+     /tmp/cccAgqdU.s:65     .text.dequeue:0000000000000000 dequeue
+     /tmp/cccAgqdU.s:102    .bss.rlist:0000000000000000 rlist
+     /tmp/cccAgqdU.s:99     .bss.rlist:0000000000000000 $d
+     /tmp/cccAgqdU.s:105    .text._scheduler_init:0000000000000000 $t
+     /tmp/cccAgqdU.s:111    .text._scheduler_init:0000000000000000 _scheduler_init
+     /tmp/cccAgqdU.s:144    .text._scheduler_init:0000000000000024 $d
+     /tmp/cccAgqdU.s:149    .rodata:0000000000000000 $d
+     /tmp/cccAgqdU.s:153    .text.chSchReadyI:0000000000000000 $t
+     /tmp/cccAgqdU.s:159    .text.chSchReadyI:0000000000000000 chSchReadyI
+     /tmp/cccAgqdU.s:235    .text.chSchReadyI:000000000000006c $d
+     /tmp/cccAgqdU.s:245    .text.chSchGoSleepS:0000000000000000 $t
+     /tmp/cccAgqdU.s:251    .text.chSchGoSleepS:0000000000000000 chSchGoSleepS
+     /tmp/cccAgqdU.s:316    .text.chSchGoSleepS:0000000000000068 $d
+     /tmp/cccAgqdU.s:322    .text.wakeup:0000000000000000 $t
+     /tmp/cccAgqdU.s:327    .text.wakeup:0000000000000000 wakeup
+     /tmp/cccAgqdU.s:360    .text.wakeup:0000000000000024 $d
+     /tmp/cccAgqdU.s:374    .text.wakeup:000000000000005c $t
+     /tmp/cccAgqdU.s:424    .text.chSchGoSleepTimeoutS:0000000000000000 $t
+     /tmp/cccAgqdU.s:430    .text.chSchGoSleepTimeoutS:0000000000000000 chSchGoSleepTimeoutS
+     /tmp/cccAgqdU.s:493    .text.chSchGoSleepTimeoutS:000000000000005c $d
+     /tmp/cccAgqdU.s:499    .text.chSchWakeupS:0000000000000000 $t
+     /tmp/cccAgqdU.s:505    .text.chSchWakeupS:0000000000000000 chSchWakeupS
+     /tmp/cccAgqdU.s:580    .text.chSchWakeupS:000000000000006c $d
+     /tmp/cccAgqdU.s:586    .text.chSchRescheduleS:0000000000000000 $t
+     /tmp/cccAgqdU.s:592    .text.chSchRescheduleS:0000000000000000 chSchRescheduleS
+     /tmp/cccAgqdU.s:705    .text.chSchDoRescheduleAhead:0000000000000000 chSchDoRescheduleAhead
+     /tmp/cccAgqdU.s:621    .text.chSchRescheduleS:000000000000001c $d
+     /tmp/cccAgqdU.s:626    .text.chSchDoRescheduleBehind:0000000000000000 $t
+     /tmp/cccAgqdU.s:632    .text.chSchDoRescheduleBehind:0000000000000000 chSchDoRescheduleBehind
+     /tmp/cccAgqdU.s:693    .text.chSchDoRescheduleBehind:000000000000005c $d
+     /tmp/cccAgqdU.s:699    .text.chSchDoRescheduleAhead:0000000000000000 $t
+     /tmp/cccAgqdU.s:796    .text.chSchDoRescheduleAhead:0000000000000088 $d
+     /tmp/cccAgqdU.s:802    .text.chSchDoReschedule:0000000000000000 $t
+     /tmp/cccAgqdU.s:808    .text.chSchDoReschedule:0000000000000000 chSchDoReschedule
+     /tmp/cccAgqdU.s:836    .text.chSchDoReschedule:000000000000001c $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/cccAgqdU.s:148    .text._scheduler_init:0000000000000028 $t
+     /tmp/cccAgqdU.s:240    .text.chSchReadyI:0000000000000074 $t
+     /tmp/cccAgqdU.s:498    .text.chSchGoSleepTimeoutS:0000000000000064 $t
+     /tmp/cccAgqdU.s:585    .text.chSchWakeupS:0000000000000074 $t
+     /tmp/cccAgqdU.s:698    .text.chSchDoRescheduleBehind:0000000000000064 $t
+
+UNDEFINED SYMBOLS
+chDbgCheckClassI
+chDbgPanic
+chDbgCheckClassS
+dbg_trace
+_port_switch
+dbg_check_lock_from_isr
+dbg_check_unlock_from_isr
+chVTSetI
+chVTResetI

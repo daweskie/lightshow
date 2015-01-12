@@ -1,0 +1,370 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"chmemcore.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.bss.nextmem,"aw",%nobits
+  20              		.align	2
+  23              	nextmem:
+  24 0000 00000000 		.space	4
+  25              		.section	.bss.endmem,"aw",%nobits
+  26              		.align	2
+  29              	endmem:
+  30 0000 00000000 		.space	4
+  31              		.section	.text._core_init,"ax",%progbits
+  32              		.align	2
+  33              		.p2align 4,,15
+  34              		.global	_core_init
+  35              		.thumb
+  36              		.thumb_func
+  38              	_core_init:
+  39              	.LFB7:
+  40              		.file 1 "/usr/src/chibiostest/os/kernel/src/chmemcore.c"
+   1:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** /*
+   2:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
+   3:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****                  2011,2012 Giovanni Di Sirio.
+   4:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+   5:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     This file is part of ChibiOS/RT.
+   6:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+   7:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     ChibiOS/RT is free software; you can redistribute it and/or modify
+   8:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     it under the terms of the GNU General Public License as published by
+   9:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     the Free Software Foundation; either version 3 of the License, or
+  10:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     (at your option) any later version.
+  11:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+  12:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     ChibiOS/RT is distributed in the hope that it will be useful,
+  13:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  14:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  15:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     GNU General Public License for more details.
+  16:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+  17:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     You should have received a copy of the GNU General Public License
+  18:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  19:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** */
+  20:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+  21:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** /**
+  22:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @file    chmemcore.c
+  23:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @brief   Core memory manager code.
+  24:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *
+  25:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @addtogroup memcore
+  26:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @details Core Memory Manager related APIs and services.
+  27:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          <h2>Operation mode</h2>
+  28:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          The core memory manager is a simplified allocator that only
+  29:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          allows to allocate memory blocks without the possibility to
+  30:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          free them.<br>
+  31:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          This allocator is meant as a memory blocks provider for the
+  32:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          other allocators such as:
+  33:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          - C-Runtime allocator (through a compiler specific adapter module).
+  34:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          - Heap allocator (see @ref heaps).
+  35:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          - Memory pools allocator (see @ref pools).
+  36:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          .
+  37:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          By having a centralized memory provider the various allocators
+  38:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          can coexist and share the main memory.<br>
+  39:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          This allocator, alone, is also useful for very simple
+  40:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          applications that just require a simple way to get memory
+  41:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          blocks.
+  42:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @pre     In order to use the core memory manager APIs the @p CH_USE_MEMCORE
+  43:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          option must be enabled in @p chconf.h.
+  44:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @{
+  45:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  */
+  46:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+  47:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** #include "ch.h"
+  48:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+  49:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** #if CH_USE_MEMCORE || defined(__DOXYGEN__)
+  50:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+  51:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** static uint8_t *nextmem;
+  52:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** static uint8_t *endmem;
+  53:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+  54:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** /**
+  55:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @brief   Low level memory manager initialization.
+  56:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *
+  57:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @notapi
+  58:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  */
+  59:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** void _core_init(void) {
+  41              		.loc 1 59 0
+  42              		.cfi_startproc
+  43              		@ args = 0, pretend = 0, frame = 0
+  44              		@ frame_needed = 0, uses_anonymous_args = 0
+  45              		@ link register save eliminated.
+  60:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** #if CH_MEMCORE_SIZE == 0
+  61:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   extern uint8_t __heap_base__[];
+  62:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   extern uint8_t __heap_end__[];
+  63:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   nextmem = (uint8_t *)MEM_ALIGN_NEXT(__heap_base__);
+  46              		.loc 1 63 0
+  47 0000 064B     		ldr	r3, .L2
+  48 0002 0733     		adds	r3, r3, #7
+  49 0004 23F00703 		bic	r3, r3, #7
+  50 0008 1A46     		mov	r2, r3
+  51 000a 054B     		ldr	r3, .L2+4
+  52 000c 1A60     		str	r2, [r3]
+  64:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   endmem = (uint8_t *)MEM_ALIGN_PREV(__heap_end__);
+  53              		.loc 1 64 0
+  54 000e 054B     		ldr	r3, .L2+8
+  55 0010 23F00703 		bic	r3, r3, #7
+  56 0014 1A46     		mov	r2, r3
+  57 0016 044B     		ldr	r3, .L2+12
+  58 0018 1A60     		str	r2, [r3]
+  65:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** #else
+  66:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   static stkalign_t buffer[MEM_ALIGN_NEXT(CH_MEMCORE_SIZE)/MEM_ALIGN_SIZE];
+  67:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   nextmem = (uint8_t *)&buffer[0];
+  68:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   endmem = (uint8_t *)&buffer[MEM_ALIGN_NEXT(CH_MEMCORE_SIZE)/MEM_ALIGN_SIZE];
+  69:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** #endif
+  70:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** }
+  59              		.loc 1 70 0
+  60 001a 7047     		bx	lr
+  61              	.L3:
+  62              		.align	2
+  63              	.L2:
+  64 001c 00000000 		.word	__heap_base__
+  65 0020 00000000 		.word	nextmem
+  66 0024 00000000 		.word	__heap_end__
+  67 0028 00000000 		.word	endmem
+  68              		.cfi_endproc
+  69              	.LFE7:
+  71 002c AFF30080 		.section	.text.chCoreAlloc,"ax",%progbits
+  72              		.align	2
+  73              		.p2align 4,,15
+  74              		.global	chCoreAlloc
+  75              		.thumb
+  76              		.thumb_func
+  78              	chCoreAlloc:
+  79              	.LFB8:
+  71:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+  72:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** /**
+  73:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @brief   Allocates a memory block.
+  74:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @details The size of the returned block is aligned to the alignment
+  75:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          type so it is not possible to allocate less
+  76:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          than <code>MEM_ALIGN_SIZE</code>.
+  77:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *
+  78:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @param[in] size      the size of the block to be allocated
+  79:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @return              A pointer to the allocated memory block.
+  80:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @retval NULL         allocation failed, core memory exhausted.
+  81:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *
+  82:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @api
+  83:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  */
+  84:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** void *chCoreAlloc(size_t size) {
+  80              		.loc 1 84 0
+  81              		.cfi_startproc
+  82              		@ args = 0, pretend = 0, frame = 16
+  83              		@ frame_needed = 0, uses_anonymous_args = 0
+  84 0000 00B5     		push	{lr}
+  85              		.cfi_def_cfa_offset 4
+  86              		.cfi_offset 14, -4
+  87 0002 85B0     		sub	sp, sp, #20
+  88              		.cfi_def_cfa_offset 24
+  89 0004 0190     		str	r0, [sp, #4]
+  90              	.LBB2:
+  85:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   void *p;
+  86:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+  87:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   chSysLock();
+  91              		.loc 1 87 0
+  92 0006 2023     		movs	r3, #32
+  93              	@ 87 "/usr/src/chibiostest/os/kernel/src/chmemcore.c" 1
+  94 0008 83F31188 		msr     BASEPRI, r3
+  95              	@ 0 "" 2
+  96              		.thumb
+  97              	.LBE2:
+  98 000c FFF7FEFF 		bl	dbg_check_lock
+  88:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   p = chCoreAllocI(size);
+  99              		.loc 1 88 0
+ 100 0010 0198     		ldr	r0, [sp, #4]
+ 101 0012 FFF7FEFF 		bl	chCoreAllocI
+ 102 0016 0390     		str	r0, [sp, #12]
+  89:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   chSysUnlock();
+ 103              		.loc 1 89 0
+ 104 0018 FFF7FEFF 		bl	dbg_check_unlock
+ 105              	.LBB3:
+ 106 001c 0023     		movs	r3, #0
+ 107              	@ 89 "/usr/src/chibiostest/os/kernel/src/chmemcore.c" 1
+ 108 001e 83F31188 		msr     BASEPRI, r3
+ 109              	@ 0 "" 2
+ 110              		.thumb
+ 111              	.LBE3:
+  90:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   return p;
+ 112              		.loc 1 90 0
+ 113 0022 039B     		ldr	r3, [sp, #12]
+  91:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** }
+ 114              		.loc 1 91 0
+ 115 0024 1846     		mov	r0, r3
+ 116 0026 05B0     		add	sp, sp, #20
+ 117              		@ sp needed
+ 118 0028 5DF804FB 		ldr	pc, [sp], #4
+ 119              		.cfi_endproc
+ 120              	.LFE8:
+ 122 002c AFF30080 		.section	.text.chCoreAllocI,"ax",%progbits
+ 123              		.align	2
+ 124              		.p2align 4,,15
+ 125              		.global	chCoreAllocI
+ 126              		.thumb
+ 127              		.thumb_func
+ 129              	chCoreAllocI:
+ 130              	.LFB9:
+  92:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+  93:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** /**
+  94:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @brief   Allocates a memory block.
+  95:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @details The size of the returned block is aligned to the alignment
+  96:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          type so it is not possible to allocate less than
+  97:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *          <code>MEM_ALIGN_SIZE</code>.
+  98:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *
+  99:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @param[in] size      the size of the block to be allocated.
+ 100:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @return              A pointer to the allocated memory block.
+ 101:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @retval NULL         allocation failed, core memory exhausted.
+ 102:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *
+ 103:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @iclass
+ 104:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  */
+ 105:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** void *chCoreAllocI(size_t size) {
+ 131              		.loc 1 105 0
+ 132              		.cfi_startproc
+ 133              		@ args = 0, pretend = 0, frame = 16
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 135 0000 00B5     		push	{lr}
+ 136              		.cfi_def_cfa_offset 4
+ 137              		.cfi_offset 14, -4
+ 138 0002 85B0     		sub	sp, sp, #20
+ 139              		.cfi_def_cfa_offset 24
+ 140 0004 0190     		str	r0, [sp, #4]
+ 106:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   void *p;
+ 107:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+ 108:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   chDbgCheckClassI();
+ 141              		.loc 1 108 0
+ 142 0006 FFF7FEFF 		bl	chDbgCheckClassI
+ 109:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+ 110:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   size = MEM_ALIGN_NEXT(size);
+ 143              		.loc 1 110 0
+ 144 000a 019B     		ldr	r3, [sp, #4]
+ 145 000c 0733     		adds	r3, r3, #7
+ 146 000e 23F00703 		bic	r3, r3, #7
+ 147 0012 0193     		str	r3, [sp, #4]
+ 111:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   if ((size_t)(endmem - nextmem) < size)
+ 148              		.loc 1 111 0
+ 149 0014 0C4B     		ldr	r3, .L9
+ 150 0016 1B68     		ldr	r3, [r3]
+ 151 0018 1A46     		mov	r2, r3
+ 152 001a 0C4B     		ldr	r3, .L9+4
+ 153 001c 1B68     		ldr	r3, [r3]
+ 154 001e D31A     		subs	r3, r2, r3
+ 155 0020 1A46     		mov	r2, r3
+ 156 0022 019B     		ldr	r3, [sp, #4]
+ 157 0024 9A42     		cmp	r2, r3
+ 158 0026 01D2     		bcs	.L7
+ 112:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****     return NULL;
+ 159              		.loc 1 112 0
+ 160 0028 0023     		movs	r3, #0
+ 161 002a 09E0     		b	.L8
+ 162              	.L7:
+ 113:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   p = nextmem;
+ 163              		.loc 1 113 0
+ 164 002c 074B     		ldr	r3, .L9+4
+ 165 002e 1B68     		ldr	r3, [r3]
+ 166 0030 0393     		str	r3, [sp, #12]
+ 114:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   nextmem += size;
+ 167              		.loc 1 114 0
+ 168 0032 064B     		ldr	r3, .L9+4
+ 169 0034 1A68     		ldr	r2, [r3]
+ 170 0036 019B     		ldr	r3, [sp, #4]
+ 171 0038 1A44     		add	r2, r2, r3
+ 172 003a 044B     		ldr	r3, .L9+4
+ 173 003c 1A60     		str	r2, [r3]
+ 115:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   return p;
+ 174              		.loc 1 115 0
+ 175 003e 039B     		ldr	r3, [sp, #12]
+ 176              	.L8:
+ 116:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** }
+ 177              		.loc 1 116 0
+ 178 0040 1846     		mov	r0, r3
+ 179 0042 05B0     		add	sp, sp, #20
+ 180              		@ sp needed
+ 181 0044 5DF804FB 		ldr	pc, [sp], #4
+ 182              	.L10:
+ 183              		.align	2
+ 184              	.L9:
+ 185 0048 00000000 		.word	endmem
+ 186 004c 00000000 		.word	nextmem
+ 187              		.cfi_endproc
+ 188              	.LFE9:
+ 190              		.section	.text.chCoreStatus,"ax",%progbits
+ 191              		.align	2
+ 192              		.p2align 4,,15
+ 193              		.global	chCoreStatus
+ 194              		.thumb
+ 195              		.thumb_func
+ 197              	chCoreStatus:
+ 198              	.LFB10:
+ 117:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+ 118:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** /**
+ 119:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @brief   Core memory status.
+ 120:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *
+ 121:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @return              The size, in bytes, of the free core memory.
+ 122:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  *
+ 123:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  * @api
+ 124:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****  */
+ 125:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** size_t chCoreStatus(void) {
+ 199              		.loc 1 125 0
+ 200              		.cfi_startproc
+ 201              		@ args = 0, pretend = 0, frame = 0
+ 202              		@ frame_needed = 0, uses_anonymous_args = 0
+ 203              		@ link register save eliminated.
+ 126:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** 
+ 127:/usr/src/chibiostest/os/kernel/src/chmemcore.c ****   return (size_t)(endmem - nextmem);
+ 204              		.loc 1 127 0
+ 205 0000 034B     		ldr	r3, .L13
+ 206 0002 1B68     		ldr	r3, [r3]
+ 207 0004 1A46     		mov	r2, r3
+ 208 0006 034B     		ldr	r3, .L13+4
+ 209 0008 1B68     		ldr	r3, [r3]
+ 210 000a D31A     		subs	r3, r2, r3
+ 128:/usr/src/chibiostest/os/kernel/src/chmemcore.c **** }
+ 211              		.loc 1 128 0
+ 212 000c 1846     		mov	r0, r3
+ 213 000e 7047     		bx	lr
+ 214              	.L14:
+ 215              		.align	2
+ 216              	.L13:
+ 217 0010 00000000 		.word	endmem
+ 218 0014 00000000 		.word	nextmem
+ 219              		.cfi_endproc
+ 220              	.LFE10:
+ 222 0018 AFF30080 		.text
+ 222      AFF30080 
+ 223              	.Letext0:
+ 224              		.file 2 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
+ 225              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 226              		.file 4 "/usr/include/newlib/stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 chmemcore.c
+     /tmp/ccukjiSw.s:20     .bss.nextmem:0000000000000000 $d
+     /tmp/ccukjiSw.s:23     .bss.nextmem:0000000000000000 nextmem
+     /tmp/ccukjiSw.s:26     .bss.endmem:0000000000000000 $d
+     /tmp/ccukjiSw.s:29     .bss.endmem:0000000000000000 endmem
+     /tmp/ccukjiSw.s:32     .text._core_init:0000000000000000 $t
+     /tmp/ccukjiSw.s:38     .text._core_init:0000000000000000 _core_init
+     /tmp/ccukjiSw.s:64     .text._core_init:000000000000001c $d
+     /tmp/ccukjiSw.s:72     .text.chCoreAlloc:0000000000000000 $t
+     /tmp/ccukjiSw.s:78     .text.chCoreAlloc:0000000000000000 chCoreAlloc
+     /tmp/ccukjiSw.s:129    .text.chCoreAllocI:0000000000000000 chCoreAllocI
+     /tmp/ccukjiSw.s:123    .text.chCoreAllocI:0000000000000000 $t
+     /tmp/ccukjiSw.s:185    .text.chCoreAllocI:0000000000000048 $d
+     /tmp/ccukjiSw.s:191    .text.chCoreStatus:0000000000000000 $t
+     /tmp/ccukjiSw.s:197    .text.chCoreStatus:0000000000000000 chCoreStatus
+     /tmp/ccukjiSw.s:217    .text.chCoreStatus:0000000000000010 $d
+                     .debug_frame:0000000000000010 $d
+     /tmp/ccukjiSw.s:71     .text._core_init:000000000000002c $t
+     /tmp/ccukjiSw.s:222    .text.chCoreStatus:0000000000000018 $t
+
+UNDEFINED SYMBOLS
+__heap_base__
+__heap_end__
+dbg_check_lock
+dbg_check_unlock
+chDbgCheckClassI
