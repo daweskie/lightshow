@@ -382,18 +382,18 @@
  194              		.file 8 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hal.c
-     /tmp/ccwkdcfK.s:20     .text.halInit:0000000000000000 $t
-     /tmp/ccwkdcfK.s:26     .text.halInit:0000000000000000 halInit
-     /tmp/ccwkdcfK.s:57     .text.halInit:0000000000000024 $d
-     /tmp/ccwkdcfK.s:62     .text.halIsCounterWithin:0000000000000000 $t
-     /tmp/ccwkdcfK.s:68     .text.halIsCounterWithin:0000000000000000 halIsCounterWithin
-     /tmp/ccwkdcfK.s:133    .text.halIsCounterWithin:0000000000000048 $d
-     /tmp/ccwkdcfK.s:138    .text.halPolledDelay:0000000000000000 $t
-     /tmp/ccwkdcfK.s:144    .text.halPolledDelay:0000000000000000 halPolledDelay
-     /tmp/ccwkdcfK.s:182    .text.halPolledDelay:000000000000002c $d
+     /tmp/cc8udLOI.s:20     .text.halInit:0000000000000000 $t
+     /tmp/cc8udLOI.s:26     .text.halInit:0000000000000000 halInit
+     /tmp/cc8udLOI.s:57     .text.halInit:0000000000000024 $d
+     /tmp/cc8udLOI.s:62     .text.halIsCounterWithin:0000000000000000 $t
+     /tmp/cc8udLOI.s:68     .text.halIsCounterWithin:0000000000000000 halIsCounterWithin
+     /tmp/cc8udLOI.s:133    .text.halIsCounterWithin:0000000000000048 $d
+     /tmp/cc8udLOI.s:138    .text.halPolledDelay:0000000000000000 $t
+     /tmp/cc8udLOI.s:144    .text.halPolledDelay:0000000000000000 halPolledDelay
+     /tmp/cc8udLOI.s:182    .text.halPolledDelay:000000000000002c $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccwkdcfK.s:61     .text.halInit:0000000000000028 $t
-     /tmp/ccwkdcfK.s:137    .text.halIsCounterWithin:000000000000004c $t
+     /tmp/cc8udLOI.s:61     .text.halInit:0000000000000028 $t
+     /tmp/cc8udLOI.s:137    .text.halIsCounterWithin:000000000000004c $t
 
 UNDEFINED SYMBOLS
 hal_lld_init

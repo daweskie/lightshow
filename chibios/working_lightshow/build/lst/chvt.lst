@@ -501,25 +501,25 @@
  361              		.file 5 "/usr/src/chibiostest/os/kernel/include/chvt.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chvt.c
-     /tmp/ccaau2fO.s:24     .bss.vtlist:0000000000000000 vtlist
-     /tmp/ccaau2fO.s:21     .bss.vtlist:0000000000000000 $d
-     /tmp/ccaau2fO.s:27     .text._vt_init:0000000000000000 $t
-     /tmp/ccaau2fO.s:33     .text._vt_init:0000000000000000 _vt_init
-     /tmp/ccaau2fO.s:62     .text._vt_init:0000000000000020 $d
-     /tmp/ccaau2fO.s:67     .rodata:0000000000000000 $d
-     /tmp/ccaau2fO.s:71     .text.chVTSetI:0000000000000000 $t
-     /tmp/ccaau2fO.s:77     .text.chVTSetI:0000000000000000 chVTSetI
-     /tmp/ccaau2fO.s:184    .text.chVTSetI:0000000000000098 $d
-     /tmp/ccaau2fO.s:197    .text.chVTResetI:0000000000000000 $t
-     /tmp/ccaau2fO.s:203    .text.chVTResetI:0000000000000000 chVTResetI
-     /tmp/ccaau2fO.s:274    .text.chVTResetI:0000000000000060 $d
-     /tmp/ccaau2fO.s:281    .text.chTimeIsWithin:0000000000000000 $t
-     /tmp/ccaau2fO.s:287    .text.chTimeIsWithin:0000000000000000 chTimeIsWithin
-     /tmp/ccaau2fO.s:352    .text.chTimeIsWithin:0000000000000048 $d
+     /tmp/ccUb6loK.s:24     .bss.vtlist:0000000000000000 vtlist
+     /tmp/ccUb6loK.s:21     .bss.vtlist:0000000000000000 $d
+     /tmp/ccUb6loK.s:27     .text._vt_init:0000000000000000 $t
+     /tmp/ccUb6loK.s:33     .text._vt_init:0000000000000000 _vt_init
+     /tmp/ccUb6loK.s:62     .text._vt_init:0000000000000020 $d
+     /tmp/ccUb6loK.s:67     .rodata:0000000000000000 $d
+     /tmp/ccUb6loK.s:71     .text.chVTSetI:0000000000000000 $t
+     /tmp/ccUb6loK.s:77     .text.chVTSetI:0000000000000000 chVTSetI
+     /tmp/ccUb6loK.s:184    .text.chVTSetI:0000000000000098 $d
+     /tmp/ccUb6loK.s:197    .text.chVTResetI:0000000000000000 $t
+     /tmp/ccUb6loK.s:203    .text.chVTResetI:0000000000000000 chVTResetI
+     /tmp/ccUb6loK.s:274    .text.chVTResetI:0000000000000060 $d
+     /tmp/ccUb6loK.s:281    .text.chTimeIsWithin:0000000000000000 $t
+     /tmp/ccUb6loK.s:287    .text.chTimeIsWithin:0000000000000000 chTimeIsWithin
+     /tmp/ccUb6loK.s:352    .text.chTimeIsWithin:0000000000000048 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccaau2fO.s:66     .text._vt_init:0000000000000024 $t
-     /tmp/ccaau2fO.s:280    .text.chVTResetI:000000000000006c $t
-     /tmp/ccaau2fO.s:356    .text.chTimeIsWithin:000000000000004c $t
+     /tmp/ccUb6loK.s:66     .text._vt_init:0000000000000024 $t
+     /tmp/ccUb6loK.s:280    .text.chVTResetI:000000000000006c $t
+     /tmp/ccUb6loK.s:356    .text.chTimeIsWithin:000000000000004c $t
 
 UNDEFINED SYMBOLS
 chDbgCheckClassI

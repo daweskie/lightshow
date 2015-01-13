@@ -26,39 +26,20 @@
 #include "hal.h"
 
 #include "myMisc.h"
+#include "buttonpush.h"
 #include "chprintf.h"
 #include "usbcfg.h"
-#include "shell.h"
+
+#include "menu.h"
+//#include "config.h"
 
 
 
 
 
-/* Virtual serial port over USB.*/
-static SerialUSBDriver SDU1;
 
-/*
- * assert Shell Commands to functions
- */
 
-static const ShellCommand commands[] =
-{
 
-    {"mem", cmd_mem},
-    {"threads", cmd_threads},
-    {"toggle", cmd_toggle},
-    {"t", cmd_toggle},
-    {"blinkspeed", cmd_blinkspeed},
-    {"bs", cmd_blinkspeed},
-    {"dir", cmd_way},
-    {"dirch", cmd_way_ch},
-    {"actual", cmd_blinkspeed_now},
-    {"bsmin", cmd_blinkspeed_min},
-    {"bsmax", cmd_blinkspeed_max},
-    {"bsminch", cmd_blinkspeed_min_ch},
-    {"bsmaxch", cmd_blinkspeed_max_ch},
-    {NULL, NULL}
-};
 
 /*
  * Shell configuration
@@ -66,11 +47,7 @@ static const ShellCommand commands[] =
 
 #define SHELL_WA_SIZE	 THD_WA_SIZE(2048)
 
-static const ShellConfig shell_cfg1 =
-{
-    (BaseSequentialStream *)&SDU1,
-    commands
-};
+
 
 
 
@@ -113,35 +90,13 @@ int main(void)
     usbStart(serusbcfg.usbp, &usbcfg);
     usbConnectBus(serusbcfg.usbp);
 
-
-
     startBlinker();
-    //chThdSleepMilliseconds(500);
-
-
+    startButton();
 
     /*
      * Main loop, does nothing except
      */
 
-
-
-    //startbuttondetect();
-
-    /**
-    while (TRUE)
-    {
-        while (palReadPad(GPIOA, GPIOA_BUTTON))
-        {
-            counter();
-            chprintf((BaseSequentialStream*)&SDU1, "value of c : %d \r\n", counter);
-
-
-        }
-        change();
-    }
-
-    */
     while (TRUE)
     {
 

@@ -89,8 +89,8 @@
   46              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chcore.c
-     /tmp/ccxmg12v.s:20     .text.port_halt:0000000000000000 $t
-     /tmp/ccxmg12v.s:26     .text.port_halt:0000000000000000 port_halt
+     /tmp/ccngFhsy.s:20     .text.port_halt:0000000000000000 $t
+     /tmp/ccngFhsy.s:26     .text.port_halt:0000000000000000 port_halt
                      .debug_frame:0000000000000010 $d
 
 NO UNDEFINED SYMBOLS

@@ -247,12 +247,12 @@
  137              		.file 5 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 board.c
-     /tmp/cchBnflj.s:24     .rodata.pal_default_config:0000000000000000 pal_default_config
-     /tmp/cchBnflj.s:21     .rodata.pal_default_config:0000000000000000 $d
-     /tmp/cchBnflj.s:89     .text.__early_init:0000000000000000 $t
-     /tmp/cchBnflj.s:95     .text.__early_init:0000000000000000 __early_init
-     /tmp/cchBnflj.s:114    .text.boardInit:0000000000000000 $t
-     /tmp/cchBnflj.s:120    .text.boardInit:0000000000000000 boardInit
+     /tmp/cccJUjx4.s:24     .rodata.pal_default_config:0000000000000000 pal_default_config
+     /tmp/cccJUjx4.s:21     .rodata.pal_default_config:0000000000000000 $d
+     /tmp/cccJUjx4.s:89     .text.__early_init:0000000000000000 $t
+     /tmp/cccJUjx4.s:95     .text.__early_init:0000000000000000 __early_init
+     /tmp/cccJUjx4.s:114    .text.boardInit:0000000000000000 $t
+     /tmp/cccJUjx4.s:120    .text.boardInit:0000000000000000 boardInit
                      .debug_frame:0000000000000010 $d
 
 UNDEFINED SYMBOLS

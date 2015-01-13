@@ -76,8 +76,8 @@ build/obj/main.o: main.c /usr/include/newlib/stdio.h \
  /usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/usb_lld.h \
  /usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/stm32_otg.h \
  /usr/src/chibiostest/os/hal/include/mmc_spi.h \
- /usr/src/chibiostest/os/hal/include/serial_usb.h myMisc.h \
- /usr/src/chibiostest/os/various/chprintf.h usbcfg.h \
+ /usr/src/chibiostest/os/hal/include/serial_usb.h myMisc.h buttonpush.h \
+ /usr/src/chibiostest/os/various/chprintf.h usbcfg.h menu.h \
  /usr/src/chibiostest/os/various/shell.h
 
 /usr/include/newlib/stdio.h:
@@ -268,8 +268,12 @@ mcuconf.h:
 
 myMisc.h:
 
+buttonpush.h:
+
 /usr/src/chibiostest/os/various/chprintf.h:
 
 usbcfg.h:
+
+menu.h:
 
 /usr/src/chibiostest/os/various/shell.h:

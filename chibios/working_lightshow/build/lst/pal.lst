@@ -344,18 +344,18 @@
  216              		.file 6 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 pal.c
-     /tmp/cciZU2Kt.s:20     .rodata:0000000000000000 $d
-     /tmp/cciZU2Kt.s:24     .text.palReadBus:0000000000000000 $t
-     /tmp/cciZU2Kt.s:30     .text.palReadBus:0000000000000000 palReadBus
-     /tmp/cciZU2Kt.s:75     .text.palReadBus:0000000000000034 $d
-     /tmp/cciZU2Kt.s:84     .text.palWriteBus:0000000000000000 $t
-     /tmp/cciZU2Kt.s:90     .text.palWriteBus:0000000000000000 palWriteBus
-     /tmp/cciZU2Kt.s:145    .text.palWriteBus:000000000000004c $d
-     /tmp/cciZU2Kt.s:154    .text.palSetBusMode:0000000000000000 $t
-     /tmp/cciZU2Kt.s:160    .text.palSetBusMode:0000000000000000 palSetBusMode
-     /tmp/cciZU2Kt.s:206    .text.palSetBusMode:000000000000003c $d
+     /tmp/ccqjOfdf.s:20     .rodata:0000000000000000 $d
+     /tmp/ccqjOfdf.s:24     .text.palReadBus:0000000000000000 $t
+     /tmp/ccqjOfdf.s:30     .text.palReadBus:0000000000000000 palReadBus
+     /tmp/ccqjOfdf.s:75     .text.palReadBus:0000000000000034 $d
+     /tmp/ccqjOfdf.s:84     .text.palWriteBus:0000000000000000 $t
+     /tmp/ccqjOfdf.s:90     .text.palWriteBus:0000000000000000 palWriteBus
+     /tmp/ccqjOfdf.s:145    .text.palWriteBus:000000000000004c $d
+     /tmp/ccqjOfdf.s:154    .text.palSetBusMode:0000000000000000 $t
+     /tmp/ccqjOfdf.s:160    .text.palSetBusMode:0000000000000000 palSetBusMode
+     /tmp/ccqjOfdf.s:206    .text.palSetBusMode:000000000000003c $d
                      .debug_frame:0000000000000010 $d
-     /tmp/cciZU2Kt.s:79     .text.palReadBus:0000000000000038 $t
+     /tmp/ccqjOfdf.s:79     .text.palReadBus:0000000000000038 $t
 
 UNDEFINED SYMBOLS
 chDbgPanic

@@ -1,0 +1,9 @@
+bin
+obj
+*~
+*.layout
+doc/html
+lib/*
+*.o
+build/
+.dep/

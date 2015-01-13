@@ -540,23 +540,23 @@
  351              		.file 10 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chmsg.c
-     /tmp/ccmmsCFl.s:20     .text.queue_insert:0000000000000000 $t
-     /tmp/ccmmsCFl.s:25     .text.queue_insert:0000000000000000 queue_insert
-     /tmp/ccmmsCFl.s:63     .text.fifo_remove:0000000000000000 $t
-     /tmp/ccmmsCFl.s:68     .text.fifo_remove:0000000000000000 fifo_remove
-     /tmp/ccmmsCFl.s:102    .rodata:0000000000000000 $d
-     /tmp/ccmmsCFl.s:106    .text.chMsgSend:0000000000000000 $t
-     /tmp/ccmmsCFl.s:112    .text.chMsgSend:0000000000000000 chMsgSend
-     /tmp/ccmmsCFl.s:197    .text.chMsgSend:0000000000000070 $d
-     /tmp/ccmmsCFl.s:203    .text.chMsgWait:0000000000000000 $t
-     /tmp/ccmmsCFl.s:209    .text.chMsgWait:0000000000000000 chMsgWait
-     /tmp/ccmmsCFl.s:272    .text.chMsgWait:0000000000000050 $d
-     /tmp/ccmmsCFl.s:281    .text.chMsgRelease:0000000000000000 $t
-     /tmp/ccmmsCFl.s:287    .text.chMsgRelease:0000000000000000 chMsgRelease
-     /tmp/ccmmsCFl.s:338    .text.chMsgRelease:000000000000003c $d
+     /tmp/ccdzfSdk.s:20     .text.queue_insert:0000000000000000 $t
+     /tmp/ccdzfSdk.s:25     .text.queue_insert:0000000000000000 queue_insert
+     /tmp/ccdzfSdk.s:63     .text.fifo_remove:0000000000000000 $t
+     /tmp/ccdzfSdk.s:68     .text.fifo_remove:0000000000000000 fifo_remove
+     /tmp/ccdzfSdk.s:102    .rodata:0000000000000000 $d
+     /tmp/ccdzfSdk.s:106    .text.chMsgSend:0000000000000000 $t
+     /tmp/ccdzfSdk.s:112    .text.chMsgSend:0000000000000000 chMsgSend
+     /tmp/ccdzfSdk.s:197    .text.chMsgSend:0000000000000070 $d
+     /tmp/ccdzfSdk.s:203    .text.chMsgWait:0000000000000000 $t
+     /tmp/ccdzfSdk.s:209    .text.chMsgWait:0000000000000000 chMsgWait
+     /tmp/ccdzfSdk.s:272    .text.chMsgWait:0000000000000050 $d
+     /tmp/ccdzfSdk.s:281    .text.chMsgRelease:0000000000000000 $t
+     /tmp/ccdzfSdk.s:287    .text.chMsgRelease:0000000000000000 chMsgRelease
+     /tmp/ccdzfSdk.s:338    .text.chMsgRelease:000000000000003c $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccmmsCFl.s:202    .text.chMsgSend:0000000000000078 $t
-     /tmp/ccmmsCFl.s:276    .text.chMsgWait:0000000000000054 $t
+     /tmp/ccdzfSdk.s:202    .text.chMsgSend:0000000000000078 $t
+     /tmp/ccdzfSdk.s:276    .text.chMsgWait:0000000000000054 $t
 
 UNDEFINED SYMBOLS
 chDbgPanic

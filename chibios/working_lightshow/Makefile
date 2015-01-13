@@ -82,6 +82,9 @@ CSRC = main.c \
        myMisc.c \
        usbcfg.c \
        board.c \
+       menu.c \
+       config.c \
+       buttonpush.c \
 	   $(PORTSRC) \
        $(KERNSRC) \
        $(HALSRC) \

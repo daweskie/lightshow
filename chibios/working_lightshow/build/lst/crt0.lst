@@ -616,17 +616,17 @@
  272              		.file 4 "/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 crt0.c
-     /tmp/ccFYYmgo.s:20     .text.__early_init:0000000000000000 $t
-     /tmp/ccFYYmgo.s:26     .text.__early_init:0000000000000000 __early_init
-     /tmp/ccFYYmgo.s:40     .text.__late_init:0000000000000000 $t
-     /tmp/ccFYYmgo.s:46     .text.__late_init:0000000000000000 __late_init
-     /tmp/ccFYYmgo.s:59     .text._default_exit:0000000000000000 $t
-     /tmp/ccFYYmgo.s:65     .text._default_exit:0000000000000000 _default_exit
-     /tmp/ccFYYmgo.s:79     .text.ResetHandler:0000000000000000 $t
-     /tmp/ccFYYmgo.s:85     .text.ResetHandler:0000000000000000 ResetHandler
-     /tmp/ccFYYmgo.s:250    .text.ResetHandler:00000000000000b8 $d
+     /tmp/ccrjtOjt.s:20     .text.__early_init:0000000000000000 $t
+     /tmp/ccrjtOjt.s:26     .text.__early_init:0000000000000000 __early_init
+     /tmp/ccrjtOjt.s:40     .text.__late_init:0000000000000000 $t
+     /tmp/ccrjtOjt.s:46     .text.__late_init:0000000000000000 __late_init
+     /tmp/ccrjtOjt.s:59     .text._default_exit:0000000000000000 $t
+     /tmp/ccrjtOjt.s:65     .text._default_exit:0000000000000000 _default_exit
+     /tmp/ccrjtOjt.s:79     .text.ResetHandler:0000000000000000 $t
+     /tmp/ccrjtOjt.s:85     .text.ResetHandler:0000000000000000 ResetHandler
+     /tmp/ccrjtOjt.s:250    .text.ResetHandler:00000000000000b8 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccFYYmgo.s:268    .text.ResetHandler:00000000000000f4 $t
+     /tmp/ccrjtOjt.s:268    .text.ResetHandler:00000000000000f4 $t
 
 UNDEFINED SYMBOLS
 main

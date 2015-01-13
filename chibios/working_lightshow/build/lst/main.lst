@@ -110,29 +110,15 @@
  102              	shell_cfg1:
  103 0000 00000000 		.word	SDU1
  104 0004 00000000 		.word	commands
- 105              		.global	msg
- 106              		.section	.data.msg,"aw",%progbits
- 107              		.align	2
- 110              	msg:
- 111 0000 4E6F7720 		.ascii	"Now is the time for all good men to come to the aid"
- 111      69732074 
- 111      68652074 
- 111      696D6520 
- 111      666F7220 
- 112 0033 206F6620 		.ascii	" of their country\000"
- 112      74686569 
- 112      7220636F 
- 112      756E7472 
- 112      7900
- 113 0045 000000   		.section	.text.main,"ax",%progbits
- 114              		.align	2
- 115              		.p2align 4,,15
- 116              		.global	main
- 117              		.thumb
- 118              		.thumb_func
- 120              	main:
- 121              	.LFB118:
- 122              		.file 1 "main.c"
+ 105              		.section	.text.main,"ax",%progbits
+ 106              		.align	2
+ 107              		.p2align 4,,15
+ 108              		.global	main
+ 109              		.thumb
+ 110              		.thumb_func
+ 112              	main:
+ 113              	.LFB118:
+ 114              		.file 1 "main.c"
    1:main.c        **** /*
    2:main.c        **** 		ChibiOS/RT - Copyright (C) 2006,2007,2008,2009,2010,
    3:main.c        **** 								 2011,2012 Giovanni Di Sirio.
@@ -161,284 +147,242 @@
   26:main.c        **** #include "hal.h"
   27:main.c        **** 
   28:main.c        **** #include "myMisc.h"
-  29:main.c        **** #include "chprintf.h"
-  30:main.c        **** #include "usbcfg.h"
-  31:main.c        **** #include "shell.h"
+  29:main.c        **** #include "buttonpush.h"
+  30:main.c        **** #include "chprintf.h"
+  31:main.c        **** #include "usbcfg.h"
   32:main.c        **** 
-  33:main.c        **** 
-  34:main.c        **** 
+  33:main.c        **** #include "menu.h"
+  34:main.c        **** //#include "config.h"
   35:main.c        **** 
   36:main.c        **** 
-  37:main.c        **** /* Virtual serial port over USB.*/
-  38:main.c        **** static SerialUSBDriver SDU1;
+  37:main.c        **** 
+  38:main.c        **** 
   39:main.c        **** 
-  40:main.c        **** /*
-  41:main.c        ****  * assert Shell Commands to functions
-  42:main.c        ****  */
+  40:main.c        **** 
+  41:main.c        **** 
+  42:main.c        **** 
   43:main.c        **** 
-  44:main.c        **** static const ShellCommand commands[] =
-  45:main.c        **** {
-  46:main.c        **** 
-  47:main.c        ****     {"mem", cmd_mem},
-  48:main.c        ****     {"threads", cmd_threads},
-  49:main.c        ****     {"toggle", cmd_toggle},
-  50:main.c        ****     {"t", cmd_toggle},
-  51:main.c        ****     {"blinkspeed", cmd_blinkspeed},
-  52:main.c        ****     {"bs", cmd_blinkspeed},
-  53:main.c        ****     {"dir", cmd_way},
-  54:main.c        ****     {"dirch", cmd_way_ch},
-  55:main.c        ****     {"actual", cmd_blinkspeed_now},
-  56:main.c        ****     {"bsmin", cmd_blinkspeed_min},
-  57:main.c        ****     {"bsmax", cmd_blinkspeed_max},
-  58:main.c        ****     {"bsminch", cmd_blinkspeed_min_ch},
-  59:main.c        ****     {"bsmaxch", cmd_blinkspeed_max_ch},
-  60:main.c        ****     {NULL, NULL}
-  61:main.c        **** };
-  62:main.c        **** 
-  63:main.c        **** /*
-  64:main.c        ****  * Shell configuration
-  65:main.c        ****  */
+  44:main.c        **** /*
+  45:main.c        ****  * Shell configuration
+  46:main.c        ****  */
+  47:main.c        **** 
+  48:main.c        **** #define SHELL_WA_SIZE	 THD_WA_SIZE(2048)
+  49:main.c        **** 
+  50:main.c        **** 
+  51:main.c        **** 
+  52:main.c        **** 
+  53:main.c        **** 
+  54:main.c        **** /*
+  55:main.c        ****  * Application entry point.
+  56:main.c        ****  */
+  57:main.c        **** int main(void)
+  58:main.c        **** {
+ 115              		.loc 1 58 0
+ 116              		.cfi_startproc
+ 117              		@ args = 0, pretend = 0, frame = 8
+ 118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119 0000 00B5     		push	{lr}
+ 120              		.cfi_def_cfa_offset 4
+ 121              		.cfi_offset 14, -4
+ 122 0002 83B0     		sub	sp, sp, #12
+ 123              		.cfi_def_cfa_offset 16
+  59:main.c        **** 
+  60:main.c        **** //    char msg[]="sos sos sos";
+  61:main.c        **** 
+  62:main.c        ****     /*
+  63:main.c        ****      * Shell thread
+  64:main.c        ****      */
+  65:main.c        ****     Thread *shelltp = NULL;
+ 124              		.loc 1 65 0
+ 125 0004 0023     		movs	r3, #0
+ 126 0006 0193     		str	r3, [sp, #4]
   66:main.c        **** 
-  67:main.c        **** #define SHELL_WA_SIZE	 THD_WA_SIZE(2048)
-  68:main.c        **** 
-  69:main.c        **** static const ShellConfig shell_cfg1 =
-  70:main.c        **** {
-  71:main.c        ****     (BaseSequentialStream *)&SDU1,
-  72:main.c        ****     commands
-  73:main.c        **** };
-  74:main.c        **** 
-  75:main.c        **** 
-  76:main.c        **** char msg[] = "Now is the time for all good men to come to the aid of their country";
-  77:main.c        **** 
-  78:main.c        **** /*
-  79:main.c        ****  * Application entry point.
-  80:main.c        ****  */
-  81:main.c        **** int main(void)
-  82:main.c        **** {
- 123              		.loc 1 82 0
- 124              		.cfi_startproc
- 125              		@ args = 0, pretend = 0, frame = 8
- 126              		@ frame_needed = 0, uses_anonymous_args = 0
- 127 0000 00B5     		push	{lr}
- 128              		.cfi_def_cfa_offset 4
- 129              		.cfi_offset 14, -4
- 130 0002 83B0     		sub	sp, sp, #12
- 131              		.cfi_def_cfa_offset 16
-  83:main.c        **** 
-  84:main.c        **** //    char msg[]="sos sos sos";
-  85:main.c        **** 
-  86:main.c        ****     /*
-  87:main.c        ****      * Shell thread
-  88:main.c        ****      */
-  89:main.c        ****     Thread *shelltp = NULL;
- 132              		.loc 1 89 0
- 133 0004 0023     		movs	r3, #0
- 134 0006 0193     		str	r3, [sp, #4]
-  90:main.c        **** 
-  91:main.c        ****     /*
-  92:main.c        ****      * System initializations.
-  93:main.c        ****      * - HAL initialization, this also initializes the configured device drivers
-  94:main.c        ****      *	 and performs the board-specific initializations.
-  95:main.c        ****      * - Kernel initialization, the main() function becomes a thread and the
-  96:main.c        ****      *	 RTOS is active.
-  97:main.c        ****      */
-  98:main.c        ****     halInit();
- 135              		.loc 1 98 0
- 136 0008 FFF7FEFF 		bl	halInit
-  99:main.c        ****     chSysInit();
- 137              		.loc 1 99 0
- 138 000c FFF7FEFF 		bl	chSysInit
- 100:main.c        **** 
- 101:main.c        ****     /*
- 102:main.c        ****      * Initializes a serial-over-USB CDC driver.
- 103:main.c        ****      */
- 104:main.c        ****     sduObjectInit(&SDU1);
- 139              		.loc 1 104 0
- 140 0010 2348     		ldr	r0, .L6
- 141 0012 FFF7FEFF 		bl	sduObjectInit
- 105:main.c        ****     sduStart(&SDU1, &serusbcfg);
- 142              		.loc 1 105 0
- 143 0016 2248     		ldr	r0, .L6
- 144 0018 2249     		ldr	r1, .L6+4
- 145 001a FFF7FEFF 		bl	sduStart
- 106:main.c        **** 
- 107:main.c        ****     /*
- 108:main.c        ****      * Activates the USB driver and then the USB bus pull-up on D+.
- 109:main.c        ****      * Note, a delay is inserted in order to not have to disconnect the cable
- 110:main.c        ****      * after a reset.
- 111:main.c        ****      */
- 112:main.c        ****     usbDisconnectBus(serusbcfg.usbp);
- 146              		.loc 1 112 0
- 147 001e 214B     		ldr	r3, .L6+4
- 148 0020 1B68     		ldr	r3, [r3]
- 149 0022 DB6B     		ldr	r3, [r3, #60]
- 150 0024 1F4A     		ldr	r2, .L6+4
- 151 0026 1268     		ldr	r2, [r2]
- 152 0028 D26B     		ldr	r2, [r2, #60]
- 153 002a 926B     		ldr	r2, [r2, #56]
- 154 002c 22F40022 		bic	r2, r2, #524288
- 155 0030 9A63     		str	r2, [r3, #56]
- 113:main.c        ****     chThdSleepMilliseconds(2000);
- 156              		.loc 1 113 0
- 157 0032 44F61760 		movw	r0, #19991
- 158 0036 FFF7FEFF 		bl	chThdSleep
- 114:main.c        ****     usbStart(serusbcfg.usbp, &usbcfg);
- 159              		.loc 1 114 0
- 160 003a 1A4B     		ldr	r3, .L6+4
- 161 003c 1B68     		ldr	r3, [r3]
- 162 003e 1846     		mov	r0, r3
- 163 0040 1949     		ldr	r1, .L6+8
- 164 0042 FFF7FEFF 		bl	usbStart
- 115:main.c        ****     usbConnectBus(serusbcfg.usbp);
- 165              		.loc 1 115 0
- 166 0046 174B     		ldr	r3, .L6+4
- 167 0048 1B68     		ldr	r3, [r3]
- 168 004a DB6B     		ldr	r3, [r3, #60]
- 169 004c 154A     		ldr	r2, .L6+4
- 170 004e 1268     		ldr	r2, [r2]
- 171 0050 D26B     		ldr	r2, [r2, #60]
- 172 0052 926B     		ldr	r2, [r2, #56]
- 173 0054 42F40022 		orr	r2, r2, #524288
- 174 0058 9A63     		str	r2, [r3, #56]
- 116:main.c        **** 
- 117:main.c        **** 
- 118:main.c        **** 
- 119:main.c        ****     startBlinker();
- 175              		.loc 1 119 0
- 176 005a FFF7FEFF 		bl	startBlinker
- 177              	.L5:
- 120:main.c        ****     //chThdSleepMilliseconds(500);
- 121:main.c        **** 
+  67:main.c        ****     /*
+  68:main.c        ****      * System initializations.
+  69:main.c        ****      * - HAL initialization, this also initializes the configured device drivers
+  70:main.c        ****      *	 and performs the board-specific initializations.
+  71:main.c        ****      * - Kernel initialization, the main() function becomes a thread and the
+  72:main.c        ****      *	 RTOS is active.
+  73:main.c        ****      */
+  74:main.c        ****     halInit();
+ 127              		.loc 1 74 0
+ 128 0008 FFF7FEFF 		bl	halInit
+  75:main.c        ****     chSysInit();
+ 129              		.loc 1 75 0
+ 130 000c FFF7FEFF 		bl	chSysInit
+  76:main.c        **** 
+  77:main.c        ****     /*
+  78:main.c        ****      * Initializes a serial-over-USB CDC driver.
+  79:main.c        ****      */
+  80:main.c        ****     sduObjectInit(&SDU1);
+ 131              		.loc 1 80 0
+ 132 0010 2448     		ldr	r0, .L6
+ 133 0012 FFF7FEFF 		bl	sduObjectInit
+  81:main.c        ****     sduStart(&SDU1, &serusbcfg);
+ 134              		.loc 1 81 0
+ 135 0016 2348     		ldr	r0, .L6
+ 136 0018 2349     		ldr	r1, .L6+4
+ 137 001a FFF7FEFF 		bl	sduStart
+  82:main.c        **** 
+  83:main.c        ****     /*
+  84:main.c        ****      * Activates the USB driver and then the USB bus pull-up on D+.
+  85:main.c        ****      * Note, a delay is inserted in order to not have to disconnect the cable
+  86:main.c        ****      * after a reset.
+  87:main.c        ****      */
+  88:main.c        ****     usbDisconnectBus(serusbcfg.usbp);
+ 138              		.loc 1 88 0
+ 139 001e 224B     		ldr	r3, .L6+4
+ 140 0020 1B68     		ldr	r3, [r3]
+ 141 0022 DB6B     		ldr	r3, [r3, #60]
+ 142 0024 204A     		ldr	r2, .L6+4
+ 143 0026 1268     		ldr	r2, [r2]
+ 144 0028 D26B     		ldr	r2, [r2, #60]
+ 145 002a 926B     		ldr	r2, [r2, #56]
+ 146 002c 22F40022 		bic	r2, r2, #524288
+ 147 0030 9A63     		str	r2, [r3, #56]
+  89:main.c        ****     chThdSleepMilliseconds(2000);
+ 148              		.loc 1 89 0
+ 149 0032 44F61760 		movw	r0, #19991
+ 150 0036 FFF7FEFF 		bl	chThdSleep
+  90:main.c        ****     usbStart(serusbcfg.usbp, &usbcfg);
+ 151              		.loc 1 90 0
+ 152 003a 1B4B     		ldr	r3, .L6+4
+ 153 003c 1B68     		ldr	r3, [r3]
+ 154 003e 1846     		mov	r0, r3
+ 155 0040 1A49     		ldr	r1, .L6+8
+ 156 0042 FFF7FEFF 		bl	usbStart
+  91:main.c        ****     usbConnectBus(serusbcfg.usbp);
+ 157              		.loc 1 91 0
+ 158 0046 184B     		ldr	r3, .L6+4
+ 159 0048 1B68     		ldr	r3, [r3]
+ 160 004a DB6B     		ldr	r3, [r3, #60]
+ 161 004c 164A     		ldr	r2, .L6+4
+ 162 004e 1268     		ldr	r2, [r2]
+ 163 0050 D26B     		ldr	r2, [r2, #60]
+ 164 0052 926B     		ldr	r2, [r2, #56]
+ 165 0054 42F40022 		orr	r2, r2, #524288
+ 166 0058 9A63     		str	r2, [r3, #56]
+  92:main.c        **** 
+  93:main.c        ****     startBlinker();
+ 167              		.loc 1 93 0
+ 168 005a FFF7FEFF 		bl	startBlinker
+  94:main.c        ****     startButton();
+ 169              		.loc 1 94 0
+ 170 005e FFF7FEFF 		bl	startButton
+ 171              	.L5:
+  95:main.c        **** 
+  96:main.c        ****     /*
+  97:main.c        ****      * Main loop, does nothing except
+  98:main.c        ****      */
+  99:main.c        **** 
+ 100:main.c        ****     while (TRUE)
+ 101:main.c        ****     {
+ 102:main.c        **** 
+ 103:main.c        **** 		/* spawn a shell when the old one was terminated */
+ 104:main.c        ****         if (!shelltp)
+ 172              		.loc 1 104 0
+ 173 0062 019B     		ldr	r3, [sp, #4]
+ 174 0064 002B     		cmp	r3, #0
+ 175 0066 0ED1     		bne	.L2
+ 105:main.c        ****         {
+ 106:main.c        ****             if (SDU1.config->usbp->state == USB_ACTIVE)
+ 176              		.loc 1 106 0
+ 177 0068 0E4B     		ldr	r3, .L6
+ 178 006a D3F85432 		ldr	r3, [r3, #596]
+ 179 006e 1B68     		ldr	r3, [r3]
+ 180 0070 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 181 0072 042B     		cmp	r3, #4
+ 182 0074 11D1     		bne	.L4
+ 107:main.c        ****             {
+ 108:main.c        ****                 /* Spawns a new shell.*/
+ 109:main.c        ****                 shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO-10);
+ 183              		.loc 1 109 0
+ 184 0076 0E48     		ldr	r0, .L6+12
+ 185 0078 40F63811 		movw	r1, #2360
+ 186 007c 3622     		movs	r2, #54
+ 187 007e FFF7FEFF 		bl	shellCreate
+ 188 0082 0190     		str	r0, [sp, #4]
+ 189 0084 09E0     		b	.L4
+ 190              	.L2:
+ 110:main.c        ****             }
+ 111:main.c        ****         }
+ 112:main.c        ****         else
+ 113:main.c        ****         {
+ 114:main.c        ****             /* If the previous shell exited.*/
+ 115:main.c        ****             if (chThdTerminated(shelltp))
+ 191              		.loc 1 115 0
+ 192 0086 019B     		ldr	r3, [sp, #4]
+ 193 0088 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 194 008c 0E2B     		cmp	r3, #14
+ 195 008e 04D1     		bne	.L4
+ 116:main.c        ****             {
+ 117:main.c        ****                 /* Recovers memory of the previous shell.*/
+ 118:main.c        ****                 chThdRelease(shelltp);
+ 196              		.loc 1 118 0
+ 197 0090 0198     		ldr	r0, [sp, #4]
+ 198 0092 FFF7FEFF 		bl	chThdRelease
+ 119:main.c        ****                 shelltp = NULL;
+ 199              		.loc 1 119 0
+ 200 0096 0023     		movs	r3, #0
+ 201 0098 0193     		str	r3, [sp, #4]
+ 202              	.L4:
+ 120:main.c        ****             }
+ 121:main.c        ****         }
  122:main.c        **** 
- 123:main.c        **** 
- 124:main.c        ****     /*
- 125:main.c        ****      * Main loop, does nothing except
- 126:main.c        ****      */
- 127:main.c        **** 
- 128:main.c        **** 
- 129:main.c        **** 
- 130:main.c        ****     //startbuttondetect();
- 131:main.c        **** 
- 132:main.c        ****     /**
- 133:main.c        ****     while (TRUE)
- 134:main.c        ****     {
- 135:main.c        ****         while (palReadPad(GPIOA, GPIOA_BUTTON))
- 136:main.c        ****         {
- 137:main.c        ****             counter();
- 138:main.c        ****             chprintf((BaseSequentialStream*)&SDU1, "value of c : %d \r\n", counter);
- 139:main.c        **** 
- 140:main.c        **** 
- 141:main.c        ****         }
- 142:main.c        ****         change();
- 143:main.c        ****     }
- 144:main.c        **** 
- 145:main.c        ****     */
- 146:main.c        ****     while (TRUE)
- 147:main.c        ****     {
- 148:main.c        **** 
- 149:main.c        **** 		/* spawn a shell when the old one was terminated */
- 150:main.c        ****         if (!shelltp)
- 178              		.loc 1 150 0
- 179 005e 019B     		ldr	r3, [sp, #4]
- 180 0060 002B     		cmp	r3, #0
- 181 0062 0ED1     		bne	.L2
- 151:main.c        ****         {
- 152:main.c        ****             if (SDU1.config->usbp->state == USB_ACTIVE)
- 182              		.loc 1 152 0
- 183 0064 0E4B     		ldr	r3, .L6
- 184 0066 D3F85432 		ldr	r3, [r3, #596]
- 185 006a 1B68     		ldr	r3, [r3]
- 186 006c 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
- 187 006e 042B     		cmp	r3, #4
- 188 0070 11D1     		bne	.L4
- 153:main.c        ****             {
- 154:main.c        ****                 /* Spawns a new shell.*/
- 155:main.c        ****                 shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO-10);
- 189              		.loc 1 155 0
- 190 0072 0E48     		ldr	r0, .L6+12
- 191 0074 40F63811 		movw	r1, #2360
- 192 0078 3622     		movs	r2, #54
- 193 007a FFF7FEFF 		bl	shellCreate
- 194 007e 0190     		str	r0, [sp, #4]
- 195 0080 09E0     		b	.L4
- 196              	.L2:
- 156:main.c        ****             }
- 157:main.c        ****         }
- 158:main.c        ****         else
- 159:main.c        ****         {
- 160:main.c        ****             /* If the previous shell exited.*/
- 161:main.c        ****             if (chThdTerminated(shelltp))
- 197              		.loc 1 161 0
- 198 0082 019B     		ldr	r3, [sp, #4]
- 199 0084 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
- 200 0088 0E2B     		cmp	r3, #14
- 201 008a 04D1     		bne	.L4
- 162:main.c        ****             {
- 163:main.c        ****                 /* Recovers memory of the previous shell.*/
- 164:main.c        ****                 chThdRelease(shelltp);
- 202              		.loc 1 164 0
- 203 008c 0198     		ldr	r0, [sp, #4]
- 204 008e FFF7FEFF 		bl	chThdRelease
- 165:main.c        ****                 shelltp = NULL;
- 205              		.loc 1 165 0
- 206 0092 0023     		movs	r3, #0
- 207 0094 0193     		str	r3, [sp, #4]
- 208              	.L4:
- 166:main.c        ****             }
- 167:main.c        ****         }
- 168:main.c        **** 
- 169:main.c        ****         chThdSleepMilliseconds(50);
- 209              		.loc 1 169 0
- 210 0096 40F2EB10 		movw	r0, #491
- 211 009a FFF7FEFF 		bl	chThdSleep
- 170:main.c        **** 
- 171:main.c        ****     }
- 212              		.loc 1 171 0
- 213 009e DEE7     		b	.L5
- 214              	.L7:
- 215              		.align	2
- 216              	.L6:
- 217 00a0 00000000 		.word	SDU1
- 218 00a4 00000000 		.word	serusbcfg
- 219 00a8 00000000 		.word	usbcfg
- 220 00ac 00000000 		.word	shell_cfg1
- 221              		.cfi_endproc
- 222              	.LFE118:
- 224              		.text
- 225              	.Letext0:
- 226              		.file 2 "/usr/include/newlib/machine/_default_types.h"
- 227              		.file 3 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
- 228              		.file 4 "/usr/include/newlib/stdint.h"
- 229              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
- 230              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
- 231              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
- 232              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
- 233              		.file 9 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
- 234              		.file 10 "/usr/src/chibiostest/os/kernel/include/chevents.h"
- 235              		.file 11 "/usr/src/chibiostest/os/kernel/include/chqueues.h"
- 236              		.file 12 "/usr/src/chibiostest/os/kernel/include/chstreams.h"
- 237              		.file 13 "/usr/src/chibiostest/os/hal/include/usb.h"
- 238              		.file 14 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/usb_lld.h"
- 239              		.file 15 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/stm32_otg.h"
- 240              		.file 16 "/usr/src/chibiostest/os/hal/include/serial_usb.h"
- 241              		.file 17 "/usr/src/chibiostest/os/various/shell.h"
- 242              		.file 18 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
- 243              		.file 19 "usbcfg.h"
+ 123:main.c        ****         chThdSleepMilliseconds(50);
+ 203              		.loc 1 123 0
+ 204 009a 40F2EB10 		movw	r0, #491
+ 205 009e FFF7FEFF 		bl	chThdSleep
+ 124:main.c        **** 
+ 125:main.c        ****     }
+ 206              		.loc 1 125 0
+ 207 00a2 DEE7     		b	.L5
+ 208              	.L7:
+ 209              		.align	2
+ 210              	.L6:
+ 211 00a4 00000000 		.word	SDU1
+ 212 00a8 00000000 		.word	serusbcfg
+ 213 00ac 00000000 		.word	usbcfg
+ 214 00b0 00000000 		.word	shell_cfg1
+ 215              		.cfi_endproc
+ 216              	.LFE118:
+ 218 00b4 AFF30080 		.text
+ 218      AFF30080 
+ 218      AFF30080 
+ 219              	.Letext0:
+ 220              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 221              		.file 3 "/usr/lib/gcc/arm-none-eabi/4.8/include/stddef.h"
+ 222              		.file 4 "/usr/include/newlib/stdint.h"
+ 223              		.file 5 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chtypes.h"
+ 224              		.file 6 "/usr/src/chibiostest/os/kernel/include/chlists.h"
+ 225              		.file 7 "/usr/src/chibiostest/os/kernel/include/chthreads.h"
+ 226              		.file 8 "/usr/src/chibiostest/os/ports/GCC/ARMCMx/chcore_v7m.h"
+ 227              		.file 9 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
+ 228              		.file 10 "/usr/src/chibiostest/os/kernel/include/chevents.h"
+ 229              		.file 11 "/usr/src/chibiostest/os/kernel/include/chqueues.h"
+ 230              		.file 12 "/usr/src/chibiostest/os/kernel/include/chstreams.h"
+ 231              		.file 13 "/usr/src/chibiostest/os/hal/include/usb.h"
+ 232              		.file 14 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/usb_lld.h"
+ 233              		.file 15 "/usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/stm32_otg.h"
+ 234              		.file 16 "/usr/src/chibiostest/os/hal/include/serial_usb.h"
+ 235              		.file 17 "/usr/src/chibiostest/os/various/shell.h"
+ 236              		.file 18 "menu.h"
+ 237              		.file 19 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
+ 238              		.file 20 "usbcfg.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 main.c
-     /tmp/ccxCP7tW.s:20     .bss.SDU1:0000000000000000 $d
-     /tmp/ccxCP7tW.s:23     .bss.SDU1:0000000000000000 SDU1
-     /tmp/ccxCP7tW.s:26     .rodata:0000000000000000 $d
-     /tmp/ccxCP7tW.s:66     .rodata.commands:0000000000000000 $d
-     /tmp/ccxCP7tW.s:69     .rodata.commands:0000000000000000 commands
-     /tmp/ccxCP7tW.s:99     .rodata.shell_cfg1:0000000000000000 $d
-     /tmp/ccxCP7tW.s:102    .rodata.shell_cfg1:0000000000000000 shell_cfg1
-     /tmp/ccxCP7tW.s:110    .data.msg:0000000000000000 msg
-     /tmp/ccxCP7tW.s:107    .data.msg:0000000000000000 $d
-     /tmp/ccxCP7tW.s:114    .text.main:0000000000000000 $t
-     /tmp/ccxCP7tW.s:120    .text.main:0000000000000000 main
-     /tmp/ccxCP7tW.s:217    .text.main:00000000000000a0 $d
+     /tmp/ccUScrbZ.s:20     .bss.SDU1:0000000000000000 $d
+     /tmp/ccUScrbZ.s:23     .bss.SDU1:0000000000000000 SDU1
+     /tmp/ccUScrbZ.s:26     .rodata:0000000000000000 $d
+     /tmp/ccUScrbZ.s:66     .rodata.commands:0000000000000000 $d
+     /tmp/ccUScrbZ.s:69     .rodata.commands:0000000000000000 commands
+     /tmp/ccUScrbZ.s:99     .rodata.shell_cfg1:0000000000000000 $d
+     /tmp/ccUScrbZ.s:102    .rodata.shell_cfg1:0000000000000000 shell_cfg1
+     /tmp/ccUScrbZ.s:106    .text.main:0000000000000000 $t
+     /tmp/ccUScrbZ.s:112    .text.main:0000000000000000 main
+     /tmp/ccUScrbZ.s:211    .text.main:00000000000000a4 $d
                      .debug_frame:0000000000000010 $d
+     /tmp/ccUScrbZ.s:218    .text.main:00000000000000b4 $t
 
 UNDEFINED SYMBOLS
 cmd_mem
@@ -459,6 +403,7 @@ sduStart
 chThdSleep
 usbStart
 startBlinker
+startButton
 shellCreate
 chThdRelease
 serusbcfg

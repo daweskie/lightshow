@@ -75,7 +75,9 @@ build/obj/myMisc.o: myMisc.c /usr/include/newlib/stdlib.h \
  /usr/src/chibiostest/os/hal/platforms/STM32/OTGv1/stm32_otg.h \
  /usr/src/chibiostest/os/hal/include/mmc_spi.h \
  /usr/src/chibiostest/os/hal/include/serial_usb.h \
- /usr/src/chibiostest/os/various/chprintf.h myMisc.h
+ /usr/src/chibiostest/os/various/chprintf.h myMisc.h config.h \
+ /usr/src/chibiostest/os/kernel/include/chsem.h menu.h \
+ /usr/src/chibiostest/os/various/shell.h
 
 /usr/include/newlib/stdlib.h:
 
@@ -258,3 +260,11 @@ mcuconf.h:
 /usr/src/chibiostest/os/various/chprintf.h:
 
 myMisc.h:
+
+config.h:
+
+/usr/src/chibiostest/os/kernel/include/chsem.h:
+
+menu.h:
+
+/usr/src/chibiostest/os/various/shell.h:
