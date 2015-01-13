@@ -22,7 +22,7 @@
 #include <chprintf.h>
 
 #include "config.h"
-//#include "menu.h"
+
 
 /**
 Configurable variables of the program
@@ -36,42 +36,16 @@ led1 = GPIOD_LED3;
 led2 = GPIOD_LED5;
 led3 = GPIOD_LED6;
 led4 = GPIOD_LED4;
-//bt1 = "GPIOA_BUTTON";
-//bt1ch = "GPIOA";
+
 presses = 0;
 
+BinarySemaphore my_bsem;
 
 
-chBSemInit(&my_bsem, FALSE);
-
-
-/**
-static THD_WORKING_AREA(waThreadconfig, 128);
-
-
-static THD_FUNCTION(Threadconfig, arg) {
-    (void) arg;
-    chRegSetThreadName("config");
-
-    while(TRUE) {
-       chThdSleepMilliseconds(50);
-    }
-    return 0;
-}
-*/
-
-/**
-    config user interface
-*/
-void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
+void cmd_config(BaseSequentialStream *chp, int argc, char *argv[])
+{
     (void) argc;
     (void) argv;
     int i;
 }
-/**
-void configInit(void)
-{
 
-  chThdCreateStatic(waThreadconfig, sizeof(waThreadconfig), NORMALPRIO, Threadconfig, NULL);
-}
-*/

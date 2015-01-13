@@ -53,50 +53,7 @@ static msg_t Thread1(void *arg)
         }
 
         int i = 0;
-        /**
-        while ((palReadPad(bt1ch, bt1)) && (i < 30000))
-        {
-            i++;
-            if (i < 3000)
-            {
-                if(dir == 1)
-                {
-                    dir = 0;
-                }
-                else if(dir == 0)
-                {
-                    dir = 1;
-                }
-            }
 
-            else if ( i > 5001)
-            {
-                if (updown == 0)
-                {
-                    blinkspeed  = blinkspeed + 30;
-                    if (blinkspeed > blinkmax)
-                        {
-                            blinkspeed = blinkmax;
-                            updown = 1;
-                        }
-                }
-                else if (updown == 1)
-                {
-                    blinkspeed = blinkspeed - 30;
-                    if (blinkspeed < blinkmin)
-                    {
-                        blinkspeed = blinkmin;
-                        updown = 0;
-                    }
-
-                }
-
-            }
-            chThdSleepMilliseconds(1);
-            //chprintf((BaseSequentialStream*)&SDU1, "value of i : %d \r\n", i);
-
-        }
-        */
         palSetPad(GPIOD, leds[ curLed ]);
         chThdSleepMilliseconds(blinkspeed);
         palClearPad(GPIOD, leds[ curLed ]);

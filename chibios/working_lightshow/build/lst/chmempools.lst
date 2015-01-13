@@ -577,28 +577,28 @@
  398              		.file 6 "/usr/src/chibiostest/os/kernel/include/chmempools.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chmempools.c
-     /tmp/ccUa1rmD.s:20     .rodata:0000000000000000 $d
-     /tmp/ccUa1rmD.s:24     .text.chPoolInit:0000000000000000 $t
-     /tmp/ccUa1rmD.s:30     .text.chPoolInit:0000000000000000 chPoolInit
-     /tmp/ccUa1rmD.s:77     .text.chPoolInit:0000000000000034 $d
-     /tmp/ccUa1rmD.s:86     .text.chPoolLoadArray:0000000000000000 $t
-     /tmp/ccUa1rmD.s:92     .text.chPoolLoadArray:0000000000000000 chPoolLoadArray
-     /tmp/ccUa1rmD.s:350    .text.chPoolFree:0000000000000000 chPoolFree
-     /tmp/ccUa1rmD.s:150    .text.chPoolLoadArray:0000000000000044 $d
-     /tmp/ccUa1rmD.s:159    .text.chPoolAllocI:0000000000000000 $t
-     /tmp/ccUa1rmD.s:165    .text.chPoolAllocI:0000000000000000 chPoolAllocI
-     /tmp/ccUa1rmD.s:226    .text.chPoolAllocI:0000000000000050 $d
-     /tmp/ccUa1rmD.s:231    .text.chPoolAlloc:0000000000000000 $t
-     /tmp/ccUa1rmD.s:237    .text.chPoolAlloc:0000000000000000 chPoolAlloc
-     /tmp/ccUa1rmD.s:286    .text.chPoolFreeI:0000000000000000 $t
-     /tmp/ccUa1rmD.s:292    .text.chPoolFreeI:0000000000000000 chPoolFreeI
-     /tmp/ccUa1rmD.s:339    .text.chPoolFreeI:0000000000000038 $d
-     /tmp/ccUa1rmD.s:344    .text.chPoolFree:0000000000000000 $t
+     /tmp/cc5xyS99.s:20     .rodata:0000000000000000 $d
+     /tmp/cc5xyS99.s:24     .text.chPoolInit:0000000000000000 $t
+     /tmp/cc5xyS99.s:30     .text.chPoolInit:0000000000000000 chPoolInit
+     /tmp/cc5xyS99.s:77     .text.chPoolInit:0000000000000034 $d
+     /tmp/cc5xyS99.s:86     .text.chPoolLoadArray:0000000000000000 $t
+     /tmp/cc5xyS99.s:92     .text.chPoolLoadArray:0000000000000000 chPoolLoadArray
+     /tmp/cc5xyS99.s:350    .text.chPoolFree:0000000000000000 chPoolFree
+     /tmp/cc5xyS99.s:150    .text.chPoolLoadArray:0000000000000044 $d
+     /tmp/cc5xyS99.s:159    .text.chPoolAllocI:0000000000000000 $t
+     /tmp/cc5xyS99.s:165    .text.chPoolAllocI:0000000000000000 chPoolAllocI
+     /tmp/cc5xyS99.s:226    .text.chPoolAllocI:0000000000000050 $d
+     /tmp/cc5xyS99.s:231    .text.chPoolAlloc:0000000000000000 $t
+     /tmp/cc5xyS99.s:237    .text.chPoolAlloc:0000000000000000 chPoolAlloc
+     /tmp/cc5xyS99.s:286    .text.chPoolFreeI:0000000000000000 $t
+     /tmp/cc5xyS99.s:292    .text.chPoolFreeI:0000000000000000 chPoolFreeI
+     /tmp/cc5xyS99.s:339    .text.chPoolFreeI:0000000000000038 $d
+     /tmp/cc5xyS99.s:344    .text.chPoolFree:0000000000000000 $t
                      .debug_frame:0000000000000010 $d
-     /tmp/ccUa1rmD.s:81     .text.chPoolInit:0000000000000038 $t
-     /tmp/ccUa1rmD.s:154    .text.chPoolLoadArray:0000000000000048 $t
-     /tmp/ccUa1rmD.s:230    .text.chPoolAllocI:0000000000000054 $t
-     /tmp/ccUa1rmD.s:343    .text.chPoolFreeI:000000000000003c $t
+     /tmp/cc5xyS99.s:81     .text.chPoolInit:0000000000000038 $t
+     /tmp/cc5xyS99.s:154    .text.chPoolLoadArray:0000000000000048 $t
+     /tmp/cc5xyS99.s:230    .text.chPoolAllocI:0000000000000054 $t
+     /tmp/cc5xyS99.s:343    .text.chPoolFreeI:000000000000003c $t
 
 UNDEFINED SYMBOLS
 chDbgPanic

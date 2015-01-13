@@ -31,13 +31,8 @@
 #include "usbcfg.h"
 
 #include "menu.h"
-//#include "config.h"
-
-
-
-
-
-
+#include "config.h"
+#include <chsem.h>
 
 
 
@@ -57,8 +52,7 @@
 int main(void)
 {
 
-//    char msg[]="sos sos sos";
-
+//
     /*
      * Shell thread
      */
@@ -89,6 +83,8 @@ int main(void)
     chThdSleepMilliseconds(2000);
     usbStart(serusbcfg.usbp, &usbcfg);
     usbConnectBus(serusbcfg.usbp);
+
+    chBSemInit(&my_bsem, FALSE); //Init semaphore
 
     startBlinker();
     startButton();

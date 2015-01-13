@@ -78,7 +78,8 @@ build/obj/main.o: main.c /usr/include/newlib/stdio.h \
  /usr/src/chibiostest/os/hal/include/mmc_spi.h \
  /usr/src/chibiostest/os/hal/include/serial_usb.h myMisc.h buttonpush.h \
  /usr/src/chibiostest/os/various/chprintf.h usbcfg.h menu.h \
- /usr/src/chibiostest/os/various/shell.h
+ /usr/src/chibiostest/os/various/shell.h config.h \
+ /usr/src/chibiostest/os/kernel/include/chsem.h
 
 /usr/include/newlib/stdio.h:
 
@@ -277,3 +278,7 @@ usbcfg.h:
 menu.h:
 
 /usr/src/chibiostest/os/various/shell.h:
+
+config.h:
+
+/usr/src/chibiostest/os/kernel/include/chsem.h:

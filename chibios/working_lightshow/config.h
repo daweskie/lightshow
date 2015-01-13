@@ -32,13 +32,6 @@ extern char *bt1ch;
 extern int presses;
 extern BinarySemaphore my_bsem;
 
-/**
-int blinkspeed = 50;
-int blinkmin = 30;
-int blinkmax = 300;
-int dir = 0;
-*/
-
 
 void configInit(void);
 

@@ -67,21 +67,18 @@ static msg_t Thread2(void *arg)
                 }
 
             }
-       //chprintf((BaseSequentialStream*)&SDU1, "value of i : %d \r\n", btcnt);
 
         }
-        if((btcnt > 10) && (btcnt < 40))
+        if((btcnt > 3) && (btcnt < 40))
         {
-          presses = 1;
+            presses = 1;
         }
-        chSysLock();
-    if (presses == 1)
-       chBSemWait(&my_bsem);
-    chSysUnlock();
+        if (presses == 1)
+            chBSemWait(&my_bsem);
     }
     return 0;
 }
 void startButton(void)
 {
-chThdCreateStatic(waThread2, sizeof(waThread2), NORMALPRIO, Thread2, NULL);
+    chThdCreateStatic(waThread2, sizeof(waThread2), NORMALPRIO, Thread2, NULL);
 }

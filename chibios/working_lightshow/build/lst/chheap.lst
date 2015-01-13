@@ -865,29 +865,29 @@
  596              		.file 11 "/usr/src/chibiostest/os/kernel/include/chheap.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chheap.c
-     /tmp/ccjWlMjC.s:20     .bss.default_heap:0000000000000000 $d
-     /tmp/ccjWlMjC.s:23     .bss.default_heap:0000000000000000 default_heap
-     /tmp/ccjWlMjC.s:26     .text._heap_init:0000000000000000 $t
-     /tmp/ccjWlMjC.s:32     .text._heap_init:0000000000000000 _heap_init
-     /tmp/ccjWlMjC.s:63     .text._heap_init:000000000000001c $d
-     /tmp/ccjWlMjC.s:70     .rodata:0000000000000000 $d
-     /tmp/ccjWlMjC.s:74     .text.chHeapInit:0000000000000000 $t
-     /tmp/ccjWlMjC.s:80     .text.chHeapInit:0000000000000000 chHeapInit
-     /tmp/ccjWlMjC.s:144    .text.chHeapInit:000000000000005c $d
-     /tmp/ccjWlMjC.s:149    .text.chHeapAlloc:0000000000000000 $t
-     /tmp/ccjWlMjC.s:155    .text.chHeapAlloc:0000000000000000 chHeapAlloc
-     /tmp/ccjWlMjC.s:311    .text.chHeapAlloc:00000000000000e0 $d
-     /tmp/ccjWlMjC.s:323    .text.chHeapFree:0000000000000000 $t
-     /tmp/ccjWlMjC.s:329    .text.chHeapFree:0000000000000000 chHeapFree
-     /tmp/ccjWlMjC.s:491    .text.chHeapFree:00000000000000f4 $d
-     /tmp/ccjWlMjC.s:497    .text.chHeapStatus:0000000000000000 $t
-     /tmp/ccjWlMjC.s:503    .text.chHeapStatus:0000000000000000 chHeapStatus
-     /tmp/ccjWlMjC.s:581    .text.chHeapStatus:0000000000000068 $d
+     /tmp/cctUI253.s:20     .bss.default_heap:0000000000000000 $d
+     /tmp/cctUI253.s:23     .bss.default_heap:0000000000000000 default_heap
+     /tmp/cctUI253.s:26     .text._heap_init:0000000000000000 $t
+     /tmp/cctUI253.s:32     .text._heap_init:0000000000000000 _heap_init
+     /tmp/cctUI253.s:63     .text._heap_init:000000000000001c $d
+     /tmp/cctUI253.s:70     .rodata:0000000000000000 $d
+     /tmp/cctUI253.s:74     .text.chHeapInit:0000000000000000 $t
+     /tmp/cctUI253.s:80     .text.chHeapInit:0000000000000000 chHeapInit
+     /tmp/cctUI253.s:144    .text.chHeapInit:000000000000005c $d
+     /tmp/cctUI253.s:149    .text.chHeapAlloc:0000000000000000 $t
+     /tmp/cctUI253.s:155    .text.chHeapAlloc:0000000000000000 chHeapAlloc
+     /tmp/cctUI253.s:311    .text.chHeapAlloc:00000000000000e0 $d
+     /tmp/cctUI253.s:323    .text.chHeapFree:0000000000000000 $t
+     /tmp/cctUI253.s:329    .text.chHeapFree:0000000000000000 chHeapFree
+     /tmp/cctUI253.s:491    .text.chHeapFree:00000000000000f4 $d
+     /tmp/cctUI253.s:497    .text.chHeapStatus:0000000000000000 $t
+     /tmp/cctUI253.s:503    .text.chHeapStatus:0000000000000000 chHeapStatus
+     /tmp/cctUI253.s:581    .text.chHeapStatus:0000000000000068 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccjWlMjC.s:69     .text._heap_init:0000000000000028 $t
-     /tmp/ccjWlMjC.s:315    .text.chHeapAlloc:00000000000000e4 $t
-     /tmp/ccjWlMjC.s:496    .text.chHeapFree:00000000000000fc $t
-     /tmp/ccjWlMjC.s:585    .text.chHeapStatus:000000000000006c $t
+     /tmp/cctUI253.s:69     .text._heap_init:0000000000000028 $t
+     /tmp/cctUI253.s:315    .text.chHeapAlloc:00000000000000e4 $t
+     /tmp/cctUI253.s:496    .text.chHeapFree:00000000000000fc $t
+     /tmp/cctUI253.s:585    .text.chHeapStatus:000000000000006c $t
 
 UNDEFINED SYMBOLS
 chMtxInit

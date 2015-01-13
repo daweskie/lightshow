@@ -25,26 +25,11 @@
 #include "config.h"
 
 
-
-/**
-static THD_WORKING_AREA(waThreadmenu, 128);
-
-
-static THD_FUNCTION(Threadmenu, arg) {
-    (void) arg;
-    chRegSetThreadName("menu");
-
-    while(TRUE) {
-        chThdSleepMilliseconds(50);
-    }
-    return 0;
-}
-*/
-
 /**
     menu user interface
 */
-void cmd_menu(BaseSequentialStream *chp, int argc, char *argv[]) {
+void cmd_menu(BaseSequentialStream *chp, int argc, char *argv[])
+{
     (void) argc;
     (void) argv;
     int i;
@@ -92,31 +77,6 @@ void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[])
     while (tp != NULL);
 }
 
-void cmd_toggle(BaseSequentialStream *chp, int argc, char *argv[])
-{
-    (void)argv;
-    if (argc != 1)
-    {
-        chprintf(chp, "Usage: toggle #led\r\n");
-        return;
-    }
-    if(argv[0][0]=='1')
-    {
-        palTogglePad(GPIOD, GPIOD_LED3);
-    }
-    else if(argv[0][0]=='2')
-    {
-        palTogglePad(GPIOD, GPIOD_LED4);
-    }
-    else if(argv[0][0]=='3')
-    {
-        palTogglePad(GPIOD, GPIOD_LED5);
-    }
-    else if(argv[0][0]=='4')
-    {
-        palTogglePad(GPIOD, GPIOD_LED6);
-    }
-}
 
 void cmd_blinkspeed(BaseSequentialStream *chp, int argc, char *argv[])
 {
@@ -216,11 +176,11 @@ void cmd_way(BaseSequentialStream *chp, int argc, char *argv[])
     {
         if (dir == 1)
         {
-         chprintf(chp, "The direction is clockwise.\r\n");
+            chprintf(chp, "The direction is clockwise.\r\n");
         }
         else if (dir == 0)
         {
-        chprintf(chp, "The direction is counter-clockwise.\r\n");
+            chprintf(chp, "The direction is counter-clockwise.\r\n");
         }
 
         return;
@@ -248,10 +208,4 @@ void cmd_way_ch(BaseSequentialStream *chp, int argc, char *argv[])
     dir = speed;
 }
 
-/**
-void menuInit(void)
-{
 
-  chThdCreateStatic(waThreadmenu, sizeof(waThreadmenu), NORMALPRIO, Threadmenu, NULL);
-}
-*/

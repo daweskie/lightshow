@@ -697,28 +697,28 @@
  445              		.file 10 "/usr/src/chibiostest/os/kernel/include/chmtx.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chcore_v7m.c
-     /tmp/ccDMGpfB.s:20     .text.SysTickVector:0000000000000000 $t
-     /tmp/ccDMGpfB.s:26     .text.SysTickVector:0000000000000000 SysTickVector
-     /tmp/ccDMGpfB.s:183    .text._port_irq_epilogue:0000000000000000 _port_irq_epilogue
-     /tmp/ccDMGpfB.s:68     .text.SVCallVector:0000000000000000 $t
-     /tmp/ccDMGpfB.s:74     .text.SVCallVector:0000000000000000 SVCallVector
-     /tmp/ccDMGpfB.s:125    .text.SVCallVector:0000000000000030 $d
-     /tmp/ccDMGpfB.s:130    .text._port_init:0000000000000000 $t
-     /tmp/ccDMGpfB.s:136    .text._port_init:0000000000000000 _port_init
-     /tmp/ccDMGpfB.s:171    .text._port_init:000000000000002c $d
-     /tmp/ccDMGpfB.s:177    .text._port_irq_epilogue:0000000000000000 $t
-     /tmp/ccDMGpfB.s:314    .text._port_irq_epilogue:00000000000000a4 $d
-     /tmp/ccDMGpfB.s:329    .text._port_switch_from_isr:0000000000000000 _port_switch_from_isr
-     /tmp/ccDMGpfB.s:344    .text._port_switch_from_isr:000000000000000c _port_exit_from_isr
-     /tmp/ccDMGpfB.s:323    .text._port_switch_from_isr:0000000000000000 $t
-     /tmp/ccDMGpfB.s:356    .text._port_switch:0000000000000000 $t
-     /tmp/ccDMGpfB.s:362    .text._port_switch:0000000000000000 _port_switch
-     /tmp/ccDMGpfB.s:398    .text._port_thread_start:0000000000000000 $t
-     /tmp/ccDMGpfB.s:404    .text._port_thread_start:0000000000000000 _port_thread_start
+     /tmp/ccSTY1L5.s:20     .text.SysTickVector:0000000000000000 $t
+     /tmp/ccSTY1L5.s:26     .text.SysTickVector:0000000000000000 SysTickVector
+     /tmp/ccSTY1L5.s:183    .text._port_irq_epilogue:0000000000000000 _port_irq_epilogue
+     /tmp/ccSTY1L5.s:68     .text.SVCallVector:0000000000000000 $t
+     /tmp/ccSTY1L5.s:74     .text.SVCallVector:0000000000000000 SVCallVector
+     /tmp/ccSTY1L5.s:125    .text.SVCallVector:0000000000000030 $d
+     /tmp/ccSTY1L5.s:130    .text._port_init:0000000000000000 $t
+     /tmp/ccSTY1L5.s:136    .text._port_init:0000000000000000 _port_init
+     /tmp/ccSTY1L5.s:171    .text._port_init:000000000000002c $d
+     /tmp/ccSTY1L5.s:177    .text._port_irq_epilogue:0000000000000000 $t
+     /tmp/ccSTY1L5.s:314    .text._port_irq_epilogue:00000000000000a4 $d
+     /tmp/ccSTY1L5.s:329    .text._port_switch_from_isr:0000000000000000 _port_switch_from_isr
+     /tmp/ccSTY1L5.s:344    .text._port_switch_from_isr:000000000000000c _port_exit_from_isr
+     /tmp/ccSTY1L5.s:323    .text._port_switch_from_isr:0000000000000000 $t
+     /tmp/ccSTY1L5.s:356    .text._port_switch:0000000000000000 $t
+     /tmp/ccSTY1L5.s:362    .text._port_switch:0000000000000000 _port_switch
+     /tmp/ccSTY1L5.s:398    .text._port_thread_start:0000000000000000 $t
+     /tmp/ccSTY1L5.s:404    .text._port_thread_start:0000000000000000 _port_thread_start
                      .debug_frame:0000000000000010 $d
-     /tmp/ccDMGpfB.s:129    .text.SVCallVector:0000000000000034 $t
-     /tmp/ccDMGpfB.s:176    .text._port_init:0000000000000034 $t
-     /tmp/ccDMGpfB.s:322    .text._port_irq_epilogue:00000000000000b8 $t
+     /tmp/ccSTY1L5.s:129    .text.SVCallVector:0000000000000034 $t
+     /tmp/ccSTY1L5.s:176    .text._port_init:0000000000000034 $t
+     /tmp/ccSTY1L5.s:322    .text._port_irq_epilogue:00000000000000b8 $t
 
 UNDEFINED SYMBOLS
 dbg_check_enter_isr

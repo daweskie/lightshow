@@ -572,13 +572,13 @@
  379              		.file 6 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 pal_lld.c
-     /tmp/ccBfEqgU.s:20     .text.initgpio:0000000000000000 $t
-     /tmp/ccBfEqgU.s:25     .text.initgpio:0000000000000000 initgpio
-     /tmp/ccBfEqgU.s:80     .text._pal_lld_init:0000000000000000 $t
-     /tmp/ccBfEqgU.s:86     .text._pal_lld_init:0000000000000000 _pal_lld_init
-     /tmp/ccBfEqgU.s:172    .text._pal_lld_init:0000000000000098 $d
-     /tmp/ccBfEqgU.s:186    .text._pal_lld_setgroupmode:0000000000000000 $t
-     /tmp/ccBfEqgU.s:192    .text._pal_lld_setgroupmode:0000000000000000 _pal_lld_setgroupmode
+     /tmp/cchOa9kv.s:20     .text.initgpio:0000000000000000 $t
+     /tmp/cchOa9kv.s:25     .text.initgpio:0000000000000000 initgpio
+     /tmp/cchOa9kv.s:80     .text._pal_lld_init:0000000000000000 $t
+     /tmp/cchOa9kv.s:86     .text._pal_lld_init:0000000000000000 _pal_lld_init
+     /tmp/cchOa9kv.s:172    .text._pal_lld_init:0000000000000098 $d
+     /tmp/cchOa9kv.s:186    .text._pal_lld_setgroupmode:0000000000000000 $t
+     /tmp/cchOa9kv.s:192    .text._pal_lld_setgroupmode:0000000000000000 _pal_lld_setgroupmode
                      .debug_frame:0000000000000010 $d
 
 NO UNDEFINED SYMBOLS

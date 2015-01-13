@@ -19,9 +19,6 @@
 /* Virtual serial port over USB.*/
 static SerialUSBDriver SDU1;
 
-
-
-
 void menuInit(void);
 
 void cmd_menu(BaseSequentialStream *chp, int argc, char *argv[]);
@@ -29,7 +26,6 @@ void cmd_menu(BaseSequentialStream *chp, int argc, char *argv[]);
 void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]);
 
 void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]);
-void cmd_toggle(BaseSequentialStream *chp, int argc, char *argv[]);
 void cmd_blinkspeed(BaseSequentialStream *chp, int argc, char *argv[]);
 void cmd_way(BaseSequentialStream *chp, int argc, char *argv[]);
 void cmd_blinkspeed_min(BaseSequentialStream *chp, int argc, char *argv[]);
@@ -44,8 +40,6 @@ static const ShellCommand commands[] =
 
     {"mem", cmd_mem},
     {"threads", cmd_threads},
-    {"toggle", cmd_toggle},
-    {"t", cmd_toggle},
     {"blinkspeed", cmd_blinkspeed},
     {"bs", cmd_blinkspeed},
     {"dir", cmd_way},

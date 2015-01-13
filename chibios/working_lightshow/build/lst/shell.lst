@@ -387,8 +387,8 @@
  265 016c 202D2000 		.ascii	" - \000"
  266              		.align	2
  267              	.LC20:
- 268 0170 32313A33 		.ascii	"21:39:43\000"
- 268      393A3433 
+ 268 0170 32333A32 		.ascii	"23:22:52\000"
+ 268      323A3532 
  268      00
  269              		.section	.text.cmd_info,"ax",%progbits
  270              		.align	2
@@ -1457,50 +1457,50 @@
  1104              		.file 15 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 shell.c
-     /tmp/ccFMvnhe.s:24     .bss.shell_terminated:0000000000000000 shell_terminated
-     /tmp/ccFMvnhe.s:21     .bss.shell_terminated:0000000000000000 $d
-     /tmp/ccFMvnhe.s:27     .text._strtok:0000000000000000 $t
-     /tmp/ccFMvnhe.s:32     .text._strtok:0000000000000000 _strtok
-     /tmp/ccFMvnhe.s:119    .rodata:0000000000000000 $d
-     /tmp/ccFMvnhe.s:123    .text.usage:0000000000000000 $t
-     /tmp/ccFMvnhe.s:128    .text.usage:0000000000000000 usage
-     /tmp/ccFMvnhe.s:153    .text.usage:0000000000000018 $d
-     /tmp/ccFMvnhe.s:162    .text.list_commands:0000000000000000 $t
-     /tmp/ccFMvnhe.s:167    .text.list_commands:0000000000000000 list_commands
-     /tmp/ccFMvnhe.s:207    .text.list_commands:000000000000002c $d
-     /tmp/ccFMvnhe.s:270    .text.cmd_info:0000000000000000 $t
-     /tmp/ccFMvnhe.s:275    .text.cmd_info:0000000000000000 cmd_info
-     /tmp/ccFMvnhe.s:351    .text.cmd_info:0000000000000078 $d
-     /tmp/ccFMvnhe.s:381    .text.cmd_systime:0000000000000000 $t
-     /tmp/ccFMvnhe.s:386    .text.cmd_systime:0000000000000000 cmd_systime
-     /tmp/ccFMvnhe.s:426    .text.cmd_systime:0000000000000030 $d
-     /tmp/ccFMvnhe.s:433    .data.local_commands:0000000000000000 $d
-     /tmp/ccFMvnhe.s:436    .data.local_commands:0000000000000000 local_commands
-     /tmp/ccFMvnhe.s:444    .text.cmdexec:0000000000000000 $t
-     /tmp/ccFMvnhe.s:449    .text.cmdexec:0000000000000000 cmdexec
-     /tmp/ccFMvnhe.s:546    .text.shell_thread:0000000000000000 $t
-     /tmp/ccFMvnhe.s:551    .text.shell_thread:0000000000000000 shell_thread
-     /tmp/ccFMvnhe.s:937    .text.shellGetLine:0000000000000000 shellGetLine
-     /tmp/ccFMvnhe.s:796    .text.shell_thread:0000000000000184 $d
-     /tmp/ccFMvnhe.s:815    .text.shellInit:0000000000000000 $t
-     /tmp/ccFMvnhe.s:821    .text.shellInit:0000000000000000 shellInit
-     /tmp/ccFMvnhe.s:837    .text.shellInit:0000000000000008 $d
-     /tmp/ccFMvnhe.s:842    .text.shellCreate:0000000000000000 $t
-     /tmp/ccFMvnhe.s:848    .text.shellCreate:0000000000000000 shellCreate
-     /tmp/ccFMvnhe.s:879    .text.shellCreate:0000000000000024 $d
-     /tmp/ccFMvnhe.s:884    .text.shellCreateStatic:0000000000000000 $t
-     /tmp/ccFMvnhe.s:890    .text.shellCreateStatic:0000000000000000 shellCreateStatic
-     /tmp/ccFMvnhe.s:922    .text.shellCreateStatic:0000000000000028 $d
-     /tmp/ccFMvnhe.s:931    .text.shellGetLine:0000000000000000 $t
-     /tmp/ccFMvnhe.s:1084   .text.shellGetLine:00000000000000e0 $d
+     /tmp/ccUFhSb1.s:24     .bss.shell_terminated:0000000000000000 shell_terminated
+     /tmp/ccUFhSb1.s:21     .bss.shell_terminated:0000000000000000 $d
+     /tmp/ccUFhSb1.s:27     .text._strtok:0000000000000000 $t
+     /tmp/ccUFhSb1.s:32     .text._strtok:0000000000000000 _strtok
+     /tmp/ccUFhSb1.s:119    .rodata:0000000000000000 $d
+     /tmp/ccUFhSb1.s:123    .text.usage:0000000000000000 $t
+     /tmp/ccUFhSb1.s:128    .text.usage:0000000000000000 usage
+     /tmp/ccUFhSb1.s:153    .text.usage:0000000000000018 $d
+     /tmp/ccUFhSb1.s:162    .text.list_commands:0000000000000000 $t
+     /tmp/ccUFhSb1.s:167    .text.list_commands:0000000000000000 list_commands
+     /tmp/ccUFhSb1.s:207    .text.list_commands:000000000000002c $d
+     /tmp/ccUFhSb1.s:270    .text.cmd_info:0000000000000000 $t
+     /tmp/ccUFhSb1.s:275    .text.cmd_info:0000000000000000 cmd_info
+     /tmp/ccUFhSb1.s:351    .text.cmd_info:0000000000000078 $d
+     /tmp/ccUFhSb1.s:381    .text.cmd_systime:0000000000000000 $t
+     /tmp/ccUFhSb1.s:386    .text.cmd_systime:0000000000000000 cmd_systime
+     /tmp/ccUFhSb1.s:426    .text.cmd_systime:0000000000000030 $d
+     /tmp/ccUFhSb1.s:433    .data.local_commands:0000000000000000 $d
+     /tmp/ccUFhSb1.s:436    .data.local_commands:0000000000000000 local_commands
+     /tmp/ccUFhSb1.s:444    .text.cmdexec:0000000000000000 $t
+     /tmp/ccUFhSb1.s:449    .text.cmdexec:0000000000000000 cmdexec
+     /tmp/ccUFhSb1.s:546    .text.shell_thread:0000000000000000 $t
+     /tmp/ccUFhSb1.s:551    .text.shell_thread:0000000000000000 shell_thread
+     /tmp/ccUFhSb1.s:937    .text.shellGetLine:0000000000000000 shellGetLine
+     /tmp/ccUFhSb1.s:796    .text.shell_thread:0000000000000184 $d
+     /tmp/ccUFhSb1.s:815    .text.shellInit:0000000000000000 $t
+     /tmp/ccUFhSb1.s:821    .text.shellInit:0000000000000000 shellInit
+     /tmp/ccUFhSb1.s:837    .text.shellInit:0000000000000008 $d
+     /tmp/ccUFhSb1.s:842    .text.shellCreate:0000000000000000 $t
+     /tmp/ccUFhSb1.s:848    .text.shellCreate:0000000000000000 shellCreate
+     /tmp/ccUFhSb1.s:879    .text.shellCreate:0000000000000024 $d
+     /tmp/ccUFhSb1.s:884    .text.shellCreateStatic:0000000000000000 $t
+     /tmp/ccUFhSb1.s:890    .text.shellCreateStatic:0000000000000000 shellCreateStatic
+     /tmp/ccUFhSb1.s:922    .text.shellCreateStatic:0000000000000028 $d
+     /tmp/ccUFhSb1.s:931    .text.shellGetLine:0000000000000000 $t
+     /tmp/ccUFhSb1.s:1084   .text.shellGetLine:00000000000000e0 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccFMvnhe.s:157    .text.usage:000000000000001c $t
-     /tmp/ccFMvnhe.s:373    .text.cmd_info:00000000000000c4 $t
-     /tmp/ccFMvnhe.s:432    .text.cmd_systime:000000000000003c $t
-     /tmp/ccFMvnhe.s:841    .text.shellInit:000000000000000c $t
-     /tmp/ccFMvnhe.s:883    .text.shellCreate:0000000000000028 $t
-     /tmp/ccFMvnhe.s:926    .text.shellCreateStatic:000000000000002c $t
-     /tmp/ccFMvnhe.s:1089   .text.shellGetLine:00000000000000e8 $t
+     /tmp/ccUFhSb1.s:157    .text.usage:000000000000001c $t
+     /tmp/ccUFhSb1.s:373    .text.cmd_info:00000000000000c4 $t
+     /tmp/ccUFhSb1.s:432    .text.cmd_systime:000000000000003c $t
+     /tmp/ccUFhSb1.s:841    .text.shellInit:000000000000000c $t
+     /tmp/ccUFhSb1.s:883    .text.shellCreate:0000000000000028 $t
+     /tmp/ccUFhSb1.s:926    .text.shellCreateStatic:000000000000002c $t
+     /tmp/ccUFhSb1.s:1089   .text.shellGetLine:00000000000000e8 $t
 
 UNDEFINED SYMBOLS
 strspn

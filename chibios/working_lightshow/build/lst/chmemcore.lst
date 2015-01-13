@@ -343,24 +343,24 @@
  226              		.file 4 "/usr/include/newlib/stdint.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chmemcore.c
-     /tmp/ccXG6qMy.s:20     .bss.nextmem:0000000000000000 $d
-     /tmp/ccXG6qMy.s:23     .bss.nextmem:0000000000000000 nextmem
-     /tmp/ccXG6qMy.s:26     .bss.endmem:0000000000000000 $d
-     /tmp/ccXG6qMy.s:29     .bss.endmem:0000000000000000 endmem
-     /tmp/ccXG6qMy.s:32     .text._core_init:0000000000000000 $t
-     /tmp/ccXG6qMy.s:38     .text._core_init:0000000000000000 _core_init
-     /tmp/ccXG6qMy.s:64     .text._core_init:000000000000001c $d
-     /tmp/ccXG6qMy.s:72     .text.chCoreAlloc:0000000000000000 $t
-     /tmp/ccXG6qMy.s:78     .text.chCoreAlloc:0000000000000000 chCoreAlloc
-     /tmp/ccXG6qMy.s:129    .text.chCoreAllocI:0000000000000000 chCoreAllocI
-     /tmp/ccXG6qMy.s:123    .text.chCoreAllocI:0000000000000000 $t
-     /tmp/ccXG6qMy.s:185    .text.chCoreAllocI:0000000000000048 $d
-     /tmp/ccXG6qMy.s:191    .text.chCoreStatus:0000000000000000 $t
-     /tmp/ccXG6qMy.s:197    .text.chCoreStatus:0000000000000000 chCoreStatus
-     /tmp/ccXG6qMy.s:217    .text.chCoreStatus:0000000000000010 $d
+     /tmp/ccXAwql3.s:20     .bss.nextmem:0000000000000000 $d
+     /tmp/ccXAwql3.s:23     .bss.nextmem:0000000000000000 nextmem
+     /tmp/ccXAwql3.s:26     .bss.endmem:0000000000000000 $d
+     /tmp/ccXAwql3.s:29     .bss.endmem:0000000000000000 endmem
+     /tmp/ccXAwql3.s:32     .text._core_init:0000000000000000 $t
+     /tmp/ccXAwql3.s:38     .text._core_init:0000000000000000 _core_init
+     /tmp/ccXAwql3.s:64     .text._core_init:000000000000001c $d
+     /tmp/ccXAwql3.s:72     .text.chCoreAlloc:0000000000000000 $t
+     /tmp/ccXAwql3.s:78     .text.chCoreAlloc:0000000000000000 chCoreAlloc
+     /tmp/ccXAwql3.s:129    .text.chCoreAllocI:0000000000000000 chCoreAllocI
+     /tmp/ccXAwql3.s:123    .text.chCoreAllocI:0000000000000000 $t
+     /tmp/ccXAwql3.s:185    .text.chCoreAllocI:0000000000000048 $d
+     /tmp/ccXAwql3.s:191    .text.chCoreStatus:0000000000000000 $t
+     /tmp/ccXAwql3.s:197    .text.chCoreStatus:0000000000000000 chCoreStatus
+     /tmp/ccXAwql3.s:217    .text.chCoreStatus:0000000000000010 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccXG6qMy.s:71     .text._core_init:000000000000002c $t
-     /tmp/ccXG6qMy.s:222    .text.chCoreStatus:0000000000000018 $t
+     /tmp/ccXAwql3.s:71     .text._core_init:000000000000002c $t
+     /tmp/ccXAwql3.s:222    .text.chCoreStatus:0000000000000018 $t
 
 UNDEFINED SYMBOLS
 __heap_base__

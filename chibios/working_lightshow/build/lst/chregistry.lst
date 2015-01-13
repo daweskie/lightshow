@@ -357,18 +357,18 @@
  206              		.file 11 "/usr/src/chibiostest/os/kernel/include/chregistry.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chregistry.c
-     /tmp/cc00SduX.s:24     .rodata.ch_debug:0000000000000000 ch_debug
-     /tmp/cc00SduX.s:21     .rodata.ch_debug:0000000000000000 $d
-     /tmp/cc00SduX.s:44     .text.chRegFirstThread:0000000000000000 $t
-     /tmp/cc00SduX.s:50     .text.chRegFirstThread:0000000000000000 chRegFirstThread
-     /tmp/cc00SduX.s:101    .text.chRegFirstThread:0000000000000038 $d
-     /tmp/cc00SduX.s:106    .rodata:0000000000000000 $d
-     /tmp/cc00SduX.s:110    .text.chRegNextThread:0000000000000000 $t
-     /tmp/cc00SduX.s:116    .text.chRegNextThread:0000000000000000 chRegNextThread
-     /tmp/cc00SduX.s:190    .text.chRegNextThread:0000000000000060 $d
+     /tmp/cc4eGavC.s:24     .rodata.ch_debug:0000000000000000 ch_debug
+     /tmp/cc4eGavC.s:21     .rodata.ch_debug:0000000000000000 $d
+     /tmp/cc4eGavC.s:44     .text.chRegFirstThread:0000000000000000 $t
+     /tmp/cc4eGavC.s:50     .text.chRegFirstThread:0000000000000000 chRegFirstThread
+     /tmp/cc4eGavC.s:101    .text.chRegFirstThread:0000000000000038 $d
+     /tmp/cc4eGavC.s:106    .rodata:0000000000000000 $d
+     /tmp/cc4eGavC.s:110    .text.chRegNextThread:0000000000000000 $t
+     /tmp/cc4eGavC.s:116    .text.chRegNextThread:0000000000000000 chRegNextThread
+     /tmp/cc4eGavC.s:190    .text.chRegNextThread:0000000000000060 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/cc00SduX.s:105    .text.chRegFirstThread:000000000000003c $t
-     /tmp/cc00SduX.s:195    .text.chRegNextThread:0000000000000068 $t
+     /tmp/cc4eGavC.s:105    .text.chRegFirstThread:000000000000003c $t
+     /tmp/cc4eGavC.s:195    .text.chRegNextThread:0000000000000068 $t
 
 UNDEFINED SYMBOLS
 dbg_check_lock

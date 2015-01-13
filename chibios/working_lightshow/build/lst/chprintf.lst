@@ -1054,17 +1054,17 @@
  789              		.file 8 "/usr/src/chibiostest/os/kernel/include/chstreams.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chprintf.c
-     /tmp/cci5HVWm.s:20     .text.long_to_string_with_divisor:0000000000000000 $t
-     /tmp/cci5HVWm.s:25     .text.long_to_string_with_divisor:0000000000000000 long_to_string_with_divisor
-     /tmp/cci5HVWm.s:137    .text.ltoa:0000000000000000 $t
-     /tmp/cci5HVWm.s:142    .text.ltoa:0000000000000000 ltoa
-     /tmp/cci5HVWm.s:172    .rodata:0000000000000000 $d
-     /tmp/cci5HVWm.s:176    .text.chprintf:0000000000000000 $t
-     /tmp/cci5HVWm.s:182    .text.chprintf:0000000000000000 chprintf
-     /tmp/cci5HVWm.s:434    .text.chprintf:000000000000018c $d
-     /tmp/cci5HVWm.s:487    .text.chprintf:0000000000000260 $t
-     /tmp/cci5HVWm.s:777    .text.chprintf:0000000000000414 $d
+     /tmp/ccEOVWT6.s:20     .text.long_to_string_with_divisor:0000000000000000 $t
+     /tmp/ccEOVWT6.s:25     .text.long_to_string_with_divisor:0000000000000000 long_to_string_with_divisor
+     /tmp/ccEOVWT6.s:137    .text.ltoa:0000000000000000 $t
+     /tmp/ccEOVWT6.s:142    .text.ltoa:0000000000000000 ltoa
+     /tmp/ccEOVWT6.s:172    .rodata:0000000000000000 $d
+     /tmp/ccEOVWT6.s:176    .text.chprintf:0000000000000000 $t
+     /tmp/ccEOVWT6.s:182    .text.chprintf:0000000000000000 chprintf
+     /tmp/ccEOVWT6.s:434    .text.chprintf:000000000000018c $d
+     /tmp/ccEOVWT6.s:487    .text.chprintf:0000000000000260 $t
+     /tmp/ccEOVWT6.s:777    .text.chprintf:0000000000000414 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/cci5HVWm.s:781    .text.chprintf:0000000000000418 $t
+     /tmp/ccEOVWT6.s:781    .text.chprintf:0000000000000418 $t
 
 NO UNDEFINED SYMBOLS

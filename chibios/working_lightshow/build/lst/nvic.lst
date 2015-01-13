@@ -295,18 +295,18 @@
  226              		.file 4 "/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 nvic.c
-     /tmp/ccp0ZbuF.s:20     .text.nvicEnableVector:0000000000000000 $t
-     /tmp/ccp0ZbuF.s:26     .text.nvicEnableVector:0000000000000000 nvicEnableVector
-     /tmp/ccp0ZbuF.s:93     .text.nvicEnableVector:0000000000000078 $d
-     /tmp/ccp0ZbuF.s:98     .text.nvicDisableVector:0000000000000000 $t
-     /tmp/ccp0ZbuF.s:104    .text.nvicDisableVector:0000000000000000 nvicDisableVector
-     /tmp/ccp0ZbuF.s:156    .text.nvicDisableVector:0000000000000054 $d
-     /tmp/ccp0ZbuF.s:161    .text.nvicSetSystemHandlerPriority:0000000000000000 $t
-     /tmp/ccp0ZbuF.s:167    .text.nvicSetSystemHandlerPriority:0000000000000000 nvicSetSystemHandlerPriority
-     /tmp/ccp0ZbuF.s:218    .text.nvicSetSystemHandlerPriority:0000000000000048 $d
+     /tmp/ccz9HI76.s:20     .text.nvicEnableVector:0000000000000000 $t
+     /tmp/ccz9HI76.s:26     .text.nvicEnableVector:0000000000000000 nvicEnableVector
+     /tmp/ccz9HI76.s:93     .text.nvicEnableVector:0000000000000078 $d
+     /tmp/ccz9HI76.s:98     .text.nvicDisableVector:0000000000000000 $t
+     /tmp/ccz9HI76.s:104    .text.nvicDisableVector:0000000000000000 nvicDisableVector
+     /tmp/ccz9HI76.s:156    .text.nvicDisableVector:0000000000000054 $d
+     /tmp/ccz9HI76.s:161    .text.nvicSetSystemHandlerPriority:0000000000000000 $t
+     /tmp/ccz9HI76.s:167    .text.nvicSetSystemHandlerPriority:0000000000000000 nvicSetSystemHandlerPriority
+     /tmp/ccz9HI76.s:218    .text.nvicSetSystemHandlerPriority:0000000000000048 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccp0ZbuF.s:97     .text.nvicEnableVector:000000000000007c $t
-     /tmp/ccp0ZbuF.s:160    .text.nvicDisableVector:0000000000000058 $t
-     /tmp/ccp0ZbuF.s:222    .text.nvicSetSystemHandlerPriority:000000000000004c $t
+     /tmp/ccz9HI76.s:97     .text.nvicEnableVector:000000000000007c $t
+     /tmp/ccz9HI76.s:160    .text.nvicDisableVector:0000000000000058 $t
+     /tmp/ccz9HI76.s:222    .text.nvicSetSystemHandlerPriority:000000000000004c $t
 
 NO UNDEFINED SYMBOLS

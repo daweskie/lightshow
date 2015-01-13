@@ -562,18 +562,18 @@
  339              		.file 6 "/usr/src/chibiostest/os/hal/platforms/STM32F4xx/stm32f4xx.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hal_lld.c
-     /tmp/ccVZMqr0.s:20     .text.hal_lld_backup_domain_init:0000000000000000 $t
-     /tmp/ccVZMqr0.s:25     .text.hal_lld_backup_domain_init:0000000000000000 hal_lld_backup_domain_init
-     /tmp/ccVZMqr0.s:78     .text.hal_lld_backup_domain_init:0000000000000050 $d
-     /tmp/ccVZMqr0.s:84     .text.hal_lld_init:0000000000000000 $t
-     /tmp/ccVZMqr0.s:90     .text.hal_lld_init:0000000000000000 hal_lld_init
-     /tmp/ccVZMqr0.s:181    .text.hal_lld_init:0000000000000098 $d
-     /tmp/ccVZMqr0.s:189    .text.stm32_clock_init:0000000000000000 $t
-     /tmp/ccVZMqr0.s:195    .text.stm32_clock_init:0000000000000000 stm32_clock_init
-     /tmp/ccVZMqr0.s:325    .text.stm32_clock_init:00000000000000d4 $d
+     /tmp/ccBDJBGK.s:20     .text.hal_lld_backup_domain_init:0000000000000000 $t
+     /tmp/ccBDJBGK.s:25     .text.hal_lld_backup_domain_init:0000000000000000 hal_lld_backup_domain_init
+     /tmp/ccBDJBGK.s:78     .text.hal_lld_backup_domain_init:0000000000000050 $d
+     /tmp/ccBDJBGK.s:84     .text.hal_lld_init:0000000000000000 $t
+     /tmp/ccBDJBGK.s:90     .text.hal_lld_init:0000000000000000 hal_lld_init
+     /tmp/ccBDJBGK.s:181    .text.hal_lld_init:0000000000000098 $d
+     /tmp/ccBDJBGK.s:189    .text.stm32_clock_init:0000000000000000 $t
+     /tmp/ccBDJBGK.s:195    .text.stm32_clock_init:0000000000000000 stm32_clock_init
+     /tmp/ccBDJBGK.s:325    .text.stm32_clock_init:00000000000000d4 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccVZMqr0.s:83     .text.hal_lld_backup_domain_init:0000000000000058 $t
-     /tmp/ccVZMqr0.s:188    .text.hal_lld_init:00000000000000a8 $t
-     /tmp/ccVZMqr0.s:333    .text.stm32_clock_init:00000000000000e8 $t
+     /tmp/ccBDJBGK.s:83     .text.hal_lld_backup_domain_init:0000000000000058 $t
+     /tmp/ccBDJBGK.s:188    .text.hal_lld_init:00000000000000a8 $t
+     /tmp/ccBDJBGK.s:333    .text.stm32_clock_init:00000000000000e8 $t
 
 NO UNDEFINED SYMBOLS
