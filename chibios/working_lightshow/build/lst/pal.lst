@@ -344,18 +344,18 @@
  216              		.file 6 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 pal.c
-     /tmp/cchHLWbT.s:20     .rodata:0000000000000000 $d
-     /tmp/cchHLWbT.s:24     .text.palReadBus:0000000000000000 $t
-     /tmp/cchHLWbT.s:30     .text.palReadBus:0000000000000000 palReadBus
-     /tmp/cchHLWbT.s:75     .text.palReadBus:0000000000000034 $d
-     /tmp/cchHLWbT.s:84     .text.palWriteBus:0000000000000000 $t
-     /tmp/cchHLWbT.s:90     .text.palWriteBus:0000000000000000 palWriteBus
-     /tmp/cchHLWbT.s:145    .text.palWriteBus:000000000000004c $d
-     /tmp/cchHLWbT.s:154    .text.palSetBusMode:0000000000000000 $t
-     /tmp/cchHLWbT.s:160    .text.palSetBusMode:0000000000000000 palSetBusMode
-     /tmp/cchHLWbT.s:206    .text.palSetBusMode:000000000000003c $d
+     /tmp/ccTArFET.s:20     .rodata:0000000000000000 $d
+     /tmp/ccTArFET.s:24     .text.palReadBus:0000000000000000 $t
+     /tmp/ccTArFET.s:30     .text.palReadBus:0000000000000000 palReadBus
+     /tmp/ccTArFET.s:75     .text.palReadBus:0000000000000034 $d
+     /tmp/ccTArFET.s:84     .text.palWriteBus:0000000000000000 $t
+     /tmp/ccTArFET.s:90     .text.palWriteBus:0000000000000000 palWriteBus
+     /tmp/ccTArFET.s:145    .text.palWriteBus:000000000000004c $d
+     /tmp/ccTArFET.s:154    .text.palSetBusMode:0000000000000000 $t
+     /tmp/ccTArFET.s:160    .text.palSetBusMode:0000000000000000 palSetBusMode
+     /tmp/ccTArFET.s:206    .text.palSetBusMode:000000000000003c $d
                      .debug_frame:0000000000000010 $d
-     /tmp/cchHLWbT.s:79     .text.palReadBus:0000000000000038 $t
+     /tmp/ccTArFET.s:79     .text.palReadBus:0000000000000038 $t
 
 UNDEFINED SYMBOLS
 chDbgPanic

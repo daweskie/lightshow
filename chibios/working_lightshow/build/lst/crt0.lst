@@ -616,17 +616,17 @@
  272              		.file 4 "/usr/src/chibiostest/os/ports/common/ARMCMx/nvic.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 crt0.c
-     /tmp/ccxmq4d5.s:20     .text.__early_init:0000000000000000 $t
-     /tmp/ccxmq4d5.s:26     .text.__early_init:0000000000000000 __early_init
-     /tmp/ccxmq4d5.s:40     .text.__late_init:0000000000000000 $t
-     /tmp/ccxmq4d5.s:46     .text.__late_init:0000000000000000 __late_init
-     /tmp/ccxmq4d5.s:59     .text._default_exit:0000000000000000 $t
-     /tmp/ccxmq4d5.s:65     .text._default_exit:0000000000000000 _default_exit
-     /tmp/ccxmq4d5.s:79     .text.ResetHandler:0000000000000000 $t
-     /tmp/ccxmq4d5.s:85     .text.ResetHandler:0000000000000000 ResetHandler
-     /tmp/ccxmq4d5.s:250    .text.ResetHandler:00000000000000b8 $d
+     /tmp/ccetaFdP.s:20     .text.__early_init:0000000000000000 $t
+     /tmp/ccetaFdP.s:26     .text.__early_init:0000000000000000 __early_init
+     /tmp/ccetaFdP.s:40     .text.__late_init:0000000000000000 $t
+     /tmp/ccetaFdP.s:46     .text.__late_init:0000000000000000 __late_init
+     /tmp/ccetaFdP.s:59     .text._default_exit:0000000000000000 $t
+     /tmp/ccetaFdP.s:65     .text._default_exit:0000000000000000 _default_exit
+     /tmp/ccetaFdP.s:79     .text.ResetHandler:0000000000000000 $t
+     /tmp/ccetaFdP.s:85     .text.ResetHandler:0000000000000000 ResetHandler
+     /tmp/ccetaFdP.s:250    .text.ResetHandler:00000000000000b8 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccxmq4d5.s:268    .text.ResetHandler:00000000000000f4 $t
+     /tmp/ccetaFdP.s:268    .text.ResetHandler:00000000000000f4 $t
 
 UNDEFINED SYMBOLS
 main

@@ -38,17 +38,17 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_ranges 00000a88  00000000  00000000  0002e438  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_line   00006522  00000000  00000000  0002eec0  2**0
+ 10 .debug_line   00006524  00000000  00000000  0002eec0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    000039f2  00000000  00000000  000353e2  2**0
+ 11 .debug_str    000039f2  00000000  00000000  000353e4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .comment      0000002b  00000000  00000000  00038dd4  2**0
+ 12 .comment      0000002b  00000000  00000000  00038dd6  2**0
                   CONTENTS, READONLY
- 13 .ARM.attributes 00000035  00000000  00000000  00038dff  2**0
+ 13 .ARM.attributes 00000035  00000000  00000000  00038e01  2**0
                   CONTENTS, READONLY
- 14 .debug_frame  0000204c  00000000  00000000  00038e34  2**2
+ 14 .debug_frame  0000204c  00000000  00000000  00038e38  2**2
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_loc    000008e0  00000000  00000000  0003ae80  2**0
+ 15 .debug_loc    000008e0  00000000  00000000  0003ae84  2**0
                   CONTENTS, READONLY, DEBUGGING
 SYMBOL TABLE:
 08000000 l    d  startup	00000000 startup
@@ -75,7 +75,7 @@ SYMBOL TABLE:
 08007100 l     O .text	00000008 shell_cfg1
 00000000 l    df *ABS*	00000000 myMisc.c
 20000f08 l     O .bss	000001b8 waThread1
-08000390 l     F .text	00000158 Thread1
+08000390 l     F .text	00000160 Thread1
 00000000 l    df *ABS*	00000000 usbcfg.c
 08007110 l     O .text	00000012 vcom_device_descriptor_data
 08007130 l     O .text	00000008 vcom_device_descriptor
@@ -98,7 +98,7 @@ SYMBOL TABLE:
 20000800 l     O .data	0000003c states.7746
 00000000 l    df *ABS*	00000000 buttonpush.c
 20001108 l     O .bss	000001b8 waThread2
-080009a0 l     F .text	000000d4 Thread2
+080009a0 l     F .text	000000d8 Thread2
 00000000 l    df *ABS*	00000000 crt0.c
 00000000 l    df *ABS*	00000000 chcore.c
 00000000 l    df *ABS*	00000000 chcore_v7m.c

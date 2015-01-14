@@ -659,21 +659,21 @@
  450              		.file 12 "/usr/src/chibiostest/os/kernel/include/chmempools.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chdynamic.c
-     /tmp/ccq7kJIA.s:20     .rodata:0000000000000000 $d
-     /tmp/ccq7kJIA.s:24     .text.chThdAddRef:0000000000000000 $t
-     /tmp/ccq7kJIA.s:30     .text.chThdAddRef:0000000000000000 chThdAddRef
-     /tmp/ccq7kJIA.s:87     .text.chThdAddRef:0000000000000044 $d
-     /tmp/ccq7kJIA.s:96     .text.chThdRelease:0000000000000000 $t
-     /tmp/ccq7kJIA.s:102    .text.chThdRelease:0000000000000000 chThdRelease
-     /tmp/ccq7kJIA.s:214    .text.chThdRelease:00000000000000b0 $d
-     /tmp/ccq7kJIA.s:219    .text.chThdCreateFromHeap:0000000000000000 $t
-     /tmp/ccq7kJIA.s:225    .text.chThdCreateFromHeap:0000000000000000 chThdCreateFromHeap
-     /tmp/ccq7kJIA.s:321    .text.chThdCreateFromMemoryPool:0000000000000000 $t
-     /tmp/ccq7kJIA.s:327    .text.chThdCreateFromMemoryPool:0000000000000000 chThdCreateFromMemoryPool
-     /tmp/ccq7kJIA.s:434    .text.chThdCreateFromMemoryPool:000000000000009c $d
+     /tmp/ccVE7Y2j.s:20     .rodata:0000000000000000 $d
+     /tmp/ccVE7Y2j.s:24     .text.chThdAddRef:0000000000000000 $t
+     /tmp/ccVE7Y2j.s:30     .text.chThdAddRef:0000000000000000 chThdAddRef
+     /tmp/ccVE7Y2j.s:87     .text.chThdAddRef:0000000000000044 $d
+     /tmp/ccVE7Y2j.s:96     .text.chThdRelease:0000000000000000 $t
+     /tmp/ccVE7Y2j.s:102    .text.chThdRelease:0000000000000000 chThdRelease
+     /tmp/ccVE7Y2j.s:214    .text.chThdRelease:00000000000000b0 $d
+     /tmp/ccVE7Y2j.s:219    .text.chThdCreateFromHeap:0000000000000000 $t
+     /tmp/ccVE7Y2j.s:225    .text.chThdCreateFromHeap:0000000000000000 chThdCreateFromHeap
+     /tmp/ccVE7Y2j.s:321    .text.chThdCreateFromMemoryPool:0000000000000000 $t
+     /tmp/ccVE7Y2j.s:327    .text.chThdCreateFromMemoryPool:0000000000000000 chThdCreateFromMemoryPool
+     /tmp/ccVE7Y2j.s:434    .text.chThdCreateFromMemoryPool:000000000000009c $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccq7kJIA.s:91     .text.chThdAddRef:0000000000000048 $t
-     /tmp/ccq7kJIA.s:218    .text.chThdRelease:00000000000000b4 $t
+     /tmp/ccVE7Y2j.s:91     .text.chThdAddRef:0000000000000048 $t
+     /tmp/ccVE7Y2j.s:218    .text.chThdRelease:00000000000000b4 $t
 
 UNDEFINED SYMBOLS
 dbg_check_lock

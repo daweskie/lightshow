@@ -37,7 +37,7 @@ static msg_t Thread1(void *arg)
     int curLed = 0;
     while (TRUE)
     {
-
+        chThdSleepMilliseconds(20);
         if (presses == 1)
         {
             presses = 0;

@@ -354,23 +354,23 @@
  234              		.file 7 "/usr/src/chibiostest/os/ports/common/ARMCMx/CMSIS/include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 tm.c
-     /tmp/ccVY7Zmi.s:20     .bss.measurement_offset:0000000000000000 $d
-     /tmp/ccVY7Zmi.s:23     .bss.measurement_offset:0000000000000000 measurement_offset
-     /tmp/ccVY7Zmi.s:26     .text.tm_start:0000000000000000 $t
-     /tmp/ccVY7Zmi.s:31     .text.tm_start:0000000000000000 tm_start
-     /tmp/ccVY7Zmi.s:54     .text.tm_start:0000000000000010 $d
-     /tmp/ccVY7Zmi.s:59     .text.tm_stop:0000000000000000 $t
-     /tmp/ccVY7Zmi.s:64     .text.tm_stop:0000000000000000 tm_stop
-     /tmp/ccVY7Zmi.s:122    .text.tm_stop:000000000000004c $d
-     /tmp/ccVY7Zmi.s:128    .text.tmInit:0000000000000000 $t
-     /tmp/ccVY7Zmi.s:134    .text.tmInit:0000000000000000 tmInit
-     /tmp/ccVY7Zmi.s:185    .text.tmObjectInit:0000000000000000 tmObjectInit
-     /tmp/ccVY7Zmi.s:174    .text.tmInit:0000000000000030 $d
-     /tmp/ccVY7Zmi.s:179    .text.tmObjectInit:0000000000000000 $t
-     /tmp/ccVY7Zmi.s:222    .text.tmObjectInit:0000000000000028 $d
+     /tmp/ccmjbvxm.s:20     .bss.measurement_offset:0000000000000000 $d
+     /tmp/ccmjbvxm.s:23     .bss.measurement_offset:0000000000000000 measurement_offset
+     /tmp/ccmjbvxm.s:26     .text.tm_start:0000000000000000 $t
+     /tmp/ccmjbvxm.s:31     .text.tm_start:0000000000000000 tm_start
+     /tmp/ccmjbvxm.s:54     .text.tm_start:0000000000000010 $d
+     /tmp/ccmjbvxm.s:59     .text.tm_stop:0000000000000000 $t
+     /tmp/ccmjbvxm.s:64     .text.tm_stop:0000000000000000 tm_stop
+     /tmp/ccmjbvxm.s:122    .text.tm_stop:000000000000004c $d
+     /tmp/ccmjbvxm.s:128    .text.tmInit:0000000000000000 $t
+     /tmp/ccmjbvxm.s:134    .text.tmInit:0000000000000000 tmInit
+     /tmp/ccmjbvxm.s:185    .text.tmObjectInit:0000000000000000 tmObjectInit
+     /tmp/ccmjbvxm.s:174    .text.tmInit:0000000000000030 $d
+     /tmp/ccmjbvxm.s:179    .text.tmObjectInit:0000000000000000 $t
+     /tmp/ccmjbvxm.s:222    .text.tmObjectInit:0000000000000028 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccVY7Zmi.s:58     .text.tm_start:0000000000000014 $t
-     /tmp/ccVY7Zmi.s:127    .text.tm_stop:0000000000000054 $t
-     /tmp/ccVY7Zmi.s:178    .text.tmInit:0000000000000034 $t
+     /tmp/ccmjbvxm.s:58     .text.tm_start:0000000000000014 $t
+     /tmp/ccmjbvxm.s:127    .text.tm_stop:0000000000000054 $t
+     /tmp/ccmjbvxm.s:178    .text.tmInit:0000000000000034 $t
 
 NO UNDEFINED SYMBOLS

@@ -29,7 +29,7 @@ Configurable variables of the program
 */
 
 blinkspeed = blinkspeed_d;
-blinkmin = blinkmax_d;
+blinkmin = blinkmin_d;
 blinkmax = blinkmax_d;
 dir = dir_d;
 led1 = led1_d;

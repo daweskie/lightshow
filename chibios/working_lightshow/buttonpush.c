@@ -37,11 +37,12 @@ static msg_t Thread2(void *arg)
 
     while (TRUE)
     {
+        chThdSleepMilliseconds(50);
         btcnt = 0;
         while (palReadPad(GPIOA, GPIOA_BUTTON))
 
         {
-            chThdSleepMilliseconds(50);
+            chThdSleepMilliseconds(20);
             btcnt++;
 
             if (btcnt >= 40)

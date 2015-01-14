@@ -437,23 +437,23 @@
  288              		.file 11 "/usr/src/chibiostest/os/kernel/include/chregistry.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 chsys.c
-     /tmp/ccXphjc9.s:24     .bss._idle_thread_wa:0000000000000000 _idle_thread_wa
-     /tmp/ccXphjc9.s:21     .bss._idle_thread_wa:0000000000000000 $d
-     /tmp/ccXphjc9.s:27     .rodata:0000000000000000 $d
-     /tmp/ccXphjc9.s:31     .text._idle_thread:0000000000000000 $t
-     /tmp/ccXphjc9.s:37     .text._idle_thread:0000000000000000 _idle_thread
-     /tmp/ccXphjc9.s:59     .text._idle_thread:0000000000000010 $d
-     /tmp/ccXphjc9.s:65     .text.chSysInit:0000000000000000 $t
-     /tmp/ccXphjc9.s:71     .text.chSysInit:0000000000000000 chSysInit
-     /tmp/ccXphjc9.s:141    .text.chSysInit:0000000000000068 $d
-     /tmp/ccXphjc9.s:275    .bss.mainthread.4881:0000000000000000 mainthread.4881
-     /tmp/ccXphjc9.s:151    .text.chSysTimerHandlerI:0000000000000000 $t
-     /tmp/ccXphjc9.s:157    .text.chSysTimerHandlerI:0000000000000000 chSysTimerHandlerI
-     /tmp/ccXphjc9.s:266    .text.chSysTimerHandlerI:000000000000009c $d
-     /tmp/ccXphjc9.s:272    .bss.mainthread.4881:0000000000000000 $d
+     /tmp/ccxyEJa6.s:24     .bss._idle_thread_wa:0000000000000000 _idle_thread_wa
+     /tmp/ccxyEJa6.s:21     .bss._idle_thread_wa:0000000000000000 $d
+     /tmp/ccxyEJa6.s:27     .rodata:0000000000000000 $d
+     /tmp/ccxyEJa6.s:31     .text._idle_thread:0000000000000000 $t
+     /tmp/ccxyEJa6.s:37     .text._idle_thread:0000000000000000 _idle_thread
+     /tmp/ccxyEJa6.s:59     .text._idle_thread:0000000000000010 $d
+     /tmp/ccxyEJa6.s:65     .text.chSysInit:0000000000000000 $t
+     /tmp/ccxyEJa6.s:71     .text.chSysInit:0000000000000000 chSysInit
+     /tmp/ccxyEJa6.s:141    .text.chSysInit:0000000000000068 $d
+     /tmp/ccxyEJa6.s:275    .bss.mainthread.4881:0000000000000000 mainthread.4881
+     /tmp/ccxyEJa6.s:151    .text.chSysTimerHandlerI:0000000000000000 $t
+     /tmp/ccxyEJa6.s:157    .text.chSysTimerHandlerI:0000000000000000 chSysTimerHandlerI
+     /tmp/ccxyEJa6.s:266    .text.chSysTimerHandlerI:000000000000009c $d
+     /tmp/ccxyEJa6.s:272    .bss.mainthread.4881:0000000000000000 $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccXphjc9.s:64     .text._idle_thread:0000000000000018 $t
-     /tmp/ccXphjc9.s:271    .text.chSysTimerHandlerI:00000000000000a4 $t
+     /tmp/ccxyEJa6.s:64     .text._idle_thread:0000000000000018 $t
+     /tmp/ccxyEJa6.s:271    .text.chSysTimerHandlerI:00000000000000a4 $t
 
 UNDEFINED SYMBOLS
 rlist

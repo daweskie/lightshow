@@ -2091,53 +2091,53 @@ OUTPUT(build/ch.elf elf32-littlearm)
  .debug_ranges  0x0000000000000a60       0x10 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-strspn.o)
  .debug_ranges  0x0000000000000a70       0x18 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-strtol.o)
 
-.debug_line     0x0000000000000000     0x6522
+.debug_line     0x0000000000000000     0x6524
  .debug_line    0x0000000000000000      0x2c7 build/obj/main.o
- .debug_line    0x00000000000002c7      0x32d build/obj/myMisc.o
- .debug_line    0x00000000000005f4      0x252 build/obj/usbcfg.o
- .debug_line    0x0000000000000846      0x122 build/obj/board.o
- .debug_line    0x0000000000000968      0x3ae build/obj/menu.o
- .debug_line    0x0000000000000d16      0x1be build/obj/config.o
- .debug_line    0x0000000000000ed4      0x210 build/obj/buttonpush.o
- .debug_line    0x00000000000010e4      0x16e build/obj/crt0.o
- .debug_line    0x0000000000001252       0x72 build/obj/vectors.o
- .debug_line    0x00000000000012c4       0x67 build/obj/chcore.o
- .debug_line    0x000000000000132b      0x207 build/obj/chcore_v7m.o
- .debug_line    0x0000000000001532       0xed build/obj/nvic.o
- .debug_line    0x000000000000161f      0x1af build/obj/chsys.o
- .debug_line    0x00000000000017ce      0x2b9 build/obj/chdebug.o
- .debug_line    0x0000000000001a87      0x1a5 build/obj/chvt.o
- .debug_line    0x0000000000001c2c      0x2e3 build/obj/chschd.o
- .debug_line    0x0000000000001f0f      0x344 build/obj/chthreads.o
- .debug_line    0x0000000000002253      0x21b build/obj/chdynamic.o
- .debug_line    0x000000000000246e      0x1ba build/obj/chregistry.o
- .debug_line    0x0000000000002628      0x3b9 build/obj/chsem.o
- .debug_line    0x00000000000029e1      0x2f9 build/obj/chmtx.o
- .debug_line    0x0000000000002cda      0x34d build/obj/chevents.o
- .debug_line    0x0000000000003027      0x335 build/obj/chqueues.o
- .debug_line    0x000000000000335c      0x123 build/obj/chmemcore.o
- .debug_line    0x000000000000347f      0x25d build/obj/chheap.o
- .debug_line    0x00000000000036dc      0x1d1 build/obj/chmempools.o
- .debug_line    0x00000000000038ad      0x238 build/obj/hal.o
- .debug_line    0x0000000000003ae5      0x287 build/obj/gpt.o
- .debug_line    0x0000000000003d6c      0x42a build/obj/serial_usb.o
- .debug_line    0x0000000000004196      0x1d0 build/obj/tm.o
- .debug_line    0x0000000000004366      0x55c build/obj/usb.o
- .debug_line    0x00000000000048c2      0x1c1 build/obj/hal_lld.o
- .debug_line    0x0000000000004a83      0x257 build/obj/gpt_lld.o
- .debug_line    0x0000000000004cda      0x1a3 build/obj/pal_lld.o
- .debug_line    0x0000000000004e7d      0x7cc build/obj/usb_lld.o
- .debug_line    0x0000000000005649      0x329 build/obj/shell.o
- .debug_line    0x0000000000005972      0x252 build/obj/chprintf.o
- .debug_line    0x0000000000005bc4      0x172 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-atoi.o)
- .debug_line    0x0000000000005d36       0xb8 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-memcpy.o)
- .debug_line    0x0000000000005dee      0x127 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-memset.o)
- .debug_line    0x0000000000005f15       0xe5 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-strcasecmp.o)
- .debug_line    0x0000000000005ffa       0xd6 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-strpbrk.o)
- .debug_line    0x00000000000060d0       0xfc /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-strspn.o)
- .debug_line    0x00000000000061cc      0x1e9 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-strtol.o)
- .debug_line    0x00000000000063b5       0x78 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-ctype_.o)
- .debug_line    0x000000000000642d       0xf5 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-impure.o)
+ .debug_line    0x00000000000002c7      0x32e build/obj/myMisc.o
+ .debug_line    0x00000000000005f5      0x252 build/obj/usbcfg.o
+ .debug_line    0x0000000000000847      0x122 build/obj/board.o
+ .debug_line    0x0000000000000969      0x3ae build/obj/menu.o
+ .debug_line    0x0000000000000d17      0x1be build/obj/config.o
+ .debug_line    0x0000000000000ed5      0x211 build/obj/buttonpush.o
+ .debug_line    0x00000000000010e6      0x16e build/obj/crt0.o
+ .debug_line    0x0000000000001254       0x72 build/obj/vectors.o
+ .debug_line    0x00000000000012c6       0x67 build/obj/chcore.o
+ .debug_line    0x000000000000132d      0x207 build/obj/chcore_v7m.o
+ .debug_line    0x0000000000001534       0xed build/obj/nvic.o
+ .debug_line    0x0000000000001621      0x1af build/obj/chsys.o
+ .debug_line    0x00000000000017d0      0x2b9 build/obj/chdebug.o
+ .debug_line    0x0000000000001a89      0x1a5 build/obj/chvt.o
+ .debug_line    0x0000000000001c2e      0x2e3 build/obj/chschd.o
+ .debug_line    0x0000000000001f11      0x344 build/obj/chthreads.o
+ .debug_line    0x0000000000002255      0x21b build/obj/chdynamic.o
+ .debug_line    0x0000000000002470      0x1ba build/obj/chregistry.o
+ .debug_line    0x000000000000262a      0x3b9 build/obj/chsem.o
+ .debug_line    0x00000000000029e3      0x2f9 build/obj/chmtx.o
+ .debug_line    0x0000000000002cdc      0x34d build/obj/chevents.o
+ .debug_line    0x0000000000003029      0x335 build/obj/chqueues.o
+ .debug_line    0x000000000000335e      0x123 build/obj/chmemcore.o
+ .debug_line    0x0000000000003481      0x25d build/obj/chheap.o
+ .debug_line    0x00000000000036de      0x1d1 build/obj/chmempools.o
+ .debug_line    0x00000000000038af      0x238 build/obj/hal.o
+ .debug_line    0x0000000000003ae7      0x287 build/obj/gpt.o
+ .debug_line    0x0000000000003d6e      0x42a build/obj/serial_usb.o
+ .debug_line    0x0000000000004198      0x1d0 build/obj/tm.o
+ .debug_line    0x0000000000004368      0x55c build/obj/usb.o
+ .debug_line    0x00000000000048c4      0x1c1 build/obj/hal_lld.o
+ .debug_line    0x0000000000004a85      0x257 build/obj/gpt_lld.o
+ .debug_line    0x0000000000004cdc      0x1a3 build/obj/pal_lld.o
+ .debug_line    0x0000000000004e7f      0x7cc build/obj/usb_lld.o
+ .debug_line    0x000000000000564b      0x329 build/obj/shell.o
+ .debug_line    0x0000000000005974      0x252 build/obj/chprintf.o
+ .debug_line    0x0000000000005bc6      0x172 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-atoi.o)
+ .debug_line    0x0000000000005d38       0xb8 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-memcpy.o)
+ .debug_line    0x0000000000005df0      0x127 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-memset.o)
+ .debug_line    0x0000000000005f17       0xe5 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-strcasecmp.o)
+ .debug_line    0x0000000000005ffc       0xd6 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-strpbrk.o)
+ .debug_line    0x00000000000060d2       0xfc /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-strspn.o)
+ .debug_line    0x00000000000061ce      0x1e9 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-strtol.o)
+ .debug_line    0x00000000000063b7       0x78 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-ctype_.o)
+ .debug_line    0x000000000000642f       0xf5 /usr/lib/gcc/arm-none-eabi/4.8/../../../arm-none-eabi/lib/armv7e-m/libc.a(lib_a-impure.o)
 
 .debug_str      0x0000000000000000     0x39f2
  .debug_str     0x0000000000000000      0xb28 build/obj/main.o
