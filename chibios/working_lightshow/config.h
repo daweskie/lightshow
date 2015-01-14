@@ -2,6 +2,15 @@
 #define CONFIG_H_INCLUDED
 #include <chsem.h>
 
+#define blinkspeed_d 100
+#define blinkmin_d 30
+#define blinkmax_d 300
+#define dir_d 0
+#define led1_d GPIOD_LED3
+#define led2_d GPIOD_LED5
+#define led3_d GPIOD_LED6
+#define led4_d GPIOD_LED4
+
 /*
  * Copyright (C)  2014 Zoltan Zidarics (Zamek)
  *
@@ -19,6 +28,7 @@
 
 
 
+
 extern int blinkspeed;
 extern int blinkmin;
 extern int blinkmax;
@@ -27,8 +37,7 @@ extern int led1;
 extern int led2;
 extern int led3;
 extern int led4;
-extern char *bt1;
-extern char *bt1ch;
+
 extern int presses;
 extern BinarySemaphore my_bsem;
 

@@ -82,51 +82,51 @@ void cmd_blinkspeed(BaseSequentialStream *chp, int argc, char *argv[])
 {
 
     (void)argv;
-    int speed = 30;
+    int speed = 50;
     if (argc != 1)
     {
-
+        chprintf(chp, "Usage: blinkspeed or bs # [speed in miliseconds]\r\n");
         return;
     }
     speed = atoi(argv[0]);
-    if(speed > 5000)
-        speed = 5000;
-    if(speed < 5)
-        speed = 5;
+    if(speed > 3000)
+        speed = 3000;
+    if(speed < 10)
+        speed = 10;
     blinkspeed = speed;
 }
 void cmd_blinkspeed_min_ch(BaseSequentialStream *chp, int argc, char *argv[])
 {
 
     (void)argv;
-    int speed = 30;
+    int speed = 50;
     if (argc != 1)
     {
-
+    chprintf(chp, "Usage: bsmin # [speed in miliseconds] - The max minimum is 10. \r\n");
         return;
     }
     speed = atoi(argv[0]);
-    if(speed > 5000)
-        speed = 5000;
-    if(speed < 5)
-        speed = 5;
+    if(speed > 3000)
+        speed = 3000;
+    if(speed < 10)
+        speed = 10;
     blinkmin = speed;
 }
 void cmd_blinkspeed_max_ch(BaseSequentialStream *chp, int argc, char *argv[])
 {
 
     (void)argv;
-    int speed = 30;
+    int speed = 50;
     if (argc != 1)
     {
-
+    chprintf(chp, "Usage: bsmax # [speed in miliseconds] - The max maximum is 3000. \r\n");
         return;
     }
     speed = atoi(argv[0]);
-    if(speed > 5000)
-        speed = 5000;
-    if(speed < 5)
-        speed = 5;
+    if(speed > 3000)
+        speed = 3000;
+    if(speed < 10)
+        speed = 10;
     blinkmax = speed;
 }
 void cmd_blinkspeed_now(BaseSequentialStream *chp, int argc, char *argv[])

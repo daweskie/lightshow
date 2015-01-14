@@ -475,24 +475,24 @@
  375              		.file 24 "config.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 myMisc.c
-     /tmp/ccJJDXvK.s:20     .bss.SDU1:0000000000000000 $d
-     /tmp/ccJJDXvK.s:23     .bss.SDU1:0000000000000000 SDU1
-     /tmp/ccJJDXvK.s:26     .rodata:0000000000000000 $d
-     /tmp/ccJJDXvK.s:60     .rodata.commands:0000000000000000 $d
-     /tmp/ccJJDXvK.s:63     .rodata.commands:0000000000000000 commands
-     /tmp/ccJJDXvK.s:89     .rodata.shell_cfg1:0000000000000000 $d
-     /tmp/ccJJDXvK.s:92     .rodata.shell_cfg1:0000000000000000 shell_cfg1
-     /tmp/ccJJDXvK.s:96     .bss.waThread1:0000000000000000 $d
-     /tmp/ccJJDXvK.s:99     .bss.waThread1:0000000000000000 waThread1
-     /tmp/ccJJDXvK.s:106    .text.Thread1:0000000000000000 $t
-     /tmp/ccJJDXvK.s:111    .text.Thread1:0000000000000000 Thread1
-     /tmp/ccJJDXvK.s:298    .text.Thread1:0000000000000128 $d
-     /tmp/ccJJDXvK.s:314    .text.startBlinker:0000000000000000 $t
-     /tmp/ccJJDXvK.s:320    .text.startBlinker:0000000000000000 startBlinker
-     /tmp/ccJJDXvK.s:346    .text.startBlinker:000000000000001c $d
+     /tmp/ccRyDPPt.s:20     .bss.SDU1:0000000000000000 $d
+     /tmp/ccRyDPPt.s:23     .bss.SDU1:0000000000000000 SDU1
+     /tmp/ccRyDPPt.s:26     .rodata:0000000000000000 $d
+     /tmp/ccRyDPPt.s:60     .rodata.commands:0000000000000000 $d
+     /tmp/ccRyDPPt.s:63     .rodata.commands:0000000000000000 commands
+     /tmp/ccRyDPPt.s:89     .rodata.shell_cfg1:0000000000000000 $d
+     /tmp/ccRyDPPt.s:92     .rodata.shell_cfg1:0000000000000000 shell_cfg1
+     /tmp/ccRyDPPt.s:96     .bss.waThread1:0000000000000000 $d
+     /tmp/ccRyDPPt.s:99     .bss.waThread1:0000000000000000 waThread1
+     /tmp/ccRyDPPt.s:106    .text.Thread1:0000000000000000 $t
+     /tmp/ccRyDPPt.s:111    .text.Thread1:0000000000000000 Thread1
+     /tmp/ccRyDPPt.s:298    .text.Thread1:0000000000000128 $d
+     /tmp/ccRyDPPt.s:314    .text.startBlinker:0000000000000000 $t
+     /tmp/ccRyDPPt.s:320    .text.startBlinker:0000000000000000 startBlinker
+     /tmp/ccRyDPPt.s:346    .text.startBlinker:000000000000001c $d
                      .debug_frame:0000000000000010 $d
-     /tmp/ccJJDXvK.s:313    .text.Thread1:0000000000000158 $t
-     /tmp/ccJJDXvK.s:351    .text.startBlinker:0000000000000024 $t
+     /tmp/ccRyDPPt.s:313    .text.Thread1:0000000000000158 $t
+     /tmp/ccRyDPPt.s:351    .text.startBlinker:0000000000000024 $t
 
 UNDEFINED SYMBOLS
 cmd_mem

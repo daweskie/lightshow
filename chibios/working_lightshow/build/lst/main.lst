@@ -362,16 +362,16 @@
  236              		.file 23 "config.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 main.c
-     /tmp/ccfePCeC.s:20     .bss.SDU1:0000000000000000 $d
-     /tmp/ccfePCeC.s:23     .bss.SDU1:0000000000000000 SDU1
-     /tmp/ccfePCeC.s:26     .rodata:0000000000000000 $d
-     /tmp/ccfePCeC.s:60     .rodata.commands:0000000000000000 $d
-     /tmp/ccfePCeC.s:63     .rodata.commands:0000000000000000 commands
-     /tmp/ccfePCeC.s:89     .rodata.shell_cfg1:0000000000000000 $d
-     /tmp/ccfePCeC.s:92     .rodata.shell_cfg1:0000000000000000 shell_cfg1
-     /tmp/ccfePCeC.s:96     .text.main:0000000000000000 $t
-     /tmp/ccfePCeC.s:102    .text.main:0000000000000000 main
-     /tmp/ccfePCeC.s:205    .text.main:00000000000000ac $d
+     /tmp/ccgdxyuX.s:20     .bss.SDU1:0000000000000000 $d
+     /tmp/ccgdxyuX.s:23     .bss.SDU1:0000000000000000 SDU1
+     /tmp/ccgdxyuX.s:26     .rodata:0000000000000000 $d
+     /tmp/ccgdxyuX.s:60     .rodata.commands:0000000000000000 $d
+     /tmp/ccgdxyuX.s:63     .rodata.commands:0000000000000000 commands
+     /tmp/ccgdxyuX.s:89     .rodata.shell_cfg1:0000000000000000 $d
+     /tmp/ccgdxyuX.s:92     .rodata.shell_cfg1:0000000000000000 shell_cfg1
+     /tmp/ccgdxyuX.s:96     .text.main:0000000000000000 $t
+     /tmp/ccgdxyuX.s:102    .text.main:0000000000000000 main
+     /tmp/ccgdxyuX.s:205    .text.main:00000000000000ac $d
                      .debug_frame:0000000000000010 $d
 
 UNDEFINED SYMBOLS

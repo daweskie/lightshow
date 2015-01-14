@@ -28,14 +28,14 @@
 Configurable variables of the program
 */
 
-blinkspeed = 100;
-blinkmin = 30;
-blinkmax = 300;
-dir = 0;
-led1 = GPIOD_LED3;
-led2 = GPIOD_LED5;
-led3 = GPIOD_LED6;
-led4 = GPIOD_LED4;
+blinkspeed = blinkspeed_d;
+blinkmin = blinkmax_d;
+blinkmax = blinkmax_d;
+dir = dir_d;
+led1 = led1_d;
+led2 = led2_d;
+led3 = led3_d;
+led4 = led4_d;
 
 presses = 0;
 
