@@ -36,12 +36,60 @@ static msg_t Threadbutton(void *arg)
     int reg = 0;
     int btcnt;
     int updown = 0;
+
+    int K = 0;
+
     while(TRUE)
     {
 
         chThdSleepMilliseconds(20);
         btcnt = 0;
-        while (palReadPad(GPIOA, GPIOA_BUTTON))
+
+
+
+        if(palReadPad(GPIOA, GPIOA_BUTTON)){
+                chThdSleepMilliseconds(200);
+
+            while(K==0){
+                btcnt++;
+                chThdSleepMilliseconds(3);
+
+                if(btcnt>300&&updown==0)
+                {
+                   ledduty=ledduty+3;
+                   chThdSleepMilliseconds(10);
+                   if(ledduty==MAXDUTY_D)
+                    updown=1;
+                }
+
+                if(btcnt>300&&updown==1)
+                {
+                   ledduty=ledduty-3;
+                   chThdSleepMilliseconds(10);
+                   if(ledduty==MINDUTY_D)
+                    updown=0;
+                }
+
+                if((palReadPad(GPIOA, GPIOA_BUTTON)==0)){
+                    K=1;
+                }
+            }
+            K=0;
+
+            if(btcnt<300 && updown==1){
+                ledduty = MINDUTY_D;
+                updown = 0;
+            }
+
+            else if(btcnt<300  && updown==0){
+                ledduty = MAXDUTY_D;
+                updown = 1;
+            }
+            btcnt=0;
+
+
+        }
+        /*while (palReadPad(GPIOA, GPIOA_BUTTON))
 
         {
             chThdSleepMilliseconds(20);
@@ -75,7 +123,9 @@ static msg_t Threadbutton(void *arg)
             if((btcnt > 10) && (btcnt < 40))
             {
 
-                if(reg == 0)
+                if(
+
+                    == 0)
                 {
                     while (ledduty < MAXDUTY_D)
                     {
@@ -97,6 +147,7 @@ static msg_t Threadbutton(void *arg)
                 }
             }
         }
+        */
         chThdSleepMilliseconds(50);
     }
     return 0;
