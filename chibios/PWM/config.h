@@ -3,7 +3,7 @@
 
 #define LEDDUTY_D 500
 #define MAXDUTY_D 1000
-#define MINDUTY_D 10
+#define MINDUTY_D 0
 #define DELAY_1 200
 #define DELAY_2 3
 #define DELAY_3 10
@@ -39,6 +39,7 @@
 extern int ledduty;
 extern int minduty;
 extern int maxduty;
+extern int timebase;
 
 
 void initPWM(void) ;

@@ -32,7 +32,7 @@ static WORKING_AREA(waThreadbutton, 128);
 static msg_t Threadbutton(void *arg)
 {
     (void) arg;
-    chRegSetThreadName("button");mma
+    chRegSetThreadName("button");
     int btcnt;
     int updown = 0;
 
@@ -46,41 +46,46 @@ static msg_t Threadbutton(void *arg)
 
 
 
-        if(palReadPad(GPIOA, GPIOA_BUTTON)){
-                chThdSleepMilliseconds(DELAY_1);    //Delay1
+        if(palReadPad(GPIOA, GPIOA_BUTTON))
+        {
+            chThdSleepMilliseconds(DELAY_1);    //Delay1
 
-            while(K==0){
+            while(K==0)
+            {
                 btcnt++;
                 chThdSleepMilliseconds(DELAY_2);          //Delay2
 
                 if(btcnt>THRESHOLD&&updown==0)            //Threshold
                 {
-                   ledduty=ledduty+SPEED;
-                   chThdSleepMilliseconds(DELAY_3);      //Delay3
-                   if(ledduty==MAXDUTY_D)
-                    updown=1;
+                    ledduty=ledduty+SPEED;
+                    chThdSleepMilliseconds(timebase);      //Delay3
+                    if(ledduty==MAXDUTY_D)
+                        updown=1;
                 }
 
                 if(btcnt>THRESHOLD&&updown==1)            //Threshold
                 {
-                   ledduty=ledduty-SPEED;
-                   chThdSleepMilliseconds(DELAY_3);      //Delay3
-                   if(ledduty==MINDUTY_D)
-                    updown=0;
+                    ledduty=ledduty-SPEED;
+                    chThdSleepMilliseconds(timebase);      //Delay3
+                    if(ledduty==MINDUTY_D)
+                        updown=0;
                 }
 
-                if((palReadPad(GPIOA, GPIOA_BUTTON)==0)){
+                if((palReadPad(GPIOA, GPIOA_BUTTON)==0))
+                {
                     K=1;
                 }
             }
             K=0;
 
-            if(btcnt<THRESHOLD && updown==1){             //Threshold
+            if(btcnt<THRESHOLD && updown==1)              //Threshold
+            {
                 ledduty = MINDUTY_D;
                 updown = 0;
             }
 
-            else if(btcnt<THRESHOLD  && updown==0){      //Threshold
+            else if(btcnt<THRESHOLD  && updown==0)       //Threshold
+            {
                 ledduty = MAXDUTY_D;
                 updown = 1;
             }

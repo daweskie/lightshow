@@ -28,19 +28,21 @@
 */
 static WORKING_AREA(PWM_WA, 128) ;
 
-static msg_t PWMThread(void *arg) {
-(void)arg ;
-chRegSetThreadName("PWMTHREAD") ;
+static msg_t PWMThread(void *arg)
+{
+    (void)arg ;
+    chRegSetThreadName("PWMTHREAD") ;
 
- while(TRUE) {
+    while(TRUE)
+    {
         chThdSleepMilliseconds(50) ;
-pwmEnableChannel(&PWMD4, CH_D, ledduty) ;
-//chThdSleepMilliseconds(1) ;
-//pwmDisableChannelI(&PWMD4, 1) ;
- }
-return 0 ;
+        pwmEnableChannel(&PWMD4, CH_D, ledduty) ;
+
+    }
+    return 0 ;
 }
 
-void startPWMThread(void) {
-chThdCreateStatic(PWM_WA, sizeof(PWM_WA), NORMALPRIO, PWMThread, NULL) ;
+void startPWMThread(void)
+{
+    chThdCreateStatic(PWM_WA, sizeof(PWM_WA), NORMALPRIO, PWMThread, NULL) ;
 }

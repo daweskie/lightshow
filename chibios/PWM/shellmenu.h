@@ -19,13 +19,19 @@
 */
 
 void cmd_actual(BaseSequentialStream *chp, int argc, char *argv[]);
+void cmd_timebase(BaseSequentialStream *chp, int argc, char *argv[]);
+void cmd_timebase_w(BaseSequentialStream *chp, int argc, char *argv[]);
+void cmd_actual_v(BaseSequentialStream *chp, int argc, char *argv[]);
 /* Virtual serial port over USB.*/
 static SerialUSBDriver SDU1;
 
 static const ShellCommand commands[] =
 {
 
-    {"actual",cmd_actual},
+    {"aduty",cmd_actual},
+    {"tbase",cmd_timebase},
+    {"wtbase",cmd_timebase_w},
+    {"wduty",cmd_actual_v},
     {NULL, NULL}
 };
 
