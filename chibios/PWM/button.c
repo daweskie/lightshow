@@ -32,8 +32,7 @@ static WORKING_AREA(waThreadbutton, 128);
 static msg_t Threadbutton(void *arg)
 {
     (void) arg;
-    chRegSetThreadName("button");
-    int reg = 0;
+    chRegSetThreadName("button");mma
     int btcnt;
     int updown = 0;
 
@@ -48,24 +47,24 @@ static msg_t Threadbutton(void *arg)
 
 
         if(palReadPad(GPIOA, GPIOA_BUTTON)){
-                chThdSleepMilliseconds(200);
+                chThdSleepMilliseconds(DELAY_1);    //Delay1
 
             while(K==0){
                 btcnt++;
-                chThdSleepMilliseconds(3);
+                chThdSleepMilliseconds(DELAY_2);          //Delay2
 
-                if(btcnt>300&&updown==0)
+                if(btcnt>THRESHOLD&&updown==0)            //Threshold
                 {
-                   ledduty=ledduty+3;
-                   chThdSleepMilliseconds(10);
+                   ledduty=ledduty+SPEED;
+                   chThdSleepMilliseconds(DELAY_3);      //Delay3
                    if(ledduty==MAXDUTY_D)
                     updown=1;
                 }
 
-                if(btcnt>300&&updown==1)
+                if(btcnt>THRESHOLD&&updown==1)            //Threshold
                 {
-                   ledduty=ledduty-3;
-                   chThdSleepMilliseconds(10);
+                   ledduty=ledduty-SPEED;
+                   chThdSleepMilliseconds(DELAY_3);      //Delay3
                    if(ledduty==MINDUTY_D)
                     updown=0;
                 }
@@ -76,12 +75,12 @@ static msg_t Threadbutton(void *arg)
             }
             K=0;
 
-            if(btcnt<300 && updown==1){
+            if(btcnt<THRESHOLD && updown==1){             //Threshold
                 ledduty = MINDUTY_D;
                 updown = 0;
             }
 
-            else if(btcnt<300  && updown==0){
+            else if(btcnt<THRESHOLD  && updown==0){      //Threshold
                 ledduty = MAXDUTY_D;
                 updown = 1;
             }
@@ -89,65 +88,7 @@ static msg_t Threadbutton(void *arg)
 
 
         }
-        /*while (palReadPad(GPIOA, GPIOA_BUTTON))
 
-        {
-            chThdSleepMilliseconds(20);
-            btcnt++;
-
-            if (btcnt >= 40)
-            {
-                if (updown == 0)
-                {
-                    ledduty  = ledduty + 5;
-                    if (ledduty > MAXDUTY_D)
-                    {
-                        ledduty = MAXDUTY_D;
-                        updown = 1;
-                    }
-                }
-                else if (updown == 1)
-                {
-                    ledduty = ledduty - 5;
-                    if (ledduty < MINDUTY_D)
-                    {
-                        ledduty = MINDUTY_D;
-                        updown = 0;
-                    }
-
-                }
-
-            }
-
-
-            if((btcnt > 10) && (btcnt < 40))
-            {
-
-                if(
-
-                    == 0)
-                {
-                    while (ledduty < MAXDUTY_D)
-                    {
-                        //chThdSleepMilliseconds(3);
-                        ledduty++;
-
-                    }
-                    reg = 1;
-                }
-                else if ( reg == 1 )
-                {
-                    while (ledduty > MINDUTY_D)
-                    {
-                        //chThdSleepMilliseconds(3);
-                        ledduty--;
-
-                    }
-                    reg = 0;
-                }
-            }
-        }
-        */
         chThdSleepMilliseconds(50);
     }
     return 0;

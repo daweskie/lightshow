@@ -4,6 +4,11 @@
 #define LEDDUTY_D 500
 #define MAXDUTY_D 1000
 #define MINDUTY_D 10
+#define DELAY_1 200
+#define DELAY_2 3
+#define DELAY_3 10
+#define THRESHOLD 300
+#define SPEED 3
 
 #define LED_PORT GPIOD
 #define LED_PIN GPIOD_LED5
